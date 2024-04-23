@@ -5,8 +5,8 @@ import { lazy, Suspense } from 'react';
 
 const Layout = ({ children }) => {
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <Navbar />
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", maxWidth:"100vw" }}>
+
       <div style={{ flex: 1 }}>
         {children}
       </div>
