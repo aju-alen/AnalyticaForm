@@ -12,6 +12,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Stack from '@mui/material/Stack';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { backendUrl } from '../utils/backendUrl';
 
 
 
@@ -20,14 +25,23 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const defaultTheme = createTheme();
 
 export default function Login() {
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+ 
+  const handleSubmit = async(event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
+    
+    const resp = await axios.post(`${backendUrl}/api/auth/login`, {
       email: data.get('email'),
       password: data.get('password'),
     });
+    console.log(resp.data);
+
+    localStorage.setItem('analyuser', JSON.stringify({email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin}));
+    navigate('/');
   };
+
+  
 
   return (
     <ThemeProvider theme={defaultTheme}>

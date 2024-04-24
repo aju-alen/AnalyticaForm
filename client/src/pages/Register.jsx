@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,20 +11,37 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import axios from 'axios';
+import { backendUrl } from '../utils/backendUrl';
 
-
-
-// TODO remove, this demo shouldn't need to reset the theme.
 
 
 export default function Register() {
-  const handleSubmit = (event) => {
+  const [checked, setChecked] = useState(true);
+
+  const handleChange = (event) => {
+    setChecked(event.target.checked);
+  };
+
+  const handleSubmit = async(event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    try {
+      const data = new FormData(event.currentTarget);
+      const registerForm = {
+        firstName: data.get('firstName'),
+        lastName: data.get('lastName'),
+        email: data.get('email'),
+        password: data.get('password'),
+        receiveMarketingEmails: checked
+      };
+
+      console.log(registerForm);
+      const resp = await axios.post(`${backendUrl}/api/auth/register`, registerForm);
+      console.log(resp.data);
+
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -88,10 +106,14 @@ export default function Register() {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
-              />
+              <Checkbox 
+                   name ="receiveMarketingEmails" 
+                   checked={checked}
+                    color="primary"
+                    onChange={handleChange}
+                    />
+                    <label > I want to receive inspiration, marketing promotions and updates via email.</label>
+              
             </Grid>
           </Grid>
           <Button
