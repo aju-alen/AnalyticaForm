@@ -17,6 +17,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { backendUrl } from '../utils/backendUrl';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
+import { axiosWithCredentials } from '../utils/customAxios';
 
 
 
@@ -26,22 +29,20 @@ const defaultTheme = createTheme();
 
 export default function Login() {
   const navigate = useNavigate();
- 
-  const handleSubmit = async(event) => {
+  
+  const handleSubmit = async (event) => {
+
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    
-    const resp = await axios.post(`${backendUrl}/api/auth/login`, {
+    const resp = await axiosWithCredentials.post(`${backendUrl}/api/auth/login`, {
       email: data.get('email'),
       password: data.get('password'),
     });
     console.log(resp.data);
 
-    localStorage.setItem('analyuser', JSON.stringify({email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin}));
-    navigate('/');
+    localStorage.setItem('analyuser', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken }));
+    navigate('/dashboard');
   };
-
-  
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -94,6 +95,22 @@ export default function Login() {
             >
               Login
             </Button>
+            <Box 
+              sx={{ mt: 1 ,
+              display: 'flex',
+              justifyContent: 'center',}}
+             
+            >
+            <GoogleLogin
+              onSuccess={credentialResponse => {
+                const decoded = jwtDecode(JSON.stringify(credentialResponse))
+                console.log(decoded);
+              }}
+              onError={() => {
+                console.log('Login Failed');
+              }}
+            />
+            </Box>
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
