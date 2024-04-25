@@ -70,18 +70,18 @@ export const login = async (req, res, next) => {
 
         const accessToken = jwt.sign({ email: user.email, id: user.id, isAdmin: user.isAdmin, firstName: user.firstName },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '1m' });
+            { expiresIn: '1h' });
 
         const refreshToken = jwt.sign({ email: user.email, id: user.id, isAdmin: user.isAdmin, firstName: user.firstName },
             process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: '3m' }
+            { expiresIn: '12h' }
         );
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true, //cookie cannot be accessed by client side
-            secure: false, //https
+            secure: true, //https
             sameSite: 'none', //different domain can access
-            maxAge: 1000 * 60 * 3,
+            maxAge: 1000 * 60 * 60 * 12 , //2 minutes
         });
 
         res.status(200).json({ accessToken, message: "Login successful",email:user.email,id:user.id,firstName:user.firstName,isAdmin:user.isAdmin });
@@ -92,6 +92,7 @@ export const login = async (req, res, next) => {
 };
 
 export const refresh = async (req, res, next) => {
+  
     const cookies = req.cookies;
 
     if (!cookies.refreshToken) {
@@ -123,7 +124,7 @@ export const refresh = async (req, res, next) => {
                     firstName: foundUser.firstName
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '1m' }
+                { expiresIn: '1h' }
             )
             res.json({ accessToken });
         });
@@ -137,7 +138,7 @@ export const logout = async (req, res, next) => {
     }
     res.clearCookie('refreshToken',{
         httpOnly: true, 
-        secure: false, 
+        secure: true, 
         sameSite: 'none', 
     })
     res.json({message: "Logout successful, Cookie has been cleared"})
