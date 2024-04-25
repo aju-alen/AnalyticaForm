@@ -1,12 +1,15 @@
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
-import Navbar from './components/Navbar';
+import { createBrowserRouter, RouterProvider, Outlet, Navigate,useLocation } from 'react-router-dom'
+import MainNavBar from './components/MainNavBar';
 import Footer from './components/Footer';
 import { lazy, Suspense } from 'react';
 
 const Layout = ({ children }) => {
+  const location = useLocation();
+  const hideNavBarPages = ['/register', '/login','/'];
+  const shouldHideNavBar = hideNavBarPages.includes(location.pathname);
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", maxWidth:"100vw" }}>
-
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", maxWidth: "100vw" }}>
+        {!shouldHideNavBar && <MainNavBar />}
       <div style={{ flex: 1 }}>
         {children}
       </div>
@@ -18,8 +21,25 @@ const Layout = ({ children }) => {
 const Home = lazy(() => import('./pages/Home'));
 const Register = lazy(() => import('./pages/Register'));
 const Login = lazy(() => import('./pages/Login'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 const App = () => {
+
+  // Function to check if the user is authenticated
+  const isAuthenticated = () => {
+    return !!localStorage.getItem('analyuser'); // Change this according to your authentication mechanism
+  };
+
+  const ProtectedRoute = ({ element, ...rest }) => {
+    if (isAuthenticated()) {
+      console.log('User is authenticated');
+      return element;
+    } else {
+      console.log('User is not authenticated');
+      return <Navigate to="/login" />;
+    }
+  };
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -42,6 +62,10 @@ const App = () => {
         {
           path: "/login",
           element: <Login />,
+        },
+        {
+          path: "/dashboard",
+          element: <ProtectedRoute element={<Dashboard />} />, // Wrap Dashboard inside ProtectedRoute
         },
       ]
     }
