@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -23,6 +23,7 @@ const logoStyle = {
 function HomeNavBar() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [userExists, setUserExists] = React.useState('');
 
 
   const toggleDrawer = (newOpen) => () => {
@@ -43,6 +44,13 @@ function HomeNavBar() {
     }
   };
 
+  useEffect(() => {
+    
+    if(localStorage.getItem('analyuser')){
+      setUserExists(JSON.parse(localStorage.getItem('analyuser')));
+    }
+  }, []);
+  console.log(userExists);
 
   return (
     <AppBar
@@ -69,9 +77,6 @@ function HomeNavBar() {
             boxShadow: `0 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
           }}
         >
-
-
-
           <Box
             sx={{
               flexGrow: 1,
@@ -81,7 +86,6 @@ function HomeNavBar() {
               px: 0,
             }}
           >
-
             <img
               src="https://i.postimg.cc/jqDGBvw9/Scientific-Journals-Portal-logo-03.png"
               style={logoStyle}
@@ -139,6 +143,7 @@ function HomeNavBar() {
               alignItems: 'center',
             }}
           >
+            {!userExists? 
             <Button
               color="primary"
               variant="text"
@@ -149,7 +154,20 @@ function HomeNavBar() {
             >
               Sign in
             </Button>
+            :
             <Button
+              color="primary"
+              variant="contained"
+              size="small"
+              component="a"
+              onClick={() => navigate('/dashboard')}
+              target="_blank"
+            >
+              Dashboard
+            </Button>}
+
+            {!userExists ?
+            (<Button
               color='primary'
               variant="contained"
               size="small"
@@ -158,7 +176,7 @@ function HomeNavBar() {
               target="_blank"
             >
               Sign up
-            </Button>
+            </Button>):null}
           </Box>
 
           <Box sx={{ display: { sm: '', md: 'none' } }}>

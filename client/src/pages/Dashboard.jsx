@@ -21,7 +21,6 @@ const Dashboard = () => {
                     localStorage.setItem('analyuser', JSON.stringify({email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken}));
                 }
                 const testResp = await axiosWithAuth.get(`${backendUrl}/api/auth/test`);
-                console.log(testResp.data);
             }
             catch(err){
                 if(err.response.status === 401){
