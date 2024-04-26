@@ -35,7 +35,7 @@ export default function Home() {
       <CssBaseline />
       <HomeNavBar />
       <Switch
-      sx={{ position: 'fixed', top: 0, right: 0 }}
+      sx={{ position: 'fixed', top: 70, right: 0 }}
       checked={mode}
       onChange={handleChange}
       inputProps={{ 'aria-label': 'controlled' }}
