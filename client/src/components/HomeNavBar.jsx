@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -45,8 +45,8 @@ function HomeNavBar() {
   };
 
   useEffect(() => {
-    
-    if(localStorage.getItem('analyuser')){
+
+    if (localStorage.getItem('analyuser')) {
       setUserExists(JSON.parse(localStorage.getItem('analyuser')));
     }
   }, []);
@@ -143,40 +143,41 @@ function HomeNavBar() {
               alignItems: 'center',
             }}
           >
-            {!userExists? 
-            <Button
-              color="primary"
-              variant="text"
-              size="small"
-              component="a"
-              onClick={() => navigate('/login')}
-              target="_blank"
-            >
-              Sign in
-            </Button>
-            :
-            <Button
-              color="primary"
-              variant="contained"
-              size="small"
-              component="a"
-              onClick={() => navigate('/dashboard')}
-              target="_blank"
-            >
-              Dashboard
-            </Button>}
+            {!userExists ?
+              <Button
+                color="primary"
+                variant="text"
+                size="small"
+                component="a"
+                onClick={() => navigate('/login')}
+                target="_blank"
+              >
+                Sign in
+              </Button>
+              :
+              (<Button
+                color="primary"
+                variant="contained"
+                size="small"
+                component="a"
+                onClick={() => navigate('/dashboard')}
+                target="_blank"
+              >
+                Dashboard
+              </Button>)
+            }
 
             {!userExists ?
-            (<Button
-              color='primary'
-              variant="contained"
-              size="small"
-              component="a"
-              onClick={() => navigate('/register')}
-              target="_blank"
-            >
-              Sign up
-            </Button>):null}
+              (<Button
+                color='primary'
+                variant="contained"
+                size="small"
+                component="a"
+                onClick={() => navigate('/register')}
+                target="_blank"
+              >
+                Sign up
+              </Button>) : null}
           </Box>
 
           <Box sx={{ display: { sm: '', md: 'none' } }}>
@@ -216,30 +217,46 @@ function HomeNavBar() {
                   FAQ
                 </MenuItem> */}
                 <Divider />
-                <MenuItem>
+                {!userExists ? (<MenuItem>
                   <Button
                     color="primary"
                     variant="contained"
                     component="a"
-                   onClick={() => navigate('/register')}
+                    onClick={() => navigate('/register')}
                     target="_blank"
                     sx={{ width: '100%' }}
                   >
                     Sign up
                   </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button
-                    color="primary"
-                    variant="outlined"
-                    component="a"
-                    onClick={() => navigate('/login')}
-                    target="_blank"
-                    sx={{ width: '100%' }}
-                  >
-                    Sign in
-                  </Button>
-                </MenuItem>
+                </MenuItem>) :
+                  (<MenuItem>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      size="small"
+                      component="a"
+                      onClick={() => navigate('/dashboard')}
+                      target="_blank"
+                      sx={{ width: '100%' }}
+                    >
+                      Dashboard
+                    </Button>
+                  </MenuItem>
+                  )}
+                {!userExists ? (
+                  <MenuItem>
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      component="a"
+                      onClick={() => navigate('/login')}
+                      target="_blank"
+                      sx={{ width: '100%' }}
+                    >
+                      Sign in
+                    </Button>
+                  </MenuItem>) :
+                  null}
               </Box>
             </Drawer>
           </Box>
