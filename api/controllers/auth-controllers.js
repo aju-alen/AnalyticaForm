@@ -81,10 +81,10 @@ export const login = async (req, res, next) => {
             httpOnly: true, //cookie cannot be accessed by client side
             secure: true, //https
             sameSite: 'none', //different domain can access
-            maxAge: 1000 * 60 * 60 * 12 , //2 minutes
+            maxAge: 1000 * 60 * 60 * 12, //2 minutes
         });
 
-        res.status(200).json({ accessToken, message: "Login successful",email:user.email,id:user.id,firstName:user.firstName,isAdmin:user.isAdmin });
+        res.status(200).json({ accessToken, message: "Login successful", email: user.email, id: user.id, firstName: user.firstName, isAdmin: user.isAdmin });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "An error has occoured" });
@@ -92,7 +92,7 @@ export const login = async (req, res, next) => {
 };
 
 export const refresh = async (req, res, next) => {
-  
+
     const cookies = req.cookies;
 
     if (!cookies.refreshToken) {
@@ -132,18 +132,24 @@ export const refresh = async (req, res, next) => {
 }
 
 export const logout = async (req, res, next) => {
-    const cookies = req.cookies;
-    if(!cookies.refreshToken){
-        return res.status(204)
+    try {
+        const cookies = req.cookies;
+        if (!cookies.refreshToken) {
+            return res.status(204)
+        }
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+        })
+        res.json({ message: "Logout successful, Cookie has been cleared" })
     }
-    res.clearCookie('refreshToken',{
-        httpOnly: true, 
-        secure: true, 
-        sameSite: 'none', 
-    })
-    res.json({message: "Logout successful, Cookie has been cleared"})
-}
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "An error has occoured" })
 
+    }
+}
 export const test = async (req, res, next) => {
 
     res.json({ message: "Test successful" });
