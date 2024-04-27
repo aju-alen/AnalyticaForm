@@ -49,7 +49,7 @@ function ResponsiveAppBar() {
       const testResp = await axiosWithCredentials.post(`${backendUrl}/api/auth/logout`);
 
       console.log(testResp,'logout response');
-      localStorage.removeItem('analyuser');
+      localStorage.removeItem('userAccessToken');
       navigate('/');
     }
     catch(error){

@@ -46,8 +46,8 @@ function HomeNavBar() {
 
   useEffect(() => {
 
-    if (localStorage.getItem('analyuser')) {
-      setUserExists(JSON.parse(localStorage.getItem('analyuser')));
+    if (localStorage.getItem('userAccessToken')) {
+      setUserExists(JSON.parse(localStorage.getItem('userAccessToken')));
     }
   }, []);
   console.log(userExists);

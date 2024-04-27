@@ -16,7 +16,7 @@ export const axiosWithAuth = axios.create({
 // Add a request interceptor to attach the Authorization header
 axiosWithAuth.interceptors.request.use(config => {
   // Add Authorization header if token is available in localStorage
-  const token = JSON.parse(localStorage.getItem('analyuser'))?.token;
+  const token = JSON.parse(localStorage.getItem('userAccessToken'))?.token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

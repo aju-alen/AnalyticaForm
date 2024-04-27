@@ -40,7 +40,7 @@ export default function Login() {
     });
     console.log(resp.data);
 
-    localStorage.setItem('analyuser', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken }));
+    localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken }));
     navigate('/dashboard');
   };
 
