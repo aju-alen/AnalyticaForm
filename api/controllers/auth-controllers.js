@@ -81,7 +81,7 @@ export const login = async (req, res, next) => {
             httpOnly: true, //cookie cannot be accessed by client side
             secure: true, //https
             sameSite: 'none', //different domain can access
-            maxAge: 1000 * 60 * 60 * 12, //2 minutes
+            maxAge: 1000 * 60 * 60 * 12, //12 hrs
         });
 
         res.status(200).json({ accessToken, message: "Login successful", email: user.email, id: user.id, firstName: user.firstName, isAdmin: user.isAdmin });
@@ -150,6 +150,8 @@ export const logout = async (req, res, next) => {
 
     }
 }
+
+//just for testing purpose of the middleware
 export const test = async (req, res, next) => {
 
     res.json({ message: "Test successful" });

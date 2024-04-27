@@ -16,7 +16,7 @@ router.get('/refresh',refresh);
 //logout
 router.post('/logout',logout);
 
-//Test
+//Testing route
 router.get('/test',loginLimiter,verifyJwt,test);
 
 
