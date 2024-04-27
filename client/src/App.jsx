@@ -27,7 +27,7 @@ const App = () => {
 
   // Function to check if the user is authenticated
   const isAuthenticated = () => {
-    return !!localStorage.getItem('analyuser'); // Change this according to your authentication mechanism
+    return !!localStorage.getItem('userAccessToken'); // Change this according to your authentication mechanism
   };
 
   const ProtectedRoute = ({ element, ...rest }) => {
