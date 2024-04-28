@@ -26,6 +26,7 @@ const Hero = () => {
             >
                 <Stack
                     spacing={2}
+                    borderWidth='10px'
                     alignItems="center"
                     useFlexGap
                     sx={{ width: { xs: '100%', sm: '70%' } }}
@@ -51,25 +52,25 @@ const Hero = () => {
                             Survey
                         </Typography>
                     </Typography>
-                    <Stack 
+                    <Stack
                         alignItems="center"
                         useFlexGap
                         sx={{ width: { xs: '100%', sm: '100%' } }}
                     >
-                    <Typography
-                        textAlign="justify"
-                        color="text.secondary"
-                        sx={{ width: { sm: '100%', md: '80%' } }}
-                    >
-                       With Easy Survey, you can seamlessly create, customize, and distribute surveys to your audience with ease. Whether it's gathering customer feedback, conducting market research, or collecting employee opinions, our platform streamlines the process for you. 
-                    </Typography>
-                    <Typography
-                        textAlign="center"
-                        color="text.secondary"
-                        sx={{ width: { sm: '100%', md: '80%' } }}
-                    >
-                        Gain actionable insights and access survey data 
-                    </Typography>
+                        <Typography
+                            textAlign="justify"
+                            color="text.secondary"
+                            sx={{ width: { sm: '100%', md: '80%' } }}
+                        >
+                            With Easy Survey, you can seamlessly create, customize, and distribute surveys to your audience with ease. Whether it&apos;s gathering customer feedback, conducting market research, or collecting employee opinions, our platform streamlines the process for you.
+                        </Typography>
+                        <Typography
+                            textAlign="center"
+                            color="text.secondary"
+                            sx={{ width: { sm: '100%', md: '80%' } }}
+                        >
+                            Gain actionable insights and access survey data
+                        </Typography>
                     </Stack>
                 </Stack>
             </Container>

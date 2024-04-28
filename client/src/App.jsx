@@ -22,6 +22,7 @@ const Home = lazy(() => import('./pages/Home'));
 const Register = lazy(() => import('./pages/Register'));
 const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const CreateNewSurvey = lazy(() => import('./pages/CreateNewSurvey'));
 
 const App = () => {
 
@@ -66,6 +67,10 @@ const App = () => {
         {
           path: "/dashboard",
           element: <ProtectedRoute element={<Dashboard />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/create-survey",
+          element: <ProtectedRoute element={<CreateNewSurvey />} />, // Wrap Dashboard inside ProtectedRoute
         },
       ]
     }
