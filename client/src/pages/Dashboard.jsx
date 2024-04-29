@@ -37,10 +37,10 @@ const Dashboard = () => {
 
     return (
         <Box component="section" sx={{ p: { md: 10 }, pt: { xs: 10 } }}>
-               <Fab onClick={()=>navigate('/create-survey')} variant="extended" size="large" color="primary">
-               <AddIcon />
-        Create new survey
-      </Fab>
+            <Fab onClick={() => navigate('/create-survey')} variant="extended" size="large" color="primary">
+                <AddIcon />
+                Create new survey
+            </Fab>
             <MySurvery />
         </Box>
 
