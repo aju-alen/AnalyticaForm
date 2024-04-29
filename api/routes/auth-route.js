@@ -19,5 +19,4 @@ router.post('/logout',logout);
 //Testing route
 router.get('/test',loginLimiter,verifyJwt,test);
 
-
 export default router;
