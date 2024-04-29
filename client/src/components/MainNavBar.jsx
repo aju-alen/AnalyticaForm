@@ -37,6 +37,7 @@ function ResponsiveAppBar() {
   };
 
   const handleCloseNavMenu = () => {
+    navigate('/dashboard');
     setAnchorElNav(null);
   };
 
@@ -102,7 +103,7 @@ function ResponsiveAppBar() {
               }}
             >
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center" onClick={()=> navigate('/')}>My Surverys</Typography>
+                  <Typography textAlign="center" onClick={()=> navigate('/dashboard')}>My Surverys</Typography>
                 </MenuItem>
             </Menu>
           </Box>

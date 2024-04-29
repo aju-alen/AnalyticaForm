@@ -1,7 +1,9 @@
+import { useParams } from 'react-router-dom';
 
 const CreateNewSurvey = () => {
-  return (
-    <div>CreateNewSurvey</div>
+  const { surveyId } = useParams();
+   return (
+    <div>Create New Survey</div>
   )
 }
 

@@ -1,14 +1,14 @@
 import express from 'express';
 const router = express.Router();
 import { userRegister,login,refresh,logout,test } from '../controllers/auth-controllers.js';
-import { loginLimiter } from '../middleware/loginLimiter.js';
+import { apiCallLimiter } from '../middleware/rateLimiter.js'
 import { verifyJwt } from '../middleware/verifyJwt.js';
 
 //user registration
-router.post('/register',loginLimiter,userRegister);
+router.post('/register',apiCallLimiter,userRegister);
 
 //login
-router.post('/login',loginLimiter,login);
+router.post('/login',apiCallLimiter,login);
 
 //refreshtoken
 router.get('/refresh',refresh);
@@ -17,6 +17,6 @@ router.get('/refresh',refresh);
 router.post('/logout',logout);
 
 //Testing route
-router.get('/test',loginLimiter,verifyJwt,test);
+router.get('/test',apiCallLimiter,verifyJwt,test);
 
 export default router;

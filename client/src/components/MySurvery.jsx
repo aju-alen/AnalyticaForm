@@ -8,10 +8,12 @@ import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
+import { Link } from 'react-router-dom';
 
 
 
-export function MySurvery() {
+export function MySurvery({userSurveyData}) {
+  console.log(userSurveyData,'userSurveyData');
   return (
     <Box component="section" sx={{ p: { md: 10 }, pt: { xs: 10 } }}>
       <Container maxWidth="lg">
@@ -29,17 +31,24 @@ export function MySurvery() {
                 </TableRow>
               </TableHead>
               <TableBody>
-
-                <TableRow
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell align="center">test</TableCell>
-                  <TableCell align="center">test</TableCell>
-                  <TableCell align="center">test</TableCell>
-                  <TableCell align="center">test</TableCell>
-                  <TableCell align="center">test</TableCell>
-                </TableRow>
-              </TableBody>
+          {userSurveyData.map((survey) => (
+            <TableRow
+              key={survey.id}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                <Link to={`/create-survey/${survey.id}`}>
+                {survey.surveyTitle}
+                </Link>
+              </TableCell>
+              <TableCell align="center">{survey.createdAt}</TableCell>
+              <TableCell align="center">{survey.updatedAt}</TableCell>
+              <TableCell align="center">{survey.surveyStatus}</TableCell>
+              <TableCell align="center">{survey.surveyResponses}</TableCell>
+            </TableRow>
+          ))}
+          
+        </TableBody>
             </Table>
           </TableContainer>
         </Box>

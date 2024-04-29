@@ -69,7 +69,7 @@ const App = () => {
           element: <ProtectedRoute element={<Dashboard />} />, // Wrap Dashboard inside ProtectedRoute
         },
         {
-          path: "/create-survey",
+          path: "/create-survey/:surveyId",
           element: <ProtectedRoute element={<CreateNewSurvey />} />, // Wrap Dashboard inside ProtectedRoute
         },
       ]
