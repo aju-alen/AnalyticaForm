@@ -13,8 +13,9 @@ export const verifyJwt = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: 'Invalid token' });
         }
-        if(decoded.tokenEmail === undefined || decoded.tokenId === undefined || decoded.tokenFirstName === undefined || decoded.tokenAdmin === undefined) {
-            return res.status(403).json({ message: 'Invalid token' });
+        console.log(decoded, 'decoded');
+        if(decoded.email === undefined || decoded.id === undefined || decoded.firstName === undefined || decoded.isAdmin === undefined) {
+            return res.status(403).json({ message: 'Invalid tokennn' });
         }
         req.tokenEmail = decoded.email;
         req.tokenId = decoded.id;
