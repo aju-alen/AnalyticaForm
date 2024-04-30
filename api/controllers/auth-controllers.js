@@ -103,11 +103,11 @@ export const refresh = async (req, res, next) => {
 
     jwt.verify(refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
-        (err, decoded) => {
+        async(err, decoded) => {
             if (err) {
                 return res.status(403).json({ message: "Invalid token" });
             }
-            const foundUser = prisma.user.findUnique({
+            const foundUser = await prisma.user.findUnique({
                 where: {
                     email: decoded.email
                 }
@@ -126,7 +126,7 @@ export const refresh = async (req, res, next) => {
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '1h' }
             )
-            res.json({ accessToken });
+            res.json({ accessToken, message: "Trefreshed", email: foundUser.email, id: foundUser.id, firstName: foundUser.firstName, isAdmin: foundUser.isAdmin });
         });
 
 }
