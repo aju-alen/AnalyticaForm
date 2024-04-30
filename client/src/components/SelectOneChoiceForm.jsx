@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -11,15 +11,14 @@ import Radio from '@mui/material/Radio';
 
 
 const SelectOneChoiceForm = () => {
-  const [selectedValue, setSelectedValue] = React.useState('a');
-  const formData = {
+  const [formData, setFormData] = useState({
     question: '',
-    options: [],
+    options: [{ id: 1, text: '' }],
     selectedValue: ''
-  }
-
+  });
   const handleChange = (event) => {
-    setSelectedValue(event.target.value);
+    console.log(event, 'radio event');
+    // setSelectedValue(event.target.value);
   };
 
   return (
@@ -43,16 +42,9 @@ const SelectOneChoiceForm = () => {
           <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='' value='' />
 
           <Stack spacing={2}>
-            
-            <Stack spacing={2} direction={'row'}>
-              <Radio
-                checked={selectedValue === 'a'}
-                onChange={handleChange}
-                value="a"
-                name="radio-buttons"
-                inputProps={{ 'aria-label': 'A' }}
-              />
-              <TextField id="standard-basic" label="Standard" variant="standard" name='' value='' />
+            <Stack direction="row" spacing={2}>
+              <Radio onChange={handleChange} value={999} />
+              <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='' value='' />
             </Stack>
           </Stack>
         </Box>

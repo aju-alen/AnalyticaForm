@@ -19,13 +19,12 @@ const CreateNewSurvey = () => {
 
   const { surveyId } = useParams();
   const navigate = useNavigate();
+
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
   });
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
   const [selectedItems, setSelectedItems] = useState([]); // selected items 
-
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -40,8 +39,6 @@ const CreateNewSurvey = () => {
       ...surveyData,
       [e.target.name]: e.target.value,
     });
-
-
   }
 
   const handleSubmitForm = async () => {
@@ -95,10 +92,10 @@ const CreateNewSurvey = () => {
 
   const selectItem = selectedItems.map((item,index) => {
     if (item === 'SingleForm') {
-      return <SelectOneChoiceForm key={nanoid()} index={index} />
+      return <SelectOneChoiceForm key={index}  />
     }
     else if (item === 'MultiForm') {
-      return <SelectMultiPoint key={nanoid()} index={index} />
+      return <SelectMultiPoint key={index}  />
     }
 
   });
@@ -128,8 +125,6 @@ const CreateNewSurvey = () => {
             Add Form
           </Button>
           </Stack>
-
-          
         </Box>
         <Button variant="contained" color="primary" onClick={handleSubmitForm}>
             Submit
