@@ -22,6 +22,8 @@ const CreateNewSurvey = () => {
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
+    surveyForms: [],
+    selectedItems: []
   });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
   const [selectedItems, setSelectedItems] = useState([]); // selected items 
@@ -32,6 +34,7 @@ const CreateNewSurvey = () => {
 
   const handleItemSelect = (item) => {
     setSelectedItems([...selectedItems, item]);
+    setSurveyData({...surveyData, selectedItems: [...selectedItems, item]})
   };
 
   const handleFormChange = (e) => {
@@ -40,10 +43,61 @@ const CreateNewSurvey = () => {
       [e.target.name]: e.target.value,
     });
   }
+  const handleSaveSelectOneForm = (formData) => {
+    console.log(formData, 'formData in the parent');
+    
+    // Check if the formData id exists in the surveyForms array
+    const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
+    
+    if (existingFormIndex !== -1) {
+      // If the form data already exists, update it
+      setSurveyData(prevSurveyData => ({
+        ...prevSurveyData,
+        surveyForms: prevSurveyData.surveyForms.map((form, index) => {
+          if (index === existingFormIndex) {
+            return formData; // Update existing form data
+          }
+          return form; // Leave other form data unchanged
+        })
+      }));
+    } else {
+      // If the form data doesn't exist, add it to the surveyForms array
+      setSurveyData(prevSurveyData => ({
+        ...prevSurveyData,
+        surveyForms: [...prevSurveyData.surveyForms, formData]
+      }));
+    }
+  };
+
+  const handleSaveSelectMultiPointForm = (formData) => {
+    
+    const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
+    
+    if (existingFormIndex !== -1) {
+      // If the form data already exists, update it
+      setSurveyData(prevSurveyData => ({
+        ...prevSurveyData,
+        surveyForms: prevSurveyData.surveyForms.map((form, index) => {
+          if (index === existingFormIndex) {
+            return formData; // Update existing form data
+          }
+          return form; // Leave other form data unchanged
+        })
+      }));
+    } else {
+      // If the form data doesn't exist, add it to the surveyForms array
+      setSurveyData(prevSurveyData => ({
+        ...prevSurveyData,
+        surveyForms: [...prevSurveyData.surveyForms, formData]
+      }));
+    }
+
+  }
 
   const handleSubmitForm = async () => {
     try {
       await refreshToken();
+      console.log(surveyData, 'surveyData to be logged before upadating');
       const updateSurveyData = await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, surveyData);
       console.log(updateSurveyData.data, 'updateSurveyData');
       navigate('/dashboard');
@@ -70,9 +124,13 @@ const CreateNewSurvey = () => {
         const getUserSurveyData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`);
         console.log(getUserSurveyData.data, 'getUserSurveyData');
         setSurveyData({
+
           surveyTitle: getUserSurveyData.data.surveyTitle,
+          surveyForms: getUserSurveyData.data.surveyForms,
+          selectedItems: getUserSurveyData.data.selectedItems
 
         });
+        setSelectedItems(getUserSurveyData.data.selectedItems)
 
       }
       catch (err) {
@@ -92,13 +150,15 @@ const CreateNewSurvey = () => {
 
   const selectItem = selectedItems.map((item,index) => {
     if (item === 'SingleForm') {
-      return <SelectOneChoiceForm key={index}  />
+      return <SelectOneChoiceForm key={index} onSaveForm={handleSaveSelectOneForm} />
     }
     else if (item === 'MultiForm') {
-      return <SelectMultiPoint key={index}  />
+      return <SelectMultiPoint key={index} onSaveForm={handleSaveSelectMultiPointForm} />
     }
 
   });
+
+  console.log(surveyData, 'surveyData in the parent');
   return (
     <React.Fragment>
       <CssBaseline />

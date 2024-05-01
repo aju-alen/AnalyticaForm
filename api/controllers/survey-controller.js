@@ -54,13 +54,16 @@ export const getSurveyById = async (req, res) => {
 
 export const updateSurveyById = async (req, res) => {
     const surveyId = req.params.surveyId;
+    console.log(req.body,'req.body in update');
     try{
         const updateSurvey = await prisma.survey.update({
             where:{
                 id:surveyId
             },
             data:{
-                surveyTitle:req.body.surveyTitle
+                surveyTitle:req.body.surveyTitle,
+                surveyForms:req.body.surveyForms,
+                selectedItems:req.body.selectedItems
             }
         });
         res.status(200).json({message:'Survey updated successfully'});

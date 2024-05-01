@@ -33,7 +33,10 @@ model Survey {
   surveyTitle     String
   surveyDescription String
   surveyStatus String @default("Draft")
+  surveyForms Json  @default("[]")
+  selectedItems Json @default("[]")
   surveyResponses Int   @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

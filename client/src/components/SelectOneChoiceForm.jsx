@@ -1,25 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import { Stack } from '@mui/material';
 import Radio from '@mui/material/Radio';
+import { nanoid } from 'nanoid';
 
 
 
 
 
-const SelectOneChoiceForm = () => {
+const SelectOneChoiceForm = ({onSaveForm}) => {
   const [formData, setFormData] = useState({
+    id: nanoid(),
     question: '',
-    options: [{ id: 1, text: '' }],
+    options: [
+      { id: 0, value: '' },
+      { id: 1, value: '' }
+
+    ],
     selectedValue: ''
   });
-  const handleChange = (event) => {
-    console.log(event, 'radio event');
-    // setSelectedValue(event.target.value);
-  };
+  
+  const handleAddOptions = () => {
+    setFormData({
+      ...formData,
+      options: [...formData.options, { id: formData.options.length, value: '' }]
+    })
+  }
+  
+  const handleSaveForm = () => {
+    onSaveForm(formData);
+
+  }
 
   return (
     <React.Fragment>
@@ -39,14 +53,36 @@ const SelectOneChoiceForm = () => {
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='' value='' />
+          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question} 
+          onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+          />
 
           <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <Radio onChange={handleChange} value={999} />
-              <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='' value='' />
+          {formData.options.map((option) => (
+  <Stack direction="row" spacing={2} key={option.id}>
+    <Radio disabled/>
+    <TextField
+      fullWidth
+      id="standard-basic"
+      label="Standard"
+      variant="standard"
+      value={option.value}
+      onChange={(e) => {
+        const newOptions = formData.options.map((opt) => {
+          if (opt.id === option.id) {
+            return { ...opt, value: e.target.value }
+          }
+          return opt
+        })
+        setFormData({ ...formData, options: newOptions })
+      }}
+    />
+  </Stack>
+))
+}
             </Stack>
-          </Stack>
+          <button onClick={handleAddOptions}>Add</button>
+          <button onClick={handleSaveForm}>Done Editing</button>
         </Box>
       </Container>
     </React.Fragment>
@@ -55,3 +91,32 @@ const SelectOneChoiceForm = () => {
 }
 
 export default SelectOneChoiceForm
+
+// {formData.options.map((option) => (
+//   <Stack direction="row" spacing={2} key={option.id}>
+//     <Radio
+//       value={option.value}
+//       onChange={(e) => setFormData({ ...formData, selectedValue: e.target.value })}
+//       checked={formData.selectedValue === option.value}/>
+    
+
+//     <TextField
+//       fullWidth
+//       id="standard-basic"
+//       label="Standard"
+//       variant="standard"
+//       name={option.text}
+//       value={option.value}
+//       onChange={(e) => {
+//         const newOptions = formData.options.map((opt) => {
+//           if (opt.id === option.id) {
+//             return { ...opt, value: e.target.value }
+//           }
+//           return opt
+//         })
+//         setFormData({ ...formData, options: newOptions })
+//       }}
+//     />
+//   </Stack>
+// ))
+// }
