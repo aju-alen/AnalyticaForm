@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -10,7 +10,8 @@ import { nanoid } from 'nanoid';
 
 
 
-const SelectMultiPoint = ({onSaveForm}) => {
+
+const SelectMultiPoint = ({onSaveForm,data,id,options}) => {
   const [formData, setFormData] = React.useState({
     id: nanoid(),
     question: '',
@@ -19,7 +20,8 @@ const SelectMultiPoint = ({onSaveForm}) => {
       { id: 1, value: '' }
 
     ],
-    selectedValue: []
+    selectedValue: [],
+    formType:'MultiForm'
   });
 
   const handleAddOptions = () => {
@@ -33,6 +35,15 @@ const SelectMultiPoint = ({onSaveForm}) => {
     onSaveForm(formData);
 
   }
+  useEffect(() => {
+    console.log(data,'data in select one choice form');
+    if(options){
+      setFormData(data)
+    }
+    else{
+      setFormData({...formData,id})
+    }
+  }, [])
   
   return (
     <React.Fragment>

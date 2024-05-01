@@ -152,8 +152,8 @@ const CreateNewSurvey = () => {
     if (item.formType === 'SingleForm') {
       return <SelectOneChoiceForm key={index} onSaveForm={handleSaveSelectOneForm} data={item} id={item.id} options={item.options}  />
     }
-    else if (item === 'MultiForm') {
-      return <SelectMultiPoint key={index} onSaveForm={handleSaveSelectMultiPointForm} />
+    else if (item.formType === 'MultiForm') {
+      return <SelectMultiPoint key={index} onSaveForm={handleSaveSelectMultiPointForm} data={item} id={item.id} options={item.options}  />
     }
 
   });
