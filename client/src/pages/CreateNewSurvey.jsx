@@ -34,7 +34,7 @@ const CreateNewSurvey = () => {
 
   const handleItemSelect = (item) => {
     setSelectedItems([...selectedItems, item]);
-    setSurveyData({...surveyData, selectedItems: [...selectedItems, item]})
+    setSurveyData({...surveyData, surveyForms:[...surveyData.surveyForms, {id:nanoid(),formType:item}]}) 
   };
 
   const handleFormChange = (e) => {
@@ -148,9 +148,9 @@ const CreateNewSurvey = () => {
     getSurveyData();
   }, []);
 
-  const selectItem = selectedItems.map((item,index) => {
-    if (item === 'SingleForm') {
-      return <SelectOneChoiceForm key={index} onSaveForm={handleSaveSelectOneForm} />
+  const selectItem = surveyData.surveyForms.map((item,index) => {
+    if (item.formType === 'SingleForm') {
+      return <SelectOneChoiceForm key={index} onSaveForm={handleSaveSelectOneForm} data={item} id={item.id} options={item.options}  />
     }
     else if (item === 'MultiForm') {
       return <SelectMultiPoint key={index} onSaveForm={handleSaveSelectMultiPointForm} />

@@ -11,16 +11,17 @@ import { nanoid } from 'nanoid';
 
 
 
-const SelectOneChoiceForm = ({onSaveForm}) => {
+const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType}) => {
   const [formData, setFormData] = useState({
-    id: nanoid(),
+    id: id,
     question: '',
     options: [
       { id: 0, value: '' },
       { id: 1, value: '' }
 
     ],
-    selectedValue: ''
+    selectedValue: '',
+    formType:'SingleForm'
   });
   
   const handleAddOptions = () => {
@@ -34,6 +35,16 @@ const SelectOneChoiceForm = ({onSaveForm}) => {
     onSaveForm(formData);
 
   }
+
+  useEffect(() => {
+    console.log(data,'data in select one choice form');
+    if(options){
+      setFormData(data)
+    }
+    else{
+      setFormData({...formData,id})
+    }
+  }, [])
 
   return (
     <React.Fragment>
