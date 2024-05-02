@@ -13,7 +13,7 @@ import TemporaryDrawer from '../components/TempDrawer';
 import SelectOneChoiceForm from '../components/SelectOneChoiceForm';
 import SelectMultiPoint from '../components/SelectMultiPoint';
 import { Stack } from '@mui/material';
-import { nanoid } from 'nanoid'
+import { uid } from 'uid';
 
 const CreateNewSurvey = () => {
 
@@ -34,7 +34,7 @@ const CreateNewSurvey = () => {
 
   const handleItemSelect = (item) => {
     setSelectedItems([...selectedItems, item]);
-    setSurveyData({...surveyData, surveyForms:[...surveyData.surveyForms, {id:nanoid(),formType:item}]}) 
+    setSurveyData({...surveyData, surveyForms:[...surveyData.surveyForms, {id:uid(5),formType:item}]}) 
   };
 
   const handleFormChange = (e) => {
@@ -69,6 +69,16 @@ const CreateNewSurvey = () => {
     }
   };
 
+  const handleDeleteSelectOneForm = (id) => {
+    console.log(id,'id in delete');
+    const newSurveyForms = surveyData.surveyForms.filter(form =>{ 
+      console.log(form.id,'form.id in delete filter');
+      return form.id !== id});
+    console.log(newSurveyForms,'newSurveyForms in delete form filter');
+    setSurveyData({...surveyData,surveyForms:newSurveyForms});
+
+  }
+
   const handleSaveSelectMultiPointForm = (formData) => {
     
     const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
@@ -97,9 +107,7 @@ const CreateNewSurvey = () => {
   const handleSubmitForm = async () => {
     try {
       await refreshToken();
-      console.log(surveyData, 'surveyData to be logged before upadating');
       const updateSurveyData = await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, surveyData);
-      console.log(updateSurveyData.data, 'updateSurveyData');
       navigate('/dashboard');
     }
     catch (err) {
@@ -122,7 +130,6 @@ const CreateNewSurvey = () => {
       try {
         await refreshToken();
         const getUserSurveyData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`);
-        console.log(getUserSurveyData.data, 'getUserSurveyData');
         setSurveyData({
 
           surveyTitle: getUserSurveyData.data.surveyTitle,
@@ -149,8 +156,15 @@ const CreateNewSurvey = () => {
   }, []);
 
   const selectItem = surveyData.surveyForms.map((item,index) => {
+    console.log(item, 'item in selectItem mapppppppp');
     if (item.formType === 'SingleForm') {
-      return <SelectOneChoiceForm key={index} onSaveForm={handleSaveSelectOneForm} data={item} id={item.id} options={item.options}  />
+
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+      <SelectOneChoiceForm key={index} onSaveForm={handleSaveSelectOneForm} data={item} id={item.id} options={item.options}  />
+      <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
+      </Stack>
+    )
     }
     else if (item.formType === 'MultiForm') {
       return <SelectMultiPoint key={index} onSaveForm={handleSaveSelectMultiPointForm} data={item} id={item.id} options={item.options}  />
@@ -159,6 +173,7 @@ const CreateNewSurvey = () => {
   });
 
   console.log(surveyData, 'surveyData in the parent');
+  console.log(surveyData.surveyForms, 'surveyFormsssss in surveyData in the parent');
   return (
     <React.Fragment>
       <CssBaseline />
@@ -179,7 +194,7 @@ const CreateNewSurvey = () => {
         }} >
 
           <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='surveyTitle' value={surveyData.surveyTitle} onChange={handleFormChange} />
-          <Stack spacing={2}>
+          <Stack spacing={12}>
             {selectItem}
           <Button variant="contained" color="primary" onClick={toggleDrawer}>
             Add Form

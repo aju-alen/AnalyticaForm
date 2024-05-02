@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import { Stack } from '@mui/material';
 import Radio from '@mui/material/Radio';
-import { nanoid } from 'nanoid';
+import { uid } from 'uid';
 
 
 
@@ -16,8 +16,8 @@ const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType
     id: id,
     question: '',
     options: [
-      { id: 0, value: '' },
-      { id: 1, value: '' }
+      { id: uid(5), value: '' },
+      { id: uid(5), value: '' }
 
     ],
     selectedValue: '',
@@ -27,25 +27,33 @@ const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType
   const handleAddOptions = () => {
     setFormData({
       ...formData,
-      options: [...formData.options, { id: formData.options.length, value: '' }]
+      options: [...formData.options, { id: uid(5), value: '' }]
     })
   }
-  
-  const handleSaveForm = () => {
-    onSaveForm(formData);
 
+  const handleDeleteOptions = (id) => {
+    // console.log(id,'id in delete');
+    const newOptions = formData.options.filter(option => option.id !== id);
+    // console.log(newOptions,'newOptions');
+    setFormData({...formData,options:newOptions});
+  }
+
+  const handleSaveForm = () => {
+    console.log('save handleSaveForm');
+    onSaveForm(formData);
   }
 
   useEffect(() => {
-    console.log(data,'data in select one choice form');
+    // console.log(data,'data in select one choice form');
     if(options){
       setFormData(data)
     }
     else{
       setFormData({...formData,id})
     }
-  }, [])
-
+  }, [data])
+  // console.log(id,'id in select one choice form');
+  console.log(formData,'formData in select one choice form');
   return (
     <React.Fragment>
       <CssBaseline />
@@ -88,12 +96,14 @@ const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType
         setFormData({ ...formData, options: newOptions })
       }}
     />
+      <button onClick={()=>handleDeleteOptions(option.id)}>Delete</button>
   </Stack>
 ))
 }
             </Stack>
           <button onClick={handleAddOptions}>Add</button>
           <button onClick={handleSaveForm}>Done Editing</button>
+         
         </Box>
       </Container>
     </React.Fragment>
