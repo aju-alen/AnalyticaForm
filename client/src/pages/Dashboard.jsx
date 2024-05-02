@@ -26,7 +26,7 @@ const Dashboard = () => {
                 await refreshToken();
                 const surveyResp = await axiosWithAuth.post(`${backendUrl}/api/survey/create`, { surveyTitle: inputText });
                 console.log(surveyResp.data.newSurvey.id,'response');
-                navigate(`/create-survey/${surveyResp.data.newSurvey.id}`, { state: { surveyName: inputText } });
+                navigate(`/dashboard/create-survey/${surveyResp.data.newSurvey.id}`, { state: { surveyName: inputText } });
             }
         }
         catch (err) {

@@ -37,7 +37,7 @@ export function MySurvery({userSurveyData}) {
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                <Link to={`/create-survey/${survey.id}`}>
+                <Link to={`/dashboard/create-survey/${survey.id}`}>
                 {survey.surveyTitle}
                 </Link>
               </TableCell>
