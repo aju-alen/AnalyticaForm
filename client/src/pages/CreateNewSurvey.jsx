@@ -167,7 +167,12 @@ const CreateNewSurvey = () => {
     )
     }
     else if (item.formType === 'MultiForm') {
-      return <SelectMultiPoint key={index} onSaveForm={handleSaveSelectMultiPointForm} data={item} id={item.id} options={item.options}  />
+      return (
+      <Stack spacing={2} key={index} direction='row'>
+      <SelectMultiPoint key={index} onSaveForm={handleSaveSelectMultiPointForm} data={item} id={item.id} options={item.options}  />
+      <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
+      </Stack>
+      )
     }
 
   });
