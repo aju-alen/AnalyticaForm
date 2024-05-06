@@ -21,13 +21,20 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
       <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer}>
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => handleItemClick('SingleForm')}>
-              <ListItemText primary={'SingleForm'} />
+            <ListItemButton onClick={() => handleItemClick('SinglePointForm')}>
+              <ListItemText primary={'SinglePointForm'} />
             </ListItemButton>
           </ListItem>
+
           <ListItem disablePadding>
-            <ListItemButton onClick={() => handleItemClick('MultiForm')}>
-              <ListItemText primary={'MultiForm'} />
+            <ListItemButton onClick={() => handleItemClick('SingleCheckForm')}>
+              <ListItemText primary={'SingleCheckForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('MultiScalePoint')}>
+              <ListItemText primary={'MultiScalePoint'} />
             </ListItemButton>
           </ListItem>
         </List>

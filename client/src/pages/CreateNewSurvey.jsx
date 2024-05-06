@@ -14,6 +14,7 @@ import SelectOneChoiceForm from '../components/SelectOneChoiceForm';
 import SelectMultiPoint from '../components/SelectMultiPoint';
 import { Stack } from '@mui/material';
 import { uid } from 'uid';
+import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
 
 const CreateNewSurvey = () => {
 
@@ -43,7 +44,7 @@ const CreateNewSurvey = () => {
       [e.target.name]: e.target.value,
     });
   }
-  const handleSaveSelectOneForm = (formData) => {
+  const handleSaveSinglePointForm = (formData) => {
     console.log(formData, 'formData in the parent');
     
     // Check if the formData id exists in the surveyForms array
@@ -69,17 +70,9 @@ const CreateNewSurvey = () => {
     }
   };
 
-  const handleDeleteSelectOneForm = (id) => {
-    console.log(id,'id in delete');
-    const newSurveyForms = surveyData.surveyForms.filter(form =>{ 
-      console.log(form.id,'form.id in delete filter');
-      return form.id !== id});
-    console.log(newSurveyForms,'newSurveyForms in delete form filter');
-    setSurveyData({...surveyData,surveyForms:newSurveyForms});
+  
 
-  }
-
-  const handleSaveSelectMultiPointForm = (formData) => {
+  const handleSaveSingleCheckForm = (formData) => {
     
     const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
     
@@ -101,6 +94,20 @@ const CreateNewSurvey = () => {
         surveyForms: [...prevSurveyData.surveyForms, formData]
       }));
     }
+
+  }
+
+  const handleSaveMultiScalePointForm = (formData) => {
+
+  }
+
+  const handleDeleteSelectOneForm = (id) => {
+    console.log(id,'id in delete');
+    const newSurveyForms = surveyData.surveyForms.filter(form =>{ 
+      console.log(form.id,'form.id in delete filter');
+      return form.id !== id});
+    console.log(newSurveyForms,'newSurveyForms in delete form filter');
+    setSurveyData({...surveyData,surveyForms:newSurveyForms});
 
   }
 
@@ -157,19 +164,27 @@ const CreateNewSurvey = () => {
 
   const selectItem = surveyData.surveyForms.map((item,index) => {
     console.log(item, 'item in selectItem mapppppppp');
-    if (item.formType === 'SingleForm') {
+    if (item.formType === 'SinglePointForm') {
 
       return (
         <Stack spacing={2} key={index} direction='row'>
-      <SelectOneChoiceForm key={index} onSaveForm={handleSaveSelectOneForm} data={item} id={item.id} options={item.options}  />
+      <SelectOneChoiceForm key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options}  />
       <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
       </Stack>
     )
     }
-    else if (item.formType === 'MultiForm') {
+    else if (item.formType === 'SingleCheckForm') {
       return (
       <Stack spacing={2} key={index} direction='row'>
-      <SelectMultiPoint key={index} onSaveForm={handleSaveSelectMultiPointForm} data={item} id={item.id} options={item.options}  />
+      <SelectMultiPoint key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options}  />
+      <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
+      </Stack>
+      )
+    }
+    else if (item.formType === 'MultiScalePoint') {
+      return (
+      <Stack spacing={2} key={index} direction='row'>
+      <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options}  />
       <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
       </Stack>
       )
@@ -201,6 +216,7 @@ const CreateNewSurvey = () => {
           <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='surveyTitle' value={surveyData.surveyTitle} onChange={handleFormChange} />
           <Stack spacing={12}>
             {selectItem}
+         
           <Button variant="contained" color="primary" onClick={toggleDrawer}>
             Add Form
           </Button>

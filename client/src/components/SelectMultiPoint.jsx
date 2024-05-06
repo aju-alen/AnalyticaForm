@@ -21,7 +21,7 @@ const SelectMultiPoint = ({ onSaveForm, data, id, options }) => {
 
     ],
     selectedValue: [],
-    formType: 'MultiForm'
+    formType: 'SingleCheckForm'
   });
 
   const handleAddOptions = () => {
