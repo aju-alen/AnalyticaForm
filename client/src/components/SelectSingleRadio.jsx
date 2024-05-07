@@ -11,7 +11,7 @@ import { uid } from 'uid';
 
 
 
-const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType}) => {
+const SelectSingleRadio = ({onSaveForm, data,id,options,selectedValue,formType}) => {
   const [formData, setFormData] = useState({
     id: id,
     question: '',
@@ -20,7 +20,7 @@ const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType
       { id: uid(5), value: '' }
 
     ],
-    selectedValue: '',
+    selectedValue: {question: '', answer: '',value: ''},
     formType:'SinglePointForm'
   });
   
@@ -43,6 +43,16 @@ const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType
     onSaveForm(formData);
   }
 
+  const handleRadioChange = (id) => {
+    const newOptions = formData.options.map((option) => {
+      if (option.id === id) {
+       
+        setFormData({ ...formData, selectedValue: {value: option.value, question: formData.question} })
+        
+      }
+    })
+  }
+  
   useEffect(() => {
     // console.log(data,'data in select one choice form');
     if(options){
@@ -79,12 +89,18 @@ const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType
           <Stack spacing={2}>
           {formData.options.map((option) => (
   <Stack direction="row" spacing={2} key={option.id}>
-    <Radio disabled/>
+    <Radio
+      
+      onChange={()=>handleRadioChange(option.id)}
+      checked={formData.selectedValue.value === option.value}/>
+    
+
     <TextField
       fullWidth
       id="standard-basic"
       label="Standard"
       variant="standard"
+      name={option.text}
       value={option.value}
       onChange={(e) => {
         const newOptions = formData.options.map((opt) => {
@@ -111,33 +127,5 @@ const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType
   )
 }
 
-export default SelectOneChoiceForm
+export default SelectSingleRadio
 
-// {formData.options.map((option) => (
-//   <Stack direction="row" spacing={2} key={option.id}>
-//     <Radio
-//       value={option.value}
-//       onChange={(e) => setFormData({ ...formData, selectedValue: e.target.value })}
-//       checked={formData.selectedValue === option.value}/>
-    
-
-//     <TextField
-//       fullWidth
-//       id="standard-basic"
-//       label="Standard"
-//       variant="standard"
-//       name={option.text}
-//       value={option.value}
-//       onChange={(e) => {
-//         const newOptions = formData.options.map((opt) => {
-//           if (opt.id === option.id) {
-//             return { ...opt, value: e.target.value }
-//           }
-//           return opt
-//         })
-//         setFormData({ ...formData, options: newOptions })
-//       }}
-//     />
-//   </Stack>
-// ))
-// }

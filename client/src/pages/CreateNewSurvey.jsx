@@ -10,8 +10,8 @@ import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
 import { useNavigate } from 'react-router-dom';
 import TemporaryDrawer from '../components/TempDrawer';
-import SelectOneChoiceForm from '../components/SelectOneChoiceForm';
-import SelectMultiPoint from '../components/SelectMultiPoint';
+import SelectSingleRadio from '../components/SelectSingleRadio';
+import SelectSingleCheckBox from '../components/SelectSingleCheckBox';
 import { Stack } from '@mui/material';
 import { uid } from 'uid';
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
@@ -99,6 +99,27 @@ const CreateNewSurvey = () => {
 
   const handleSaveMultiScalePointForm = (formData) => {
 
+    const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
+    
+    if (existingFormIndex !== -1) {
+      // If the form data already exists, update it
+      setSurveyData(prevSurveyData => ({
+        ...prevSurveyData,
+        surveyForms: prevSurveyData.surveyForms.map((form, index) => {
+          if (index === existingFormIndex) {
+            return formData; // Update existing form data
+          }
+          return form; // Leave other form data unchanged
+        })
+      }));
+    } else {
+      // If the form data doesn't exist, add it to the surveyForms array
+      setSurveyData(prevSurveyData => ({
+        ...prevSurveyData,
+        surveyForms: [...prevSurveyData.surveyForms, formData]
+      }));
+    }
+
   }
 
   const handleDeleteSelectOneForm = (id) => {
@@ -168,7 +189,7 @@ const CreateNewSurvey = () => {
 
       return (
         <Stack spacing={2} key={index} direction='row'>
-      <SelectOneChoiceForm key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options}  />
+      <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options}  />
       <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
       </Stack>
     )
@@ -176,7 +197,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SingleCheckForm') {
       return (
       <Stack spacing={2} key={index} direction='row'>
-      <SelectMultiPoint key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options}  />
+      <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options}  />
       <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
       </Stack>
       )
