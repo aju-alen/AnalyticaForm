@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider, Outlet, Navigate,useLocation } fro
 import MainNavBar from './components/MainNavBar';
 import Footer from './components/Footer';
 import { lazy, Suspense } from 'react';
+import UserSubmitSurvey from './pages/UserSubmitSurvey';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -63,6 +64,10 @@ const App = () => {
         {
           path: "/login",
           element: <Login />,
+        },
+        {
+          path: "/user-survey/:surveyId",
+          element: <UserSubmitSurvey />,
         },
         {
           path: "/dashboard",
