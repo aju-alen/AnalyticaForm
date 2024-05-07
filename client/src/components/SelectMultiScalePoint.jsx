@@ -23,7 +23,7 @@ const initialFormData = {
   formType: 'MultiScalePoint',
 };
 
-const SelectMultiScalePoint = ({ onSaveForm, data, id, options }) => {
+const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm }) => {
   const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options }) => {
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
+          <TextField disabled fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
           />
           <Stack spacing={2} direction='row'>
@@ -112,7 +112,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options }) => {
                     console.log('column', column, 'columnIndex', columnIndex, 'rowIndex', rowIndex, 'formData.selectedValue[rowIndex]', formData.selectedValue[rowIndex], 'selectedValue', formData.selectedValue);
                     return (
                       <Radio
-                        disabled
+                        disabled={disableForm}
                         key={column.id}
                         checked={formData.selectedValue[rowIndex].value === columnIndex}
                         onChange={() => handleRadioChange(rowIndex, columnIndex)}

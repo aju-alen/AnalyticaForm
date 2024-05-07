@@ -11,7 +11,7 @@ import { uid } from 'uid';
 
 
 
-const SelectSingleRadio = ({ onSaveForm, data, id, options, selectedValue, formType }) => {
+const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm }) => {
   const [formData, setFormData] = useState({
     id: id,
     question: '',
@@ -90,7 +90,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, selectedValue, formT
             {formData.options.map((option) => (
               <Stack direction="row" spacing={2} key={option.id}>
                 <Radio
-                  disabled
+                  disabled={disableForm}
                   onChange={() => handleRadioChange(option.id)}
                   checked={formData.selectedValue.value === option.value} />
 

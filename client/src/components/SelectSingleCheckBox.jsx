@@ -9,7 +9,7 @@ import { uid } from 'uid';
 
 
 
-const SelectSingleCheckBox = ({ onSaveForm, data, id, options }) => {
+const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm }) => {
   const [formData, setFormData] = React.useState({
     id: id,
     question: '',
@@ -89,7 +89,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options }) => {
                 <Stack direction="row" spacing={2} key={opt.id}>
 
                   <Checkbox
-                    disabled
+                    disabled={disableForm}
                     checked={formData.selectedValue.map((item) => item.id).includes(opt.id)}
                     onChange={() => handleCheckboxChange(opt.id)}
 

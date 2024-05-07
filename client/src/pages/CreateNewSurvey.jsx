@@ -190,7 +190,7 @@ const CreateNewSurvey = () => {
 
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} />
+          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} />
           <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
         </Stack>
       )
@@ -198,7 +198,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SingleCheckForm') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} />
+          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true}/>
           <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
         </Stack>
       )
@@ -206,7 +206,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiScalePoint') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} />
+          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} />
           <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
         </Stack>
       )
@@ -247,6 +247,7 @@ const CreateNewSurvey = () => {
         <Button variant="contained" color="primary" onClick={handleSubmitForm}>
           Submit
         </Button>
+        <Button  variant="contained" color="secondary" onClick={() => navigate(`/user-survey/${surveyId}`)}>Survey Link </Button>
       </Container>
 
       <TemporaryDrawer open={isDrawerOpen} toggleDrawer={toggleDrawer} handleItemSelect={handleItemSelect} />
