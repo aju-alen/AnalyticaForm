@@ -11,7 +11,7 @@ import { uid } from 'uid';
 
 
 
-const SelectSingleRadio = ({onSaveForm, data,id,options,selectedValue,formType}) => {
+const SelectSingleRadio = ({ onSaveForm, data, id, options, selectedValue, formType }) => {
   const [formData, setFormData] = useState({
     id: id,
     question: '',
@@ -20,10 +20,10 @@ const SelectSingleRadio = ({onSaveForm, data,id,options,selectedValue,formType})
       { id: uid(5), value: '' }
 
     ],
-    selectedValue: {question: '', answer: '',value: ''},
-    formType:'SinglePointForm'
+    selectedValue: { question: '', answer: '', value: '' },
+    formType: 'SinglePointForm'
   });
-  
+
   const handleAddOptions = () => {
     setFormData({
       ...formData,
@@ -35,7 +35,7 @@ const SelectSingleRadio = ({onSaveForm, data,id,options,selectedValue,formType})
     // console.log(id,'id in delete');
     const newOptions = formData.options.filter(option => option.id !== id);
     // console.log(newOptions,'newOptions');
-    setFormData({...formData,options:newOptions});
+    setFormData({ ...formData, options: newOptions });
   }
 
   const handleSaveForm = () => {
@@ -46,24 +46,24 @@ const SelectSingleRadio = ({onSaveForm, data,id,options,selectedValue,formType})
   const handleRadioChange = (id) => {
     const newOptions = formData.options.map((option) => {
       if (option.id === id) {
-       
-        setFormData({ ...formData, selectedValue: {value: option.value, question: formData.question} })
-        
+
+        setFormData({ ...formData, selectedValue: { value: option.value, question: formData.question } })
+
       }
     })
   }
-  
+
   useEffect(() => {
     // console.log(data,'data in select one choice form');
-    if(options){
+    if (options) {
       setFormData(data)
     }
-    else{
-      setFormData({...formData,id})
+    else {
+      setFormData({ ...formData, id })
     }
   }, [data])
   // console.log(id,'id in select one choice form');
-  console.log(formData,'formData in select one choice form');
+  console.log(formData, 'formData in select one choice form');
   return (
     <React.Fragment>
       <CssBaseline />
@@ -82,44 +82,44 @@ const SelectSingleRadio = ({onSaveForm, data,id,options,selectedValue,formType})
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question} 
-          onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
+            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
           />
 
           <Stack spacing={2}>
-          {formData.options.map((option) => (
-  <Stack direction="row" spacing={2} key={option.id}>
-    <Radio
-      
-      onChange={()=>handleRadioChange(option.id)}
-      checked={formData.selectedValue.value === option.value}/>
-    
+            {formData.options.map((option) => (
+              <Stack direction="row" spacing={2} key={option.id}>
+                <Radio
+                  disabled
+                  onChange={() => handleRadioChange(option.id)}
+                  checked={formData.selectedValue.value === option.value} />
 
-    <TextField
-      fullWidth
-      id="standard-basic"
-      label="Standard"
-      variant="standard"
-      name={option.text}
-      value={option.value}
-      onChange={(e) => {
-        const newOptions = formData.options.map((opt) => {
-          if (opt.id === option.id) {
-            return { ...opt, value: e.target.value }
-          }
-          return opt
-        })
-        setFormData({ ...formData, options: newOptions })
-      }}
-    />
-      <button onClick={()=>handleDeleteOptions(option.id)}>Delete</button>
-  </Stack>
-))
-}
-            </Stack>
+
+                <TextField
+                  fullWidth
+                  id="standard-basic"
+                  label="Standard"
+                  variant="standard"
+                  name={option.text}
+                  value={option.value}
+                  onChange={(e) => {
+                    const newOptions = formData.options.map((opt) => {
+                      if (opt.id === option.id) {
+                        return { ...opt, value: e.target.value }
+                      }
+                      return opt
+                    })
+                    setFormData({ ...formData, options: newOptions })
+                  }}
+                />
+                <button onClick={() => handleDeleteOptions(option.id)}>Delete</button>
+              </Stack>
+            ))
+            }
+          </Stack>
           <button onClick={handleAddOptions}>Add</button>
           <button onClick={handleSaveForm}>Done Editing</button>
-         
+
         </Box>
       </Container>
     </React.Fragment>

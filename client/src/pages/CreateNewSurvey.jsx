@@ -35,7 +35,7 @@ const CreateNewSurvey = () => {
 
   const handleItemSelect = (item) => {
     setSelectedItems([...selectedItems, item]);
-    setSurveyData({...surveyData, surveyForms:[...surveyData.surveyForms, {id:uid(5),formType:item}]}) 
+    setSurveyData({ ...surveyData, surveyForms: [...surveyData.surveyForms, { id: uid(5), formType: item }] })
   };
 
   const handleFormChange = (e) => {
@@ -46,10 +46,10 @@ const CreateNewSurvey = () => {
   }
   const handleSaveSinglePointForm = (formData) => {
     console.log(formData, 'formData in the parent');
-    
+
     // Check if the formData id exists in the surveyForms array
     const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
-    
+
     if (existingFormIndex !== -1) {
       // If the form data already exists, update it
       setSurveyData(prevSurveyData => ({
@@ -70,12 +70,12 @@ const CreateNewSurvey = () => {
     }
   };
 
-  
+
 
   const handleSaveSingleCheckForm = (formData) => {
-    
+
     const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
-    
+
     if (existingFormIndex !== -1) {
       // If the form data already exists, update it
       setSurveyData(prevSurveyData => ({
@@ -100,7 +100,7 @@ const CreateNewSurvey = () => {
   const handleSaveMultiScalePointForm = (formData) => {
 
     const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
-    
+
     if (existingFormIndex !== -1) {
       // If the form data already exists, update it
       setSurveyData(prevSurveyData => ({
@@ -123,12 +123,13 @@ const CreateNewSurvey = () => {
   }
 
   const handleDeleteSelectOneForm = (id) => {
-    console.log(id,'id in delete');
-    const newSurveyForms = surveyData.surveyForms.filter(form =>{ 
-      console.log(form.id,'form.id in delete filter');
-      return form.id !== id});
-    console.log(newSurveyForms,'newSurveyForms in delete form filter');
-    setSurveyData({...surveyData,surveyForms:newSurveyForms});
+    console.log(id, 'id in delete');
+    const newSurveyForms = surveyData.surveyForms.filter(form => {
+      console.log(form.id, 'form.id in delete filter');
+      return form.id !== id
+    });
+    console.log(newSurveyForms, 'newSurveyForms in delete form filter');
+    setSurveyData({ ...surveyData, surveyForms: newSurveyForms });
 
   }
 
@@ -183,31 +184,31 @@ const CreateNewSurvey = () => {
     getSurveyData();
   }, []);
 
-  const selectItem = surveyData.surveyForms.map((item,index) => {
+  const selectItem = surveyData.surveyForms.map((item, index) => {
     console.log(item, 'item in selectItem mapppppppp');
     if (item.formType === 'SinglePointForm') {
 
       return (
         <Stack spacing={2} key={index} direction='row'>
-      <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options}  />
-      <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
-      </Stack>
-    )
+          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} />
+          <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
+        </Stack>
+      )
     }
     else if (item.formType === 'SingleCheckForm') {
       return (
-      <Stack spacing={2} key={index} direction='row'>
-      <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options}  />
-      <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
-      </Stack>
+        <Stack spacing={2} key={index} direction='row'>
+          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} />
+          <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
+        </Stack>
       )
     }
     else if (item.formType === 'MultiScalePoint') {
       return (
-      <Stack spacing={2} key={index} direction='row'>
-      <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options}  />
-      <button onClick={()=>handleDeleteSelectOneForm(item.id)}>Delete Form</button>
-      </Stack>
+        <Stack spacing={2} key={index} direction='row'>
+          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} />
+          <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
+        </Stack>
       )
     }
 
@@ -237,17 +238,17 @@ const CreateNewSurvey = () => {
           <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='surveyTitle' value={surveyData.surveyTitle} onChange={handleFormChange} />
           <Stack spacing={12}>
             {selectItem}
-         
-          <Button variant="contained" color="primary" onClick={toggleDrawer}>
-            Add Form
-          </Button>
+
+            <Button variant="contained" color="primary" onClick={toggleDrawer}>
+              Add Form
+            </Button>
           </Stack>
         </Box>
         <Button variant="contained" color="primary" onClick={handleSubmitForm}>
-            Submit
-          </Button>
+          Submit
+        </Button>
       </Container>
-      
+
       <TemporaryDrawer open={isDrawerOpen} toggleDrawer={toggleDrawer} handleItemSelect={handleItemSelect} />
 
     </React.Fragment>

@@ -19,7 +19,7 @@ const initialFormData = {
     { id: uid(5), value: '' },
     { id: uid(5), value: '' },
   ],
-  selectedValue: [{question: '', answer: '',value: ''}],
+  selectedValue: [{ question: '', answer: '', value: '' }],
   formType: 'MultiScalePoint',
 };
 
@@ -49,9 +49,9 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options }) => {
         id: uid(5),
         rowQuestion: '',
         columns: formData.columnTextField.map((column) => ({ id: uid(5), value: '' })),
-        
+
       }],
-      selectedValue: [...formData.selectedValue, {question: '', answer: '',value: ''}],
+      selectedValue: [...formData.selectedValue, { question: '', answer: '', value: '' }],
     });
   };
 
@@ -63,7 +63,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options }) => {
   const handleRadioChange = (rowIndex, columnIndex) => {
     const newSelectedValue = [...formData.selectedValue];
     newSelectedValue[rowIndex].value = columnIndex;
-    
+
     newSelectedValue[rowIndex].question = formData.options[rowIndex].rowQuestion;
 
     console.log();
@@ -108,16 +108,18 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options }) => {
                   onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
                 />
                 <Stack direction="row" spacing={12}>
-                  {row.columns.map((column, columnIndex) =>{
-                    console.log('column', column, 'columnIndex', columnIndex, 'rowIndex', rowIndex, 'formData.selectedValue[rowIndex]', formData.selectedValue[rowIndex],'selectedValue', formData.selectedValue);
-                    return(
-                      <Radio 
-                       key={column.id}
+                  {row.columns.map((column, columnIndex) => {
+                    console.log('column', column, 'columnIndex', columnIndex, 'rowIndex', rowIndex, 'formData.selectedValue[rowIndex]', formData.selectedValue[rowIndex], 'selectedValue', formData.selectedValue);
+                    return (
+                      <Radio
+                        disabled
+                        key={column.id}
                         checked={formData.selectedValue[rowIndex].value === columnIndex}
-                         onChange={() => handleRadioChange(rowIndex, columnIndex)} 
-                         />
-                    )})
-                  } 
+                        onChange={() => handleRadioChange(rowIndex, columnIndex)}
+                      />
+                    )
+                  })
+                  }
                 </Stack>
               </Stack>
             ))}
