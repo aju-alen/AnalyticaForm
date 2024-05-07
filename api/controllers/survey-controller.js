@@ -73,3 +73,17 @@ export const updateSurveyById = async (req, res) => {
         res.status(500).send({message:'Internal server error'});
     }
 };  
+
+export const getSurveyDataForSurvey = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try{
+        const getSurveyData = await prisma.survey.findUnique({
+            where:{
+                id:surveyId
+            }});
+        res.status(200).json(getSurveyData);
+    }catch(err){
+        console.log(err);
+        res.status(500).send({message:'Internal server error'});
+    }
+}
