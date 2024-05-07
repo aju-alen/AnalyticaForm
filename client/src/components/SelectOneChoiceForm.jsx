@@ -21,7 +21,7 @@ const SelectOneChoiceForm = ({onSaveForm, data,id,options,selectedValue,formType
 
     ],
     selectedValue: '',
-    formType:'SingleForm'
+    formType:'SinglePointForm'
   });
   
   const handleAddOptions = () => {
