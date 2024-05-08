@@ -20,7 +20,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
       { id: uid(5), value: '' }
 
     ],
-    selectedValue: { question: '', answer: '', value: '' },
+    selectedValue: [{ question: '', answer: '', value: '' }],
     formType: 'SinglePointForm'
   });
 
@@ -48,7 +48,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
     const newOptions = formData.options.map((option) => {
       if (option.id === id) {
 
-        setFormData({ ...formData, selectedValue: { value: option.value, question: formData.question } })
+        setFormData({ ...formData, selectedValue: [{ answer: option.value, question: formData.question }] })
 
       }
     })
@@ -96,7 +96,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
                 <Radio
                   disabled={disableForm}
                   onChange={() => handleRadioChange(option.id)}
-                  checked={formData.selectedValue.value === option.value} />
+                  checked={formData.selectedValue[0].answer === option.value} />
 
 
                 <TextField

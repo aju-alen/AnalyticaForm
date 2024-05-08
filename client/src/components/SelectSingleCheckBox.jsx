@@ -9,7 +9,7 @@ import { uid } from 'uid';
 
 
 
-const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm,disableText,disableButtons,onHandleNext }) => {
+const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
   const [formData, setFormData] = React.useState({
     id: id,
     question: '',
@@ -41,9 +41,11 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm,disabl
       if (option.id === id) {
         if (formData.selectedValue.map((item) => item.id).includes(option.id)) {
           const newSelectedValue = formData.selectedValue.filter((item) => item.id !== option.id);
+            console.log(newSelectedValue, 'newSelectedValue in checkbox');
           setFormData({ ...formData, selectedValue: newSelectedValue })
         } else {
-          setFormData({ ...formData, selectedValue: [...formData.selectedValue, option] })
+          setFormData({ ...formData, selectedValue: [...formData.selectedValue, {...option,question:formData.question,answer:option.value}] })
+
         }
       }
     })
@@ -63,6 +65,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm,disabl
       setFormData({ ...formData, id })
     }
   }, [data])
+  console.log(formData, 'formData in select one choice form');
 
   return (
     <React.Fragment>
@@ -82,16 +85,16 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm,disabl
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField 
+          <TextField
             fullWidth id="standard-basic"
             label="Standard"
-            variant="standard" 
-            value={formData.question} 
+            variant="standard"
+            value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,
             }}
-            />
+          />
           <Stack spacing={2}>
             {formData.options.map((opt) => {
               console.log(formData.selectedValue.includes(opt.id), 'selectedValue');
@@ -131,7 +134,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm,disabl
 
           </Stack>
           {!disableButtons && (<button onClick={handleAddOptions}>Add</button>)}
-          
+
           {<button onClick={handleSaveForm}>Done Editing</button>}
 
         </Box>

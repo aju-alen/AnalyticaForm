@@ -1,19 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { backendUrl } from '../utils/backendUrl';
-import { useParams } from 'react-router-dom';
-import SelectSingleCheckBox from '../components/SelectSingleCheckBox';
-import SelectSingleRadio from '../components/SelectSingleRadio';
-import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
-import { Button } from '@mui/material';
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import { backendUrl } from '../utils/backendUrl'
+import { useParams } from 'react-router-dom'
+import SelectSingleCheckBox from '../components/SelectSingleCheckBox'
+import SelectSingleRadio from '../components/SelectSingleRadio'
+import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
+import { Button, TextField } from '@mui/material'
+
 
 const UserSubmitSurvey = () => {
     const { surveyId } = useParams();
-    const [surveyData, setSurveyData] = useState({});
+    const [surveyData, setSurveyData] = React.useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [formData, setFormData] = useState({
+        userEmail: '',
+        userName: '',
+    });
+
 
     const handleSaveSinglePointForm = (formData) => {
-        console.log(formData, 'formData in the parent');
 
         // Check if the formData id exists in the surveyForms array
         const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
@@ -41,94 +46,202 @@ const UserSubmitSurvey = () => {
     const handleSaveSingleCheckForm = (formData) => {
 
         const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
-    
-        if (existingFormIndex !== -1) {
-          // If the form data already exists, update it
-          setSurveyData(prevSurveyData => ({
-            ...prevSurveyData,
-            surveyForms: prevSurveyData.surveyForms.map((form, index) => {
-              if (index === existingFormIndex) {
-                return formData; // Update existing form data
-              }
-              return form; // Leave other form data unchanged
-            })
-          }));
-        } else {
-          // If the form data doesn't exist, add it to the surveyForms array
-          setSurveyData(prevSurveyData => ({
-            ...prevSurveyData,
-            surveyForms: [...prevSurveyData.surveyForms, formData]
-          }));
-        }
-    
-      }
-    
 
-    const handleNext = (num) => {
+        if (existingFormIndex !== -1) {
+            // If the form data already exists, update it
+            setSurveyData(prevSurveyData => ({
+                ...prevSurveyData,
+                surveyForms: prevSurveyData.surveyForms.map((form, index) => {
+                    if (index === existingFormIndex) {
+                        return formData; // Update existing form data
+                    }
+                    return form; // Leave other form data unchanged
+                })
+            }));
+        } else {
+            // If the form data doesn't exist, add it to the surveyForms array
+            setSurveyData(prevSurveyData => ({
+                ...prevSurveyData,
+                surveyForms: [...prevSurveyData.surveyForms, formData]
+            }));
+        }
+
+    }
+
+    const handleSaveMultiScalePointForm = (formData) => {
+
+        const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
+
+        if (existingFormIndex !== -1) {
+            // If the form data already exists, update it
+            setSurveyData(prevSurveyData => ({
+                ...prevSurveyData,
+                surveyForms: prevSurveyData.surveyForms.map((form, index) => {
+                    if (index === existingFormIndex) {
+                        return formData; // Update existing form data
+                    }
+                    return form; // Leave other form data unchanged
+                })
+            }));
+        } else {
+            // If the form data doesn't exist, add it to the surveyForms array
+            setSurveyData(prevSurveyData => ({
+                ...prevSurveyData,
+                surveyForms: [...prevSurveyData.surveyForms, formData]
+            }));
+        }
+
+    }
+
+    const handleNext = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
-    };
+    }
+
+    const handleSaveForm = async() => {
+        try {
+            const data = surveyData.surveyForms.map(form => ({
+                question: form.question,
+                selectedValue: form.selectedValue.map(option => option)
+            }));
+            const finalData = {
+                userResponse: data,
+                userName: formData.userName,
+                userEmail: formData.userEmail
+
+            }
+            console.log(surveyData, 'surveyData');
+            console.log(finalData, 'finalData');
+
+            const sendUserResp = await axios.post(`${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`, finalData);
+
+            console.log(sendUserResp, 'sendUserResp');
+
+
+            const response = await axios.post(`${backendUrl}/export-to-excel`, finalData, {
+                responseType: 'blob' // Ensure response type is blob
+            });
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.xlsx';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+    }
+
 
     useEffect(() => {
         const fetchSurveyData = async () => {
             try {
-                const response = await axios.get(`${backendUrl}/api/survey/get-one-survey/customer/${surveyId}`);
-                setSurveyData(response.data);
-            } catch (err) {
+                const surveyData = await axios.get(`${backendUrl}/api/user-response-survey/get-one-survey/user/${surveyId}`);
+                setSurveyData(surveyData.data);
+            }
+            catch (err) {
                 console.log(err);
             }
-        };
+        }
         fetchSurveyData();
-    }, [surveyId]);
+    }, [])
+    console.log(surveyData, 'surveyData');
 
+    const handleExportToExcel = async () => {
+        try {
+            const response = await axios.post('/export-to-excel', data, {
+                responseType: 'blob' // Ensure response type is blob
+            });
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.xlsx';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+        }
+    };
+
+
+    const renderCurrentComponent = () => {
+        const currentItem = surveyData?.surveyForms[currentIndex];
+
+        if (!currentItem) {
+            return (
+                <div className="">
+                    <h1>Thank You for your response</h1>
+
+                    <TextField
+                        label='Please Enter your name if you wish to'
+                        value={formData.userName}
+                        onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+                    ></TextField>
+                    <TextField
+                        label='Please Enter your Email Id if you wish to'
+                        value={formData.userEmail}
+                        onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
+                    ></TextField>
+
+                    <Button onClick={handleSaveForm} >Submit Response</Button>
+                    <button onClick={handleExportToExcel}>Export to Excel</button>
+                </div>
+            ); // Handle case when currentIndex is out of bounds
+        }
+
+        switch (currentItem.formType) {
+            case 'SinglePointForm':
+                return <SelectSingleRadio
+                    data={currentItem}
+                    onSaveForm={handleSaveSinglePointForm}
+                    onHandleNext={handleNext}
+                    id={currentItem.id}
+                    options={currentItem.options}
+                    disableForm={false}
+                    disableText={true}
+                    disableButtons={true} />;
+
+            case 'SingleCheckForm':
+                return <SelectSingleCheckBox
+                    data={currentItem}
+                    onHandleNext={handleNext}
+                    onSaveForm={handleSaveSingleCheckForm}
+                    id={currentItem.id}
+                    options={currentItem.options}
+                    disableForm={false}
+                    disableText={true}
+                    disableButtons={true} />;
+
+            case 'MultiScalePoint':
+                return <SelectMultiScalePoint
+                    data={currentItem}
+                    onHandleNext={handleNext}
+                    onSaveForm={handleSaveMultiScalePointForm}
+                    id={currentItem.id}
+                    options={currentItem.options}
+                    disableForm={false}
+                    disableText={true}
+                    disableButtons={true} />;
+            default:
+                return null;
+        }
+    }
+
+    console.log(surveyData.surveyForms, 'surveyForms');
     return (
         <div className="">
             <h1>{surveyData.surveyTitle}</h1>
-            {surveyData.surveyForms && surveyData.surveyForms.length > 0 && (
-                <>
+            {surveyData.surveyForms && renderCurrentComponent()}
 
-                    {surveyData.surveyForms[currentIndex].formType === 'SinglePointForm' && (
-                        <SelectSingleRadio
-                            data={surveyData.surveyForms[currentIndex]}
-                            id={surveyData.surveyForms[currentIndex].id}
-                            options={surveyData.surveyForms[currentIndex].options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onHandleNext={handleNext}
-                        />
-                    )}
-
-                    {surveyData.surveyForms[currentIndex].formType === 'SingleCheckForm' && (
-                        <SelectSingleCheckBox
-                            data={surveyData.surveyForms[currentIndex]}
-                            id={surveyData.surveyForms[currentIndex].id}
-                            options={surveyData.surveyForms[currentIndex].options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSaveForm={handleSaveSingleCheckForm}
-                            onHandleNext={handleNext}   
-
-                        />
-                    )}
-
-                    {surveyData.surveyForms[currentIndex].formType === 'MultiScalePoint' && (
-                        <SelectMultiScalePoint
-                            data={surveyData.surveyForms[currentIndex]}
-                            id={surveyData.surveyForms[currentIndex].id}
-                            options={surveyData.surveyForms[currentIndex].options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            // onSaveForm={handleSaveForm}
-                        />
-                    )}
-                    <Button onClick={handleNext}>Next</Button>
-                </>
-            )}
         </div>
-    );
-};
+    )
+}
 
-export default UserSubmitSurvey;
+export default UserSubmitSurvey
+
+
+
