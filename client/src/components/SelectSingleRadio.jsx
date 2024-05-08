@@ -11,7 +11,7 @@ import { uid } from 'uid';
 
 
 
-const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm }) => {
+const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableText,disableButtons,onHandleNext }) => {
   const [formData, setFormData] = useState({
     id: id,
     question: '',
@@ -41,6 +41,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm }) => {
   const handleSaveForm = () => {
     console.log('save handleSaveForm');
     onSaveForm(formData);
+    onHandleNext()
   }
 
   const handleRadioChange = (id) => {
@@ -84,6 +85,9 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm }) => {
         }} >
           <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+            InputProps={{
+              readOnly: disableText,
+            }}
           />
 
           <Stack spacing={2}>
@@ -111,14 +115,18 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm }) => {
                     })
                     setFormData({ ...formData, options: newOptions })
                   }}
+                  InputProps={{
+                    readOnly: disableText,
+                  }}
                 />
-                <button onClick={() => handleDeleteOptions(option.id)}>Delete</button>
+               {!disableButtons && (<button onClick={() => handleDeleteOptions(option.id)}>Delete</button>)}
               </Stack>
             ))
             }
           </Stack>
-          <button onClick={handleAddOptions}>Add</button>
-          <button onClick={handleSaveForm}>Done Editing</button>
+          {!disableButtons && (<button onClick={handleAddOptions}>Add</button>)}
+          
+          {<button onClick={handleSaveForm}>Done Editing</button>}
 
         </Box>
       </Container>

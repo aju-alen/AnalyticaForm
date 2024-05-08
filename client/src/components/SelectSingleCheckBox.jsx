@@ -9,7 +9,7 @@ import { uid } from 'uid';
 
 
 
-const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm }) => {
+const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm,disableText,disableButtons,onHandleNext }) => {
   const [formData, setFormData] = React.useState({
     id: id,
     question: '',
@@ -50,8 +50,9 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm }) => 
   };
 
   const handleSaveForm = () => {
+    console.log('save handleSaveForm');
     onSaveForm(formData);
-
+    onHandleNext()
   }
   useEffect(() => {
     console.log(data, 'data in select one choice form');
@@ -81,7 +82,16 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm }) => 
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" value={formData.question} onChange={(e) => setFormData({ ...formData, question: e.target.value })} />
+          <TextField 
+            fullWidth id="standard-basic"
+            label="Standard"
+            variant="standard" 
+            value={formData.question} 
+            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+            InputProps={{
+              readOnly: disableText,
+            }}
+            />
           <Stack spacing={2}>
             {formData.options.map((opt) => {
               console.log(formData.selectedValue.includes(opt.id), 'selectedValue');
@@ -110,15 +120,20 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options,disableForm }) => 
                         ),
                       })
                     }
+                    InputProps={{
+                      readOnly: disableText,
+                    }}
                   />
-                  <button onClick={() => handleDeleteOptions(opt.id)}>Delete</button>
+                  {!disableButtons && (<button onClick={() => handleDeleteOptions(opt.id)}>Delete</button>)}
                 </Stack>
               )
             })}
 
           </Stack>
-          <button onClick={handleAddOptions}>Add</button>
-          <button onClick={handleSaveForm}>Done Editing</button>
+          {!disableButtons && (<button onClick={handleAddOptions}>Add</button>)}
+          
+          {<button onClick={handleSaveForm}>Done Editing</button>}
+
         </Box>
       </Container>
     </React.Fragment>

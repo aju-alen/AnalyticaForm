@@ -190,7 +190,7 @@ const CreateNewSurvey = () => {
 
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} />
+          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
           <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
         </Stack>
       )
@@ -198,7 +198,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SingleCheckForm') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true}/>
+          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
           <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
         </Stack>
       )
@@ -206,7 +206,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiScalePoint') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} />
+          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
           <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
         </Stack>
       )

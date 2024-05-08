@@ -23,7 +23,7 @@ const initialFormData = {
   formType: 'MultiScalePoint',
 };
 
-const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm }) => {
+const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disableText,disableButtons }) => {
   const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
@@ -90,13 +90,19 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm }) =>
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField disabled fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
+          <TextField  fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+            InputProps={{
+              readOnly: disableText,
+            }}
           />
           <Stack spacing={2} direction='row'>
             {formData.columnTextField.map((column) => (
               <TextField id="standard-basic" label="Standard" variant="standard" key={column.id} name='columnTextField' value={column.value}
                 onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
+                InputProps={{
+                  readOnly: disableText,
+                }}
               />
             ))}
           </Stack>
@@ -106,6 +112,9 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm }) =>
               <Stack direction="row" spacing={2} key={row.id}>
                 <TextField id="standard-basic" label="Standard" variant="standard" name='rowQuestion' value={row.rowQuestion}
                   onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
+                  InputProps={{
+                    readOnly: disableText,
+                  }}
                 />
                 <Stack direction="row" spacing={12}>
                   {row.columns.map((column, columnIndex) => {
@@ -126,9 +135,11 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm }) =>
           </Stack>
 
           <Stack direction="row" spacing={2}>
-            <Button onClick={handleAddColumn}>Add Column</Button>
-            <Button onClick={handleAddRow}>Add Row</Button>
-            <Button onClick={handleSaveForm}>Done Editing</Button>
+
+            {!disableButtons && (<Button onClick={handleAddColumn}>Add Column</Button>)}
+
+           {!disableButtons && ( <Button onClick={handleAddRow}>Add Row</Button>)}
+            {!disableButtons && <Button onClick={handleSaveForm}>Done Editing</Button>}
           </Stack>
         </Box>
       </Container>
