@@ -42,4 +42,20 @@ model Survey {
 
   user      User     @relation(fields: [userId], references: [id])
   userId    String      // Field to store the user id
+
+  responses UserSurveyResponse[]
+}
+
+model UserSurveyResponse{
+  id       String   @id @default(cuid())
+  userEmail String @default("Anonymous")
+  userName String @default("Anonymous")
+  userResponse Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+
+  survey Survey @relation(fields: [surveyId], references: [id])
+  surveyId String
+ 
 }
