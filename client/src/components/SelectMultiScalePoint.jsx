@@ -23,7 +23,7 @@ const initialFormData = {
   formType: 'MultiScalePoint',
 };
 
-const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disableText,disableButtons }) => {
+const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disableText,disableButtons,onHandleNext }) => {
   const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
@@ -58,6 +58,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disab
   const handleSaveForm = () => {
     console.log('save handleSaveForm', formData);
     onSaveForm(formData);
+    onHandleNext();
   };
 
   const handleRadioChange = (rowIndex, columnIndex) => {
@@ -139,7 +140,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disab
             {!disableButtons && (<Button onClick={handleAddColumn}>Add Column</Button>)}
 
            {!disableButtons && ( <Button onClick={handleAddRow}>Add Row</Button>)}
-            {!disableButtons && <Button onClick={handleSaveForm}>Done Editing</Button>}
+            { <Button onClick={handleSaveForm}>Done Editing</Button>}
           </Stack>
         </Box>
       </Container>
