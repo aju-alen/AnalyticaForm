@@ -5,6 +5,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { corsOptions } from './utils/corsFe.js';
 import authRoute from './routes/auth-route.js';
 import surveyRoute from './routes/survey-route.js';
+import userResponseSurveyRoute from './routes/user-response-survey.route.js';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoute)
 app.use('/api/survey', surveyRoute)
+app.use('/api/user-response-survey', userResponseSurveyRoute)
 
 
 
