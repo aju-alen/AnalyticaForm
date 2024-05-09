@@ -14,6 +14,7 @@ import { backendUrl } from '../utils/backendUrl';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken'; 
 import { useNavigate } from 'react-router-dom';
+import Button from '@mui/material/Button';
 
 
 
@@ -91,7 +92,8 @@ export function MySurvery({userSurveyData}) {
               <TableCell align="center">{survey.surveyStatus}</TableCell>
               <TableCell align="center">{survey.surveyResponses}</TableCell>
               <TableCell align="center">
-              <img src={excelIcon} alt="excel icon" onClick={()=>handleConvertToExcel(survey.id)} className=' md:ml-16' />
+                <Button>
+              <img src={excelIcon} alt="excel icon" onClick={()=>handleConvertToExcel(survey.id)} className=' md:ml-16 cursor-pointer' /></Button>
               </TableCell>
             </TableRow>
           ))}
