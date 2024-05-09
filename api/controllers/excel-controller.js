@@ -24,7 +24,13 @@ export const exportToExcel = async (req, res) => {
             // Add data rows for user responses
             user.userResponse.forEach(response => {
                 response.selectedValue.forEach(selected => {
-                    worksheet.addRow([response.question, selected.question, selected.answer]);
+                    if(selected.question === response.question){
+                        worksheet.addRow(['', selected.question, selected.answer]);    
+                    }
+                    else{
+                        worksheet.addRow([response.question, selected.question, selected.answer]);
+
+                    }
                 });
             });
 
