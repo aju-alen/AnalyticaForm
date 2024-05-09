@@ -2,76 +2,97 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient();
 
 export const createNewSurvey = async (req, res) => {
-    const {surveyTitle} = req.body;
+    const { surveyTitle } = req.body;
     const userId = req.tokenId;
-    console.log(surveyTitle,req.tokenId,'req.body');
-try{
-    const newSurvey = await prisma.survey.create({
-        data:{
-            surveyTitle,
-            surveyDescription:"Test",
-            userId,
-        }
-    });
-    res.status(201).send({message:'Survey created successfully',newSurvey});
+    console.log(surveyTitle, req.tokenId, 'req.body');
+    try {
+        const newSurvey = await prisma.survey.create({
+            data: {
+                surveyTitle,
+                surveyDescription: "Test",
+                userId,
+            }
+        });
+        await prisma.$disconnect();
+        res.status(201).send({ message: 'Survey created successfully', newSurvey });
 
-}catch(err){
-    console.log(err);
-    res.status(500).send({message:'Internal server error'});
-}
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
 };
 
 export const getUserSurvey = async (req, res) => {
     const userId = req.tokenId;
-    try{
+    try {
         const getSurveyAll = await prisma.survey.findMany({
-            where:{
+            where: {
                 userId
             }
         });
+        await prisma.$disconnect();
         res.status(200).send(getSurveyAll);
 
-    }catch(err){
+    } catch (err) {
         console.log(err);
-        res.status(500).send({message:'Internal server error'});
+        res.status(500).send({ message: 'Internal server error' });
     }
 }
 export const getSurveyById = async (req, res) => {
     const surveyId = req.params.surveyId;
-    try{
+    try {
         const getSurvey = await prisma.survey.findUnique({
-            where:{
-                id:surveyId
+            where: {
+                id: surveyId
             }
         });
+        await prisma.$disconnect();
         res.status(200).json(getSurvey);
     }
-    catch(err){
+    catch (err) {
         console.log(err);
-        res.status(500).send({message:'Internal server error'});
+        res.status(500).send({ message: 'Internal server error' });
     }
 }
 
 export const updateSurveyById = async (req, res) => {
     const surveyId = req.params.surveyId;
-    console.log(req.body,'req.body in update');
-    try{
+    console.log(req.body, 'req.body in update');
+    try {
         const updateSurvey = await prisma.survey.update({
-            where:{
-                id:surveyId
+            where: {
+                id: surveyId
             },
-            data:{
-                surveyTitle:req.body.surveyTitle,
-                surveyForms:req.body.surveyForms,
-                selectedItems:req.body.selectedItems
+            data: {
+                surveyTitle: req.body.surveyTitle,
+                surveyForms: req.body.surveyForms,
+                selectedItems: req.body.selectedItems
             }
         });
-        res.status(200).json({message:'Survey updated successfully'});
+        await prisma.$disconnect();
+        res.status(200).json({ message: 'Survey updated successfully' });
     }
-    catch(err){
+    catch (err) {
         console.log(err);
-        res.status(500).send({message:'Internal server error'});
+        res.status(500).send({ message: 'Internal server error' });
     }
-};  
+};
+
+export const getAllSurveyResponse = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try {
+        const getAllResponse = await prisma.userSurveyResponse.findMany({
+            where: {
+                surveyId
+            }
+        });
+        await prisma.$disconnect();
+        res.status(200).send(getAllResponse);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+}
 
 
