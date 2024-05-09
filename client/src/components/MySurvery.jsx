@@ -7,13 +7,57 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
+import excelIcon from '../assets/icons/excel.svg';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
+import { backendUrl } from '../utils/backendUrl';
+import { axiosWithAuth } from '../utils/customAxios';
+import { refreshToken } from '../utils/refreshToken'; 
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 
 export function MySurvery({userSurveyData}) {
-  console.log(userSurveyData,'userSurveyData');
+  const navigate = useNavigate();
+
+  const handleConvertToExcel = async(surveyId) => {
+    console.log(surveyId);
+    try{
+      await refreshToken();
+      const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}`);
+      console.log(getAllUserResponse.data, 'response in export excel');
+
+      if(getAllUserResponse.data.length === 0){
+        alert('No response available for this survey');
+        return;
+      }
+      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/export-to-excel`, getAllUserResponse.data, {
+        responseType: 'blob' // Ensure response type is blob
+    });
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'UserResponse.xlsx';
+    a.click();
+    window.URL.revokeObjectURL(url);
+    }
+    catch (err) {
+      if (err.response.status === 401) {
+          console.log('unauthorized');
+          localStorage.removeItem('userAccessToken');
+          navigate('/login');
+      }
+      else {
+          console.log(err);
+
+      }
+  }
+
+
+  }
   return (
     <Box component="section" sx={{ p: { md: 10 }, pt: { xs: 10 } }}>
       <Container maxWidth="lg">
@@ -28,6 +72,7 @@ export function MySurvery({userSurveyData}) {
                   <TableCell align="center">Modified At</TableCell>
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Response</TableCell>
+                  <TableCell align="center">Import to Excel</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -45,6 +90,9 @@ export function MySurvery({userSurveyData}) {
               <TableCell align="center">{survey.updatedAt}</TableCell>
               <TableCell align="center">{survey.surveyStatus}</TableCell>
               <TableCell align="center">{survey.surveyResponses}</TableCell>
+              <TableCell align="center">
+              <img src={excelIcon} alt="excel icon" onClick={()=>handleConvertToExcel(survey.id)} className=' md:ml-16' />
+              </TableCell>
             </TableRow>
           ))}
           
