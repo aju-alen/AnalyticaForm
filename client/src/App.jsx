@@ -2,7 +2,6 @@ import { createBrowserRouter, RouterProvider, Outlet, Navigate,useLocation } fro
 import MainNavBar from './components/MainNavBar';
 import Footer from './components/Footer';
 import { lazy, Suspense } from 'react';
-import UserSubmitSurvey from './pages/UserSubmitSurvey';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -24,6 +23,7 @@ const Register = lazy(() => import('./pages/Register'));
 const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const CreateNewSurvey = lazy(() => import('./pages/CreateNewSurvey'));
+const UserSubmitSurvey = lazy(() => import('./pages/UserSubmitSurvey'));
 
 const App = () => {
 
