@@ -37,6 +37,12 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
               <ListItemText primary={'MultiScalePoint'} />
             </ListItemButton>
           </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('MultiScaleCheckBox')}>
+              <ListItemText primary={'MultiScaleCheckBox'} />
+            </ListItemButton>
+          </ListItem>
         </List>
         <Divider />
         <List>
