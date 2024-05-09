@@ -12,6 +12,7 @@ const UserSubmitSurvey = () => {
     const { surveyId } = useParams();
     const [surveyData, setSurveyData] = React.useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [responseSubmitted, setResponseSubmitted] = useState(false);
     const [formData, setFormData] = useState({
         userEmail: '',
         userName: '',
@@ -113,20 +114,9 @@ const UserSubmitSurvey = () => {
             console.log(finalData, 'finalData');
 
             const sendUserResp = await axios.post(`${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`, finalData);
+            setResponseSubmitted(true);
 
             console.log(sendUserResp, 'sendUserResp');
-
-
-            const response = await axios.post(`${backendUrl}/export-to-excel`, finalData, {
-                responseType: 'blob' // Ensure response type is blob
-            });
-            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'data.xlsx';
-            a.click();
-            window.URL.revokeObjectURL(url);
             
         }
         catch (err) {
@@ -150,23 +140,6 @@ const UserSubmitSurvey = () => {
     }, [])
     console.log(surveyData, 'surveyData');
 
-    const handleExportToExcel = async () => {
-        try {
-            const response = await axios.post('/export-to-excel', data, {
-                responseType: 'blob' // Ensure response type is blob
-            });
-            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'data.xlsx';
-            a.click();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Error exporting to Excel:', error);
-        }
-    };
-
 
     const renderCurrentComponent = () => {
         const currentItem = surveyData?.surveyForms[currentIndex];
@@ -176,7 +149,9 @@ const UserSubmitSurvey = () => {
                 <div className="">
                     <h1>Thank You for your response</h1>
 
-                    <TextField
+                   {!responseSubmitted&& 
+                   <div className="">
+                   <TextField
                         label='Please Enter your name if you wish to'
                         value={formData.userName}
                         onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
@@ -188,7 +163,9 @@ const UserSubmitSurvey = () => {
                     ></TextField>
 
                     <Button onClick={handleSaveForm} >Submit Response</Button>
-                    <button onClick={handleExportToExcel}>Export to Excel</button>
+                    </div>
+                    }
+                    {responseSubmitted &&<p>Response submitted! You can now leave this page</p>}
                 </div>
             ); // Handle case when currentIndex is out of bounds
         }
