@@ -26,7 +26,7 @@ const Hero = () => {
             >
                 <Stack
                     spacing={2}
-                    borderWidth='10px'
+                    borderwidth='10px'
                     alignItems="center"
                     useFlexGap
                     sx={{ width: { xs: '100%', sm: '70%' } }}
