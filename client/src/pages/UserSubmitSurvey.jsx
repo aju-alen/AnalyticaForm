@@ -6,6 +6,7 @@ import SelectSingleCheckBox from '../components/SelectSingleCheckBox'
 import SelectSingleRadio from '../components/SelectSingleRadio'
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
 import { Button, TextField } from '@mui/material'
+import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
 
 
 const UserSubmitSurvey = () => {
@@ -98,7 +99,7 @@ const UserSubmitSurvey = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
     }
 
-    const handleSaveForm = async() => {
+    const handleSaveForm = async () => {
         try {
             const data = surveyData.surveyForms.map(form => ({
                 question: form.question,
@@ -117,7 +118,7 @@ const UserSubmitSurvey = () => {
             setResponseSubmitted(true);
 
             console.log(sendUserResp, 'sendUserResp');
-            
+
         }
         catch (err) {
             console.log(err);
@@ -149,23 +150,23 @@ const UserSubmitSurvey = () => {
                 <div className="">
                     <h1>Thank You for your response</h1>
 
-                   {!responseSubmitted&& 
-                   <div className="">
-                   <TextField
-                        label='Please Enter your name if you wish to'
-                        value={formData.userName}
-                        onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
-                    ></TextField>
-                    <TextField
-                        label='Please Enter your Email Id if you wish to'
-                        value={formData.userEmail}
-                        onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
-                    ></TextField>
+                    {!responseSubmitted &&
+                        <div className="">
+                            <TextField
+                                label='Please Enter your name if you wish to'
+                                value={formData.userName}
+                                onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+                            ></TextField>
+                            <TextField
+                                label='Please Enter your Email Id if you wish to'
+                                value={formData.userEmail}
+                                onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
+                            ></TextField>
 
-                    <Button onClick={handleSaveForm} >Submit Response</Button>
-                    </div>
+                            <Button onClick={handleSaveForm} >Submit Response</Button>
+                        </div>
                     }
-                    {responseSubmitted &&<p>Response submitted! You can now leave this page</p>}
+                    {responseSubmitted && <p>Response submitted! You can now leave this page</p>}
                 </div>
             ); // Handle case when currentIndex is out of bounds
         }
@@ -198,6 +199,17 @@ const UserSubmitSurvey = () => {
                     data={currentItem}
                     onHandleNext={handleNext}
                     onSaveForm={handleSaveMultiScalePointForm}
+                    id={currentItem.id}
+                    options={currentItem.options}
+                    disableForm={false}
+                    disableText={true}
+                    disableButtons={true} />;
+
+            case 'MultiScaleCheckBox':
+                return <SelectMultiScaleCheckBox
+                    data={currentItem}
+                    onHandleNext={handleNext}
+                    onSaveForm={handleSaveSingleCheckForm}
                     id={currentItem.id}
                     options={currentItem.options}
                     disableForm={false}
