@@ -146,14 +146,10 @@ const SelectMultiSpreadsheet = ({ onSaveForm, data, id, options, disableForm, di
                                             <TextField
                                                 disabled={!disableForm}
                                                 key={column.id}
-                                                id="standard-basic"
                                                 label="Standard"
-                                                variant="standard"
                                                 name='columnTextField'
                                                 value={column.value}
                                                 onChange={(e) => handleTextFieldChange(row.id, column.id)}
-
-                                                
                                             />
                                         )
                                     })
