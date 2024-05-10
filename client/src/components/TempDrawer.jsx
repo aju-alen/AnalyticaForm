@@ -44,11 +44,11 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding>
+          {/* <ListItem disablePadding>
             <ListItemButton onClick={() => handleItemClick('MultiSpreadsheet')}>
               <ListItemText primary={'MultiSpreadsheet'} />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
           
         </List>
         <Divider />
