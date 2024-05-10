@@ -16,6 +16,7 @@ import { Stack } from '@mui/material';
 import { uid } from 'uid';
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox';
+import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet';
 
 const CreateNewSurvey = () => {
 
@@ -242,6 +243,15 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row'>
           <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
+          <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'MultiSpreadsheet') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
           <button onClick={() => handleDeleteSelectOneForm(item.id)}>Delete Form</button>
         </Stack>
       )
