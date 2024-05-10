@@ -265,6 +265,13 @@ const CreateNewSurvey = () => {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
+        <TextField fullWidth id="standard-basic" label="Survey Name" variant="standard" name='surveyTitle' value={surveyData.surveyTitle} onChange={handleFormChange} />
+        <Stack spacing={12}>
+          {selectItem}
+          <Button variant="contained" color="primary" onClick={toggleDrawer}>
+            Add Form
+          </Button>
+        </Stack>
         <Box sx={{
           bgcolor: 'brown',
           display: 'flex',
@@ -279,15 +286,6 @@ const CreateNewSurvey = () => {
           borderRadius: 1,
           p: 2,
         }} >
-
-          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='surveyTitle' value={surveyData.surveyTitle} onChange={handleFormChange} />
-          <Stack spacing={12}>
-            {selectItem}
-
-            <Button variant="contained" color="primary" onClick={toggleDrawer}>
-              Add Form
-            </Button>
-          </Stack>
         </Box>
         <Button variant="contained" color="primary" onClick={handleSubmitForm}>
           Submit

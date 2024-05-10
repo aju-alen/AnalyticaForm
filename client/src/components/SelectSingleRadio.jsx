@@ -3,8 +3,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
-import { Stack } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import Radio from '@mui/material/Radio';
+import ClearIcon from '@mui/icons-material/Clear';
 import { uid } from 'uid';
 
 
@@ -70,7 +71,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
       <CssBaseline />
       <Container maxWidth="lg">
         <Box sx={{
-          bgcolor: 'orange',
+          bgcolor: '',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -83,7 +84,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
+          <TextField fullWidth id="standard-basic" label="Form Question" variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,
@@ -93,12 +94,6 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
           <Stack spacing={2}>
             {formData.options.map((option) => (
               <Stack direction="row" spacing={2} key={option.id}>
-                <Radio
-                  disabled={disableForm}
-                  onChange={() => handleRadioChange(option.id)}
-                  checked={formData.selectedValue[0].answer === option.value} />
-
-
                 <TextField
                   fullWidth
                   id="standard-basic"
@@ -119,12 +114,27 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
                     readOnly: disableText,
                   }}
                 />
-               {!disableButtons && (<button onClick={() => handleDeleteOptions(option.id)}>Delete</button>)}
+                <Radio
+                  disabled={disableForm}
+                  onChange={() => handleRadioChange(option.id)}
+                  checked={formData.selectedValue[0].answer === option.value} />
+
+
+               {!disableButtons && (<button onClick={() => handleDeleteOptions(option.id)}>
+                  <ClearIcon />
+               </button>)}
               </Stack>
             ))
             }
           </Stack>
-          {!disableButtons && (<button onClick={handleAddOptions}>Add</button>)}
+          {!disableButtons && (<button onClick={handleAddOptions}>
+            <Button 
+            variant="contained"
+            color="primary"
+            size="small"
+
+            >Add new row</Button>
+          </button>)}
           
           {<button onClick={handleSaveForm}>Done Editing</button>}
 
