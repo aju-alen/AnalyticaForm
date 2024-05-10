@@ -19,11 +19,11 @@ const initialFormData = {
     { id: "a1f4d", value: '' },
     { id: "a2k9m", value: '' },
   ],
-  selectedValue: [{ id:"az56j",question: '', answer: '', value: '' }],
+  selectedValue: [{ id: "az56j", question: '', answer: '', value: '' }],
   formType: 'MultiScalePoint',
 };
 
-const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disableText,disableButtons,onHandleNext }) => {
+const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
   const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
@@ -60,16 +60,16 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disab
         columns: formData.columnTextField.map((column) => ({ id: column.id, value: '' })),
 
       }],
-      selectedValue: [...formData.selectedValue, {id:genRowUid, question: '', answer: '', value: '' }],
+      selectedValue: [...formData.selectedValue, { id: genRowUid, question: '', answer: '', value: '' }],
     });
   };
-  
+
   const handleDeleteRow = (id) => {
     const newOptions = formData.options.filter(row => row.id !== id);
     const newSelectedValue = formData.selectedValue.filter(row => row.id !== id);
     setFormData({ ...formData, options: newOptions, selectedValue: newSelectedValue });
   }
-  
+
 
   const handleSaveForm = () => {
     console.log('save handleSaveForm', formData);
@@ -106,7 +106,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disab
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField  fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
+          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,
@@ -115,16 +115,16 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disab
           <Stack spacing={2} direction='row'>
             {formData.columnTextField.map((column) => (
               <Stack direction="column" spacing={2} key={column.id}>
-              <TextField id="standard-basic" label="Standard" variant="standard" key={column.id} name='columnTextField' value={column.value}
-                onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
-                InputProps={{
-                  readOnly: disableText,
-                }}
-              />
-              <Button 
-              size='small'
-              onClick={()=>handleDeleteColumn(column.id)}
-              >Delete Column</Button>
+                <TextField id="standard-basic" label="Standard" variant="standard" key={column.id} name='columnTextField' value={column.value}
+                  onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
+                  InputProps={{
+                    readOnly: disableText,
+                  }}
+                />
+                <Button
+                  size='small'
+                  onClick={() => handleDeleteColumn(column.id)}
+                >Delete Column</Button>
               </Stack>
             ))}
           </Stack>
@@ -151,7 +151,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disab
                   })
                   }
                 </Stack>
-                <Button onClick={()=>handleDeleteRow(row.id)}>Delete Row</Button>
+                <Button onClick={() => handleDeleteRow(row.id)}>Delete Row</Button>
               </Stack>
             ))}
           </Stack>
@@ -160,8 +160,8 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options,disableForm,disab
 
             {!disableButtons && (<Button onClick={handleAddColumn}>Add Column</Button>)}
 
-           {!disableButtons && ( <Button onClick={handleAddRow}>Add Row</Button>)}
-            { <Button onClick={handleSaveForm}>Done Editing</Button>}
+            {!disableButtons && (<Button onClick={handleAddRow}>Add Row</Button>)}
+            {<Button onClick={handleSaveForm}>Done Editing</Button>}
           </Stack>
         </Box>
       </Container>
