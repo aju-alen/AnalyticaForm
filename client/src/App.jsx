@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
       <div style={{ flex: 1 }}>
         {children}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
