@@ -30,18 +30,18 @@ export default function Home() {
     [prefersDarkMode],
   );
   return (
-       <ThemeProvider theme={theme}>
+      //  <ThemeProvider theme={theme}>
     <div>
       <CssBaseline />
       <HomeNavBar />
-      <Switch
+      {/* <Switch
       sx={{ position: 'fixed', top: 70, right: 0 }}
       checked={mode}
       onChange={handleChange}
       inputProps={{ 'aria-label': 'controlled' }}
-    />
+    /> */}
       <Hero />
     </div>
-    </ThemeProvider>
+    // </ThemeProvider>
   );
 }

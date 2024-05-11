@@ -5,6 +5,8 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import { Stack } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
+import ClearIcon from '@mui/icons-material/Clear';
+import Button from '@mui/material/Button';
 import { uid } from 'uid';
 
 
@@ -41,10 +43,10 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
       if (option.id === id) {
         if (formData.selectedValue.map((item) => item.id).includes(option.id)) {
           const newSelectedValue = formData.selectedValue.filter((item) => item.id !== option.id);
-            console.log(newSelectedValue, 'newSelectedValue in checkbox');
+          console.log(newSelectedValue, 'newSelectedValue in checkbox');
           setFormData({ ...formData, selectedValue: newSelectedValue })
         } else {
-          setFormData({ ...formData, selectedValue: [...formData.selectedValue, {...option,question:formData.question,answer:option.value}] })
+          setFormData({ ...formData, selectedValue: [...formData.selectedValue, { ...option, question: formData.question, answer: option.value }] })
 
         }
       }
@@ -72,7 +74,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
       <CssBaseline />
       <Container maxWidth="lg">
         <Box sx={{
-          bgcolor: 'yellow',
+          bgcolor: '',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -87,7 +89,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
         }} >
           <TextField
             fullWidth id="standard-basic"
-            label="Standard"
+            label={!disableText ? "Type Your Form Question" : ''}
             variant="standard"
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
@@ -100,17 +102,10 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
               console.log(formData.selectedValue.includes(opt.id), 'selectedValue');
               return (
                 <Stack direction="row" spacing={2} key={opt.id}>
-
-                  <Checkbox
-                    disabled={disableForm}
-                    checked={formData.selectedValue.map((item) => item.id).includes(opt.id)}
-                    onChange={() => handleCheckboxChange(opt.id)}
-
-                  />
                   <TextField
                     fullWidth
                     id="standard-basic"
-                    label="Standard"
+                    label={!disableText ? "Type Your Response Here" : ''}
                     variant="standard"
                     value={opt.value}
                     onChange={(e) =>
@@ -127,16 +122,41 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                       readOnly: disableText,
                     }}
                   />
-                  {!disableButtons && (<button onClick={() => handleDeleteOptions(opt.id)}>Delete</button>)}
+                  <Checkbox
+                    disabled={disableForm}
+                    checked={formData.selectedValue.map((item) => item.id).includes(opt.id)}
+                    onChange={() => handleCheckboxChange(opt.id)}
+
+                  />
+
+                  {!disableButtons && (<Button
+                    color='error'
+                    variant='outlined'
+                    onClick={() => handleDeleteOptions(opt.id)}><ClearIcon 
+                      fontSize='small'
+                    /></Button>)}
                 </Stack>
               )
             })}
 
           </Stack>
-          {!disableButtons && (<button onClick={handleAddOptions}>Add</button>)}
+          <Stack spacing={2} direction='row'>
+            {!disableButtons && (
+              <Button
+                onClick={handleAddOptions}
+                variant='outlined'
+                color="primary"
+                size="small"
+              >Add new row</Button>
+            )}
 
-          {<button onClick={handleSaveForm}>Done Editing</button>}
-
+<Button
+              variant='contained'
+              color="success"
+              onClick={handleSaveForm}>
+              {!disableButtons? 'Save This Form' : 'Next Question'}
+            </Button>
+          </Stack>
         </Box>
       </Container>
     </React.Fragment>

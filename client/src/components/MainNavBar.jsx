@@ -63,10 +63,13 @@ function ResponsiveAppBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
 
-          <Box sx={{ flexGrow:0.8, display:{xs:"none",md:"flex"}  }}>
+          <Box sx={{ flexGrow:0.8, display:{xs:"none",md:"flex",}, 
+          height: 50,
+          width: 25,
+        }}>
           
           <img className='hidden mr-4 md:flex' 
-              src="https://i.postimg.cc/jqDGBvw9/Scientific-Journals-Portal-logo-03.png"
+              src="https://i.postimg.cc/ZKxxfzDQ/DA-LOGO-removebg-preview.png"
               style={logoStyle}
               alt="logo of Analytics Dubai"
               onClick={() => navigate('/')}
@@ -147,9 +150,9 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-                <MenuItem  onClick={handleCloseUserMenu}>
+                {/* <MenuItem  onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">Profile</Typography>
-                </MenuItem>
+                </MenuItem> */}
                 <MenuItem  onClick={handleCloseUserMenu}>
                   <Typography textAlign="center" onClick={handleLogout}>Logout</Typography>
                 </MenuItem>

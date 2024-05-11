@@ -13,10 +13,12 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios';
 import { backendUrl } from '../utils/backendUrl';
+import { useNavigate } from 'react-router-dom';
 
 
 
 export default function Register() {
+  const navigate = useNavigate();
   const [checked, setChecked] = useState(true);
 
   const handleChange = (event) => {
@@ -38,6 +40,9 @@ export default function Register() {
       console.log(registerForm);
       const resp = await axios.post(`${backendUrl}/api/auth/register`, registerForm);
       console.log(resp.data);
+      alert('Registration successful');
+      navigate('/login')
+
 
     } catch (err) {
       console.log(err);

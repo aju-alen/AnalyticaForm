@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, CssBaseline, Container, Box, Stack, Radio, Button } from '@mui/material';
 import { uid } from 'uid';
+import ClearIcon from '@mui/icons-material/Clear';
 
 const initialFormData = {
   id: uid(5),
@@ -93,7 +94,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
       <CssBaseline />
       <Container maxWidth="lg">
         <Box sx={{
-          bgcolor: 'lightgreen',
+          bgcolor: '',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -106,16 +107,20 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField fullWidth id="standard-basic" label="Standard" variant="standard" name='question' value={formData.question}
+          <TextField fullWidth id="standard-basic" label={!disableText ? "Type Your Form Question" : ''} variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,
             }}
           />
-          <Stack spacing={2} direction='row'>
+          <Stack
+            className=' w-1/2 flex justify-center'
+            spacing={2}
+            direction='row'
+          >
             {formData.columnTextField.map((column) => (
               <Stack direction="column" spacing={2} key={column.id}>
-                <TextField id="standard-basic" label="Standard" variant="standard" key={column.id} name='columnTextField' value={column.value}
+                <TextField id="standard-basic" label={!disableText ? "Type Your Response Here" : ''} variant="standard" key={column.id} name='columnTextField' value={column.value}
                   onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
                   InputProps={{
                     readOnly: disableText,
@@ -123,8 +128,13 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                 />
                 <Button
                   size='small'
+                  color='error'
                   onClick={() => handleDeleteColumn(column.id)}
-                >Delete Column</Button>
+                >
+                  <ClearIcon
+                    fontSize='small'
+                  />
+                </Button>
               </Stack>
             ))}
           </Stack>
@@ -132,13 +142,23 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           <Stack spacing={2} className='w-full'>
             {formData.options.map((row, rowIndex) => (
               <Stack direction="row" spacing={2} key={row.id}>
-                <TextField id="standard-basic" label="Standard" variant="standard" name='rowQuestion' value={row.rowQuestion}
+                <TextField
+                  id="standard-basic"
+                  label={!disableText ? "Type Your Sub Question" : ''}
+                  variant="standard"
+                  name='rowQuestion'
+                  value={row.rowQuestion}
                   onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
                   InputProps={{
                     readOnly: disableText,
                   }}
+                  sx={{ width: '20%' }} // Fixed width applied here
                 />
-                <Stack direction="row" spacing={12}>
+                <Stack
+                  className='w-full flex justify-center'
+                  direction="row"
+                  spacing={12}
+                >
                   {row.columns.map((column, columnIndex) => {
                     return (
                       <Radio
@@ -148,20 +168,40 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                         onChange={() => handleRadioChange(rowIndex, columnIndex)}
                       />
                     )
-                  })
-                  }
+                  })}
                 </Stack>
-                <Button onClick={() => handleDeleteRow(row.id)}>Delete Row</Button>
+                <Button
+                  variant='outlined'
+                  color='error'
+                  onClick={() => handleDeleteRow(row.id)}>
+                  <ClearIcon
+                    fontSize='small'
+                  />
+                </Button>
               </Stack>
             ))}
           </Stack>
 
           <Stack direction="row" spacing={2}>
 
-            {!disableButtons && (<Button onClick={handleAddColumn}>Add Column</Button>)}
+            {!disableButtons && (<Button
+              variant='outlined'
+              color="primary"
+              size='small'
+              onClick={handleAddColumn}>Add Column</Button>)}
 
-            {!disableButtons && (<Button onClick={handleAddRow}>Add Row</Button>)}
-            {<Button onClick={handleSaveForm}>Done Editing</Button>}
+            <Button
+              variant='contained'
+              color="success"
+              onClick={handleSaveForm}>
+              {!disableButtons ? 'Save This Form' : 'Next Question'}
+            </Button>
+
+            {!disableButtons && (<Button
+              variant='outlined'
+              color="primary"
+              size='small'
+              onClick={handleAddRow}>Add Row</Button>)}
           </Stack>
         </Box>
       </Container>

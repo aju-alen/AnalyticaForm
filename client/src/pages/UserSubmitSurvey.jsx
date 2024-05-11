@@ -13,6 +13,7 @@ const UserSubmitSurvey = () => {
     const { surveyId } = useParams();
     const [surveyData, setSurveyData] = React.useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [introduction, setIntroduction] = useState(true)
     const [responseSubmitted, setResponseSubmitted] = useState(false);
     const [formData, setFormData] = useState({
         userEmail: '',
@@ -99,6 +100,10 @@ const UserSubmitSurvey = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
     }
 
+    const handleChangeIntroduction = () => {
+        setIntroduction(false);
+    }
+
     const handleSaveForm = async () => {
         try {
             const data = surveyData.surveyForms.map(form => ({
@@ -148,25 +153,30 @@ const UserSubmitSurvey = () => {
         if (!currentItem) {
             return (
                 <div className="">
-                    <h1>Thank You for your response</h1>
+                    <h1 className=' font-bold text-blue-500 text-2xl text-center mb-2'>Thank You for your response</h1>
+                    {!responseSubmitted && <h1 className=' font-bold text-blue-500 text-md mb-2'>Please enter your details. You can still proceed if you wish not to enter the details.  </h1>}
 
                     {!responseSubmitted &&
-                        <div className="">
+                        <div className=" text-center">
                             <TextField
-                                label='Please Enter your name if you wish to'
+                                label='Please Enter your name'
                                 value={formData.userName}
                                 onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
                             ></TextField>
                             <TextField
-                                label='Please Enter your Email Id if you wish to'
+                                label='Please Enter your Email Id'
                                 value={formData.userEmail}
                                 onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
                             ></TextField>
+                                <div className=" mt-4">
+                            <Button 
+                                variant='contained'
 
-                            <Button onClick={handleSaveForm} >Submit Response</Button>
+                            onClick={handleSaveForm} >Submit Response</Button>
+                            </div>
                         </div>
                     }
-                    {responseSubmitted && <p>Response submitted! You can now leave this page</p>}
+                    {responseSubmitted && <h1 className=' font-bold text-blue-500 text-md mb-2'>Response submitted! You can now leave this page</h1>}
                 </div>
             ); // Handle case when currentIndex is out of bounds
         }
@@ -222,9 +232,21 @@ const UserSubmitSurvey = () => {
 
     console.log(surveyData.surveyForms, 'surveyForms');
     return (
-        <div className="">
-            <h1>{surveyData.surveyTitle}</h1>
-            {surveyData.surveyForms && renderCurrentComponent()}
+        <div className=" flex justify-center items-center h-screen">
+            {introduction &&(<div className=" flex flex-col">
+                <h1 className=' font-bold text-blue-500 text-xl'>Hello, welcome to the survey!</h1>
+
+                {/* <TextField variant='standard' >
+                    <h2>{surveyData.surveyTitle}</h2>
+                </TextField> */}
+                <Button 
+                    variant='contained'
+
+                    onClick={handleChangeIntroduction}>
+                    Start Survey
+                </Button>
+            </div>)}
+            {(surveyData.surveyForms && !introduction) && renderCurrentComponent()}
 
         </div>
     )

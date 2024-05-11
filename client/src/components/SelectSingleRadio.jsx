@@ -84,7 +84,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField fullWidth id="standard-basic" label="Form Question" variant="standard" name='question' value={formData.question}
+          <TextField fullWidth id="standard-basic" label={!disableText?"Type Your Form Question" : ''} variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,
@@ -97,7 +97,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
                 <TextField
                   fullWidth
                   id="standard-basic"
-                  label="Standard"
+                  label={!disableText?"Type Your Response Here" : ''}
                   variant="standard"
                   name={option.text}
                   value={option.value}
@@ -120,24 +120,35 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
                   checked={formData.selectedValue[0].answer === option.value} />
 
 
-               {!disableButtons && (<button onClick={() => handleDeleteOptions(option.id)}>
-                  <ClearIcon />
-               </button>)}
+               {!disableButtons && (<Button
+                color='error'
+                variant='outlined'
+               onClick={() => handleDeleteOptions(option.id)}>
+                  <ClearIcon 
+                    fontSize='small'
+                  />
+               </Button>)}
               </Stack>
             ))
             }
           </Stack>
-          {!disableButtons && (<button onClick={handleAddOptions}>
+          <Stack spacing={2} direction='row'>
+          {!disableButtons && (
             <Button 
-            variant="contained"
+            onClick={handleAddOptions}
+            variant='outlined'
             color="primary"
             size="small"
-
             >Add new row</Button>
-          </button>)}
+          )}
           
-          {<button onClick={handleSaveForm}>Done Editing</button>}
-
+          <Button
+              variant='contained'
+              color="success"
+              onClick={handleSaveForm}>
+              {!disableButtons? 'Save This Form' : 'Next Question'}
+            </Button>
+          </Stack>
         </Box>
       </Container>
     </React.Fragment>

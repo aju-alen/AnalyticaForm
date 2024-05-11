@@ -101,7 +101,7 @@ export default function Login() {
               justifyContent: 'center',}}
              
             >
-            <GoogleLogin
+            {/* <GoogleLogin
               onSuccess={credentialResponse => {
                 const decoded = jwtDecode(JSON.stringify(credentialResponse))
                 console.log(decoded);
@@ -109,7 +109,7 @@ export default function Login() {
               onError={() => {
                 console.log('Login Failed');
               }}
-            />
+            /> */}
             </Box>
             <Grid container>
               <Grid item xs>

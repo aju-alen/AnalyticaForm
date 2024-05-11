@@ -9,11 +9,14 @@ import AddIcon from '@mui/icons-material/Add';
 import { Box } from '@mui/material';
 import { Grid } from '@mui/material';
 import { TextField } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 
 
 const Dashboard = () => {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
     const [input, setInput] = useState(false);
     const [inputFeildVisible, setInputFeildVisible] = useState(false);
     const [inputText, setInputText] = useState(''); 
@@ -60,6 +63,7 @@ const Dashboard = () => {
                 const getUserSurvey = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-survey`);
                 setUserSurveyData(getUserSurvey.data);
                 console.log(getUserSurvey.data);
+                setIsLoading(false);
             }
             catch (err) {
                 if (err.response.status === 401) {
@@ -83,6 +87,11 @@ const Dashboard = () => {
 
 
     return (
+        isLoading? (
+            <Box sx={{ display: 'flex', justifyContent:'center', alignItems:"center",height:'100vh' }}>
+            <CircularProgress />
+          </Box>
+          ) : (
         <Box component="section" sx={{ p: { md: 10 }, pt: { xs: 10 } }}>
             <Grid container spacing={2} alignItems="center">
                 <Grid item>
@@ -105,7 +114,7 @@ const Dashboard = () => {
                 </Grid>}
             </Grid>
             <MySurvery userSurveyData={userSurveyData} />
-        </Box>
+        </Box>)
 
 
     )
