@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { TextField, CssBaseline, Container, Box, Stack, Radio, Button } from '@mui/material';
 import { uid } from 'uid';
 import ClearIcon from '@mui/icons-material/Clear';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
 const initialFormData = {
   id: uid(5),
@@ -92,7 +97,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container maxWidth="lg">
+      <Container >
         <Box sx={{
           bgcolor: '',
           display: 'flex',
@@ -106,81 +111,107 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           boxShadow: 3,
           borderRadius: 1,
           p: 2,
+          overflowX: 'auto',
         }} >
-          <TextField fullWidth id="standard-basic" label={!disableText ? "Type Your Form Question" : ''} variant="standard" name='question' value={formData.question}
+          <TextField
+            fullWidth
+            id="standard-basic"
+            label={!disableText ? "Type Your Form Question" : ''}
+            variant="standard"
+            name='question'
+            value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,
             }}
           />
-          <Stack
-            className=' w-1/2 flex justify-center'
-            spacing={2}
-            direction='row'
-          >
-            {formData.columnTextField.map((column) => (
-              <Stack direction="column" spacing={2} key={column.id}>
-                <TextField id="standard-basic" label={!disableText ? "Type Your Response Here" : ''} variant="standard" key={column.id} name='columnTextField' value={column.value}
-                  onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
-                  InputProps={{
-                    readOnly: disableText,
-                  }}
-                />
-                <Button
-                  size='small'
-                  color='error'
-                  onClick={() => handleDeleteColumn(column.id)}
-                >
-                  <ClearIcon
-                    fontSize='small'
-                  />
-                </Button>
-              </Stack>
-            ))}
-          </Stack>
+          <div style={{ width: '100%' }}>
+            <Table
+              sx={{ minWidth: 650 }}
+              aria-label="simple table">
+              <TableHead>
 
-          <Stack spacing={2} className='w-full'>
-            {formData.options.map((row, rowIndex) => (
-              <Stack direction="row" spacing={2} key={row.id}>
-                <TextField
-                  id="standard-basic"
-                  label={!disableText ? "Type Your Sub Question" : ''}
-                  variant="standard"
-                  name='rowQuestion'
-                  value={row.rowQuestion}
-                  onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
-                  InputProps={{
-                    readOnly: disableText,
-                  }}
-                  sx={{ width: '20%' }} // Fixed width applied here
-                />
-                <Stack
-                  className='w-full flex justify-center'
-                  direction="row"
-                  spacing={12}
-                >
-                  {row.columns.map((column, columnIndex) => {
-                    return (
-                      <Radio
-                        disabled={disableForm}
-                        key={column.id}
-                        checked={formData.selectedValue[rowIndex].value === columnIndex}
-                        onChange={() => handleRadioChange(rowIndex, columnIndex)}
+                <TableRow>
+                  <TableCell
+                    align="left"
+                    sx={{ width: 'auto ' }}
+                  ><h1 className=' text-white'>HeadingIdForRowAndColumn</h1></TableCell>
+                  {formData.columnTextField.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      sx={{ width: 'auto ', overflowX: 'auto', }}>
+                      <Stack direction="column" spacing={2} >
+                        <TextField
+                          key={column.id}
+                          id="standard-basic"
+                          label={!disableText ? "Type Your Response Here" : ''} variant="standard"
+                          name='columnTextField'
+                          value={column.value}
+                          onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
+                          InputProps={{
+                            readOnly: disableText,
+                          }}
+                          fullWidth
+                          multiline
+                        />
+                        {!disableButtons && (<Button
+                          size='small'
+                          color='error'
+                          onClick={() => handleDeleteColumn(column.id)}
+                        >
+                          <ClearIcon
+                            fontSize='small'
+                          />
+                        </Button>)}
+                      </Stack>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {formData.options.map((row, rowIndex) => (
+                  <TableRow
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row" sx={{ width: '30%' }}>
+                      <TextField
+                        id="standard-basic"
+                        label={!disableText ? "Type Your Sub Question" : ''}
+                        variant="standard"
+                        name='rowQuestion'
+                        value={row.rowQuestion}
+                        onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
+                        InputProps={{
+                          readOnly: disableText,
+                        }}
                       />
-                    )
-                  })}
-                </Stack>
-                <Button
-                  variant='outlined'
-                  color='error'
-                  onClick={() => handleDeleteRow(row.id)}>
-                  <ClearIcon
-                    fontSize='small'
-                  />
-                </Button>
-              </Stack>
-            ))}
-          </Stack>
+                    </TableCell>
+
+                    {row.columns.map((column, columnIndex) =>
+                      <TableCell key={column.id} align='center' >
+                        <Radio
+                          disabled={disableForm}
+                          key={column.id}
+                          checked={formData.selectedValue[rowIndex].value === columnIndex}
+                          onChange={() => handleRadioChange(rowIndex, columnIndex)}
+                        />
+                      </TableCell>
+                    )}
+                    <TableCell align="center">
+                      {!disableButtons && (<Button
+                        variant='outlined'
+                        color='error'
+                        onClick={() => handleDeleteRow(row.id)}>
+                        <ClearIcon
+                          fontSize='small'
+                        />
+                      </Button>)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
 
           <Stack direction="row" spacing={2}>
 
@@ -210,3 +241,6 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
 }
 
 export default SelectMultiScalePoint;
+
+
+

@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { TextField, CssBaseline, Container, Box, Stack, Button, Checkbox } from '@mui/material';
 import { uid } from 'uid';
 import ClearIcon from '@mui/icons-material/Clear';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
 const initialFormData = {
     id: uid(5),
@@ -116,96 +122,136 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                     boxShadow: 3,
                     borderRadius: 1,
                     p: 2,
+                    overflowX: 'auto',
                 }} >
-                    <TextField fullWidth id="standard-basic" label={!disableText ? "Type Your Form Question" : ''} variant="standard" name='question' value={formData.question}
+                    <TextField
+                        fullWidth id="standard-basic"
+                        label={!disableText ? "Type Your Form Question" : ''} variant="standard"
+                        name='question'
+                        value={formData.question}
                         onChange={(e) => setFormData({ ...formData, question: e.target.value })}
                         InputProps={{
                             readOnly: disableText,
                         }}
                     />
-                    <Stack className=' w-1/2 flex justify-center'
-                        spacing={2}
-                        direction='row'>
-                        {formData.columnTextField.map((column) => (
-                            <Stack direction="column" spacing={2} key={column.id}>
-                                <TextField id="standard-basic" label={!disableText ? "Type Your Response Here" : ''} variant="standard" key={column.id} name='columnTextField' value={column.value}
-                                    onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
-                                    InputProps={{
-                                        readOnly: disableText,
-                                    }}
-                                />
-                               <Button
-                  size='small'
-                  color='error'
-                  onClick={() => handleDeleteColumn(column.id)}
-                >
-                  <ClearIcon
-                    fontSize='small'
-                  />
-                </Button>
-                            </Stack>
-                        ))}
-                    </Stack>
 
-                    <Stack spacing={2} className='w-full'>
-                        {formData.options.map((row) => (
-                            <Stack direction="row" spacing={2} key={row.id}>
-                                <TextField id="standard-basic"  label={!disableText ? "Type Your Sub Question" : ''} variant="standard" name='rowQuestion' value={row.rowQuestion}
+                    <div style={{ width: '100%' }}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell
+                                        align="left"
+                                        sx={{ width: 'auto ' }}
+                                    ><h1 className=' text-white'>HeadingIdForRowAndColumn</h1></TableCell>
+                                    {formData.columnTextField.map((column) => (
+                                        <TableCell
+                                            key={column.id}
+                                            sx={{ width: 'auto ', overflowX: 'auto', }}>
+                                            <Stack direction="column" spacing={2} >
+                                                <TextField
+                                                    key={column.id}
+                                                    id="standard-basic"
+                                                    label={!disableText ? "Type Your Response Here" : ''}
+                                                    variant="standard"
+                                                    name='columnTextField'
+                                                    value={column.value}
+                                                    onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
+                                                    InputProps={{
+                                                        readOnly: disableText,
+                                                    }}
+                                                    fullWidth
+                                                    multiline
+                                                />
+                                                {!disableButtons && (<Button
+                                                    size='small'
+                                                    color='error'
+                                                    onClick={() => handleDeleteColumn(column.id)}
+                                                >
+                                                    <ClearIcon
+                                                        fontSize='small'
+                                                    />
+                                                </Button>)}
+                                            </Stack>
+                                        </TableCell>
+                                    ))}
+
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                            {formData.options.map((row) => (
+                                <TableRow
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                   <TableCell component="th" scope="row" sx={{ width: '30%' }}>
+                                        
+                                   <TextField 
+                                   id="standard-basic"
+                                    label={!disableText ? "Type Your Sub Question" : ''} 
+                                    variant="standard"
+                                     name='rowQuestion'
+                                      value={row.rowQuestion}
                                     onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
                                     InputProps={{
                                         readOnly: disableText,
                                     }}
-                                    sx={{ width: '20%' }} // Fixed width applied here
+                                   
                                 />
-                                <Stack
-                  className='w-full flex justify-center'
-                  direction="row"
-                  spacing={12}
-                >
-                                    {row.columns.map((column) => {
-                                        return (
-                                            <Checkbox
+
+                                    </TableCell>
+                                    {row.columns.map((column) => (
+                                        <TableCell key={column.id} align='center' >
+                                                <Checkbox
                                                 disabled={disableForm}
                                                 key={column.id}
                                                 onChange={() => handleCheckBoxChange(row.id, column.id)}
                                                 checked={formData.selectedValue.some((item) => item.rowId === row.id && item.colId === column.id)}
                                             />
-                                        )
-                                    })
-                                    }
-                                </Stack>
-                                <Button
-                  variant='outlined'
-                  color='error'
-                  onClick={() => handleDeleteRow(row.id)}>
-                  <ClearIcon
-                    fontSize='small'
-                  />
-                </Button>
-                            </Stack>
-                        ))}
-                    </Stack>
+
+                                        </TableCell>
+
+
+                                    ))}
+                                    <TableCell align="center">
+                      {!disableButtons && (<Button
+                        variant='outlined'
+                        color='error'
+                        onClick={() => handleDeleteRow(row.id)}>
+                        <ClearIcon
+                          fontSize='small'
+                        />
+                      </Button>)}
+                    </TableCell>
+
+                                </TableRow>
+                            ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+
+
+
+                    
 
                     <Stack direction="row" spacing={2}>
 
-                    {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddColumn}>Add Column</Button>)}
+                        {!disableButtons && (<Button
+                            variant='outlined'
+                            color="primary"
+                            size='small'
+                            onClick={handleAddColumn}>Add Column</Button>)}
 
-            <Button
-              variant='contained'
-              color="success"
-              onClick={handleSaveForm}>
-              {!disableButtons ? 'Save This Form' : 'Next Question'}
-            </Button>
+                        <Button
+                            variant='contained'
+                            color="success"
+                            onClick={handleSaveForm}>
+                            {!disableButtons ? 'Save This Form' : 'Next Question'}
+                        </Button>
 
-            {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddRow}>Add Row</Button>)}
+                        {!disableButtons && (<Button
+                            variant='outlined'
+                            color="primary"
+                            size='small'
+                            onClick={handleAddRow}>Add Row</Button>)}
                     </Stack>
                 </Box>
             </Container>
