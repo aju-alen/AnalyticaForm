@@ -1,10 +1,13 @@
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useNavigate } from 'react-router-dom';
 
 
 const Hero = () => {
+    const navigate = useNavigate();
     return (
         <Box
             id="hero"
@@ -71,6 +74,14 @@ const Hero = () => {
                         >
                             Gain actionable insights and access survey data
                         </Typography>
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            size="large" 
+                            onClick={()=>navigate('/dashboard')}
+                        >
+                            Get Started
+                        </Button>
                     </Stack>
                 </Stack>
             </Container>
