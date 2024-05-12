@@ -7,6 +7,7 @@ import SelectSingleRadio from '../components/SelectSingleRadio'
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
 import { Button, TextField } from '@mui/material'
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
+import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet'
 
 
 const UserSubmitSurvey = () => {
@@ -217,6 +218,17 @@ const UserSubmitSurvey = () => {
 
             case 'MultiScaleCheckBox':
                 return <SelectMultiScaleCheckBox
+                    data={currentItem}
+                    onHandleNext={handleNext}
+                    onSaveForm={handleSaveSingleCheckForm}
+                    id={currentItem.id}
+                    options={currentItem.options}
+                    disableForm={false}
+                    disableText={true}
+                    disableButtons={true} />;
+
+            case 'MultiSpreadsheet':
+                return <SelectMultiSpreadsheet
                     data={currentItem}
                     onHandleNext={handleNext}
                     onSaveForm={handleSaveSingleCheckForm}

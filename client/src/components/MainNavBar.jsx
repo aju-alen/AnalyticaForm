@@ -112,7 +112,7 @@ function ResponsiveAppBar() {
           </Box>
           <Box sx={{ flexGrow:0.5 , display: { xs: 'flex', md: 'none' },  }}>
           <img  
-              src="https://i.postimg.cc/jqDGBvw9/Scientific-Journals-Portal-logo-03.png"
+               src="https://i.postimg.cc/ZKxxfzDQ/DA-LOGO-removebg-preview.png"
               style={logoStyle}
               alt="logo of sitemark"
               onClick={() => navigate('/')}

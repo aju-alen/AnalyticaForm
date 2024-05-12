@@ -19,6 +19,7 @@ import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox';
 import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CircularProgress from '@mui/material/CircularProgress';
+import SelectDropdownMenu from '../components/SelectDropdownMenu';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
@@ -278,6 +279,20 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row'>
           <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'DropdownMenu') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <SelectDropdownMenu key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
           <Button
             color="secondary"
             size='large'

@@ -98,7 +98,7 @@ function HomeNavBar() {
                 sx={{ py: '6px', px: '12px' }}
               >
                 <Typography variant='body2' color='text.primary'>
-                  Easy Survey
+                  Dubai Analytica
                 </Typography>
               </MenuItem>
               {/* <MenuItem
@@ -202,7 +202,7 @@ function HomeNavBar() {
                 }}
               >
                 <MenuItem onClick={() => scrollToSection('features')}>
-                  Easy Survey
+                Dubai Analytica
                 </MenuItem>
                 {/* <MenuItem onClick={() => scrollToSection('testimonials')}>
                   Testimonials

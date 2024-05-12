@@ -43,7 +43,7 @@ const Hero = () => {
                             fontSize: 'clamp(3rem, 10vw, 3.5rem)',
                         }}
                     >
-                        Easy&nbsp;
+                        Dubai&nbsp;
                         <Typography
                             component="span"
                             variant="h1"
@@ -52,7 +52,7 @@ const Hero = () => {
                                 color: 'primary.main',
                             }}
                         >
-                            Survey
+                            Analytica
                         </Typography>
                     </Typography>
                     <Stack
@@ -65,7 +65,7 @@ const Hero = () => {
                             color="text.secondary"
                             sx={{ width: { sm: '100%', md: '80%' } }}
                         >
-                            With Easy Survey, you can seamlessly create, customize, and distribute surveys to your audience with ease. Whether it&apos;s gathering customer feedback, conducting market research, or collecting employee opinions, our platform streamlines the process for you.
+                            With Dubai Analytica, you can seamlessly create, customize, and distribute surveys to your audience with ease. Whether it&apos;s gathering customer feedback, conducting market research, or collecting employee opinions, our platform streamlines the process for you.
                         </Typography>
                         <Typography
                             textAlign="center"
