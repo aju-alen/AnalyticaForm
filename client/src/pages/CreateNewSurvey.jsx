@@ -362,7 +362,7 @@ const CreateNewSurvey = () => {
                 mt: 2,
                 width: { xs: '100%', md: '42%' },
               }}
-              value={`${frontendUrl}/user-survey/${surveyId}`}
+              value={`${frontendUrl}user-survey/${surveyId}`}
             />}
 
           <Stack spacing={12}>
