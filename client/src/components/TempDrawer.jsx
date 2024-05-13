@@ -50,11 +50,11 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding>
+          {/* <ListItem disablePadding>
             <ListItemButton onClick={() => handleItemClick('DropdownMenu')}>
               <ListItemText primary={'DropdownMenu'} />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
           
         </List>
         <Divider />

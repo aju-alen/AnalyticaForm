@@ -245,7 +245,9 @@ const UserSubmitSurvey = () => {
     console.log(surveyData.surveyForms, 'surveyForms');
     return (
         <div className=" flex justify-center items-center h-screen">
-            {introduction &&(<div className=" flex flex-col">
+            {( surveyData.surveyResponses > 1) && (<h1 className=' font-bold text-blue-500 text-xl'>Survey response trial has exceeded. Please contact host</h1>)}            
+
+            {(introduction && surveyData.surveyResponses <= 1)  &&(<div className=" flex flex-col">
                 <h1 className=' font-bold text-blue-500 text-xl'>Hello, welcome to the survey!</h1>
 
                 {/* <TextField variant='standard' >

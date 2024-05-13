@@ -326,7 +326,7 @@ const CreateNewSurvey = () => {
             onChange={handleFormChange}
             sx={{ mt: 2 }}
           />
-          <Stack spacing={2} direction='row'>
+          {surveyData.surveyForms.length > 0 &&
             <TextField
               id="outlined-basic"
               label="Survey URL"
@@ -336,15 +336,15 @@ const CreateNewSurvey = () => {
                 width: { xs: '100%', md: '42%' },
               }}
               value={`${frontendUrl}/user-survey/${surveyId}`}
-            />
-          </Stack>
+            />}
   
           <Stack spacing={12}>
             {selectItem}
             <div className="flex justify-center">
               <Button
                 sx={{
-                  width: { xs: '100%', md: '50%' },
+                  width: { xs: '100%', md: '20%' },
+                  mt: 2,
                 }}
                 variant="contained"
                 color="primary"
@@ -369,12 +369,12 @@ const CreateNewSurvey = () => {
           }} >
           </Box> */}
   
-          <Button
+         {surveyData.surveyForms.length > 0 && <Button
             fullWidth
             sx={{ mt: 2, }}
             variant="contained" color="success" onClick={handleSubmitForm}>
             Submit Your Survey
-          </Button>
+          </Button>}
           {/* <Button variant="contained" color="secondary" onClick={() => navigate(`/user-survey/${surveyId}`)}>Survey Link </Button> */}
         </Container>
   

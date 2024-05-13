@@ -25,7 +25,11 @@ const Dashboard = () => {
     const handleSubmit = async () => {
         try {
             setInputFeildVisible(true);
-            if (input && inputFeildVisible) {
+            if (input && inputFeildVisible && inputText.length > 0) {
+                if(userSurveyData.length > 1){
+                    alert('You can only create 2 surveys with a free account. Please upgrade to premium to create more surveys.');
+                    return;
+                }
                 await refreshToken();
                 const surveyResp = await axiosWithAuth.post(`${backendUrl}/api/survey/create`, { surveyTitle: inputText });
                 console.log(surveyResp.data.newSurvey.id,'response');
@@ -83,6 +87,7 @@ const Dashboard = () => {
     }, [])
 
     console.log(inputText);
+    console.log(userSurveyData, 'surveyDatanames');
 
 
 
