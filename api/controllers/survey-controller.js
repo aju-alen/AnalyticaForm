@@ -66,10 +66,12 @@ export const updateSurveyById = async (req, res) => {
             data: {
                 surveyTitle: req.body.surveyTitle,
                 surveyForms: req.body.surveyForms,
-                selectedItems: req.body.selectedItems
+                selectedItems: req.body.selectedItems,
+                surveyIntroduction: req.body.surveyIntroduction,
             }
         });
         await prisma.$disconnect();
+        console.log(updateSurvey, 'updateSurvey');
         res.status(200).json({ message: 'Survey updated successfully' });
     }
     catch (err) {

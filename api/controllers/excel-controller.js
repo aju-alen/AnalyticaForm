@@ -12,14 +12,30 @@ export const exportToExcel = async (req, res) => {
         const worksheet = workbook.addWorksheet(`User_${index + 1}`);
 
         // Add main headers for user information
-        worksheet.addRow(['Name', 'Email Id', 'User Response Date']);
+        const headerRow = worksheet.addRow(['Name', 'Email Id', 'User Response Date']);
+        headerRow.eachCell((cell, colNumber) => {
+            // Apply color to each cell in the header row
+            cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFF00' } // Yellow color
+            };
+        });
         worksheet.addRow([user.userName, user.userEmail, user.createdAt]);
 
         // Add spacing row
         worksheet.addRow([]);
 
         // Add headers for user responses
-        worksheet.addRow(['Main Heading', 'Question', 'Response']);
+        const surveyHeader = worksheet.addRow(['Main Heading', 'Question', 'Response']);
+        surveyHeader.eachCell((cell, colNumber) => {
+            // Apply color to each cell in the header row
+            cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFF00' } // Yellow color
+            };
+        });
 
             // Add data rows for user responses
             user.userResponse.forEach(response => {
