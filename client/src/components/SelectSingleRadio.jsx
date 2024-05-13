@@ -16,6 +16,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
   const [formData, setFormData] = useState({
     id: id,
     question: '',
+    formMandate: false,
     options: [
       { id: uid(5), value: '' },
       { id: uid(5), value: '' }
@@ -43,6 +44,11 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
     console.log('save handleSaveForm');
     onSaveForm(formData);
     onHandleNext()
+  }
+
+  const handleMandateForm = () => {
+    console.log('mandate handleMandateForm');
+    setFormData({ ...formData, formMandate: true })
   }
 
   const handleRadioChange = (id) => {
@@ -148,6 +154,12 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
               onClick={handleSaveForm}>
               {!disableButtons? 'Save This Form' : 'Next Question'}
             </Button>
+          {!disableButtons && <Button
+              variant='contained'
+              color="primary"
+              onClick={handleMandateForm}>
+               Mandate This Form
+            </Button>}
           </Stack>
         </Box>
       </Container>

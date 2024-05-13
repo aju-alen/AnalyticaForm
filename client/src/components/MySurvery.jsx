@@ -73,7 +73,7 @@ export function MySurvery({ userSurveyData }) {
                   <TableCell align="center">Modified At</TableCell>
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Response</TableCell>
-                  <TableCell align="center">Import to Excel</TableCell>
+                  <TableCell align="center">Export to Excel</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

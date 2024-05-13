@@ -24,6 +24,8 @@ const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const CreateNewSurvey = lazy(() => import('./pages/CreateNewSurvey'));
 const UserSubmitSurvey = lazy(() => import('./pages/UserSubmitSurvey'));
+const ProductDisplay = lazy(() => import('./pages/ProductDisplay'));
+const SuccessPaymentPage = lazy(() => import('./pages/SuccessPaymentPage'));
 
 const App = () => {
 
@@ -76,6 +78,14 @@ const App = () => {
         {
           path: "/dashboard/create-survey/:surveyId",
           element: <ProtectedRoute element={<CreateNewSurvey />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/product-display",
+          element: <ProtectedRoute element={<ProductDisplay/>} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/payment-success",
+          element: <ProtectedRoute element={<SuccessPaymentPage/>} />, // Wrap Dashboard inside ProtectedRoute
         },
       ]
     }

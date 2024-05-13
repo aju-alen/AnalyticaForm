@@ -20,16 +20,20 @@ import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CircularProgress from '@mui/material/CircularProgress';
 import SelectDropdownMenu from '../components/SelectDropdownMenu';
+import AddIcon from '@mui/icons-material/Add';
+import SurveyIntro from '../components/SurveyIntro';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
   const { surveyId } = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [addIntro, setAddIntro] = useState(false);
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
     surveyForms: [],
-    selectedItems: []
+    selectedItems: [],
+    surveyIntroduction:''
   });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
   const [selectedItems, setSelectedItems] = useState([]); // selected items 
@@ -49,6 +53,28 @@ const CreateNewSurvey = () => {
       [e.target.name]: e.target.value,
     });
   }
+
+  const handleSaveIntro = (formData) => {
+    console.log(formData, 'formData in the parent');
+    setSurveyData({ ...surveyData, surveyIntroduction: formData });
+  }
+
+  const handleDeleteIntro = () => {
+    setSurveyData({ ...surveyData, surveyIntroduction: '' });
+    setAddIntro(false);
+  }
+
+  const handleAddIntro = () => {
+    setAddIntro(true);
+    setSurveyData({ ...surveyData, surveyIntroduction: `Hello:
+    You are invited to participate in our survey [Project Description Here]. In this survey, approximately [Approximate Respondents] people will be asked to complete a survey that asks questions about [General Survey Process]. It will take approximately [Approximate Time] minutes to complete the questionnaire.
+    
+    Your participation in this study is completely voluntary. There are no foreseeable risks associated with this project. However, if you feel uncomfortable answering any questions, you can withdraw from the survey at any point. It is very important for us to learn your opinions.
+    
+    Your survey responses will be strictly confidential and data from this research will be reported only in the aggregate. Your information will be coded and will remain confidential. If you have questions at any time about the survey or the procedures, you may contact [Name of Survey Researcher] at [Phone Number] or by email at the email address specified below.` });
+  }
+
+
   const handleSaveSinglePointForm = (formData) => {
     console.log(formData, 'formData in the parent');
 
@@ -196,7 +222,8 @@ const CreateNewSurvey = () => {
 
           surveyTitle: getUserSurveyData.data.surveyTitle,
           surveyForms: getUserSurveyData.data.surveyForms,
-          selectedItems: getUserSurveyData.data.selectedItems
+          selectedItems: getUserSurveyData.data.selectedItems,
+          surveyIntroduction: getUserSurveyData.data.surveyIntroduction
 
         });
         setSelectedItems(getUserSurveyData.data.selectedItems)
@@ -306,12 +333,12 @@ const CreateNewSurvey = () => {
   });
 
   console.log(surveyData, 'surveyData in the parent');
-  console.log(surveyData.surveyForms, 'surveyFormsssss in surveyData in the parent');
+  // console.log(surveyData.surveyForms, 'surveyFormsssss in surveyData in the parent');
   return (
     isLoading ? (
-      <Box sx={{ display: 'flex', justifyContent:'center', alignItems:"center",height:'100vh' }}>
-      <CircularProgress />
-    </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
+        <CircularProgress />
+      </Box>
     ) : (
       <React.Fragment>
         <CssBaseline />
@@ -337,20 +364,43 @@ const CreateNewSurvey = () => {
               }}
               value={`${frontendUrl}/user-survey/${surveyId}`}
             />}
-  
+
           <Stack spacing={12}>
+            {addIntro && <Stack spacing={2} direction='row'>
+              <SurveyIntro onSaveForm={handleSaveIntro} data ={surveyData.surveyIntroduction} disableText={false} disableButtons={false}  />
+              <Button
+                color="secondary"
+                size='large'
+                onClick={handleDeleteIntro}>
+                <CancelIcon />
+              </Button>
+            </Stack>}
             {selectItem}
             <div className="flex justify-center">
-              <Button
-                sx={{
-                  width: { xs: '100%', md: '20%' },
-                  mt: 2,
-                }}
-                variant="contained"
-                color="primary"
-                onClick={toggleDrawer}>
-                Add Form
-              </Button>
+              <Stack spacing={2} direction='row'>
+                <Button
+                  sx={{
+                    width: { xs: '100%', md: '90%' },
+                    mt: 2,
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={toggleDrawer}>
+                  Add Form
+                </Button>
+                <Button
+                  sx={{
+                    width: { xs: '100%', md: '5%' },
+                    mt: 2,
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={
+                    handleAddIntro
+                  }>
+                  <AddIcon />
+                </Button>
+              </Stack>
             </div>
           </Stack>
           {/* <Box sx={{
@@ -368,22 +418,22 @@ const CreateNewSurvey = () => {
             p: 2,
           }} >
           </Box> */}
-  
-         {surveyData.surveyForms.length > 0 && <Button
+
+          <Button
             fullWidth
             sx={{ mt: 2, }}
             variant="contained" color="success" onClick={handleSubmitForm}>
             Submit Your Survey
-          </Button>}
+          </Button>
           {/* <Button variant="contained" color="secondary" onClick={() => navigate(`/user-survey/${surveyId}`)}>Survey Link </Button> */}
         </Container>
-  
+
         <TemporaryDrawer open={isDrawerOpen} toggleDrawer={toggleDrawer} handleItemSelect={handleItemSelect} />
-  
+
       </React.Fragment>
     )
   );
-  
+
 }
 
 export default CreateNewSurvey

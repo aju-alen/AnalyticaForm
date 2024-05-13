@@ -20,6 +20,7 @@ const UserSubmitSurvey = () => {
         userEmail: '',
         userName: '',
     });
+    const [skippedFields, setSkippedFields] = useState([]);
 
 
     const handleSaveSinglePointForm = (formData) => {
@@ -107,6 +108,18 @@ const UserSubmitSurvey = () => {
 
     const handleSaveForm = async () => {
         try {
+            const mandatoryFields = surveyData.surveyForms.filter(form => form.formMandate);
+            
+            const skippedMandatoryFields = mandatoryFields.filter(form =>  !form.selectedValue[0].answer);
+
+
+            if (skippedMandatoryFields.length > 0) {
+                alert('Please fill the mandatory fields');
+                // Optionally, you can set the currentIndex to the first skipped mandatory field index
+                setCurrentIndex(surveyData.surveyForms.findIndex(form => form === skippedMandatoryFields[0]));
+                return;
+            }
+
             const data = surveyData.surveyForms.map(form => ({
                 question: form.question,
                 selectedValue: form.selectedValue.map(option => option)
@@ -182,6 +195,14 @@ const UserSubmitSurvey = () => {
             ); // Handle case when currentIndex is out of bounds
         }
 
+        const hasMandatoryFields = currentItem.formMandate && currentItem.selectedValue.length === 0;
+
+        if (hasMandatoryFields && !skippedFields.includes(currentItem.id)) {
+            // Show alert if mandatory fields are not filled and not skipped
+            alert('Please fill the mandatory fields');
+            return null; // Do not render the form until mandatory fields are filled
+        }
+
         switch (currentItem.formType) {
             case 'SinglePointForm':
                 return <SelectSingleRadio
@@ -250,6 +271,7 @@ const UserSubmitSurvey = () => {
             {(introduction && surveyData.surveyResponses <= 1)  &&(<div className=" flex flex-col">
                 <h1 className=' font-bold text-blue-500 text-xl'>Hello, welcome to the survey!</h1>
 
+                {surveyData.surveyIntroduction ? <p className=' flex justify-center items-center w-1/2 font-bold text-blue-500 text-lg'>{surveyData.surveyIntroduction}</p>: null}
                 {/* <TextField variant='standard' >
                     <h2>{surveyData.surveyTitle}</h2>
                 </TextField> */}

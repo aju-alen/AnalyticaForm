@@ -14,16 +14,19 @@ import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import { axiosWithCredentials } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
-import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 
 const logoStyle = {
-  width: '140px',
+  // width: '140px',
   height: 'auto',
   cursor: 'pointer',
 };
 
 function ResponsiveAppBar() {
+  const location = useLocation();
+  const currentPath = location.pathname;
+  const userSurveyPage =  currentPath.startsWith('/user-survey');
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -63,15 +66,15 @@ function ResponsiveAppBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
 
-          <Box sx={{ flexGrow:0.8, display:{xs:"none",md:"flex",}, 
+          <Box sx={{ flexGrow:1, display:{xs:"none",md:"flex",}, 
           height: 50,
           width: 25,
         }}>
           
           <img className='hidden mr-4 md:flex' 
-              src="https://i.postimg.cc/ZKxxfzDQ/DA-LOGO-removebg-preview.png"
+              src="https://i.postimg.cc/xCTK9TPJ/Whats-App-Image-2024-05-10-at-18-17-03-photoaidcom-cropped-1.png"
               style={logoStyle}
-              alt="logo of Analytics Dubai"
+              alt="logo of Dubai Analytica"
               onClick={() => navigate('/')}
             />
             </Box>
@@ -106,7 +109,7 @@ function ResponsiveAppBar() {
               }}
             >
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center" onClick={()=> navigate('/dashboard')}>My Surverys</Typography>
+                  <Typography textAlign="center" onClick={()=> navigate('/dashboard')}>Create Your Survey Now</Typography>
                 </MenuItem>
             </Menu>
           </Box>
@@ -124,7 +127,7 @@ function ResponsiveAppBar() {
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                My Surveys
+                Create Your Survey Now
               </Button>
           </Box>
 
