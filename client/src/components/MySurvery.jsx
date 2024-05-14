@@ -108,8 +108,8 @@ export function MySurvery({ userSurveyData }) {
                   <TableCell align="center">Modified At</TableCell>
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Response</TableCell>
-                  <TableCell align="center">Export to Excel Answers</TableCell>
-                  <TableCell align="center">Export to Excel Index</TableCell>
+                  <TableCell align="center">Export to Excel(Display answers)</TableCell>
+                  <TableCell align="center">Export to Excel(Display Index)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
