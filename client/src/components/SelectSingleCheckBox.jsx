@@ -39,14 +39,14 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
   }
 
   const handleCheckboxChange = (id) => {
-    const newOptions = formData.options.map((option) => {
+    const newOptions = formData.options.map((option,idx) => {
       if (option.id === id) {
         if (formData.selectedValue.map((item) => item.id).includes(option.id)) {
           const newSelectedValue = formData.selectedValue.filter((item) => item.id !== option.id);
           console.log(newSelectedValue, 'newSelectedValue in checkbox');
           setFormData({ ...formData, selectedValue: newSelectedValue })
         } else {
-          setFormData({ ...formData, selectedValue: [...formData.selectedValue, { ...option, question: formData.question, answer: option.value }] })
+          setFormData({ ...formData, selectedValue: [...formData.selectedValue, { ...option, question: formData.question, answer: option.value,index:idx + 1 }] })
 
         }
       }

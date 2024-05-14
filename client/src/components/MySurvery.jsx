@@ -23,7 +23,7 @@ import Button from '@mui/material/Button';
 export function MySurvery({ userSurveyData }) {
   const navigate = useNavigate();
 
-  const handleConvertToExcel = async (surveyId) => {
+  const handleConvertToExcelAnswer = async (surveyId) => {
     console.log(surveyId);
     try {
       await refreshToken();
@@ -59,6 +59,41 @@ export function MySurvery({ userSurveyData }) {
 
 
   }
+
+  const handleConvertToExcelIndex = async (surveyId) => {
+    try {
+      await refreshToken();
+      const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}`);
+      console.log(getAllUserResponse.data, 'response in export excel');
+
+      if (getAllUserResponse.data.length === 0) {
+        alert('No response available for this survey');
+        return;
+      }
+      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/export-to-excel-index`, getAllUserResponse.data, {
+        responseType: 'blob' // Ensure response type is blob
+      });
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'UserResponse.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+    catch (err) {
+      if (err.response.status === 401) {
+        console.log('unauthorized');
+        localStorage.removeItem('userAccessToken');
+        navigate('/login');
+      }
+      else {
+        console.log(err);
+
+      }
+    }
+
+  }
   return (
     <Box component="section" sx={{ p: { md: 10 }, pt: { xs: 10 } }} >
       <Container maxWidth="lg">
@@ -73,7 +108,8 @@ export function MySurvery({ userSurveyData }) {
                   <TableCell align="center">Modified At</TableCell>
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Response</TableCell>
-                  <TableCell align="center">Export to Excel</TableCell>
+                  <TableCell align="center">Export to Excel Answers</TableCell>
+                  <TableCell align="center">Export to Excel Index</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -93,7 +129,11 @@ export function MySurvery({ userSurveyData }) {
                     <TableCell align="center">{survey.surveyResponses}</TableCell>
                     <TableCell align="center">
                       <Button>
-                        <img src={excelIcon} alt="excel icon" onClick={() => handleConvertToExcel(survey.id)} className=' md:ml-16 cursor-pointer' /></Button>
+                        <img src={excelIcon} alt="excel icon" onClick={() => handleConvertToExcelAnswer(survey.id)} className=' md:ml-16 cursor-pointer' /></Button>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button>
+                        <img src={excelIcon} alt="excel icon" onClick={() => handleConvertToExcelIndex(survey.id)} className=' md:ml-16 cursor-pointer' /></Button>
                     </TableCell>
                   </TableRow>
                 ))}

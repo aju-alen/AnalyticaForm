@@ -70,16 +70,17 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
         setFormData({ ...formData, options: newOptions, selectedValue: newSelectedValue });
     }
 
-    const handleCheckBoxChange = (rowID, columnID) => {
+    const handleCheckBoxChange = (rowID, columnID,colIdx) => {
         let newSelectedValue = [...formData.selectedValue];
 
         const question = formData.options.find((item) => item.id === rowID).rowQuestion;
         const answer = formData.columnTextField.find(item => item.id === columnID).value;
 
         const index = newSelectedValue.findIndex((item) => item.rowId === rowID && item.colId === columnID);
+        console.log(colIdx, 'index in checkbox change');
 
         if (index === -1) {
-            newSelectedValue.push({ rowId: rowID, colId: columnID, value: true, question: question, answer: answer });
+            newSelectedValue.push({ rowId: rowID, colId: columnID, value: true, question: question, answer: answer, index:colIdx +1 });
         }
         else {
             newSelectedValue.splice(index, 1);
@@ -198,12 +199,12 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                 />
 
                                     </TableCell>
-                                    {row.columns.map((column) => (
+                                    {row.columns.map((column,idx) => (
                                         <TableCell key={column.id} align='center' >
                                                 <Checkbox
                                                 disabled={disableForm}
                                                 key={column.id}
-                                                onChange={() => handleCheckBoxChange(row.id, column.id)}
+                                                onChange={() => handleCheckBoxChange(row.id, column.id,idx)}
                                                 checked={formData.selectedValue.some((item) => item.rowId === row.id && item.colId === column.id)}
                                             />
 

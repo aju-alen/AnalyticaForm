@@ -25,7 +25,7 @@ const initialFormData = {
     { id: "a1f4d", value: '' },
     { id: "a2k9m", value: '' },
   ],
-  selectedValue: [{ id: "az56j", question: '', answer: '', value: '' }],
+  selectedValue: [{ id: "az56j", question: '', answer: '', value: '',index:''}],
   formType: 'MultiScalePoint',
 };
 
@@ -66,7 +66,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
         columns: formData.columnTextField.map((column) => ({ id: column.id, value: '' })),
 
       }],
-      selectedValue: [...formData.selectedValue, { id: genRowUid, question: '', answer: '', value: '' }],
+      selectedValue: [...formData.selectedValue, { id: genRowUid, question: '', answer: '', value: '',index:'' }],
     });
   };
 
@@ -86,6 +86,8 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
   const handleRadioChange = (rowIndex, columnIndex) => {
     const newSelectedValue = [...formData.selectedValue];
     newSelectedValue[rowIndex].value = columnIndex;
+    newSelectedValue[rowIndex].index = columnIndex + 1;
+
 
     newSelectedValue[rowIndex].question = formData.options[rowIndex].rowQuestion;
 

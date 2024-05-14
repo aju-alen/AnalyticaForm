@@ -119,12 +119,14 @@ const UserSubmitSurvey = () => {
                 setCurrentIndex(surveyData.surveyForms.findIndex(form => form === skippedMandatoryFields[0]));
                 return;
             }
-
+            const introduction = surveyData.surveyIntroduction === null? false : true;
+            console.log(introduction, 'introduction');
             const data = surveyData.surveyForms.map(form =>
              ({
                 formType: form.formType,
                 question: form.question,
-                selectedValue: form.selectedValue.map(option => option)
+                selectedValue: form.selectedValue.map(option => option),
+
             }));
 
             const formQuestions = surveyData.surveyForms.map(form => {
@@ -153,7 +155,8 @@ const UserSubmitSurvey = () => {
                 userResponse: data,
                 userName: formData.userName,
                 userEmail: formData.userEmail,
-                formQuestions : formQuestions
+                formQuestions : formQuestions,
+                introduction: introduction
 
             }
             console.log(finalData, 'finalData');
@@ -296,7 +299,7 @@ const UserSubmitSurvey = () => {
             {(introduction )  &&(<div className=" flex flex-col">
                 <h1 className=' font-bold text-blue-500 text-xl'>Hello, welcome to the survey!</h1>
 
-                {surveyData.surveyIntroduction ? <p className=' flex justify-center items-center w-1/2 font-bold text-blue-500 text-lg'>{surveyData.surveyIntroduction}</p>: null}
+                {surveyData.surveyIntroduction ? <p className=' flex justify-center items-center  font-bold text-blue-500 text-lg'>{surveyData.surveyIntroduction}</p>: null}
                 {/* <TextField variant='standard' >
                     <h2>{surveyData.surveyTitle}</h2>
                 </TextField> */}

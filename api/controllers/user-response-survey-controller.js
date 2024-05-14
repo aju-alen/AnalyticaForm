@@ -32,7 +32,8 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 userResponse:req.body.userResponse,
                 userName:req.body.userName,
                 userEmail:req.body.userEmail,
-                formQuestions:req.body.formQuestions
+                formQuestions:req.body.formQuestions,
+                introduction:req.body.introduction,
             }
         });
 

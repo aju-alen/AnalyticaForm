@@ -22,7 +22,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
       { id: uid(5), value: '' }
 
     ],
-    selectedValue: [{ question: '', answer: '', value: '' }],
+    selectedValue: [{ question: '', answer: '', value: '',index:'' }],
     formType: 'SinglePointForm'
   });
 
@@ -52,10 +52,10 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
   }
 
   const handleRadioChange = (id) => {
-    const newOptions = formData.options.map((option) => {
+    const newOptions = formData.options.map((option,idx) => {
       if (option.id === id) {
 
-        setFormData({ ...formData, selectedValue: [{ answer: option.value, question: formData.question }] })
+        setFormData({ ...formData, selectedValue: [{ answer: option.value, question: formData.question,index:idx+1}] })
 
       }
     })
@@ -154,12 +154,12 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
               onClick={handleSaveForm}>
               {!disableButtons? 'Save This Form' : 'Next Question'}
             </Button>
-          {!disableButtons && <Button
+          {/* {!disableButtons && <Button
               variant='contained'
               color="primary"
               onClick={handleMandateForm}>
                Mandate This Form
-            </Button>}
+            </Button>} */}
           </Stack>
         </Box>
       </Container>
