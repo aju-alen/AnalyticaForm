@@ -37,7 +37,6 @@ model Survey {
   selectedItems Json @default("[]")
   surveyResponses Int   @default(0)
   surveyIntroduction String? @db.VarChar(1000)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -52,6 +51,7 @@ model UserSurveyResponse{
   userEmail String @default("Anonymous")
   userName String @default("Anonymous")
   userResponse Json
+  formQuestions Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   

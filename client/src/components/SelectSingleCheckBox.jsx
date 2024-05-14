@@ -16,8 +16,8 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
     id: id,
     question: '',
     options: [
-      { id: uid(5), value: '' },
-      { id: uid(5), value: '' }
+      { id: uid(5), value: '',rowQuestion:'' },
+      { id: uid(5), value: '',rowQuestion:'' }
 
     ],
     selectedValue: [],
@@ -27,7 +27,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
   const handleAddOptions = () => {
     setFormData({
       ...formData,
-      options: [...formData.options, { id: uid(5), value: '' }]
+      options: [...formData.options, { id: uid(5), value: '',rowQuestion:'' }]
     })
   }
 
@@ -113,7 +113,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                         ...formData,
                         options: formData.options.map((item) =>
                           item.id === opt.id
-                            ? { ...item, value: e.target.value }
+                            ? { ...item, value: e.target.value, rowQuestion:e.target.value }
                             : item
                         ),
                       })

@@ -120,17 +120,42 @@ const UserSubmitSurvey = () => {
                 return;
             }
 
-            const data = surveyData.surveyForms.map(form => ({
+            const data = surveyData.surveyForms.map(form =>
+             ({
+                formType: form.formType,
                 question: form.question,
                 selectedValue: form.selectedValue.map(option => option)
             }));
+
+            const formQuestions = surveyData.surveyForms.map(form => {
+                if (form.formType !== "MultiScaleCheckBox") {
+                    return {
+                        [form.subheading ? form.subheading : form.question]: form.options.map(option => {
+                            console.log(option, 'option');
+                            if (form.formType === "SinglePointForm") {
+                                // Return an array with a single null for SinglePointForm
+                                return null;
+                            }
+                            return option.rowQuestion;
+                        }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
+                    };
+                } else if (form.formType === "MultiScaleCheckBox") {
+                    return form.options.map(option => {
+                        return {
+                            [form.question + " " + option.rowQuestion]: form.columnTextField.map(column => column.value)
+                        };
+                    });
+                }
+            }).flat(); // Flatten the array since MultiScaleCheckBox returns an array of objects
+            
+            console.log(formQuestions, 'formQuestions');
             const finalData = {
                 userResponse: data,
                 userName: formData.userName,
-                userEmail: formData.userEmail
+                userEmail: formData.userEmail,
+                formQuestions : formQuestions
 
             }
-            console.log(surveyData, 'surveyData');
             console.log(finalData, 'finalData');
 
             const sendUserResp = await axios.post(`${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`, finalData);
@@ -266,9 +291,9 @@ const UserSubmitSurvey = () => {
     console.log(surveyData.surveyForms, 'surveyForms');
     return (
         <div className=" flex justify-center items-center h-screen">
-            {( surveyData.surveyResponses > 1) && (<h1 className=' font-bold text-blue-500 text-xl'>Survey response trial has exceeded. Please contact host</h1>)}            
+            {( surveyData.surveyResponses > 10) && (<h1 className=' font-bold text-blue-500 text-xl'>Survey response trial has exceeded. Please contact host</h1>)}            
 
-            {(introduction && surveyData.surveyResponses <= 1)  &&(<div className=" flex flex-col">
+            {(introduction )  &&(<div className=" flex flex-col">
                 <h1 className=' font-bold text-blue-500 text-xl'>Hello, welcome to the survey!</h1>
 
                 {surveyData.surveyIntroduction ? <p className=' flex justify-center items-center w-1/2 font-bold text-blue-500 text-lg'>{surveyData.surveyIntroduction}</p>: null}

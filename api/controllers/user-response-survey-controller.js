@@ -16,6 +16,7 @@ export const getSingleSurveyDataForUser = async (req, res) => {
 }
 
 export const postSingleSurveyDataForUser = async (req, res) => {
+    console.log(req.body.formQuestions);
     const surveyId = req.params.surveyId;
     if(req.body.userName === ''){
         req.body.userName = undefined;
@@ -25,11 +26,13 @@ export const postSingleSurveyDataForUser = async (req, res) => {
     }
     try{
         const createUserResponse = await prisma.userSurveyResponse.create({
+            
             data:{
                 surveyId,
                 userResponse:req.body.userResponse,
                 userName:req.body.userName,
-                userEmail:req.body.userEmail
+                userEmail:req.body.userEmail,
+                formQuestions:req.body.formQuestions
             }
         });
 
