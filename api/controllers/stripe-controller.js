@@ -1,7 +1,9 @@
 import stripe from 'stripe';
 import { frontendURL } from '../utils/corsFe.js';
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
+console.log(process.env.STRIPE_SECRET_KEY,'env key');
 const YOUR_DOMAIN = frontendURL;
+console.log(YOUR_DOMAIN,'YOUR_DOMAIN')
 
 export const createCheckoutSessionForSubscription = async (req, res) => {
     console.log(req.body,'req.body');
