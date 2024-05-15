@@ -53,22 +53,27 @@ export const stripeWebhook = async (req, res) => {
   switch (event.type) {
     case 'checkout.session.async_payment_failed':
       const checkoutSessionAsyncPaymentFailed = event.data.object;
+      console.log(checkoutSessionAsyncPaymentFailed,'checkoutSessionAsyncPaymentFailed');
       // Then define and call a function to handle the event checkout.session.async_payment_failed
       break;
     case 'checkout.session.async_payment_succeeded':
       const checkoutSessionAsyncPaymentSucceeded = event.data.object;
+      console.log(checkoutSessionAsyncPaymentSucceeded,'checkoutSessionAsyncPaymentSucceeded');
       // Then define and call a function to handle the event checkout.session.async_payment_succeeded
       break;
     case 'checkout.session.completed':
       const checkoutSessionCompleted = event.data.object;
+      console.log(checkoutSessionCompleted,'checkoutSessionCompleted');
       // Then define and call a function to handle the event checkout.session.completed
       break;
     case 'invoice.created':
       const invoiceCreated = event.data.object;
+      console.log(invoiceCreated,'invoiceCreated');
       // Then define and call a function to handle the event invoice.created
       break;
     case 'invoice.payment_succeeded':
       const invoicePaymentSucceeded = event.data.object;
+      console.log(invoicePaymentSucceeded,'invoicePaymentSucceeded');
       // Then define and call a function to handle the event invoice.payment_succeeded
       break;
     // ... handle other event types
