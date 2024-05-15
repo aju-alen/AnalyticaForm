@@ -11,3 +11,5 @@ export const corsOptions = {
     credentials: true,
     optionSuccessStatus: 200
 }
+
+export const stripeFrontendURL = process.env.STRIPE_FRONTEND_URL || 'http://localhost:5173';
