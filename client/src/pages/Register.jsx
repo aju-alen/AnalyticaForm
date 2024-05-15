@@ -40,7 +40,7 @@ export default function Register() {
       console.log(registerForm);
       const resp = await axios.post(`${backendUrl}/api/auth/register`, registerForm);
       console.log(resp.data);
-      alert('Registration successful');
+      alert('Registration successful, please verify email.');
       navigate('/login')
 
 
@@ -110,7 +110,7 @@ export default function Register() {
                 autoComplete="new-password"
               />
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <Checkbox 
                    name ="receiveMarketingEmails" 
                    checked={checked}
@@ -119,7 +119,7 @@ export default function Register() {
                     />
                     <label > I want to receive inspiration, marketing promotions and updates via email.</label>
               
-            </Grid>
+            </Grid> */}
           </Grid>
           <Button
             type="submit"
@@ -129,7 +129,7 @@ export default function Register() {
           >
             Sign Up
           </Button>
-          <Grid container justifyContent="flex-end">
+          <Grid  container justifyContent="flex-end">
             <Grid item>
               <Link href="#" variant="body2">
                 Already have an account? Sign in

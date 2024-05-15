@@ -87,7 +87,7 @@ function HomeNavBar() {
             }}
           >
             <img
-              src="https://i.postimg.cc/ZKxxfzDQ/DA-LOGO-removebg-preview.png"
+              src="https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png"
               style={logoStyle}
               alt="logo of sitemark"
               onClick={() => navigate('/')}
@@ -97,9 +97,9 @@ function HomeNavBar() {
                 onClick={() => scrollToSection('features')}
                 sx={{ py: '6px', px: '12px' }}
               >
-                <Typography variant='body2' color='text.primary'>
+                {/* <Typography variant='body2' color='text.primary'>
                   Dubai Analytica
-                </Typography>
+                </Typography> */}
               </MenuItem>
               {/* <MenuItem
                 onClick={() => scrollToSection('testimonials')}
@@ -201,9 +201,9 @@ function HomeNavBar() {
                   flexGrow: 1,
                 }}
               >
-                <MenuItem onClick={() => scrollToSection('features')}>
+                {/* <MenuItem onClick={() => scrollToSection('features')}>
                 Dubai Analytica
-                </MenuItem>
+                </MenuItem> */}
                 {/* <MenuItem onClick={() => scrollToSection('testimonials')}>
                   Testimonials
                 </MenuItem>
