@@ -349,7 +349,7 @@ const sendResetPassword = async (email, resetToken, name) => {
         <div>
             <p>Hi ${name},</p>
             <p>Click to reset your password:</p>
-            <p><a href="http://localhost:5173/reset-password/${resetToken}">Reset Password</a></p>
+            <p><a href="https://dubaianalytica.com/reset-password/${resetToken}">Reset Password</a></p>
         </div>
     </body>
     </html>`
