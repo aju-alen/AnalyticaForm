@@ -175,7 +175,7 @@ const ProductDisplayy = () => {
                   ))}
                 </CardContent>
                 <CardActions>
-                  <form action="https://analyticaform-api.onrender.com/api/stripe/create-checkout-session" method="POST">
+                  <form action="https://analyticaform.onrender.com/api/stripe/create-checkout-session" method="POST">
                     {/* Add a hidden field with the lookup_key of your Price */}
                     <input type="hidden" name="DubaiAnalyticaTestKey" value={import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY} />
                     <input type="hidden" name="emailId" value={emailId} />
