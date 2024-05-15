@@ -5,7 +5,7 @@ import { lazy, Suspense } from 'react';
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const hideNavBarPages = ['/register', '/login','/'];
+  const hideNavBarPages = ['/','/register', '/login','/forget-password'];
   const shouldHideNavBar = hideNavBarPages.includes(location.pathname);
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", maxWidth: "100vw" }}>

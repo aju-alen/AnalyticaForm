@@ -300,3 +300,101 @@ export const test = async (req, res, next) => {
 
     res.json({ message: "Test successful" });
 }
+
+export const forgetPassword = async(req,res,next)=>{
+    try{
+        const user = await prisma.user.findUnique({
+            where:{
+                email:req.body.email
+            }
+
+        })
+        if(!user){
+            return res.status(400).json({message:'User does not exist'})
+        }
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        await prisma.user.update({
+            where:{
+                email:req.body.email
+            },
+            data:{
+                resetToken:resetToken
+            }
+        })
+        console.log("reached");
+        await prisma.$disconnect()
+        console.log(req.body.email,resetToken,user.surname, 'user in forget password');
+        sendResetPassword(req.body.email, resetToken, user.firstName);
+        res.status(200).json({message:'Password reset link sent to your email'})
+    }
+    catch(err){
+        console.log(err);
+        res.status(400).send('An error occoured')
+    }
+}
+
+const sendResetPassword = async (email, resetToken, name) => {
+
+    const transporter = createTransport;
+    const mailOptions = {
+        from: process.env.GMAIL_AUTH_USER,
+        to: email,
+        subject: 'Reset Password',
+        html: `
+    <html>
+    <body>
+        <div>
+            <img src="https://i.postimg.cc/8cpfZ5sP/215b7754-0e37-41b2-be2f-453d190af861.jpg" alt="Reset Password" style="display:block;margin:auto;width:50%;" />
+        </div>
+        <div>
+            <p>Hi ${name},</p>
+            <p>Click to reset your password:</p>
+            <p><a href="http://localhost:5173/reset-password/${resetToken}">Reset Password</a></p>
+        </div>
+    </body>
+    </html>`
+    }
+
+    //send the mail
+    try {
+        const response = await transporter.sendMail(mailOptions);
+        console.log("Reset Password email sent", response);
+    }
+    catch (err) {
+        console.log("Err sending Reset Password email", err);
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    const resetToken = req.params.resetToken;
+    console.log(resetToken, 'resetToken');
+    console.log(req.body.password, 'password');
+    try {
+        const user = await prisma.user.findFirst({
+            where: {
+                resetToken,
+            }
+          });
+
+        if(!user){
+            return res.status(400).json({message:'Invalid token'})
+        }
+        const hash = await bcrypt.hash(req.body.password, 10);
+        await prisma.user.update({
+            where:{
+                resetToken:resetToken,
+            },
+            data:{
+                password:hash,
+            }
+        })
+        await prisma.$disconnect()
+        res.status(200).json({message:'Password reset successful'}) 
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(400).send('An error occoured')
+    }
+      
+}
