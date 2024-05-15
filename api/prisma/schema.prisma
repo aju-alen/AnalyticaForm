@@ -21,6 +21,9 @@ model User {
   lastName  String
   password  String
   receiveMarketingEmails Boolean 
+  resetToken String @unique @db.VarChar(255) @default(cuid())  
+  emailVerificationToken String 
+  emailVerified Boolean @default(false)
   isAdmin   Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
