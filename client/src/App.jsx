@@ -26,6 +26,8 @@ const CreateNewSurvey = lazy(() => import('./pages/CreateNewSurvey'));
 const UserSubmitSurvey = lazy(() => import('./pages/UserSubmitSurvey'));
 const ProductDisplay = lazy(() => import('./pages/ProductDisplay'));
 const SuccessPaymentPage = lazy(() => import('./pages/SuccessPaymentPage'));
+const ForgetPassword = lazy(()=> import('./pages/ForgetPassword'))
+const ResetPassword = lazy(()=> import('./pages/ResetPassword'))
 
 const App = () => {
 
@@ -70,6 +72,14 @@ const App = () => {
         {
           path: "/user-survey/:surveyId",
           element: <UserSubmitSurvey />,
+        },
+        {
+          path: "/forget-password",
+          element: <ForgetPassword />,
+        },
+        {
+          path: '/reset-password/:resetToken',
+          element: <ResetPassword/>,
         },
         {
           path: "/dashboard",

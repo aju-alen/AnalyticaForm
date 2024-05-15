@@ -64,6 +64,8 @@ const createTransport = nodemailer.createTransport({
 
 // not a route controller, function to send verification email
 const sendVerificationEmail = async (email, verificationToken, name) => {
+    console.log(process.env.GMAIL_AUTH_USER);
+    console.log(process.env.GMAIL_AUTH_PASS);
 
     const transporter = createTransport;
     const mailOptions = {
