@@ -12,7 +12,7 @@ import bodyParser from 'body-parser';
 
 const app = express();
 
-// app.set('trust proxy', true);
+app.set('trust proxy', true);
 app.use(cors(corsOptions)); 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
