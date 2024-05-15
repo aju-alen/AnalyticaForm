@@ -25,6 +25,8 @@ model User {
   emailVerificationToken String 
   emailVerified Boolean @default(false)
   isAdmin   Boolean @default(false)
+  isAProMember Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

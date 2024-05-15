@@ -15,6 +15,8 @@ import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 
 
@@ -22,6 +24,7 @@ import Button from '@mui/material/Button';
 
 export function MySurvery({ userSurveyData }) {
   const navigate = useNavigate();
+  dayjs.extend(relativeTime);
 
   const handleConvertToExcelAnswer = async (surveyId) => {
     console.log(surveyId);
@@ -120,11 +123,16 @@ export function MySurvery({ userSurveyData }) {
                   >
                     <TableCell component="th" scope="row">
                       <Link to={`/dashboard/create-survey/${survey.id}`}>
+                        <Button
+                          variant='text'
+                          color="primary"
+                        >
                         {survey.surveyTitle}
+                        </Button>
                       </Link>
                     </TableCell>
-                    <TableCell align="center">{survey.createdAt}</TableCell>
-                    <TableCell align="center">{survey.updatedAt}</TableCell>
+                    <TableCell align="center">{dayjs(survey.createdAt).fromNow()}</TableCell>
+                    <TableCell align="center">{dayjs(survey.updatedAt).fromNow()}</TableCell>
                     <TableCell align="center">{survey.surveyStatus}</TableCell>
                     <TableCell align="center">{survey.surveyResponses}</TableCell>
                     <TableCell align="center">

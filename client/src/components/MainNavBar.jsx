@@ -72,7 +72,7 @@ function ResponsiveAppBar() {
         }}>
           
           <img className='hidden mr-4 md:flex' 
-              src="https://i.postimg.cc/xCTK9TPJ/Whats-App-Image-2024-05-10-at-18-17-03-photoaidcom-cropped-1.png"
+              src="https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png"
               style={logoStyle}
               alt="logo of Dubai Analytica"
               onClick={() => navigate('/')}
@@ -115,7 +115,7 @@ function ResponsiveAppBar() {
           </Box>
           <Box sx={{ flexGrow:0.5 , display: { xs: 'flex', md: 'none' },  }}>
           <img  
-               src="https://i.postimg.cc/ZKxxfzDQ/DA-LOGO-removebg-preview.png"
+               src="https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png"
               style={logoStyle}
               alt="logo of sitemark"
               onClick={() => navigate('/')}
@@ -124,10 +124,16 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
            
               <Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                onClick={()=>navigate('/dashboard')}
+                sx={{color: 'white', display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}
               >
-                Create Your Survey Now
+                Create A Survey
+              </Button>
+
+              <Button
+                onClick={()=>navigate('/product-display')}
+                sx={{color: 'white', display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}              >
+                Become a pro member
               </Button>
           </Box>
 
