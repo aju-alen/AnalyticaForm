@@ -22,6 +22,7 @@
     "express-rate-limit": "^7.2.0",
     "google-auth-library": "^9.9.0",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.13",
     "stripe": "^15.6.0",
     "ulid": "^2.3.0"
   },
