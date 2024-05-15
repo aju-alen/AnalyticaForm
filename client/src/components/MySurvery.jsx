@@ -1,3 +1,4 @@
+import React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,9 +15,15 @@ import { backendUrl } from '../utils/backendUrl';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
 import { useNavigate } from 'react-router-dom';
-import Button from '@mui/material/Button';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Typography } from '@mui/material';
 
 
 
@@ -25,6 +32,19 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 export function MySurvery({ userSurveyData }) {
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
+
+  const [open, setOpen] = React.useState(false);
+  const [surveyId, setSurveyId] = React.useState(''); 
+
+  const handleClickOpen = (surveyId) => {
+    setSurveyId(surveyId);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
 
   const handleConvertToExcelAnswer = async (surveyId) => {
     console.log(surveyId);
@@ -111,8 +131,9 @@ export function MySurvery({ userSurveyData }) {
                   <TableCell align="center">Modified At</TableCell>
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Response</TableCell>
-                  <TableCell align="center">Export to Excel(Display answers)</TableCell>
-                  <TableCell align="center">Export to Excel(Display Index)</TableCell>
+                  <TableCell align="center">Export to Excel</TableCell>
+                  {/* <TableCell align="center">Export to Excel(Display answers)</TableCell>
+                  <TableCell align="center">Export to Excel(Display Index)</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -135,14 +156,47 @@ export function MySurvery({ userSurveyData }) {
                     <TableCell align="center">{dayjs(survey.updatedAt).fromNow()}</TableCell>
                     <TableCell align="center">{survey.surveyStatus}</TableCell>
                     <TableCell align="center">{survey.surveyResponses}</TableCell>
+
                     <TableCell align="center">
+                    <Button variant="" onClick={()=>handleClickOpen(survey.id)}>
+                    <img src={excelIcon} alt="excel icon" className='cursor-pointer' />
+                    </Button>
+
+                    <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"You can download the user response in two formats"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+          >
+           Display as Answers- This will display the user response in the excel sheet as answers.
+          </DialogContentText>
+          <DialogContentText>
+            Display as Index- This will display the user response in the excel sheet as index.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handleConvertToExcelAnswer(surveyId)}>Display as Answers</Button>
+          <Button onClick={() => handleConvertToExcelIndex(surveyId)} autoFocus>
+            Display as Index
+          </Button>
+        </DialogActions>
+      </Dialog>
+                    </TableCell>
+
+                    {/* <TableCell align="center">
                       <Button>
                         <img src={excelIcon} alt="excel icon" onClick={() => handleConvertToExcelAnswer(survey.id)} className=' md:ml-16 cursor-pointer' /></Button>
                     </TableCell>
                     <TableCell align="center">
                       <Button>
                         <img src={excelIcon} alt="excel icon" onClick={() => handleConvertToExcelIndex(survey.id)} className=' md:ml-16 cursor-pointer' /></Button>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
 
