@@ -11,6 +11,7 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
             lookup_keys: [req.body.lookup_key],
             expand: ['data.product'],
           });
+          console.log(prices);
           const session = await Stripe.checkout.sessions.create({
             billing_address_collection: 'auto',
             customer_email: req.body.emailId,
@@ -26,6 +27,7 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
             success_url: `${YOUR_DOMAIN}/payment-success?success=true&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${YOUR_DOMAIN}?canceled=true`,
           });
+          console.log(session,'session');
         
           res.redirect(303, session.url);
     }
