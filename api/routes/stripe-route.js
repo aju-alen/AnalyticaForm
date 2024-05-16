@@ -6,6 +6,6 @@ import {createCheckoutSessionForSubscription,stripeWebhook} from '../controllers
 
 
 router.post('/create-checkout-session',createCheckoutSessionForSubscription)
-router.post('/webhook', express.raw({type: 'application/json'}),stripeWebhook)
+// router.post('/', express.raw({type: 'application/json'}),stripeWebhook)
 
 export default router;
