@@ -6,8 +6,6 @@ const YOUR_DOMAIN = stripeFrontendURL;
 console.log(YOUR_DOMAIN,'YOUR_DOMAIN')
 
 export const createCheckoutSessionForSubscription = async (req, res) => {
-    console.log(req.body,'req.body');
-    console.log(req.body.emailId,'req.body');
     try {
         const prices = await Stripe.prices.list({
             lookup_keys: [req.body.lookup_key],
@@ -39,7 +37,7 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
     }
 }
 
-const endpointSecret = "whsec_85cb6e9c519f49df3be95a4f7f6ffa0558352b0e63e25b1da45b1535691f0947";
+const endpointSecret = "whsec_WwO4P8KQsXS1gzpfzMD8DKJUWxmder4H";
 
 export const stripeWebhook = async (req, res) => {
   const sig = request.headers['stripe-signature'];
