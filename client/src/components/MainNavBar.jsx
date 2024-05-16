@@ -17,8 +17,13 @@ import { backendUrl } from '../utils/backendUrl';
 import { useLocation } from 'react-router-dom';
 
 
-const logoStyle = {
+const logoStyleDextop = {
   // width: '140px',
+  height: 'auto',
+  cursor: 'pointer',
+};
+const logoStyle = {
+  width: '140px',
   height: 'auto',
   cursor: 'pointer',
 };
@@ -73,7 +78,7 @@ function ResponsiveAppBar() {
           
           <img className='hidden mr-4 md:flex' 
               src="https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png"
-              style={logoStyle}
+              style={logoStyleDextop}
               alt="logo of Dubai Analytica"
               onClick={() => navigate('/')}
             />
