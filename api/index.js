@@ -9,12 +9,16 @@ import userResponseSurveyRoute from './routes/user-response-survey.route.js';
 import excelRoute from './routes/excel-route.js';
 import stripeRoute from './routes/stripe-route.js';
 import bodyParser from 'body-parser';
+import stripe from 'stripe';
+import {  stripeFrontendURL } from '../utils/corsFe.js';
+const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 // app.set('trust proxy', true);
 app.use(cors(corsOptions)); 
 
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async (request, response) => {
+    const endpointSecret = "whsec_WwO4P8KQsXS1gzpfzMD8DKJUWxmder4H";
     const sig = request.headers['stripe-signature'];
   
     let event;
