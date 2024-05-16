@@ -42,51 +42,48 @@ const endpointSecret = "whsec_WwO4P8KQsXS1gzpfzMD8DKJUWxmder4H";
 export const stripeWebhook = async (request, response) => {
   const sig = request.headers['stripe-signature'];
 
-  let event;
-  console.log(endpointSecret,'endpointSecret');
-  console.log(sig,'sig');
-  console.log(request.body,'sig');
   try {
-    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-    console.log(event,'event');
+    // Parse the raw request body as a Buffer
+    const buffer = Buffer.from(JSON.stringify(request.body));
+
+    // Construct the event using the raw request body
+    const event = Stripe.webhooks.constructEvent(buffer, sig, endpointSecret);
+
+    // Handle the event
+    switch (event.type) {
+      case 'checkout.session.async_payment_failed':
+        const checkoutSessionAsyncPaymentFailed = event.data.object;
+        console.log(checkoutSessionAsyncPaymentFailed,'checkoutSessionAsyncPaymentFailed');
+        // Then define and call a function to handle the event checkout.session.async_payment_failed
+        break;
+      case 'checkout.session.async_payment_succeeded':
+        const checkoutSessionAsyncPaymentSucceeded = event.data.object;
+        console.log(checkoutSessionAsyncPaymentSucceeded,'checkoutSessionAsyncPaymentSucceeded');
+        // Then define and call a function to handle the event checkout.session.async_payment_succeeded
+        break;
+      case 'checkout.session.completed':
+        const checkoutSessionCompleted = event.data.object;
+        console.log(checkoutSessionCompleted,'checkoutSessionCompleted');
+        // Then define and call a function to handle the event checkout.session.completed
+        break;
+      case 'invoice.created':
+        const invoiceCreated = event.data.object;
+        console.log(invoiceCreated,'invoiceCreated');
+        // Then define and call a function to handle the event invoice.created
+        break;
+      case 'invoice.payment_succeeded':
+        const invoicePaymentSucceeded = event.data.object;
+        console.log(invoicePaymentSucceeded,'invoicePaymentSucceeded');
+        // Then define and call a function to handle the event invoice.payment_succeeded
+        break;
+      // ... handle other event types
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    response.send();
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
-    return;
   }
-
-  // Handle the event
-  switch (event.type) {
-    case 'checkout.session.async_payment_failed':
-      const checkoutSessionAsyncPaymentFailed = event.data.object;
-      console.log(checkoutSessionAsyncPaymentFailed,'checkoutSessionAsyncPaymentFailed');
-      // Then define and call a function to handle the event checkout.session.async_payment_failed
-      break;
-    case 'checkout.session.async_payment_succeeded':
-      const checkoutSessionAsyncPaymentSucceeded = event.data.object;
-      console.log(checkoutSessionAsyncPaymentSucceeded,'checkoutSessionAsyncPaymentSucceeded');
-      // Then define and call a function to handle the event checkout.session.async_payment_succeeded
-      break;
-    case 'checkout.session.completed':
-      const checkoutSessionCompleted = event.data.object;
-      console.log(checkoutSessionCompleted,'checkoutSessionCompleted');
-      // Then define and call a function to handle the event checkout.session.completed
-      break;
-    case 'invoice.created':
-      const invoiceCreated = event.data.object;
-      console.log(invoiceCreated,'invoiceCreated');
-      // Then define and call a function to handle the event invoice.created
-      break;
-    case 'invoice.payment_succeeded':
-      const invoicePaymentSucceeded = event.data.object;
-      console.log(invoicePaymentSucceeded,'invoicePaymentSucceeded');
-      // Then define and call a function to handle the event invoice.payment_succeeded
-      break;
-    // ... handle other event types
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
-
-  // Return a 200 response to acknowledge receipt of the event
-  response.send();
-  
 };
