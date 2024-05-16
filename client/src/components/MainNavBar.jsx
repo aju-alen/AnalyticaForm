@@ -117,7 +117,7 @@ function ResponsiveAppBar() {
                   <Typography textAlign="center" onClick={()=> navigate('/dashboard')}>Create Your Survey Now</Typography>
                 </MenuItem>
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center" onClick={()=> navigate('/product-display')}>Create Your Survey Now</Typography>
+                  <Typography textAlign="center" onClick={()=> navigate('/product-display')}>Become A Pro Member</Typography>
                 </MenuItem>
             </Menu>
           </Box>
