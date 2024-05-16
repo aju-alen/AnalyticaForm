@@ -12,7 +12,7 @@ import { uid } from 'uid';
 
 
 
-const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableText,disableButtons,onHandleNext }) => {
+const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
   const [formData, setFormData] = useState({
     id: id,
     question: '',
@@ -22,7 +22,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
       { id: uid(5), value: '' }
 
     ],
-    selectedValue: [{ question: '', answer: '', value: '',index:'' }],
+    selectedValue: [{ question: '', answer: '', value: '', index: '' }],
     formType: 'SinglePointForm'
   });
 
@@ -52,10 +52,10 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
   }
 
   const handleRadioChange = (id) => {
-    const newOptions = formData.options.map((option,idx) => {
+    const newOptions = formData.options.map((option, idx) => {
       if (option.id === id) {
 
-        setFormData({ ...formData, selectedValue: [{ answer: option.value, question: formData.question,index:idx+1}] })
+        setFormData({ ...formData, selectedValue: [{ answer: option.value, question: formData.question, index: idx + 1 }] })
 
       }
     })
@@ -77,20 +77,26 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
       <CssBaseline />
       <Container maxWidth="lg">
         <Box sx={{
-          bgcolor: '',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexGrow: 1,
-          height: "100%",
-          mt: { xs: 4, md: 8 },
-          width: '100%',
-          boxShadow: 3,
-          borderRadius: 1,
-          p: 2,
+           bgcolor: 'white',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexGrow: 1,
+  height: "100%",
+  mt: { xs: 4, md: 8 },
+  width: '100%',
+  boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
+  borderRadius: 8, // Increased border radius for rounded corners
+  p: 3, // Increased padding for inner content
+  overflowX: 'auto',
+  border: '2px solid #f0f0f0', // Added border for more distinction
+  transition: 'box-shadow 0.3s ease-in-out', // Added transition effect for box shadow
+  '&:hover': {
+    boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.3)', // Updated box shadow on hover
+  },
         }} >
-          <TextField fullWidth id="standard-basic" label={!disableText?"Type Your Form Question" : ''} variant="standard" name='question' value={formData.question}
+          <TextField fullWidth id="standard-basic" label={!disableText ? "Type Your Form Question" : ''} variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,
@@ -103,7 +109,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
                 <TextField
                   fullWidth
                   id="standard-basic"
-                  label={!disableText?"Type Your Response Here" : ''}
+                  label={!disableText ? "Type Your Response Here" : ''}
                   variant="standard"
                   name={option.text}
                   value={option.value}
@@ -126,35 +132,35 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options,disableForm,disableTe
                   checked={formData.selectedValue[0].answer === option.value} />
 
 
-               {!disableButtons && (<Button
-                color='error'
-                variant='outlined'
-               onClick={() => handleDeleteOptions(option.id)}>
-                  <ClearIcon 
+                {!disableButtons && (<Button
+                  color='error'
+                  variant='outlined'
+                  onClick={() => handleDeleteOptions(option.id)}>
+                  <ClearIcon
                     fontSize='small'
                   />
-               </Button>)}
+                </Button>)}
               </Stack>
             ))
             }
           </Stack>
           <Stack spacing={2} direction='row'>
-          {!disableButtons && (
-            <Button 
-            onClick={handleAddOptions}
-            variant='outlined'
-            color="primary"
-            size="small"
-            >Add new row</Button>
-          )}
-          
-          <Button
+            {!disableButtons && (
+              <Button
+                onClick={handleAddOptions}
+                variant='outlined'
+                color="primary"
+                size="small"
+              >Add new row</Button>
+            )}
+
+            <Button
               variant='contained'
               color="success"
               onClick={handleSaveForm}>
-              {!disableButtons? 'Save This Form' : 'Next Question'}
+              {!disableButtons ? 'Save This Form' : 'Next Question'}
             </Button>
-          {/* {!disableButtons && <Button
+            {/* {!disableButtons && <Button
               variant='contained'
               color="primary"
               onClick={handleMandateForm}>

@@ -70,7 +70,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
         setFormData({ ...formData, options: newOptions, selectedValue: newSelectedValue });
     }
 
-    const handleCheckBoxChange = (rowID, columnID,colIdx) => {
+    const handleCheckBoxChange = (rowID, columnID, colIdx) => {
         let newSelectedValue = [...formData.selectedValue];
 
         const question = formData.options.find((item) => item.id === rowID).rowQuestion;
@@ -80,7 +80,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
         console.log(colIdx, 'index in checkbox change');
 
         if (index === -1) {
-            newSelectedValue.push({ rowId: rowID, colId: columnID, value: true, question: question, answer: answer, index:colIdx +1 });
+            newSelectedValue.push({ rowId: rowID, colId: columnID, value: true, question: question, answer: answer, index: colIdx + 1 });
         }
         else {
             newSelectedValue.splice(index, 1);
@@ -120,9 +120,9 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                     height: "100%",
                     mt: { xs: 4, md: 8 },
                     width: '100%',
-                    boxShadow: 3,
-                    borderRadius: 1,
-                    p: 2,
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Updated box shadow for a subtle effect
+                    borderRadius: 8, // Increased border radius for rounded corners
+                    p: 3, // Increased padding for inner content
                     overflowX: 'auto',
                 }} >
                     <TextField
@@ -179,59 +179,59 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                            {formData.options.map((row) => (
-                                <TableRow
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                   <TableCell component="th" scope="row" sx={{ width: '30%' }}>
-                                        
-                                   <TextField 
-                                   id="standard-basic"
-                                    label={!disableText ? "Type Your Sub Question" : ''} 
-                                    variant="standard"
-                                     name='rowQuestion'
-                                      value={row.rowQuestion}
-                                    onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
-                                    InputProps={{
-                                        readOnly: disableText,
-                                    }}
-                                   
-                                />
+                                {formData.options.map((row) => (
+                                    <TableRow
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row" sx={{ width: '30%' }}>
 
-                                    </TableCell>
-                                    {row.columns.map((column,idx) => (
-                                        <TableCell key={column.id} align='center' >
-                                                <Checkbox
-                                                disabled={disableForm}
-                                                key={column.id}
-                                                onChange={() => handleCheckBoxChange(row.id, column.id,idx)}
-                                                checked={formData.selectedValue.some((item) => item.rowId === row.id && item.colId === column.id)}
+                                            <TextField
+                                                id="standard-basic"
+                                                label={!disableText ? "Type Your Sub Question" : ''}
+                                                variant="standard"
+                                                name='rowQuestion'
+                                                value={row.rowQuestion}
+                                                onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
+                                                InputProps={{
+                                                    readOnly: disableText,
+                                                }}
+
                                             />
 
                                         </TableCell>
+                                        {row.columns.map((column, idx) => (
+                                            <TableCell key={column.id} align='center' >
+                                                <Checkbox
+                                                    disabled={disableForm}
+                                                    key={column.id}
+                                                    onChange={() => handleCheckBoxChange(row.id, column.id, idx)}
+                                                    checked={formData.selectedValue.some((item) => item.rowId === row.id && item.colId === column.id)}
+                                                />
+
+                                            </TableCell>
 
 
-                                    ))}
-                                    <TableCell align="center">
-                      {!disableButtons && (<Button
-                        variant='outlined'
-                        color='error'
-                        onClick={() => handleDeleteRow(row.id)}>
-                        <ClearIcon
-                          fontSize='small'
-                        />
-                      </Button>)}
-                    </TableCell>
+                                        ))}
+                                        <TableCell align="center">
+                                            {!disableButtons && (<Button
+                                                variant='outlined'
+                                                color='error'
+                                                onClick={() => handleDeleteRow(row.id)}>
+                                                <ClearIcon
+                                                    fontSize='small'
+                                                />
+                                            </Button>)}
+                                        </TableCell>
 
-                                </TableRow>
-                            ))}
+                                    </TableRow>
+                                ))}
                             </TableBody>
                         </Table>
                     </div>
 
 
 
-                    
+
 
                     <Stack direction="row" spacing={2}>
 

@@ -16,8 +16,8 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
     id: id,
     question: '',
     options: [
-      { id: uid(5), value: '',rowQuestion:'' },
-      { id: uid(5), value: '',rowQuestion:'' }
+      { id: uid(5), value: '', rowQuestion: '' },
+      { id: uid(5), value: '', rowQuestion: '' }
 
     ],
     selectedValue: [],
@@ -27,7 +27,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
   const handleAddOptions = () => {
     setFormData({
       ...formData,
-      options: [...formData.options, { id: uid(5), value: '',rowQuestion:'' }]
+      options: [...formData.options, { id: uid(5), value: '', rowQuestion: '' }]
     })
   }
 
@@ -39,14 +39,14 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
   }
 
   const handleCheckboxChange = (id) => {
-    const newOptions = formData.options.map((option,idx) => {
+    const newOptions = formData.options.map((option, idx) => {
       if (option.id === id) {
         if (formData.selectedValue.map((item) => item.id).includes(option.id)) {
           const newSelectedValue = formData.selectedValue.filter((item) => item.id !== option.id);
           console.log(newSelectedValue, 'newSelectedValue in checkbox');
           setFormData({ ...formData, selectedValue: newSelectedValue })
         } else {
-          setFormData({ ...formData, selectedValue: [...formData.selectedValue, { ...option, question: formData.question, answer: option.value,index:idx + 1 }] })
+          setFormData({ ...formData, selectedValue: [...formData.selectedValue, { ...option, question: formData.question, answer: option.value, index: idx + 1 }] })
 
         }
       }
@@ -83,9 +83,9 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
           height: "100%",
           mt: { xs: 4, md: 8 },
           width: '100%',
-          boxShadow: 3,
-          borderRadius: 1,
-          p: 2,
+          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Updated box shadow for a subtle effect
+          borderRadius: 8, // Increased border radius for rounded corners
+          p: 3, // Increased padding for inner content
         }} >
           <TextField
             fullWidth id="standard-basic"
@@ -113,7 +113,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                         ...formData,
                         options: formData.options.map((item) =>
                           item.id === opt.id
-                            ? { ...item, value: e.target.value, rowQuestion:e.target.value }
+                            ? { ...item, value: e.target.value, rowQuestion: e.target.value }
                             : item
                         ),
                       })
@@ -132,7 +132,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                   {!disableButtons && (<Button
                     color='error'
                     variant='outlined'
-                    onClick={() => handleDeleteOptions(opt.id)}><ClearIcon 
+                    onClick={() => handleDeleteOptions(opt.id)}><ClearIcon
                       fontSize='small'
                     /></Button>)}
                 </Stack>
@@ -150,11 +150,11 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
               >Add new row</Button>
             )}
 
-<Button
+            <Button
               variant='contained'
               color="success"
               onClick={handleSaveForm}>
-              {!disableButtons? 'Save This Form' : 'Next Question'}
+              {!disableButtons ? 'Save This Form' : 'Next Question'}
             </Button>
           </Stack>
         </Box>

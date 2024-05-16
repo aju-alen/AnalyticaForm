@@ -25,7 +25,7 @@ const initialFormData = {
     { id: "a1f4d", value: '' },
     { id: "a2k9m", value: '' },
   ],
-  selectedValue: [{ id: "az56j", question: '', answer: '', value: '',index:''}],
+  selectedValue: [{ id: "az56j", question: '', answer: '', value: '', index: '' }],
   formType: 'MultiScalePoint',
 };
 
@@ -66,7 +66,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
         columns: formData.columnTextField.map((column) => ({ id: column.id, value: '' })),
 
       }],
-      selectedValue: [...formData.selectedValue, { id: genRowUid, question: '', answer: '', value: '',index:'' }],
+      selectedValue: [...formData.selectedValue, { id: genRowUid, question: '', answer: '', value: '', index: '' }],
     });
   };
 
@@ -101,7 +101,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
       <CssBaseline />
       <Container >
         <Box sx={{
-          bgcolor: '',
+          bgcolor: 'white',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -110,9 +110,9 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           height: "100%",
           mt: { xs: 4, md: 8 },
           width: '100%',
-          boxShadow: 3,
-          borderRadius: 1,
-          p: 2,
+          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Updated box shadow for a subtle effect
+          borderRadius: 8, // Increased border radius for rounded corners
+          p: 3, // Increased padding for inner content
           overflowX: 'auto',
         }} >
           <TextField
@@ -186,6 +186,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                         InputProps={{
                           readOnly: disableText,
                         }}
+                        multiline
                       />
                     </TableCell>
 
