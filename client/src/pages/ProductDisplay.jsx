@@ -175,7 +175,7 @@ const ProductDisplayy = () => {
                   ))}
                 </CardContent>
                 <CardActions>
-                  <form action="https://dubaianalytica.com/api/stripe/create-checkout-session" method="POST">
+                  <form action="https://www.dubaianalytica.com/api/stripe/create-checkout-session" method="POST">
                     {/* Add a hidden field with the lookup_key of your Price */}
                     <input type="hidden" name="lookup_key" value="DubaiAnalyticaTestKey" />
                     <input type="hidden" name="emailId" value={emailId} />
