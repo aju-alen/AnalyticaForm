@@ -10,7 +10,6 @@ import excelRoute from './routes/excel-route.js';
 import stripeRoute from './routes/stripe-route.js';
 import bodyParser from 'body-parser';
 import stripe from 'stripe';
-import {  stripeFrontendURL } from '../utils/corsFe.js';
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
