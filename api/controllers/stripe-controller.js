@@ -39,15 +39,15 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
 
 const endpointSecret = "whsec_WwO4P8KQsXS1gzpfzMD8DKJUWxmder4H";
 
-export const stripeWebhook = async (req, res) => {
+export const stripeWebhook = async (request, response) => {
   const sig = request.headers['stripe-signature'];
 
   let event;
   console.log(endpointSecret,'endpointSecret');
   console.log(sig,'sig');
-  console.log(req.body,'sig');
+  console.log(request.body,'sig');
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
     console.log(event,'event');
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
