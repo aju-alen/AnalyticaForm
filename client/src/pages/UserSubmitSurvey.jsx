@@ -15,6 +15,7 @@ const UserSubmitSurvey = () => {
     const [surveyData, setSurveyData] = React.useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
     const [introduction, setIntroduction] = useState(true)
+    const [welcomePage, setWelcomePage] = useState(true)
     const [responseSubmitted, setResponseSubmitted] = useState(false);
     const [formData, setFormData] = useState({
         userEmail: '',
@@ -102,8 +103,13 @@ const UserSubmitSurvey = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
     }
 
+    const handleChangeWelcome = () => {
+        // setIntroduction(false);
+        setWelcomePage(false);
+    }
     const handleChangeIntroduction = () => {
         setIntroduction(false);
+        setWelcomePage(false);
     }
 
     const handleSaveForm = async () => {
@@ -300,26 +306,38 @@ const UserSubmitSurvey = () => {
         <div className=" flex justify-center items-center h-screen">
             {( surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'>Survey response trial has exceeded. Please contact host</h1>)}            
 
-            {(introduction )  &&(<div className=" flex flex-col">
+            {(introduction && welcomePage )  &&(<div className=" flex flex-col">
                 <h1 className=' font-bold text-blue-500 text-xl text-center'>Hello, welcome to the survey!</h1>
 
-                <div className="px-4 py-2">
-  {surveyData.surveyIntroduction ? (
-    <p className="text-justify font-bold text-md md:text-lg text-blue-500 lg:text-xl">
-      {surveyData.surveyIntroduction}
-    </p>
-  ) : null}
-</div>
+                
                 {/* <TextField variant='standard' >
                     <h2>{surveyData.surveyTitle}</h2>
                 </TextField> */}
                 <Button 
                     variant='contained'
 
-                    onClick={handleChangeIntroduction}>
+                    onClick={handleChangeWelcome}>
                     Start Survey
                 </Button>
             </div>)}
+
+            {(introduction && !welcomePage) && (<div className=" flex flex-col">
+                <h1 className=' font-bold text-blue-500 text-xl text-center'>Survey Introduction</h1>
+                <div className="px-4 py-2 overflow-scroll">
+    {surveyData.surveyIntroduction ? (
+        <p className="text-justify font-bold text-md md:text-lg text-blue-500 lg:text-xl">
+            {surveyData.surveyIntroduction}
+        </p>
+    ) : null}
+</div>
+                <Button 
+                    variant='contained'
+
+                    onClick={handleChangeIntroduction}>
+                    Start Survey
+                </Button>
+            </div>)
+                }
             {(surveyData.surveyForms && !introduction) && renderCurrentComponent()}
 
         </div>

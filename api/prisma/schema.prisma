@@ -50,7 +50,7 @@ model Survey {
   surveyForms Json  @default("[]")
   selectedItems Json @default("[]")
   surveyResponses Int   @default(0)
-  surveyIntroduction String? @db.VarChar(1000)
+  surveyIntroduction String? @db.VarChar(3000)
   formQuestions Json @default("[]") 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
