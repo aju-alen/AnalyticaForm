@@ -255,7 +255,9 @@ const UserSubmitSurvey = () => {
                     disableButtons={true} />;
 
             case 'MultiScalePoint':
-                return <SelectMultiScalePoint
+                return (
+                <div className=" w-5/6 h-4/6">
+                <SelectMultiScalePoint
                     data={currentItem}
                     onHandleNext={handleNext}
                     onSaveForm={handleSaveMultiScalePointForm}
@@ -263,7 +265,9 @@ const UserSubmitSurvey = () => {
                     options={currentItem.options}
                     disableForm={false}
                     disableText={true}
-                    disableButtons={true} />;
+                    disableButtons={true} />
+                    </div>
+                    );
 
             case 'MultiScaleCheckBox':
                 return <SelectMultiScaleCheckBox
