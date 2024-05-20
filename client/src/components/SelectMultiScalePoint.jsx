@@ -274,7 +274,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
               readOnly: disableText,
             }}
           />
-          <div className="">
+           <div style={{ width: '100%' }}>
             {formData.options.map((row, rowIndex) => (
               <Accordion key={row.id}>
                 <AccordionSummary
