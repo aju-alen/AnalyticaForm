@@ -1,15 +1,17 @@
-import { createBrowserRouter, RouterProvider, Outlet, Navigate,useLocation } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Outlet, Navigate, useLocation } from 'react-router-dom'
 import MainNavBar from './components/MainNavBar';
 import Footer from './components/Footer';
 import { lazy, Suspense } from 'react';
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const hideNavBarPages = ['/','/register', '/login','/forget-password'];
-  const shouldHideNavBar = hideNavBarPages.includes(location.pathname);
+  const hideNavBarPages = ['/', '/register', '/login', '/forget-password'];
+  const isDynamicRoute = (path) => /^\/user-survey\/.+$/.test(path);
+  const shouldHideNavBar = hideNavBarPages.includes(location.pathname) || isDynamicRoute(location.pathname);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", maxWidth: "100vw" }}>
-        {!shouldHideNavBar && <MainNavBar />}
+      {!shouldHideNavBar && <MainNavBar />}
       <div style={{ flex: 1 }}>
         {children}
       </div>
@@ -26,8 +28,8 @@ const CreateNewSurvey = lazy(() => import('./pages/CreateNewSurvey'));
 const UserSubmitSurvey = lazy(() => import('./pages/UserSubmitSurvey'));
 const ProductDisplay = lazy(() => import('./pages/ProductDisplay'));
 const SuccessPaymentPage = lazy(() => import('./pages/SuccessPaymentPage'));
-const ForgetPassword = lazy(()=> import('./pages/ForgetPassword'))
-const ResetPassword = lazy(()=> import('./pages/ResetPassword'))
+const ForgetPassword = lazy(() => import('./pages/ForgetPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 
 const App = () => {
 
@@ -79,7 +81,7 @@ const App = () => {
         },
         {
           path: '/reset-password/:resetToken',
-          element: <ResetPassword/>,
+          element: <ResetPassword />,
         },
         {
           path: "/dashboard",
@@ -91,11 +93,11 @@ const App = () => {
         },
         {
           path: "/product-display",
-          element: <ProtectedRoute element={<ProductDisplay/>} />, // Wrap Dashboard inside ProtectedRoute
+          element: <ProtectedRoute element={<ProductDisplay />} />, // Wrap Dashboard inside ProtectedRoute
         },
         {
           path: "/payment-success",
-          element: <ProtectedRoute element={<SuccessPaymentPage/>} />, // Wrap Dashboard inside ProtectedRoute
+          element: <ProtectedRoute element={<SuccessPaymentPage />} />, // Wrap Dashboard inside ProtectedRoute
         },
       ]
     }

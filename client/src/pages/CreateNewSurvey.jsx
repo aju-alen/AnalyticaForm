@@ -251,7 +251,7 @@ const CreateNewSurvey = () => {
 
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
+          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false}onHandleNext={()=> 1}  />
           <Button
             color="secondary"
             size='large'
@@ -264,7 +264,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SingleCheckForm') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
+          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1} />
           <Button
             color="secondary"
             size='large'
@@ -277,7 +277,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiScalePoint') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
+          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1} />
           <Button
             color="secondary"
             size='large'
@@ -291,7 +291,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiScaleCheckBox') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
+          <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1}/>
           <Button
             color="secondary"
             size='large'
@@ -305,7 +305,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiSpreadsheet') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
+          <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1} />
           <Button
             color="secondary"
             size='large'
@@ -319,7 +319,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'DropdownMenu') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectDropdownMenu key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} />
+          <SelectDropdownMenu key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1} />
           <Button
             color="secondary"
             size='large'
