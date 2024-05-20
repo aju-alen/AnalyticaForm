@@ -301,9 +301,15 @@ const UserSubmitSurvey = () => {
             {( surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'>Survey response trial has exceeded. Please contact host</h1>)}            
 
             {(introduction )  &&(<div className=" flex flex-col">
-                <h1 className=' font-bold text-blue-500 text-xl'>Hello, welcome to the survey!</h1>
+                <h1 className=' font-bold text-blue-500 text-xl text-center'>Hello, welcome to the survey!</h1>
 
-                {surveyData.surveyIntroduction ? <p className=' flex justify-center items-center  font-bold text-blue-500 text-lg'>{surveyData.surveyIntroduction}</p>: null}
+                <div className="px-4 py-2">
+  {surveyData.surveyIntroduction ? (
+    <p className="text-justify font-bold text-md md:text-lg text-blue-500 lg:text-xl">
+      {surveyData.surveyIntroduction}
+    </p>
+  ) : null}
+</div>
                 {/* <TextField variant='standard' >
                     <h2>{surveyData.surveyTitle}</h2>
                 </TextField> */}
