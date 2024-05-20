@@ -276,7 +276,9 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           />
            <div style={{ width: '100%' }}>
             {formData.options.map((row, rowIndex) => (
-              <Accordion key={row.id}>
+              <Accordion key={row.id} sx={{
+                overflowX: 'auto',
+              }}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel1-content"
@@ -287,7 +289,8 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Table
+                  <div className="">
+                  <Table 
                     sx={{ minWidth: 650 }}
                     aria-label="simple table">
                     <TableHead>
@@ -332,6 +335,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                       </TableRow>
                     </TableBody>
                   </Table>
+                  </div>
                 </AccordionDetails>
               </Accordion>
             ))}
