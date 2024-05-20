@@ -256,7 +256,7 @@ const UserSubmitSurvey = () => {
 
             case 'MultiScalePoint':
                 return (
-                <div className=" w-5/6 h-4/6">
+                <div className=" w-11/12 h-4/6">
                 <SelectMultiScalePoint
                     data={currentItem}
                     onHandleNext={handleNext}
