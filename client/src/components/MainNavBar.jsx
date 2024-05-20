@@ -48,6 +48,10 @@ function ResponsiveAppBar() {
     navigate('/dashboard');
     setAnchorElNav(null);
   };
+  const handleCloseProductDisplay = () => {
+    navigate('/product-display');
+    setAnchorElNav(null);
+  };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -116,7 +120,7 @@ function ResponsiveAppBar() {
                 <MenuItem onClick={handleCloseNavMenu}>
                   <Typography textAlign="center" onClick={()=> navigate('/dashboard')}>Create Your Survey Now</Typography>
                 </MenuItem>
-                <MenuItem onClick={handleCloseNavMenu}>
+                <MenuItem onClick={handleCloseProductDisplay}>
                   <Typography textAlign="center" onClick={()=> navigate('/product-display')}>Become A Pro Member</Typography>
                 </MenuItem>
             </Menu>
