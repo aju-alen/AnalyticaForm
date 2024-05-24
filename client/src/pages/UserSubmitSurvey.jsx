@@ -322,10 +322,10 @@ const UserSubmitSurvey = () => {
             </div>)}
 
             {(introduction && !welcomePage) && (<div className=" flex flex-col">
-                <h1 className=' font-bold text-blue-500 text-xl text-center'>Survey Introduction</h1>
+                <h1 className=' font-bold text-blue-700 text-xl text-center'>Survey Introduction</h1>
                 <div className="px-4 py-2 overflow-scroll w-11/12 mx-auto">
     {surveyData.surveyIntroduction ? (
-        <p className="text-justify font-bold text-md md:text-lg text-blue-500 lg:text-xl">
+        <p className="text-justify  text-md md:text-lg text-blue-600 lg:text-xl">
             {surveyData.surveyIntroduction}
         </p>
     ) : null}

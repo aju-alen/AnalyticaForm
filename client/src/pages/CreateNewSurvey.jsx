@@ -66,12 +66,17 @@ const CreateNewSurvey = () => {
 
   const handleAddIntro = () => {
     setAddIntro(true);
+    if(surveyData.surveyIntroduction === ''){
     setSurveyData({ ...surveyData, surveyIntroduction: `Hello:
     You are invited to participate in our survey [Project Description Here]. In this survey, approximately [Approximate Respondents] people will be asked to complete a survey that asks questions about [General Survey Process]. It will take approximately [Approximate Time] minutes to complete the questionnaire.
     
     Your participation in this study is completely voluntary. There are no foreseeable risks associated with this project. However, if you feel uncomfortable answering any questions, you can withdraw from the survey at any point. It is very important for us to learn your opinions.
     
     Your survey responses will be strictly confidential and data from this research will be reported only in the aggregate. Your information will be coded and will remain confidential. If you have questions at any time about the survey or the procedures, you may contact [Name of Survey Researcher] at [Phone Number] or by email at the email address specified below.` });
+    }
+    else{
+      setSurveyData({ ...surveyData, surveyIntroduction: surveyData.surveyIntroduction });
+    }
   }
 
 
