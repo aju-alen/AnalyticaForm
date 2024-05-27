@@ -325,7 +325,7 @@ const UserSubmitSurvey = () => {
                 <h1 className=' font-bold text-blue-700 text-xl text-center'>Survey Introduction</h1>
                 <div className="px-4 py-2 overflow-scroll w-11/12 mx-auto">
     {surveyData.surveyIntroduction ? (
-        <p className="text-justify  text-md md:text-lg text-blue-600 lg:text-xl">
+        <p className="text-justify  text-md md:text-lg text-black lg:text-xl">
             {surveyData.surveyIntroduction}
         </p>
     ) : null}
