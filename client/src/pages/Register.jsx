@@ -21,6 +21,22 @@ export default function Register() {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(true);
 
+  const [open, setOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertColor, setAlertColor] = useState('');
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
@@ -40,8 +56,7 @@ export default function Register() {
       console.log(registerForm);
       const resp = await axios.post(`${backendUrl}/api/auth/register`, registerForm);
       console.log(resp.data);
-      alert('Registration successful, please verify email.');
-      navigate('/login')
+      // navigate('/login')
 
 
     } catch (err) {

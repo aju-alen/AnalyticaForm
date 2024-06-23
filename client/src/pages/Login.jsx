@@ -21,6 +21,9 @@ import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { axiosWithCredentials } from '../utils/customAxios';
 
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
 
 
 // TODO remove, this demo shouldn't need to reset the theme.
@@ -29,19 +32,48 @@ const defaultTheme = createTheme();
 
 export default function Login() {
   const navigate = useNavigate();
+
+  const [open, setOpen] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState('');
+  const [alertColor, setAlertColor] = React.useState('');
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   
   const handleSubmit = async (event) => {
 
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const resp = await axiosWithCredentials.post(`${backendUrl}/api/auth/login`, {
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    console.log(resp.data);
-
-    localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken }));
-    navigate('/dashboard');
+    try{
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const resp = await axiosWithCredentials.post(`${backendUrl}/api/auth/login`, {
+        email: data.get('email'),
+        password: data.get('password'),
+      });
+      console.log(resp.data);
+      handleClick();
+      setAlertMessage(resp.data.message);
+      setAlertColor('success');
+  
+      localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken }));
+      navigate('/dashboard');
+    }
+    catch(err){
+      console.log(err.response.data.message,'error text');
+      handleClick();
+      setAlertMessage(err.response.data.message);
+      setAlertColor('error');
+    }
+   
   };
 
   return (
@@ -125,7 +157,18 @@ export default function Login() {
             </Grid>
           </Box>
         </Box>
+        <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={alertColor}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+         {alertMessage}
+        </Alert>
+      </Snackbar>
       </Container>
+     
     </ThemeProvider>
   );
 }
