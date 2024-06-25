@@ -37,7 +37,7 @@ const SurveyIntro = ({disableText,disableButtons,onSaveForm,data}) => {
           borderRadius: 1,
           p: 2,
         }} >
-          <TextField fullWidth id="standard-basic" label={!disableText?"Type Your Form Question" : ''} variant="standard" name='question' value={surveyIntroduction}
+          <TextField fullWidth id="standard-basic" label={!disableText?"Type Your Form Introduction" : ''} variant="standard" name='question' value={surveyIntroduction}
             onChange={(e) => setSurveyIntroduction(e.target.value)}
             InputProps={{
               readOnly: disableText,

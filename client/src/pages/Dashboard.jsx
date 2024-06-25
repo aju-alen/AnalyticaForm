@@ -10,6 +10,8 @@ import { Box } from '@mui/material';
 import { Grid } from '@mui/material';
 import { TextField } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 
 
@@ -21,6 +23,22 @@ const Dashboard = () => {
     const [inputFeildVisible, setInputFeildVisible] = useState(false);
     const [inputText, setInputText] = useState(''); 
     const [userSurveyData, setUserSurveyData] = useState([]);
+    const [open, setOpen] = useState(true);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertColor, setAlertColor] = useState('');
+
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
     const handleSubmit = async () => {
         try {
@@ -86,6 +104,20 @@ const Dashboard = () => {
         getTest();
     }, [])
 
+    useEffect(() => {
+
+        const adminResponseLimit = userSurveyData.map((survey) => {
+            return survey.surveyResponses;
+        })
+        if(adminResponseLimit.filter((response) => response > 0).length > 0){
+            handleClick();
+            setAlertMessage('Some of your surveys has exceeded the response limit. Please upgrade to premium so that users can continue submitting responses.');
+            setAlertColor('warning');
+    }
+
+    }, [])
+        
+
     console.log(inputText);
     console.log(userSurveyData, 'surveyDatanames');
 
@@ -119,6 +151,16 @@ const Dashboard = () => {
                 </Grid>}
             </Grid>
             <MySurvery userSurveyData={userSurveyData} />
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={alertColor}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
         </Box>)
 
 

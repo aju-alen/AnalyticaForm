@@ -89,7 +89,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
         }} >
           <TextField
             fullWidth id="standard-basic"
-            label={!disableText ? "Type Your Form Question" : ''}
+            label={!disableText ? "Insert Input" : ''}
             variant="standard"
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
@@ -102,6 +102,12 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
               console.log(formData.selectedValue.includes(opt.id), 'selectedValue');
               return (
                 <Stack direction="row" spacing={2} key={opt.id}>
+                   <Checkbox
+                    disabled={disableForm}
+                    checked={formData.selectedValue.map((item) => item.id).includes(opt.id)}
+                    onChange={() => handleCheckboxChange(opt.id)}
+
+                  />
                   <TextField
                     fullWidth
                     id="standard-basic"
@@ -122,12 +128,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                       readOnly: disableText,
                     }}
                   />
-                  <Checkbox
-                    disabled={disableForm}
-                    checked={formData.selectedValue.map((item) => item.id).includes(opt.id)}
-                    onChange={() => handleCheckboxChange(opt.id)}
-
-                  />
+                 
 
                   {!disableButtons && (<Button
                     color='error'

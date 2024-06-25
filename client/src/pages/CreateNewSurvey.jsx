@@ -22,21 +22,33 @@ import CircularProgress from '@mui/material/CircularProgress';
 import SelectDropdownMenu from '../components/SelectDropdownMenu';
 import AddIcon from '@mui/icons-material/Add';
 import SurveyIntro from '../components/SurveyIntro';
+import { ContentCopy } from '@mui/icons-material';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
-  const { surveyId } = useParams();
   const navigate = useNavigate();
+  const { surveyId } = useParams();
+
   const [isLoading, setIsLoading] = useState(true);
   const [addIntro, setAddIntro] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
+  const [selectedItems, setSelectedItems] = useState([]); // selected items 
+
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
     surveyForms: [],
     selectedItems: [],
-    surveyIntroduction:''
+    surveyIntroduction: ''
   });
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
-  const [selectedItems, setSelectedItems] = useState([]); // selected items 
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(`${frontendUrl}user-survey/${surveyId}`).then(() => {
+      console.log('Text copied to clipboard');
+      alert('Survey URL copied to clipboard');
+    }).catch(err => {
+      console.error('Could not copy text: ', err);
+    });
+  };
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -66,15 +78,16 @@ const CreateNewSurvey = () => {
 
   const handleAddIntro = () => {
     setAddIntro(true);
-    if(surveyData.surveyIntroduction === ''){
-    setSurveyData({ ...surveyData, surveyIntroduction: `Hello:
+    if (surveyData.surveyIntroduction === '') {
+      setSurveyData({
+        ...surveyData, surveyIntroduction: `Hello:
     You are invited to participate in our survey [Project Description Here]. In this survey, approximately [Approximate Respondents] people will be asked to complete a survey that asks questions about [General Survey Process]. It will take approximately [Approximate Time] minutes to complete the questionnaire.
     
     Your participation in this study is completely voluntary. There are no foreseeable risks associated with this project. However, if you feel uncomfortable answering any questions, you can withdraw from the survey at any point. It is very important for us to learn your opinions.
     
     Your survey responses will be strictly confidential and data from this research will be reported only in the aggregate. Your information will be coded and will remain confidential. If you have questions at any time about the survey or the procedures, you may contact [Name of Survey Researcher] at [Phone Number] or by email at the email address specified below.` });
     }
-    else{
+    else {
       setSurveyData({ ...surveyData, surveyIntroduction: surveyData.surveyIntroduction });
     }
   }
@@ -256,7 +269,7 @@ const CreateNewSurvey = () => {
 
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false}onHandleNext={()=> 1}  />
+          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -269,7 +282,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SingleCheckForm') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1} />
+          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -282,7 +295,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiScalePoint') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1} />
+          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -296,7 +309,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiScaleCheckBox') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1}/>
+          <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -310,7 +323,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiSpreadsheet') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1} />
+          <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -324,7 +337,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'DropdownMenu') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectDropdownMenu key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={()=>1} />
+          <SelectDropdownMenu key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -359,20 +372,32 @@ const CreateNewSurvey = () => {
             sx={{ mt: 2 }}
           />
           {surveyData.surveyForms.length > 0 &&
-            <TextField
-              id="outlined-basic"
-              label="Survey URL"
-              variant='filled'
-              sx={{
-                mt: 2,
-                width: { xs: '100%', md: '42%' },
-              }}
-              value={`${frontendUrl}user-survey/${surveyId}`}
-            />}
+            (<div className=' flex flex-row justify-center items-center'>
+              <TextField
+                id="outlined-basic"
+                label="Survey URL"
+                variant='filled'
+                sx={{
+                  mt: 2,
+                  width: { xs: '100%', md: '42%' },
+                }}
+                value={`${frontendUrl}user-survey/${surveyId}`}
+              />
+              <Button
+                sx={{ mt: 2 }}
+                variant='text'
+                onClick={handleCopy}
+                startIcon={<ContentCopy />}
+              >
+              </Button>
+            </div>
+            )
+
+          }
 
           <Stack spacing={12}>
             {addIntro && <Stack spacing={2} direction='row'>
-              <SurveyIntro onSaveForm={handleSaveIntro} data ={surveyData.surveyIntroduction} disableText={false} disableButtons={false}  />
+              <SurveyIntro onSaveForm={handleSaveIntro} data={surveyData.surveyIntroduction} disableText={false} disableButtons={false} />
               <Button
                 color="secondary"
                 size='large'
@@ -395,7 +420,7 @@ const CreateNewSurvey = () => {
                 </Button>
                 <Button
                   sx={{
-                    width: { xs: '100%', md: '5%' },
+                    width: { xs: '100%', md: '100%' },
                     mt: 2,
                   }}
                   variant="contained"
@@ -403,7 +428,7 @@ const CreateNewSurvey = () => {
                   onClick={
                     handleAddIntro
                   }>
-                  <AddIcon />
+                  Show Form Intro
                 </Button>
               </Stack>
             </div>

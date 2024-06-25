@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
@@ -15,8 +14,8 @@ import { useNavigate } from 'react-router-dom';
 
 
 const logoStyle = {
-  width: '140px',
-  height: 'auto',
+  width: '240px',
+  height: '150px',
   cursor: 'pointer',
 };
 
@@ -152,7 +151,7 @@ function HomeNavBar() {
                 onClick={() => navigate('/login')}
                 target="_blank"
               >
-                Sign in
+                Log in
               </Button>
               :
               (<Button

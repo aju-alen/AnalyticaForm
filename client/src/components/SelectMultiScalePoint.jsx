@@ -123,7 +123,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           <TextField
             fullWidth
             id="standard-basic"
-            label={!disableText ? "Type Your Form Question" : ''}
+            label={!disableText ? "Insert Input" : ''}
             variant="standard"
             name='question'
             value={formData.question}
@@ -265,7 +265,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           <TextField
             fullWidth
             id="standard-basic"
-            label={!disableText ? "Type Your Form Question" : ''}
+            label={!disableText ? "Insert Input" : ''}
             variant="standard"
             name='question'
             value={formData.question}

@@ -127,7 +127,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                 }} >
                     <TextField
                         fullWidth id="standard-basic"
-                        label={!disableText ? "Type Your Form Question" : ''} variant="standard"
+                        label={!disableText ? "Insert Input" : ''} variant="standard"
                         name='question'
                         value={formData.question}
                         onChange={(e) => setFormData({ ...formData, question: e.target.value })}

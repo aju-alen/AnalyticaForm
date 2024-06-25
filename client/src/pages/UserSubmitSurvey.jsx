@@ -8,7 +8,7 @@ import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
 import { Button, TextField } from '@mui/material'
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
 import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet'
-
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 const UserSubmitSurvey = () => {
     const { surveyId } = useParams();
@@ -102,6 +102,12 @@ const UserSubmitSurvey = () => {
     const handleNext = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
     }
+    const handlePrevious = () => {
+        if (currentIndex === 0) {
+            return;
+        }
+        setCurrentIndex(prevIndex => prevIndex - 1);
+    }
 
     const handleChangeWelcome = () => {
         // setIntroduction(false);
@@ -115,8 +121,8 @@ const UserSubmitSurvey = () => {
     const handleSaveForm = async () => {
         try {
             const mandatoryFields = surveyData.surveyForms.filter(form => form.formMandate);
-            
-            const skippedMandatoryFields = mandatoryFields.filter(form =>  !form.selectedValue[0].answer);
+
+            const skippedMandatoryFields = mandatoryFields.filter(form => !form.selectedValue[0].answer);
 
 
             if (skippedMandatoryFields.length > 0) {
@@ -125,10 +131,10 @@ const UserSubmitSurvey = () => {
                 setCurrentIndex(surveyData.surveyForms.findIndex(form => form === skippedMandatoryFields[0]));
                 return;
             }
-            const introduction = surveyData.surveyIntroduction === null? false : true;
+            const introduction = surveyData.surveyIntroduction === null ? false : true;
             console.log(introduction, 'introduction');
             const data = surveyData.surveyForms.map(form =>
-             ({
+            ({
                 formType: form.formType,
                 question: form.question,
                 selectedValue: form.selectedValue.map(option => option),
@@ -155,13 +161,13 @@ const UserSubmitSurvey = () => {
                     });
                 }
             }).flat(); // Flatten the array since MultiScaleCheckBox returns an array of objects
-            
+
             console.log(formQuestions, 'formQuestions');
             const finalData = {
                 userResponse: data,
                 userName: formData.userName,
                 userEmail: formData.userEmail,
-                formQuestions : formQuestions,
+                formQuestions: formQuestions,
                 introduction: introduction
 
             }
@@ -216,11 +222,11 @@ const UserSubmitSurvey = () => {
                                 value={formData.userEmail}
                                 onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
                             ></TextField>
-                                <div className=" mt-4">
-                            <Button 
-                                variant='contained'
+                            <div className=" mt-4">
+                                <Button
+                                    variant='contained'
 
-                            onClick={handleSaveForm} >Submit Response</Button>
+                                    onClick={handleSaveForm} >Submit Response</Button>
                             </div>
                         </div>
                     }
@@ -239,18 +245,32 @@ const UserSubmitSurvey = () => {
 
         switch (currentItem.formType) {
             case 'SinglePointForm':
-                return <SelectSingleRadio
-                    data={currentItem}
-                    onSaveForm={handleSaveSinglePointForm}
-                    onHandleNext={handleNext}
-                    id={currentItem.id}
-                    options={currentItem.options}
-                    disableForm={false}
-                    disableText={true}
-                    disableButtons={true} />;
+                return (
+                    <div className=' w-full'>
+                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        <SelectSingleRadio
+                            data={currentItem}
+                            onSaveForm={handleSaveSinglePointForm}
+                            onHandleNext={handleNext}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true} />
+                    </div>
+                );
 
             case 'SingleCheckForm':
-                return <SelectSingleCheckBox
+                return  (
+                    <div className=' w-full'>
+                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                 <SelectSingleCheckBox
                     data={currentItem}
                     onHandleNext={handleNext}
                     onSaveForm={handleSaveSingleCheckForm}
@@ -259,32 +279,45 @@ const UserSubmitSurvey = () => {
                     disableForm={false}
                     disableText={true}
                     disableButtons={true} />;
+                    </div>
+                );
 
             case 'MultiScalePoint':
                 return (
+                    <div className=" w-11/12 h-4/6">
+                          {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        <SelectMultiScalePoint
+                            data={currentItem}
+                            onHandleNext={handleNext}
+                            onSaveForm={handleSaveMultiScalePointForm}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true} />
+                    </div>
+                );
+
+            case 'MultiScaleCheckBox':
+                return (
                 <div className=" w-11/12 h-4/6">
-                <SelectMultiScalePoint
+                      {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+                <SelectMultiScaleCheckBox
                     data={currentItem}
                     onHandleNext={handleNext}
-                    onSaveForm={handleSaveMultiScalePointForm}
+                    onSaveForm={handleSaveSingleCheckForm}
                     id={currentItem.id}
                     options={currentItem.options}
                     disableForm={false}
                     disableText={true}
                     disableButtons={true} />
-                    </div>
-                    );
-
-            case 'MultiScaleCheckBox':
-                return <SelectMultiScaleCheckBox
-                    data={currentItem}
-                    onHandleNext={handleNext}
-                    onSaveForm={handleSaveSingleCheckForm}
-                    id={currentItem.id}
-                    options={currentItem.options}
-                    disableForm={false}
-                    disableText={true}
-                    disableButtons={true} />;
+                </div>
+                );
 
             case 'MultiSpreadsheet':
                 return <SelectMultiSpreadsheet
@@ -304,16 +337,16 @@ const UserSubmitSurvey = () => {
     console.log(surveyData.surveyForms, 'surveyForms');
     return (
         <div className=" flex justify-center items-center h-screen">
-            {( surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'>Survey response trial has exceeded. Please contact host</h1>)}            
+            {(surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'>Survey response trial has exceeded. Please contact host</h1>)}
 
-            {(introduction && welcomePage )  &&(<div className=" flex flex-col">
+            {(introduction && welcomePage && surveyData.surveyResponses <= 500 ) && (<div className=" flex flex-col">
                 <h1 className=' font-bold text-blue-500 text-xl text-center'>Hello, welcome to the survey!</h1>
 
-                
+
                 {/* <TextField variant='standard' >
                     <h2>{surveyData.surveyTitle}</h2>
                 </TextField> */}
-                <Button 
+                <Button
                     variant='contained'
 
                     onClick={handleChangeWelcome}>
@@ -323,21 +356,21 @@ const UserSubmitSurvey = () => {
 
             {(introduction && !welcomePage) && (<div className=" flex flex-col">
                 <h1 className=' font-bold text-blue-700 text-xl text-center'>Survey Introduction</h1>
-                <div className="px-4 py-2 overflow-scroll w-11/12 mx-auto">
-    {surveyData.surveyIntroduction ? (
-        <p className="text-justify  text-md md:text-lg text-black lg:text-xl">
-            {surveyData.surveyIntroduction}
-        </p>
-    ) : null}
-</div>
-                <Button 
+                <div className="px-4 py-2 overflow-scroll w-screen mx-auto ">
+                    {surveyData.surveyIntroduction ? (
+                        <p className="text-justify  text-md md:text-lg text-black lg:text-xl">
+                            {surveyData.surveyIntroduction}
+                        </p>
+                    ) : null}
+                </div>
+                <Button
                     variant='contained'
 
                     onClick={handleChangeIntroduction}>
                     Start Survey
                 </Button>
             </div>)
-                }
+            }
             {(surveyData.surveyForms && !introduction) && renderCurrentComponent()}
 
         </div>
