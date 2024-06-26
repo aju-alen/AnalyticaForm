@@ -37,28 +37,26 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
       case 'checkout.session.async_payment_failed':
         const checkoutSessionAsyncPaymentFailed = event.data.object;
         console.log(checkoutSessionAsyncPaymentFailed,'checkoutSessionAsyncPaymentFailed');
-        // Then define and call a function to handle the event checkout.session.async_payment_failed
         break;
       case 'checkout.session.async_payment_succeeded':
         const checkoutSessionAsyncPaymentSucceeded = event.data.object;
         console.log(checkoutSessionAsyncPaymentSucceeded,'checkoutSessionAsyncPaymentSucceeded');
-        // Then define and call a function to handle the event checkout.session.async_payment_succeeded
         break;
+
+
       case 'checkout.session.completed':
-        const checkoutSessionCompleted = event.data.object;
+        const checkoutSessionCompleted = event.data.object; //--This is run when the payment is successful
         console.log(checkoutSessionCompleted,'checkoutSessionCompleted');
-        // Then define and call a function to handle the event checkout.session.completed
         break;
       case 'invoice.created':
         const invoiceCreated = event.data.object;
         console.log(invoiceCreated,'invoiceCreated');
-        // Then define and call a function to handle the event invoice.created
         break;
-      case 'invoice.payment_succeeded':
+      case 'invoice.payment_succeeded': //--This is run when the payment is successful
         const invoicePaymentSucceeded = event.data.object;
         console.log(invoicePaymentSucceeded,'invoicePaymentSucceeded');
-        // Then define and call a function to handle the event invoice.payment_succeeded
         break;
+        
       // ... handle other event types
       default:
         console.log(`Unhandled event type ${event.type}`);

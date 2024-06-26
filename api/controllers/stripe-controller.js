@@ -13,6 +13,9 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
           });
           console.log(prices);
           const session = await Stripe.checkout.sessions.create({
+            metadata:{
+              userId:req.body.userId,
+            },
             billing_address_collection: 'auto',
             customer_email: req.body.emailId,
             line_items: [

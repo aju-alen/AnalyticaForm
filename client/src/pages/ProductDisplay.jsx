@@ -11,7 +11,6 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import { Link } from 'react-router-dom';
 
 
 
@@ -32,13 +31,18 @@ const tiers = [
 const ProductDisplayy = () => {
 
     const [emailId, setEmailId] = useState('');
+    const [userId, setUserId] = useState('');
 
     useEffect(() => {
-        const email = JSON.parse(localStorage.getItem('userAccessToken'))?.email;
-        setEmailId(email);
+        const userDetails = JSON.parse(localStorage.getItem('userAccessToken'));
+
+        setEmailId(userDetails?.email);
+        setUserId(userDetails?.id);
+
     }, []);
 
     console.log(emailId, 'emailId');
+    console.log(userId, 'userId');
  
   return (
     <div className="h-auto w-auto bg-slate-200 ">
@@ -175,9 +179,10 @@ const ProductDisplayy = () => {
                   ))}
                 </CardContent>
                 <CardActions>
-                  <form action="https://analyticaform-api.onrender.com/api/stripe/create-checkout-session" method="POST">
+                  <form action="http://localhost:3001/api/stripe/create-checkout-session" method="POST">
                     {/* Add a hidden field with the lookup_key of your Price */}
                     <input type="hidden" name="lookup_key" value="DubaiAnalyticaTestKey" />
+                    <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="emailId" value={emailId} />
                     <Button id="checkout-and-portal-button" type="submit">
                       Checkout now

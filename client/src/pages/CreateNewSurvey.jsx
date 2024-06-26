@@ -20,7 +20,6 @@ import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CircularProgress from '@mui/material/CircularProgress';
 import SelectDropdownMenu from '../components/SelectDropdownMenu';
-import AddIcon from '@mui/icons-material/Add';
 import SurveyIntro from '../components/SurveyIntro';
 import { ContentCopy } from '@mui/icons-material';
 
@@ -44,7 +43,7 @@ const CreateNewSurvey = () => {
   const handleCopy = () => {
     navigator.clipboard.writeText(`${frontendUrl}user-survey/${surveyId}`).then(() => {
       console.log('Text copied to clipboard');
-      alert('Survey URL copied to clipboard');
+      
     }).catch(err => {
       console.error('Could not copy text: ', err);
     });
