@@ -68,6 +68,7 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
     console.log(process.env.GMAIL_AUTH_PASS);
 
     const transporter = createTransport;
+    console.log(transporter, 'transporter');
     const mailOptions = {
         from: process.env.GMAIL_AUTH_USER,
         to: email,

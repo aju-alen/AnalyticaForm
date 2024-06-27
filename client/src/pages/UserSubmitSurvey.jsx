@@ -121,8 +121,14 @@ const UserSubmitSurvey = () => {
     const handleSaveForm = async () => {
         try {
             const mandatoryFields = surveyData.surveyForms.filter(form => form.formMandate);
+            console.log(mandatoryFields, 'mandatoryFields');
+            
+            mandatoryFields.filter(form => {
+                console.log(form,'form');
+            })
 
-            const skippedMandatoryFields = mandatoryFields.filter(form => !form.selectedValue[0].answer);
+            const skippedMandatoryFields = mandatoryFields.filter(form => form.selectedValue[0]?.answer === '' || form.selectedValue.length === 0);
+            console.log(skippedMandatoryFields, 'skippedMandatoryFields');
 
 
             if (skippedMandatoryFields.length > 0) {
@@ -237,7 +243,7 @@ const UserSubmitSurvey = () => {
 
         const hasMandatoryFields = currentItem.formMandate && currentItem.selectedValue.length === 0;
 
-        if (hasMandatoryFields && !skippedFields.includes(currentItem.id)) {
+        if (hasMandatoryFields && skippedFields.includes(currentItem.id)) {
             // Show alert if mandatory fields are not filled and not skipped
             alert('Please fill the mandatory fields');
             return null; // Do not render the form until mandatory fields are filled

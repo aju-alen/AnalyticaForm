@@ -24,6 +24,20 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
     formType: 'SingleCheckForm'
   });
 
+  // const [debouncedValue, setDebouncedValue] = React.useState('');
+
+  // useEffect(() => {
+  //   const handler = setTimeout(() => {
+  //     setDebouncedValue(formData);
+  //     onSaveForm(formData);
+  //   }, 1000); // 500ms delay
+
+  //   // Cleanup function to cancel the timeout if value changes before delay
+  //   return () => {
+  //     clearTimeout(handler);
+  //   };
+  // }, [formData]);
+
   const handleAddOptions = () => {
     setFormData({
       ...formData,
@@ -52,6 +66,11 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
       }
     })
   };
+
+  // const handleMandateForm = () => {
+  //   console.log('mandate handleMandateForm');
+  //   setFormData({ ...formData, formMandate: true })
+  // }
 
   const handleSaveForm = () => {
     console.log('save handleSaveForm');
@@ -157,6 +176,14 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
               onClick={handleSaveForm}>
               {!disableButtons ? 'Save This Form' : 'Next Question'}
             </Button>
+
+            {/* {!disableButtons && <Button
+              variant='contained'
+              color="primary"
+              onClick={handleMandateForm}>
+               Mandate This Form
+            </Button>} */}
+
           </Stack>
         </Box>
       </Container>

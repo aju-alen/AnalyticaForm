@@ -26,6 +26,20 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     formType: 'SinglePointForm'
   });
 
+  // const [debouncedValue, setDebouncedValue] = useState('');
+
+  // useEffect(() => {
+  //   const handler = setTimeout(() => {
+  //     setDebouncedValue(formData);
+  //     onSaveForm(formData);
+  //   }, 1000); // 500ms delay
+
+  //   // Cleanup function to cancel the timeout if value changes before delay
+  //   return () => {
+  //     clearTimeout(handler);
+  //   };
+  // }, [formData]);
+
   const handleAddOptions = () => {
     setFormData({
       ...formData,
@@ -46,10 +60,10 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     onHandleNext()
   }
 
-  const handleMandateForm = () => {
-    console.log('mandate handleMandateForm');
-    setFormData({ ...formData, formMandate: true })
-  }
+  // const handleMandateForm = () => {
+  //   console.log('mandate handleMandateForm');
+  //   setFormData({ ...formData, formMandate: true })
+  // }
 
   const handleRadioChange = (id) => {
     const newOptions = formData.options.map((option, idx) => {
@@ -96,7 +110,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.3)', // Updated box shadow on hover
   },
         }} >
-          <TextField fullWidth id="standard-basic" label={!disableText ? "Type Your Form Question" : ''} variant="standard" name='question' value={formData.question}
+          <TextField fullWidth id="standard-basic" label={!disableText ? "Insert Input" : ''} variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,
@@ -106,6 +120,10 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
           <Stack spacing={2}>
             {formData.options.map((option) => (
               <Stack direction="row" spacing={2} key={option.id}>
+                    <Radio
+                  disabled={disableForm}
+                  onChange={() => handleRadioChange(option.id)}
+                  checked={formData.selectedValue[0].answer === option.value} />
                 <TextField
                   fullWidth
                   id="standard-basic"
@@ -126,10 +144,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
                     readOnly: disableText,
                   }}
                 />
-                <Radio
-                  disabled={disableForm}
-                  onChange={() => handleRadioChange(option.id)}
-                  checked={formData.selectedValue[0].answer === option.value} />
+            
 
 
                 {!disableButtons && (<Button
