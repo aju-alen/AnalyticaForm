@@ -160,7 +160,7 @@ const sendWelcomeEmail = async (email,name) => {
 
         </div>
         <div>
-            <p>welcome ${name},</p>
+            <p>Welcome ${name},</p>
             <p>With your Dubai Analytica account you can sign in, create forms and send it to anyone you like without them having to sign up. It is that simple!.</p>
             <br>
             <p>The Dubai Analytica Team</p>

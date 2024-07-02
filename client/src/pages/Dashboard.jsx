@@ -23,7 +23,7 @@ const Dashboard = () => {
     const [inputFeildVisible, setInputFeildVisible] = useState(false);
     const [inputText, setInputText] = useState(''); 
     const [userSurveyData, setUserSurveyData] = useState([]);
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('');
 
@@ -105,17 +105,19 @@ const Dashboard = () => {
     }, [])
 
     useEffect(() => {
-
+        console.log('12345');
+        
         const adminResponseLimit = userSurveyData.map((survey) => {
+            console.log(survey.surveyResponses, 'surveyResponses');
             return survey.surveyResponses;
         })
-        if(adminResponseLimit.filter((response) => response > 0).length > 0){
+        if(adminResponseLimit.filter((response) => response > 500).length > 0){
             handleClick();
-            setAlertMessage('Some of your surveys has exceeded the response limit. Please upgrade to premium so that users can continue submitting responses.');
+            setAlertMessage('Your "name" survey has exceeded the response limit. The participants are not able to provide further responses Please upgrade to premium so that users can continue submitting responses.');
             setAlertColor('warning');
     }
 
-    }, [])
+    }, [userSurveyData])
         
 
     console.log(inputText);

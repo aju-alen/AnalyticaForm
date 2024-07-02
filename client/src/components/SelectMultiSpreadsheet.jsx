@@ -144,7 +144,7 @@ const SelectMultiSpreadsheet = ({ onSaveForm, data, id, options, disableForm, di
                     <TextField
                         fullWidth
                         id="standard-basic"
-                        label={!disableText ? "Insert Input" : ''}
+                        label={!disableText ? "Insert input" : ''}
                         variant="standard"
                         name='question'
                         value={formData.question}

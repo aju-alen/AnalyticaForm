@@ -343,7 +343,7 @@ const UserSubmitSurvey = () => {
     console.log(surveyData.surveyForms, 'surveyForms');
     return (
         <div className=" flex justify-center items-center h-screen">
-            {(surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'>Survey response trial has exceeded. Please contact host</h1>)}
+            {(surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'> This survey has exceeded it's alloted responses. Please contact host.</h1>)}
 
             {(introduction && welcomePage && surveyData.surveyResponses <= 500 ) && (<div className=" flex flex-col">
                 <h1 className=' font-bold text-blue-500 text-xl text-center'>Hello, welcome to the survey!</h1>

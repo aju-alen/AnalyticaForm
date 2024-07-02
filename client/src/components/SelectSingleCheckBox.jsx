@@ -108,7 +108,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
         }} >
           <TextField
             fullWidth id="standard-basic"
-            label={!disableText ? "Insert Input" : ''}
+            label={!disableText ? "Insert input" : ''}
             variant="standard"
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}

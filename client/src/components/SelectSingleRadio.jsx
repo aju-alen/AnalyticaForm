@@ -110,7 +110,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.3)', // Updated box shadow on hover
   },
         }} >
-          <TextField fullWidth id="standard-basic" label={!disableText ? "Insert Input" : ''} variant="standard" name='question' value={formData.question}
+          <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" name='question' value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
               readOnly: disableText,

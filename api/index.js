@@ -10,6 +10,9 @@ import excelRoute from './routes/excel-route.js';
 import stripeRoute from './routes/stripe-route.js';
 import bodyParser from 'body-parser';
 import stripe from 'stripe';
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient();
+
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
@@ -54,9 +57,11 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
         break;
       case 'invoice.payment_succeeded': //--This is run when the payment is successful
         const invoicePaymentSucceeded = event.data.object;
-        console.log(invoicePaymentSucceeded,'invoicePaymentSucceeded');
-        break;
         
+        console.log(invoicePaymentSucceeded,'invoicePaymentSucceeded');
+
+        break;
+
       // ... handle other event types
       default:
         console.log(`Unhandled event type ${event.type}`);
