@@ -63,7 +63,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
 
       if(findCustomer){
 
-        const updateSubscription = await prisma.subscription.update({
+        const updateSubscription = await prisma.proMember.update({
           where : {subscriptionEmail : invoicePaymentSucceeded.customer_email},
           data: {
             isSubscribed: true,
@@ -79,7 +79,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
         console.log(updateSubscription, 'updateSubscription in invoice succeed');
       }
       else{
-        const subscription = await prisma.subscription.create({
+        const subscription = await prisma.proMember.create({
           data: {
               isSubscribed: true,
               subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
