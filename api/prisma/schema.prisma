@@ -30,17 +30,27 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  proMember ProMember?
    surveys   Survey[]
 }
 
 model ProMember {
   id  String   @id @default(cuid())
+  subscriptionPeriodStart Int 
+  subscriptionAmmount Int
+  subscriptionEmail String @unique
+  hosted_invoice_url String
+  hosted_invoice_pdf String
+  subscriptionPeriodEnd   Int 
+  invoiceId String @unique
+  customerId String
+  isSubscribed Boolean
+
+
+
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId String    @unique
-  user   User   @relation(fields: [userId], references: [id])  
 }
 
 model Survey {

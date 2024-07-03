@@ -8,11 +8,11 @@ import surveyRoute from './routes/survey-route.js';
 import userResponseSurveyRoute from './routes/user-response-survey.route.js';
 import excelRoute from './routes/excel-route.js';
 import stripeRoute from './routes/stripe-route.js';
+import superAdminData from './routes/superadmin-data-route.js';
 import bodyParser from 'body-parser';
 import stripe from 'stripe';
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient();
-
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
@@ -57,9 +57,44 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
         break;
       case 'invoice.payment_succeeded': //--This is run when the payment is successful
         const invoicePaymentSucceeded = event.data.object;
-        
-        console.log(invoicePaymentSucceeded,'invoicePaymentSucceeded');
+        const findCustomer = await prisma.proMember.findUnique({
+          where: { subscriptionEmail: invoicePaymentSucceeded.customer_email }
+      });
 
+      if(findCustomer){
+
+        const updateSubscription = await prisma.subscription.update({
+          where : {subscriptionEmail : invoicePaymentSucceeded.customer_email},
+          data: {
+            isSubscribed: true,
+            subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
+            subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
+            subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
+            hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
+            hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
+            invoiceId: invoicePaymentSucceeded.id,
+            customerId: invoicePaymentSucceeded.subscription
+          }
+        });
+        console.log(updateSubscription, 'updateSubscription in invoice succeed');
+      }
+      else{
+        const subscription = await prisma.subscription.create({
+          data: {
+              isSubscribed: true,
+              subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
+              subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
+              subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
+              subscriptionEmail: invoicePaymentSucceeded.customer_email,
+              hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
+              hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
+              invoiceId: invoicePaymentSucceeded.id,
+              customerId: invoicePaymentSucceeded.subscription,
+              
+          }
+        });
+      }
+      await prisma.$disconnect();
         break;
 
       // ... handle other event types
@@ -83,6 +118,7 @@ app.use('/api/survey', surveyRoute)
 app.use('/api/user-response-survey', userResponseSurveyRoute)
 app.use('/api/stripe',stripeRoute)
 app.use('/api/excel',excelRoute)
+app.use('/api/superadmin-data',superAdminData)
 
 
 
