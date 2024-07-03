@@ -59,6 +59,12 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
           console.log(customerSubscriptionDeleted,'customerSubscriptionDeleted');
         break;
 
+        case 'customer.subscription.updated':
+          const customerSubscriptionUpdated = event.data.object;
+          console.log(customerSubscriptionUpdated,'customerSubscriptionUpdated');
+          // Then define and call a function to handle the event customer.subscription.updated
+          break;
+
       case 'invoice.created':
         const invoiceCreated = event.data.object;
         console.log(invoiceCreated,'invoiceCreated');
