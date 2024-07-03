@@ -49,6 +49,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
 
       case 'checkout.session.completed':
         const checkoutSessionCompleted = event.data.object; //--This is run when the payment is successful
+
         console.log(checkoutSessionCompleted,'checkoutSessionCompleted');
         break;
       case 'invoice.created':
@@ -91,6 +92,12 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
               invoiceId: invoicePaymentSucceeded.id,
               customerId: invoicePaymentSucceeded.subscription,
               
+          }
+        });
+        const updateUserData = await prisma.user.update({
+          where: { email: invoicePaymentSucceeded.customer_email },
+          data: {
+            isAProMember: true
           }
         });
       }
