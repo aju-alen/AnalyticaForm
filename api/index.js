@@ -118,7 +118,7 @@ app.use('/api/survey', surveyRoute)
 app.use('/api/user-response-survey', userResponseSurveyRoute)
 app.use('/api/stripe',stripeRoute)
 app.use('/api/excel',excelRoute)
-app.use('/api/superadmin-data',superAdminData)
+// app.use('/api/superadmin-data',superAdminData)
 
 
 
