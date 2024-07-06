@@ -180,12 +180,13 @@ const ProductDisplayy = () => {
                 </CardContent>
                 <CardActions>
                   <form action="https://analyticaform-api.onrender.com/api/stripe/create-checkout-session" method="POST">
+                  {/* <form action="http://localhost:3001/api/stripe/create-checkout-session" method="POST"> */}
                     {/* Add a hidden field with the lookup_key of your Price */}
-                    <input type="hidden" name="lookup_key" value="DubaiAnalyticaTestKey" />
+                    <input type="hidden" name="lookup_key" value="dataanalyticasubscription" />
                     <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="emailId" value={emailId} />
                     <Button id="checkout-and-portal-button" type="submit">
-                      Checkout now
+                      Proceed to checkout
                     </Button>
                   </form>
                 </CardActions>
