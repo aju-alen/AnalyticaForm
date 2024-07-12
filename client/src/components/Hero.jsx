@@ -10,6 +10,7 @@ import theme from '../utils/theme';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
+import { Helmet } from 'react-helmet-async';
 
 
 
@@ -37,6 +38,9 @@ const Hero = () => {
                     pb: { xs: 8, sm: 12 },
                 }}
             >
+                <Helmet>
+                <meta name='description' content='Easy to create, distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions.' />
+                </Helmet>
                 <Stack
                     spacing={2}
                     borderwidth='10px'
@@ -49,21 +53,14 @@ const Hero = () => {
                         sx={{
                             display: 'flex',
                             flexDirection: { xs: 'column', sm: 'row' },
-                            alignItems: 'center',
-                            fontSize: 'clamp(3rem, 10vw, 3.5rem)',
+                            justifyContent: 'center',
+                            fontSize: 'clamp(2rem, 10vw, 3.0rem)',
+                            textAlign: 'center',
+                            mt: 6,
                         }}
                     >
-                        Dubai&nbsp;
-                        <Typography
-                            component="span"
-                            variant="h1"
-                            sx={{
-                                fontSize: 'inherit',
-                                color: 'primary.main',
-                            }}
-                        >
-                            Analytica
-                        </Typography>
+                        Ask the right questions to find the answers you need with
+                        
                     </Typography>
                     <Stack
                         spacing={3}
@@ -77,7 +74,7 @@ const Hero = () => {
                             color="text.secondary"
                             sx={{ width: { sm: '100%', md: '80%' } }}
                         >
-                            Ask the right questions to find the answers you need with Dubai Analytica, the best survey software that helps UAE based companies and individual teams with audience surveys. Create employee engagement surveys, customer surveys, market research surveys and more.
+                            <b>Dubai Analytica</b>, the best survey software that helps UAE based companies and individual teams with audience surveys. Create employee engagement surveys, customer surveys, market research surveys and more.
                         </Typography>
 
                         <Button
