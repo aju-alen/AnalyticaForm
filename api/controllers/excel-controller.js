@@ -60,11 +60,21 @@ export const exportToExcel = async (req, res) => {
                 response.selectedValue.forEach(selected => {
                     if (selected.question && selected.question !== response.question && response.formType !== "MultiScaleCheckBox") {
                         // Find the index in the sub-headers
+                        console.log(selected,'inside !== MultiScaleCheckBox');
                         const subHeaderIndex = subHeaders.indexOf(selected.question);
                         if (subHeaderIndex !== -1) {
                             userResponses[subHeaderIndex - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
-                    } else if (response.formType === "SingleCheckForm") {
+                    }
+                    else if ( response.formType === "ContactInformationForm") {
+                        // Find the index in the sub-headers
+                        console.log(selected,'inside !== MultiScaleCheckBox');
+                        const subHeaderIndex = subHeaders.indexOf(selected.question);   
+                        if (subHeaderIndex !== -1) {
+                            userResponses[subHeaderIndex - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
+                        }
+                    }
+                    else if (response.formType === "SingleCheckForm") {
                         const subHeaderIndex = subHeaders.indexOf(selected.rowQuestion);
                         if (subHeaderIndex !== -1) {
                             userResponses[subHeaderIndex - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
@@ -77,8 +87,10 @@ export const exportToExcel = async (req, res) => {
                             userResponses[subHeaderIdx - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     } else {
+                        console.log('inside else');
                         // Find the index in the headers
                         const headerIndex = headers.indexOf(response.question);
+                        console.log(headerIndex, 'headerIndex');
                         if (headerIndex !== -1) {
                             userResponses[headerIndex - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }

@@ -55,7 +55,9 @@ export const userRegister = async (req, res, next) => {
 };
 
 const createTransport = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'mail.privateemail.com',
+    port: 587,
+    secure: false,
     auth: {
         user: process.env.GMAIL_AUTH_USER,
         pass: process.env.GMAIL_AUTH_PASS
@@ -213,7 +215,7 @@ export const login = async (req, res, next) => {
         }
 
 
-        const accessToken = jwt.sign({ email: user.email, id: user.id, isAdmin: user.isAdmin, firstName: user.firstName },
+        const accessToken = jwt.sign({ email: user.email, id: user.id, isAdmin: user.isAdmin, firstName: user.firstName, isSuperAdmin:user.isSuperAdmin},
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: '1h' });
 
@@ -229,7 +231,7 @@ export const login = async (req, res, next) => {
             maxAge: 1000 * 60 * 60 * 12, //12 hrs
         });
 
-        res.status(200).json({ accessToken, message: "Login successful", email: user.email, id: user.id, firstName: user.firstName, isAdmin: user.isAdmin });
+        res.status(200).json({ accessToken, message: "Login successful", email: user.email, id: user.id, firstName: user.firstName, isAdmin: user.isAdmin,isSuperAdmin:user.isSuperAdmin });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "An error has occoured" });
@@ -398,4 +400,25 @@ export const resetPassword = async (req, res) => {
         res.status(400).send('An error occoured')
     }
       
+}
+
+export const getUserData = async (req, res) => {
+    try{
+        const user = await prisma.user.findUnique({
+            where:{
+                id:req.tokenId
+            },
+            select:{
+                id:true,
+                isSuperAdmin:true
+            }
+        })
+        await prisma.$disconnect()
+        res.status(200).json(user)
+
+    }
+    catch(err){
+        console.log(err);
+        res.status(400).send('An error occoured')
+    }
 }
