@@ -14,8 +14,6 @@ import Container from '@mui/material/Container';
 import axios from 'axios';
 import { backendUrl } from '../utils/backendUrl';
 import { useNavigate } from 'react-router-dom';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 
 
 
@@ -164,16 +162,6 @@ export default function Register() {
           </Grid>
         </Box>
       </Box>
-      <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-        <Alert
-          onClose={handleClose}
-          severity={alertColor}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-         {alertMessage}
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }

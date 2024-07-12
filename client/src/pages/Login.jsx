@@ -64,7 +64,7 @@ export default function Login() {
       setAlertMessage(resp.data.message);
       setAlertColor('success');
   
-      localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken }));
+      localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken, isSuperAdmin: resp.data.isSuperAdmin}));
       navigate('/dashboard');
     }
     catch(err){
