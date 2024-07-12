@@ -30,6 +30,8 @@ const ProductDisplay = lazy(() => import('./pages/ProductDisplay'));
 const SuccessPaymentPage = lazy(() => import('./pages/SuccessPaymentPage'));
 const ForgetPassword = lazy(() => import('./pages/ForgetPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+
 
 const App = () => {
 
@@ -98,6 +100,10 @@ const App = () => {
         {
           path: "/payment-success",
           element: <ProtectedRoute element={<SuccessPaymentPage />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/admin-analytics",
+          element: <ProtectedRoute element={<Analytics />} />, // Wrap Dashboard inside ProtectedRoute
         },
       ]
     }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React,{useEffect,useState} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,13 +12,17 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
-import { axiosWithCredentials } from '../utils/customAxios';
+import { axiosWithCredentials,axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
 import { useLocation } from 'react-router-dom';
+import { refreshToken } from '../utils/refreshToken';
+import theme from '../utils/theme';
+import { ThemeProvider } from '@mui/material';
+
 
 
 const logoStyleDextop = {
-  // width: '140px',
+  width: '140px',
   height: 'auto',
   cursor: 'pointer',
 };
@@ -34,8 +38,9 @@ function ResponsiveAppBar() {
   const userSurveyPage =  currentPath.startsWith('/user-survey');
   const navigate = useNavigate();
 
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -50,6 +55,10 @@ function ResponsiveAppBar() {
   };
   const handleCloseProductDisplay = () => {
     navigate('/product-display');
+    setAnchorElNav(null);
+  };
+  const handleCloseAdminAnalytics = () => {
+    navigate('/admin-analytics');
     setAnchorElNav(null);
   };
 
@@ -69,10 +78,38 @@ function ResponsiveAppBar() {
       console.log(error)
     }
   }
+  
+  useEffect(() => {
+    const checkUser = async () => {
+      try{
+        await refreshToken();
+        const getUserData = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user`);
+        console.log(getUserData.data, 'userData');
+        console.log(getUserData.data.isSuperAdmin, 'isSuperAdmin');
+        setIsSuperAdmin(getUserData.data.isSuperAdmin);
+      }
+      catch(err){
+        if (err.response.status === 401) {
+          console.log('unauthorized');
+          localStorage.removeItem('userAccessToken');
+          navigate('/login');
+        }
+        else {
+          console.log(err);
+        }
+      }
+    }
+    checkUser();
+  }, []);
+
 
   return (
+    <ThemeProvider theme={theme}>
     <AppBar position="static">
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{
+        backgroundColor: 'white',
+        borderRadius: '5px',
+      }}>
         <Toolbar disableGutters>
 
           <Box sx={{ flexGrow:1, display:{xs:"none",md:"flex",}, 
@@ -120,9 +157,14 @@ function ResponsiveAppBar() {
                 <MenuItem onClick={handleCloseNavMenu}>
                   <Typography textAlign="center" onClick={()=> navigate('/dashboard')}>Create Your Survey Now</Typography>
                 </MenuItem>
+
                 <MenuItem onClick={handleCloseProductDisplay}>
                   <Typography textAlign="center" onClick={()=> navigate('/product-display')}>Become A Pro Member</Typography>
                 </MenuItem>
+
+                <MenuItem onClick={handleCloseAdminAnalytics}>
+                  <Typography textAlign="center" onClick={()=> navigate('/admin-analytics')}>Analytics</Typography>
+                </MenuItem>              
             </Menu>
           </Box>
           <Box sx={{ flexGrow:0.5 , display: { xs: 'flex', md: 'none' },  }}>
@@ -137,16 +179,22 @@ function ResponsiveAppBar() {
            
               <Button
                 onClick={()=>navigate('/dashboard')}
-                sx={{color: 'white', display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}
+                sx={{color: 'black', fontWeight:'500', display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}
               >
                 Create A Survey
               </Button>
 
               <Button
                 onClick={()=>navigate('/product-display')}
-                sx={{color: 'white', display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}              >
+                sx={{color: 'black',fontWeight:'500',  display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}              >
                 Become a pro member
               </Button>
+
+             {isSuperAdmin && <Button
+                onClick={()=>navigate('/admin-analytics')}
+                sx={{color: 'black',fontWeight:'500' ,display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}              >
+                Analytics
+              </Button>}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -182,6 +230,7 @@ function ResponsiveAppBar() {
         </Toolbar>
       </Container>
     </AppBar>
+    </ThemeProvider>
   );
 }
 export default ResponsiveAppBar;
