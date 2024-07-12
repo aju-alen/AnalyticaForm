@@ -154,6 +154,7 @@ function HomeNavBar() {
                 component="a"
                 onClick={() => navigate('/login')}
                 target="_blank"
+                href='/login'
               >
                 Log in
               </Button>
