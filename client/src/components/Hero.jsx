@@ -42,14 +42,14 @@ const Hero = () => {
                 <meta name='description' content='Easy to create, distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions.' />
                 </Helmet>
                 <Stack
-                    spacing={2}
+                    spacing={4}
                     borderwidth='10px'
                     alignItems="center"
                     useFlexGap
                     sx={{ width: { xs: '100%', sm: '70%' } }}
                 >
                     <Typography
-                        variant="h1"
+                        variant="h2"
                         sx={{
                             display: 'flex',
                             flexDirection: { xs: 'column', sm: 'row' },
@@ -72,7 +72,8 @@ const Hero = () => {
                         <Typography
                             textAlign="center"
                             color="text.secondary"
-                            sx={{ width: { sm: '100%', md: '80%' } }}
+                            sx={{ width: { sm: '100%', md: '100%' } }}
+                            fontSize={'clamp(1.3rem, 3vw, 1rem)'}
                         >
                             <b>Dubai Analytica</b>, the best survey software that helps UAE based companies and individual teams with audience surveys. Create employee engagement surveys, customer surveys, market research surveys and more.
                         </Typography>
@@ -123,8 +124,8 @@ const Hero = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        pt: { xs: 14, sm: 20 },
-                        pb: { xs: 8, sm: 12 },
+                        pt: { xs: 14, sm: 10 },
+                        pb: { xs: 8, sm: 2 },
 
                     }}
                 >
@@ -136,21 +137,24 @@ const Hero = () => {
                             spacing={3}
                         >
                             <Typography
-                                variant='h4'
+                                variant='h3'
                                 sx={{
                                     width: { xs: '100%', sm: '100%' },
                                     fontWeight: 700,
                                 }}
+                                fontSize={'clamp(1.5rem, 3vw, 2rem)'}
                             >Create remarkable surveys</Typography>
                             <Typography
+                                varient= 'body1'
                                 textAlign=""
                                 color="text.secondary"
                                 sx={{ width: { sm: '100%', md: '80%' } }}
+                                fontSize={'clamp(1.3rem, 3vw, 1rem)'}
                             >
                                 Reach your desired target audience by creating incredible surveys. Choose from multiple-choice question types, add logic, and customize with your branding. Your creativity sets the boundaries. And yes, it&apos;s incredibly easy! Discover how we make it happen.
                             </Typography>
                         </Stack>
-                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={700} alt="My GIF" />
+                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={510} alt="My GIF" />
                     </Stack>
                 </Container>
                 <Container
@@ -167,21 +171,24 @@ const Hero = () => {
                         spacing={2}
                         direction={{ xs: 'column', md: 'row' }}
                     >
-                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={700} alt="My GIF" />
+                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={510} alt="My GIF" />
                         <Stack
                             spacing={3}
                         >
                             <Typography
-                                variant='h4'
+                                variant='h3'
                                 sx={{
                                     width: { xs: '100%', sm: '100%' },
                                     fontWeight: 700,
                                 }}
+                                fontSize={'clamp(1.5rem, 3vw, 2rem)'}
+                                
                             >Fast-track better decision-making</Typography>
                             <Typography
                                 textAlign=""
                                 color="text.secondary"
-                                sx={{ width: { sm: '100%', md: '80%' } }}
+                                sx={{ width: { sm: '100%', md: '100%' } }}
+                                fontSize={'clamp(1.3rem, 3vw, 1rem)'}
                             >
                                 Our reports simplify your analysis. With real-time, shareable dashboards and a complete analytics suite, we empower you to quickly transform data into actionable insights.
 
@@ -209,23 +216,25 @@ const Hero = () => {
                             spacing={3}
                         >
                             <Typography
-                                variant='h4'
+                                variant='h3'
                                 sx={{
                                     width: { xs: '100%', sm: '100%' },
                                     fontWeight: 700,
                                 }}
+                                fontSize={'clamp(1.5rem, 3vw, 2rem)'}
                             >Designed for enterprise use
                             </Typography>
                             <Typography
                                 textAlign=""
                                 color="text.secondary"
                                 sx={{ width: { sm: '100%', md: '80%' } }}
+                                fontSize={'clamp(1.3rem, 3vw, 1rem)'}
                             >
                                 We meet all the needs of today&apos;s modern enterprise. From robust security and time-saving integrations to advanced collaboration features, we've got it covered. Plus, our world-class account service team is here to support you every step of the way.
 
                             </Typography>
                         </Stack>
-                        <img src='https://i.postimg.cc/dtcqL7dC/second.jpg' width={700} alt="My GIF" />
+                        <img src='https://i.postimg.cc/dtcqL7dC/second.jpg' width={510} alt="My GIF" />
                     </Stack>
                 </Container>
 
@@ -243,23 +252,25 @@ const Hero = () => {
                         spacing={2}
                         direction={{ xs: 'column', md: 'row' }}
                     >
-                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={700} alt="My GIF" />
+                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={600} alt="My GIF" />
 
                         <Stack
                             spacing={3}
                         >
                             <Typography
-                                variant='h4'
+                                variant='h3'
                                 sx={{
                                     width: { xs: '100%', sm: '100%' },
                                     fontWeight: 700,
                                 }}
+                                fontSize={'clamp(1.5rem, 3vw, 2rem)'}
                             >All round support
                             </Typography>
                             <Typography
                                 textAlign=""
                                 color="text.secondary"
                                 sx={{ width: { sm: '100%', md: '80%' } }}
+                                fontSize={'clamp(1.3rem, 3vw, 1rem)'}
                             >
                                 Working late into the night? Our support team is available 24/7. From dedicated enterprise account managers to live chat, we&apos;re committed to ensuring your research is successful, no matter the hour.
 
@@ -281,10 +292,13 @@ const Hero = () => {
                     }}
                 >
                     <Stack
-                        spacing={2}
+                        spacing={3}
+                        display={{ xs: 'flex', sm: 'flex' }}
+                        justifyContent={{ xs: 'center', sm: 'center' }}
+                        alignItems={{ xs: 'center', sm: 'center' }}
                     >
                         <Typography
-                            variant="h4"
+                            variant="h2"
                             textAlign="center"
                             sx={{ height: 'full' }}
                             fontWeight={540}
@@ -296,6 +310,7 @@ const Hero = () => {
                             variant="body1"
                             textAlign="center"
                             sx={{ height: 'full' }}
+                            fontSize={'clamp(1.3rem, 3vw, 1rem)'}
 
                         >
                             Make use of the best online survey software for reliable actionable insights.
@@ -304,9 +319,12 @@ const Hero = () => {
                         <Button
                             variant="contained"
                             color="primary"
-                            size="large"
+                            textAlign="center"
+                            size='large'
                             onClick={() => navigate('/dashboard')}
-                            sx={{}}
+                            sx={{
+                                width: { xs: '100%', sm: '30%'},
+                            }}
                         >
                             Sign up free.
                         </Button>
@@ -321,19 +339,20 @@ const Hero = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        pt: { xs: 14, sm: 20 },
+                        pt: { xs: 14, sm: 5 },
                         pb: { xs: 8, sm: 12 },
 
                     }}
                 >
                     <Stack
-                        spacing={2}
+                        spacing={4}
                     >
                     <Typography
-                        variant="h4"
+                        variant="h1"
                         textAlign="center"
-                        sx={{ height: 'full' }}
+                        sx={{ height: 'full'}}
                         fontWeight={300}
+                        fontSize={'clamp(1.5rem, 5vw, 2.5rem)'}
                     >
                     The online survey software and data collection tool you need to uncover the right insights
                     </Typography>
@@ -342,10 +361,14 @@ const Hero = () => {
                         textAlign="center"
                         color="text.secondary"
                         sx={{ width: { sm: '100%', md: '100%' } }}
+                        fontSize={'clamp(1.3rem, 3vw, 1rem)'}
+
                     >
                     Be a part of the 150+ global companies that trust Dubai Analytica to achieve their research objectives.
                     </Typography>
                     </Stack>
+                    <br></br>
+                    <br></br>
                     <Divider
                         sx={{ width: '100%', mb: 5}}
                     ></Divider>    
@@ -357,7 +380,9 @@ const Hero = () => {
 
                         <Card sx={{ minWidth: 275 }}>
                             <CardContent>
-                                <Typography variant='h5' gutterBottom>
+                                <Typography variant='h3' gutterBottom 
+                                fontSize={'clamp(1.5rem, 3vw, 1.5rem)'}
+                                >
                                 What is a survey software?
                                 </Typography>
 
@@ -382,7 +407,9 @@ const Hero = () => {
 
                         <Card sx={{ minWidth: 275 }}>
                             <CardContent>
-                                <Typography variant='h5' gutterBottom>
+                                <Typography variant='h3'
+                                fontSize={'clamp(1.5rem, 3vw, 1.5rem)'}
+                                gutterBottom>
                                 Benefits of using survey software
                                 </Typography>
 
@@ -403,7 +430,9 @@ const Hero = () => {
 
                         <Card sx={{ minWidth: 275 }}>
                             <CardContent>
-                                <Typography variant='h5' gutterBottom>
+                                <Typography variant='h3'
+                                fontSize={'clamp(1.5rem, 3vw, 1.5rem)'}
+                                gutterBottom>
                                 What&apos;s the best survey software?
                                 </Typography>
 
