@@ -20,8 +20,8 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
     <Drawer open={open} onClose={toggleDrawer}>
       <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer}>
         <List>
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => handleItemClick('SinglePointForm')}>
+          <ListItem disablePadding > 
+            <ListItemButton  onClick={() => handleItemClick('SinglePointForm')}>
               <ListItemText primary={'SinglePointForm'} />
             </ListItemButton>
           </ListItem>
@@ -50,26 +50,62 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
             </ListItemButton>
           </ListItem> */}
 
-          {/* <ListItem disablePadding>
-            <ListItemButton onClick={() => handleItemClick('DropdownMenu')}>
-              <ListItemText primary={'DropdownMenu'} />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('SelectDropDownForm')}>
+              <ListItemText primary={'SelectDropDownForm'} />
             </ListItemButton>
-          </ListItem> */}
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('CommentBoxForm')}>
+              <ListItemText primary={'CommentBoxForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('SingleRowTextForm')}>
+              <ListItemText primary={'SingleRowTextForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('EmailAddressForm')}>
+              <ListItemText primary={'EmailAddressForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('ContactInformationForm')}>
+              <ListItemText primary={'ContactInformationForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('StarRatingForm')}>
+              <ListItemText primary={'StarRatingForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('SmileyRatingForm')}>
+              <ListItemText primary={'SmileyRatingForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('ThumbUpDownForm')}>
+              <ListItemText primary={'ThumbUpDownForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('SliderTextForm')}>
+              <ListItemText primary={'SliderTextForm'} />
+            </ListItemButton>
+          </ListItem>
           
         </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => handleItemClick(text)}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+       
       </Box>
     </Drawer>
   );

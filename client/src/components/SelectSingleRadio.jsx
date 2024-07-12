@@ -7,12 +7,13 @@ import { Button, Stack } from '@mui/material';
 import Radio from '@mui/material/Radio';
 import ClearIcon from '@mui/icons-material/Clear';
 import { uid } from 'uid';
+import theme from '../utils/theme';
+import { ThemeProvider } from '@mui/material/styles';
 
 
 
 
-
-const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
+const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext,onSaveIndicator }) => {
   const [formData, setFormData] = useState({
     id: id,
     question: '',
@@ -26,16 +27,18 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     formType: 'SinglePointForm'
   });
 
-  // const [debouncedValue, setDebouncedValue] = useState('');
+  const [debouncedValue, setDebouncedValue] = useState('');
 
   // useEffect(() => {
   //   const handler = setTimeout(() => {
   //     setDebouncedValue(formData);
   //     onSaveForm(formData);
+  //     // onSaveIndicator('Saved')
   //   }, 1000); // 500ms delay
 
   //   // Cleanup function to cancel the timeout if value changes before delay
   //   return () => {
+  //     // onSaveIndicator('Not Saaved')
   //     clearTimeout(handler);
   //   };
   // }, [formData]);
@@ -87,6 +90,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
   // console.log(id,'id in select one choice form');
   console.log(formData, 'formData in select one choice form');
   return (
+    <ThemeProvider theme={theme}>
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
@@ -144,7 +148,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
                     readOnly: disableText,
                   }}
                 />
-            
+                
 
 
                 {!disableButtons && (<Button
@@ -155,6 +159,8 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
                     fontSize='small'
                   />
                 </Button>)}
+
+
               </Stack>
             ))
             }
@@ -185,6 +191,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
         </Box>
       </Container>
     </React.Fragment>
+    </ThemeProvider>
 
   )
 }

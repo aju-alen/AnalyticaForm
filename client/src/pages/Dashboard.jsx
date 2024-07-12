@@ -21,36 +21,36 @@ const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [input, setInput] = useState(false);
     const [inputFeildVisible, setInputFeildVisible] = useState(false);
-    const [inputText, setInputText] = useState(''); 
+    const [inputText, setInputText] = useState('');
     const [userSurveyData, setUserSurveyData] = useState([]);
     const [open, setOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('');
 
 
-  const handleClick = () => {
-    setOpen(true);
-  };
+    const handleClick = () => {
+        setOpen(true);
+    };
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
 
-    setOpen(false);
-  };
+        setOpen(false);
+    };
 
     const handleSubmit = async () => {
         try {
             setInputFeildVisible(true);
             if (input && inputFeildVisible && inputText.length > 0) {
-                if(userSurveyData.length > 5){
+                if (userSurveyData.length > 5) {
                     alert('You can only create 5 surveys with a free account. Please upgrade to premium to create more surveys.');
                     return;
                 }
                 await refreshToken();
                 const surveyResp = await axiosWithAuth.post(`${backendUrl}/api/survey/create`, { surveyTitle: inputText });
-                console.log(surveyResp.data.newSurvey.id,'response');
+                console.log(surveyResp.data.newSurvey.id, 'response');
                 navigate(`/dashboard/create-survey/${surveyResp.data.newSurvey.id}`, { state: { surveyName: inputText } });
             }
         }
@@ -105,65 +105,61 @@ const Dashboard = () => {
     }, [])
 
     useEffect(() => {
-        console.log('12345');
-        
         const adminResponseLimit = userSurveyData.map((survey) => {
             console.log(survey.surveyResponses, 'surveyResponses');
             return survey.surveyResponses;
         })
-        if(adminResponseLimit.filter((response) => response > 500).length > 0){
+        if (adminResponseLimit.filter((response) => response > 500).length > 0) {
             handleClick();
-            setAlertMessage('Your "name" survey has exceeded the response limit. The participants are not able to provide further responses Please upgrade to premium so that users can continue submitting responses.');
+            setAlertMessage('Your survey has exceeded the response limit. The participants are not able to provide further responses Please upgrade to premium so that users can continue submitting responses.');
             setAlertColor('warning');
-    }
+        }
 
     }, [userSurveyData])
-        
 
-    console.log(inputText);
-    console.log(userSurveyData, 'surveyDatanames');
 
 
 
     return (
-        isLoading? (
-            <Box sx={{ display: 'flex', justifyContent:'center', alignItems:"center",height:'100vh' }}>
-            <CircularProgress />
-          </Box>
-          ) : (
-        <Box component="section" sx={{ p: { md: 10 }, pt: { xs: 10 } }}>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                    <Fab onClick={handleSubmit} variant="extended" size="large" color="primary">
-                        <AddIcon />
-                        Create new survey
-                    </Fab>
+        isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        ) : (
+            <Box component="section" sx={{ p: { md: 10 }, pt: { xs: 10 } }}>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item>
+                        <Fab onClick={handleSubmit} variant="extended" size="large" color="primary">
+                            <AddIcon />
+                            Create new survey
+                        </Fab>
+                    </Grid>
+                    {inputFeildVisible && <Grid item>
+                        <TextField
+                            id="outlined-basic"
+                            name='inputText'
+                            value={inputText}
+                            onChange={handleInputText}
+                            label="Enter a name for the survey"
+                            variant="filled"
+                            size="small"
+                            fullWidth
+                        />
+                    </Grid>}
                 </Grid>
-                {inputFeildVisible && <Grid item>
-                    <TextField
-                        id="outlined-basic"
-                        name='inputText'
-                        value={inputText}
-                        onChange={handleInputText}
-                        label="Enter a name for the survey"
+                <MySurvery userSurveyData={userSurveyData} />
+
+                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                    <Alert
+                        onClose={handleClose}
+                        severity={alertColor}
                         variant="filled"
-                        size="small"
-                        fullWidth
-                    />
-                </Grid>}
-            </Grid>
-            <MySurvery userSurveyData={userSurveyData} />
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert
-          onClose={handleClose}
-          severity={alertColor}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {alertMessage}
-        </Alert>
-      </Snackbar>
-        </Box>)
+                        sx={{ width: '100%' }}
+                    >
+                        {alertMessage}
+                    </Alert>
+                </Snackbar>
+            </Box>)
 
 
     )

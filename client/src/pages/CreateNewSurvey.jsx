@@ -12,6 +12,14 @@ import { useNavigate } from 'react-router-dom';
 import TemporaryDrawer from '../components/TempDrawer';
 import SelectSingleRadio from '../components/SelectSingleRadio';
 import SelectSingleCheckBox from '../components/SelectSingleCheckBox';
+import CommentBox from '../components/CommentBox';
+import SingleRowText from '../components/SingleRowText';
+import EmailAddress from '../components/EmailAddress';
+import ContactInformation from '../components/ContactInformation';
+import StarRating from '../components/StarRating';
+import SmileyRating from '../components/SmileyRating';
+import ThumbsUpDown from '../components/ThumbsUpDown';
+import SliderText from '../components/SliderText';
 import { Stack } from '@mui/material';
 import { uid } from 'uid';
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
@@ -32,6 +40,7 @@ const CreateNewSurvey = () => {
   const [addIntro, setAddIntro] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
   const [selectedItems, setSelectedItems] = useState([]); // selected items 
+  const [isSaved, setIsSaved] = useState('Saved'); // saved or not
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
@@ -195,6 +204,32 @@ const CreateNewSurvey = () => {
 
   }
 
+  const handleSaveDropdown = (formData) => {
+    console.log(formData, 'formData in the parent');
+
+    // Check if the formData id exists in the surveyForms array
+    const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
+
+    if (existingFormIndex !== -1) {
+      // If the form data already exists, update it
+      setSurveyData(prevSurveyData => ({
+        ...prevSurveyData,
+        surveyForms: prevSurveyData.surveyForms.map((form, index) => {
+          if (index === existingFormIndex) {
+            return formData; // Update existing form data
+          }
+          return form; // Leave other form data unchanged
+        })
+      }));
+    } else {
+      // If the form data doesn't exist, add it to the surveyForms array
+      setSurveyData(prevSurveyData => ({
+        ...prevSurveyData,
+        surveyForms: [...prevSurveyData.surveyForms, formData]
+      }));
+    }
+  };
+
   const handleDeleteSelectOneForm = (id) => {
     console.log(id, 'id in delete');
     const newSurveyForms = surveyData.surveyForms.filter(form => {
@@ -263,12 +298,12 @@ const CreateNewSurvey = () => {
   }, []);
 
   const selectItem = surveyData.surveyForms.map((item, index) => {
-    console.log(item, 'item in selectItem mapppppppp');
+    console.log(item, 'item in selectItem mapppppppp',index);
     if (item.formType === 'SinglePointForm') {
 
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} onSaveIndicator={setIsSaved} />
           <Button
             color="secondary"
             size='large'
@@ -333,10 +368,10 @@ const CreateNewSurvey = () => {
       )
     }
 
-    else if (item.formType === 'DropdownMenu') {
+    else if (item.formType === 'SelectDropDownForm') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectDropdownMenu key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SelectDropdownMenu key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -347,6 +382,114 @@ const CreateNewSurvey = () => {
       )
     }
 
+    else if (item.formType === 'CommentBoxForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <CommentBox key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'SingleRowTextForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <SingleRowText key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'EmailAddressForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <EmailAddress key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'ContactInformationForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <ContactInformation key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'StarRatingForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <StarRating key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'SmileyRatingForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <SmileyRating key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'ThumbUpDownForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <ThumbsUpDown key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'SliderTextForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <SliderText key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
   });
 
   console.log(surveyData, 'surveyData in the parent');
@@ -389,6 +532,9 @@ const CreateNewSurvey = () => {
                 startIcon={<ContentCopy />}
               >
               </Button>
+
+              { isSaved }
+
             </div>
             )
 
