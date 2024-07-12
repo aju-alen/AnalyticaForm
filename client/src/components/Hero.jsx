@@ -11,6 +11,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import { Helmet } from 'react-helmet-async';
+import SEO from './SEO';
 
 
 
@@ -38,9 +39,11 @@ const Hero = () => {
                     pb: { xs: 8, sm: 12 },
                 }}
             >
-                <Helmet>
-                <meta name='description' content='Easy to create, distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions.' />
-                </Helmet>
+                <SEO
+                    title='Online Survey Data Collection Software | Dubai Analytica'
+                    description='Easy to create, distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions.'
+                    name='Dubai Analytica'
+                    type='Homepage' />
                 <Stack
                     spacing={4}
                     borderwidth='10px'
