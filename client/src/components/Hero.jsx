@@ -157,7 +157,7 @@ const Hero = () => {
                                 Reach your desired target audience by creating incredible surveys. Choose from multiple-choice question types, add logic, and customize with your branding. Your creativity sets the boundaries. And yes, it&apos;s incredibly easy! Discover how we make it happen.
                             </Typography>
                         </Stack>
-                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={510} alt="My GIF" />
+                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={510} alt="My GIF"  />
                     </Stack>
                 </Container>
                 <Container
