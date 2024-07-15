@@ -99,10 +99,16 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
           </ListItem>
 
           <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('DateTimeForm')}>
+              <ListItemText primary={'DateTimeForm'} />
+            </ListItemButton>
+          </ListItem>
+
+          {/* <ListItem disablePadding>
             <ListItemButton onClick={() => handleItemClick('SliderTextForm')}>
               <ListItemText primary={'SliderTextForm'} />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
           
         </List>
        

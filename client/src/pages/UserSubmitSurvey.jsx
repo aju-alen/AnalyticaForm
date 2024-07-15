@@ -21,6 +21,7 @@ import StarRating from '../components/StarRating'
 import SmileyRating from '../components/SmileyRating'
 import ThumbsUpDown from '../components/ThumbsUpDown'
 import SliderText from '../components/SliderText'
+import DateTime from '../components/DateTime'
 
 const UserSubmitSurvey = () => {
     const { surveyId } = useParams();
@@ -221,6 +222,18 @@ const UserSubmitSurvey = () => {
                             return option.question;
 
                         }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
+                        
+                    }
+                }
+
+                else if (form.formType === "DateTimeForm"){
+                    console.log(form, 'form in DateTimeForm');
+                    return {
+                        [form.subheading ? form.subheading : form.question]: form.options.map(option => {
+                            console.log(option, 'option DateTimeForm');
+                            return option.question;
+
+                        }).filter((item, index) => form.formType !== "DateTimeForm" || index === 0)
                         
                     }
                 }
@@ -606,6 +619,30 @@ const UserSubmitSurvey = () => {
 
 
                         <ThumbsUpDown
+                            data={currentItem}
+                            onHandleNext={handleNext}
+                            onSaveForm={handleSaveMultiScalePointForm}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true} />
+                    </div>
+                );
+
+                case 'DateTimeForm':
+                return (
+                    <div className=" w-11/12 h-4/6">
+                          {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+
+                        <DateTime
                             data={currentItem}
                             onHandleNext={handleNext}
                             onSaveForm={handleSaveMultiScalePointForm}

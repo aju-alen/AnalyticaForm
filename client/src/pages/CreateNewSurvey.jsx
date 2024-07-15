@@ -20,6 +20,7 @@ import StarRating from '../components/StarRating';
 import SmileyRating from '../components/SmileyRating';
 import ThumbsUpDown from '../components/ThumbsUpDown';
 import SliderText from '../components/SliderText';
+import DateTime from '../components/DateTime';
 import { Stack } from '@mui/material';
 import { uid } from 'uid';
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
@@ -481,6 +482,20 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row'>
           <SliderText key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'DateTimeForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <DateTime key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
