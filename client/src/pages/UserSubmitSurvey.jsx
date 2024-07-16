@@ -7,6 +7,7 @@ import SelectSingleRadio from '../components/SelectSingleRadio'
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
 import { Button, TextField } from '@mui/material'
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
+import GoogleRecaptcha from '../components/googleRecaptcha'
 import SelectDropdownMenu from '../components/SelectDropdownMenu'
 import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet'
 import CommentBox from '../components/CommentBox'
@@ -643,6 +644,30 @@ const UserSubmitSurvey = () => {
 
 
                         <DateTime
+                            data={currentItem}
+                            onHandleNext={handleNext}
+                            onSaveForm={handleSaveMultiScalePointForm}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true} />
+                    </div>
+                );
+                
+                case 'GoogleRecaptchaForm':
+                return (
+                    <div className=" w-11/12 h-4/6">
+                          {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+
+                        <GoogleRecaptcha
                             data={currentItem}
                             onHandleNext={handleNext}
                             onSaveForm={handleSaveMultiScalePointForm}

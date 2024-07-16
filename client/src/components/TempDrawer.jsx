@@ -104,6 +104,12 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
             </ListItemButton>
           </ListItem>
 
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleItemClick('GoogleRecaptchaForm')}>
+              <ListItemText primary={'GoogleRecaptchaForm'} />
+            </ListItemButton>
+          </ListItem>
+
           {/* <ListItem disablePadding>
             <ListItemButton onClick={() => handleItemClick('SliderTextForm')}>
               <ListItemText primary={'SliderTextForm'} />

@@ -26,6 +26,7 @@ import { uid } from 'uid';
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox';
 import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet';
+import GoogleRecaptcha from '../components/GoogleRecaptcha';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CircularProgress from '@mui/material/CircularProgress';
 import SelectDropdownMenu from '../components/SelectDropdownMenu';
@@ -496,6 +497,19 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row'>
           <DateTime key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'GoogleRecaptchaForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <GoogleRecaptcha key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
