@@ -16,6 +16,8 @@ export const getSingleSurveyDataForUser = async (req, res) => {
 }
 
 export const postSingleSurveyDataForUser = async (req, res) => {
+    const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log(userIP, 'userIP ip address');
     console.log(req.body.formQuestions);
     const surveyId = req.params.surveyId;
     if(req.body.userName === ''){
