@@ -162,9 +162,9 @@ function ResponsiveAppBar() {
                   <Typography textAlign="center" onClick={()=> navigate('/product-display')}>Become A Pro Member</Typography>
                 </MenuItem>
 
-                <MenuItem onClick={handleCloseAdminAnalytics}>
+                {isSuperAdmin && <MenuItem onClick={handleCloseAdminAnalytics}>
                   <Typography textAlign="center" onClick={()=> navigate('/admin-analytics')}>Analytics</Typography>
-                </MenuItem>              
+                </MenuItem>}              
             </Menu>
           </Box>
           <Box sx={{ flexGrow:0.5 , display: { xs: 'flex', md: 'none' },  }}>
