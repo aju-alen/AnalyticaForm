@@ -37,6 +37,7 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 userEmail:req.body.userEmail,
                 formQuestions:req.body.formQuestions,
                 introduction:req.body.introduction,
+                ipAddress:userIP.split(',')[0]
 
             }
         });
