@@ -17,13 +17,26 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 const tiers = [
   {
     title: 'Monthly Subscription',
-    price: '170.00',
+    price: '200.00',
     description: [
       'Access to creating unlimited surveys',
       'Access to unlimited responses',
     ],
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
+    lookup_key: 'dubai_analytica_monthly',
+  },
+  {
+    title: 'Annual Subscription',
+    originalPrice: '2400.00',
+    discountedPrice: (2400 * 0.83).toFixed(2), // Apply 17% discount
+    description: [
+      'Access to creating unlimited surveys',
+      'Access to unlimited responses',
+    ],
+    buttonText: 'Sign up for free',
+    buttonVariant: 'outlined',
+    lookup_key: 'dubai_analytica_annual',
   },
 ];
 
@@ -72,117 +85,127 @@ const ProductDisplayy = () => {
           </Typography>
         </Box>
         <Grid container spacing={3} alignItems="center" justifyContent="center">
-          {tiers.map((tier) => (
-            <Grid
-              item
-              key={tier.title}
-              xs={12}
-              sm={tier.title === 'Enterprise' ? 12 : 6}
-              md={4}
-            >
-              <Card
+      {tiers.map((tier) => (
+        <Grid
+          item
+          key={tier.title}
+          xs={12}
+          sm={tier.title === 'Enterprise' ? 12 : 6}
+          md={4}
+        >
+          <Card
+            sx={{
+              p: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+              border: tier.title === '' ? '1px solid' : undefined,
+              borderColor: tier.title === '' ? 'primary.main' : undefined,
+              background: tier.title === '' ? 'linear-gradient(#f4dea7, #000000)' : undefined,
+            }}
+          >
+            <CardContent>
+              <Box
                 sx={{
-                  p: 2,
+                  mb: 1,
                   display: 'flex',
-                  flexDirection: 'column',
-                  gap: 4,
-                  border: tier.title === '' ? '1px solid' : undefined,
-                  borderColor:
-                    tier.title === '' ? 'primary.main' : undefined,
-                  background:
-                    tier.title === ''
-                      ? 'linear-gradient(#f4dea7, #000000)'
-                      : undefined,
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  color: tier.title === '' ? 'grey.100' : '',
                 }}
               >
-                <CardContent>
-                  <Box
+                <Typography component="h3" variant="h6">
+                  {tier.title}
+                </Typography>
+                {tier.title === '' && (
+                  <Chip
+                    icon={<AutoAwesomeIcon />}
+                    label={tier.subheader}
+                    size="small"
                     sx={{
-                      mb: 1,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      color: tier.title === '' ? 'grey.100' : '',
-                    }}
-                  >
-                    <Typography component="h3" variant="h6">
-                      {tier.title}
-                    </Typography>
-                    {tier.title === '' && (
-                      <Chip
-                        icon={<AutoAwesomeIcon />}
-                        label={tier.subheader}
-                        size="small"
-                        sx={{
-                          background: (theme) =>
-                            theme.palette.mode === 'light' ? '' : 'none',
-                          backgroundColor: 'primary.contrastText',
-                          '& .MuiChip-label': {
-                            color: 'primary.dark',
-                          },
-                          '& .MuiChip-icon': {
-                            color: 'primary.dark',
-                          },
-                        }}
-                      />
-                    )}
-                  </Box>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      color: tier.title === '' ? 'grey.50' : undefined,
-                    }}
-                  >
-                    <Typography component="h3" variant="h2">
-                      AED{tier.price}
-                    </Typography>
-                    
-                  </Box>
-                  <Divider
-                    sx={{
-                      my: 2,
-                      opacity: 0.2,
-                      borderColor: 'grey.500',
+                      background: (theme) => theme.palette.mode === 'light' ? '' : 'none',
+                      backgroundColor: 'primary.contrastText',
+                      '& .MuiChip-label': {
+                        color: 'primary.dark',
+                      },
+                      '& .MuiChip-icon': {
+                        color: 'primary.dark',
+                      },
                     }}
                   />
-                  {tier.description.map((line) => (
-                    <Box
-                      key={line}
+                )}
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  color: tier.title === '' ? 'grey.50' : undefined,
+                }}
+              >
+                {tier.originalPrice ? (
+                  <>
+                    <Typography component="h3" variant="p" sx={{ textDecoration: 'line-through', mr: 1 }}>
+                      AED{tier.originalPrice}
+                    </Typography>
+                    <Typography component="h3" variant="p">
+                      AED{tier.discountedPrice}
+                    </Typography>
+                    <Chip
+                      label="17% OFF"
+                      size="small"
                       sx={{
-                        py: 1,
-                        display: 'flex',
-                        gap: 1.5,
-                        alignItems: 'center',
+                        ml: 2,
+                        backgroundColor: 'secondary.main',
+                        color: 'secondary.contrastText',
                       }}
-                    >
-                      <CheckCircleRoundedIcon
-                        sx={{
-                          width: 20,
-                          color:
-                            tier.title === 'Professional'
-                              ? 'primary.light'
-                              : 'primary.main',
-                        }}
-                      />
-                      <Typography
-                        component="text"
-                        variant="subtitle2"
-                        sx={{
-                          color:
-                            tier.title === '' ? 'grey.200' : undefined,
-                        }}
-                      >
-                        {line}
-                      </Typography>
-                    </Box>
-                  ))}
-                </CardContent>
+                    />
+                  </>
+                ) : (
+                  <Typography component="h3" variant="p">
+                    AED{tier.price}
+                  </Typography>
+                )}
+              </Box>
+              <Divider
+                sx={{
+                  my: 2,
+                  opacity: 0.2,
+                  borderColor: 'grey.500',
+                }}
+              />
+              {tier.description.map((line) => (
+                <Box
+                  key={line}
+                  sx={{
+                    py: 1,
+                    display: 'flex',
+                    gap: 1.5,
+                    alignItems: 'center',
+                  }}
+                >
+                  <CheckCircleRoundedIcon
+                    sx={{
+                      width: 20,
+                      color: tier.title === 'Professional' ? 'primary.light' : 'primary.main',
+                    }}
+                  />
+                  <Typography
+                    component="text"
+                    variant="subtitle2"
+                    sx={{
+                      color: tier.title === '' ? 'grey.200' : undefined,
+                    }}
+                  >
+                    {line}
+                  </Typography>
+                </Box>
+              ))}
+            </CardContent>
                 <CardActions>
                   <form action="https://analyticaform-api.onrender.com/api/stripe/create-checkout-session" method="POST">
                   {/* <form action="http://localhost:3001/api/stripe/create-checkout-session" method="POST"> */}
                     {/* Add a hidden field with the lookup_key of your Price */}
-                    <input type="hidden" name="lookup_key" value="dataanalyticasubscription" />
+                    <input type="hidden" name="lookup_key" value={tier.lookup_key} />
                     <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="emailId" value={emailId} />
                     <Button id="checkout-and-portal-button" type="submit">
