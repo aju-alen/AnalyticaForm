@@ -8,6 +8,7 @@ return (
 <meta name='description' content={description} />
 { /* End standard metadata tags */ }
 { /* Facebook tags */ }
+<meta property="og:site_name" content={name} />
 <meta property="og:type" content={type} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />

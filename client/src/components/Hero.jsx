@@ -25,7 +25,7 @@ const Hero = () => {
             sx={{
                 width: '100%',
                 backgroundImage:
-                    'radial-gradient(ellipse 100% 80% at 50% 5%, hsl(210, 100%, 90%), transparent)',
+                    'radial-gradient(ellipse 100% 200% at 50% 5%, hsl(210, 100%, 90%), transparent)',
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover', // Ensures the gradient covers the whole box
             }}
@@ -174,7 +174,7 @@ const Hero = () => {
                         spacing={2}
                         direction={{ xs: 'column', md: 'row' }}
                     >
-                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={510} alt="My GIF" />
+                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={570} alt="My GIF" />
                         <Stack
                             spacing={3}
                         >
@@ -182,7 +182,7 @@ const Hero = () => {
                                 variant='h3'
                                 sx={{
                                     width: { xs: '100%', sm: '100%' },
-                                    fontWeight: 700,
+                                    fontWeight: 700,alignItems:'flex-end'
                                 }}
                                 fontSize={'clamp(1.5rem, 3vw, 2rem)'}
                                 
@@ -255,7 +255,7 @@ const Hero = () => {
                         spacing={2}
                         direction={{ xs: 'column', md: 'row' }}
                     >
-                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={600} alt="My GIF" />
+                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={570} alt="My GIF" />
 
                         <Stack
                             spacing={3}
