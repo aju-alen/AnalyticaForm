@@ -54,7 +54,7 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
   };
   const handleCloseProductDisplay = () => {
-    navigate('/product-display');
+    navigate('/pricing');
     setAnchorElNav(null);
   };
   const handleCloseAdminAnalytics = () => {
@@ -159,12 +159,16 @@ function ResponsiveAppBar() {
                 </MenuItem>
 
                 <MenuItem onClick={handleCloseProductDisplay}>
-                  <Typography textAlign="center" onClick={()=> navigate('/product-display')}>Become A Pro Member</Typography>
+                  <Typography textAlign="center" onClick={()=> navigate('/pricing')}>Become A Pro Member</Typography>
                 </MenuItem>
 
-                {isSuperAdmin && <MenuItem onClick={handleCloseAdminAnalytics}>
-                  <Typography textAlign="center" onClick={()=> navigate('/admin-analytics')}>Analytics</Typography>
-                </MenuItem>}              
+                 <MenuItem onClick={handleCloseAdminAnalytics}>
+                  <Typography textAlign="center" onClick={()=> navigate('/user-analytics')}>User Analytics</Typography>
+                </MenuItem>   
+
+                 {isSuperAdmin && <MenuItem onClick={handleCloseAdminAnalytics}>
+                  <Typography textAlign="center" onClick={()=> navigate('/admin-analytics')}>Super Admin Data</Typography>
+                </MenuItem>}           
             </Menu>
           </Box>
           <Box sx={{ flexGrow:0.5 , display: { xs: 'flex', md: 'none' },  }}>
@@ -185,15 +189,21 @@ function ResponsiveAppBar() {
               </Button>
 
               <Button
-                onClick={()=>navigate('/product-display')}
+                onClick={()=>navigate('/pricing')}
                 sx={{color: 'black',fontWeight:'500',  display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}              >
                 Become a pro member
               </Button>
 
+
+              <Button
+                onClick={()=>navigate('/user-analytics')}
+                sx={{color: 'black',fontWeight:'500' ,display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}              >
+                User Analytics
+              </Button>
              {isSuperAdmin && <Button
                 onClick={()=>navigate('/admin-analytics')}
                 sx={{color: 'black',fontWeight:'500' ,display: 'block',":hover":{backgroundColor: '#4ABCE3'} }}              >
-                Analytics
+                Super Admin Data
               </Button>}
           </Box>
 

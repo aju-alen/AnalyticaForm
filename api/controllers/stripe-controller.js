@@ -29,7 +29,7 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
             ],
             mode: 'subscription',
             success_url: `${YOUR_DOMAIN}/payment-success?success=true&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${YOUR_DOMAIN}/product-display`,
+            cancel_url: `${YOUR_DOMAIN}/pricing`,
           });
           console.log(session,'session');
         

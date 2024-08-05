@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
       <div style={{ flex: 1 }}>
         {children}
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 };
@@ -31,6 +31,10 @@ const SuccessPaymentPage = lazy(() => import('./pages/SuccessPaymentPage'));
 const ForgetPassword = lazy(() => import('./pages/ForgetPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Analytics = lazy(() => import('./pages/Analytics'));
+const Error404 = lazy(() => import('./pages/404Error'));
+const UserAnalytics = lazy(() => import('./pages/UserAnalytics'));
+const Usersurveyanalytics = lazy(() => import('./pages/User-survey-analytics'));
+const ContactUs = lazy(() => import('./pages/ContactUs'));
 
 
 const App = () => {
@@ -39,6 +43,22 @@ const App = () => {
   const isAuthenticated = () => {
     return !!localStorage.getItem('userAccessToken'); // Change this according to your authentication mechanism
   };
+
+  const isSuperAdmin = () => {
+    console.log(JSON.parse(localStorage.getItem('userAccessToken')).isSuperAdmin, 'isSuperAdmin in protected routes');
+    return JSON.parse(localStorage.getItem('userAccessToken')).isSuperAdmin; // Change this according to your authentication mechanism
+  };
+
+  const SuperAdminProtectedRoute = ({ element, ...rest }) => {
+    if (isSuperAdmin()) {
+      return element;
+    } else {
+      console.log(isSuperAdmin(), 'isSuperAdmin in FINALSprotected routes');
+      console.log('User is not Super Admin');
+      return <Navigate to="/404" />;
+    }
+  };
+
 
   const ProtectedRoute = ({ element, ...rest }) => {
     if (isAuthenticated()) {
@@ -94,7 +114,7 @@ const App = () => {
           element: <ProtectedRoute element={<CreateNewSurvey />} />, // Wrap Dashboard inside ProtectedRoute
         },
         {
-          path: "/product-display",
+          path: "/pricing",
           element: <ProtectedRoute element={<ProductDisplay />} />, // Wrap Dashboard inside ProtectedRoute
         },
         {
@@ -103,7 +123,23 @@ const App = () => {
         },
         {
           path: "/admin-analytics",
-          element: <ProtectedRoute element={<Analytics />} />, // Wrap Dashboard inside ProtectedRoute
+          element: <SuperAdminProtectedRoute element={<Analytics />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/user-analytics",
+          element: <ProtectedRoute element={<UserAnalytics />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/user-survey-analytics/:surveyId",
+          element: <ProtectedRoute element={<Usersurveyanalytics />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/contact-us",
+          element: <ProtectedRoute element={<ContactUs />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/404",
+          element: <Error404 /> // Wrap Dashboard inside ProtectedRoute
         },
       ]
     }

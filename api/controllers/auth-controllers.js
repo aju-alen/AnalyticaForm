@@ -137,7 +137,7 @@ export const verifyEmail = async (req, res) => {
         await prisma.$disconnect()
             sendWelcomeEmail(updatedUser.email, updatedUser.firstName);
         console.log(updatedUser, 'updatedUser');
-        res.status(200).send("Your email has been verified!")
+        res.redirect(`${originUrl}/login`);
     }
     catch (err) {
         console.log(err);
@@ -420,5 +420,46 @@ export const getUserData = async (req, res) => {
     catch(err){
         console.log(err);
         res.status(400).send('An error occoured')
+    }
+}
+
+export const updateUserOf450Response = async (name,email) => {
+    const transporter = createTransport;
+    const mailOptions = {
+        from: process.env.GMAIL_AUTH_USER,
+        to: email,
+        subject: 'Response limit is closeby',
+        html: `
+    <html>
+    <body>
+        <div>
+
+            <img src="https://i.postimg.cc/8cpfZ5sP/215b7754-0e37-41b2-be2f-453d190af861.jpg" alt="Welcome Email" style="display:block;margin:auto;width:50%;" />
+            <p>Dubai Analytica</p>
+
+        </div>
+        <div>
+            <p>Hey ${name},</p>
+            <p>This is to let you know that your survey response limit close to reaching the limit.</p>
+            <br>
+            <p>To increase the response limit, you can purchase our premium service.</p>
+            <br>
+            <p><a href="https://dubaianalytica.com/pricing">View our pricing options</a></p>
+            <br>
+            <p>--------------------</p>
+            <p>Copyright © 2024, Dubai Analytica, its licensors and distributors. All rights are reserved, including those for text and data mining.</p>
+            <br>
+        </div>
+    </body>
+    </html>`
+    }
+
+    try{
+        const response = await transporter.sendMail(mailOptions);
+        console.log("Response limit email sent", response);
+
+    }
+    catch(err){
+        console.log(err);
     }
 }
