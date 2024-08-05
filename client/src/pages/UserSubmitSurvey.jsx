@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { backendUrl } from '../utils/backendUrl'
-import { useParams } from 'react-router-dom'
+import { useParams,useNavigate } from 'react-router-dom'
 import SelectSingleCheckBox from '../components/SelectSingleCheckBox'
 import SelectSingleRadio from '../components/SelectSingleRadio'
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
-import { Button, TextField,Box } from '@mui/material'
+import { Button, TextField,Box,Typography, Stack } from '@mui/material'
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
 import GoogleRecaptcha from '../components/GoogleRecaptcha'
 import SelectDropdownMenu from '../components/SelectDropdownMenu'
@@ -40,6 +40,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 
 const UserSubmitSurvey = () => {
     const { surveyId } = useParams();
+    const navigate = useNavigate();
+
     const [surveyData, setSurveyData] = React.useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
     const [introduction, setIntroduction] = useState(true)
@@ -153,7 +155,9 @@ const UserSubmitSurvey = () => {
         setWelcomePage(false);
     }
 
-    const handleSaveForm = async () => {
+    const handleSaveForm = async (e) => {
+        e.preventDefault();
+
         try {
             const finishedDate = Date.now();
             console.log(finishedDate, 'finishedDate',startDate,'startDate');
@@ -429,12 +433,14 @@ const UserSubmitSurvey = () => {
 
                     {!responseSubmitted &&
                         <div className=" text-center">
+                            <form onSubmit={handleSaveForm}>
                             <TextField
                                 label='Please Enter your name'
                                 value={formData.userName}
                                 onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
                             ></TextField>
                             <TextField
+                                type='email'
                                 label='Please Enter your Email Id'
                                 value={formData.userEmail}
                                 onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
@@ -443,8 +449,9 @@ const UserSubmitSurvey = () => {
                                 <Button
                                     variant='contained'
 
-                                    onClick={handleSaveForm} >Submit Response</Button>
+                                    type="submit" >Submit Response</Button>
                             </div>
+                            </form>
                         </div>
                     }
                     {(isLoading)  && 
@@ -468,7 +475,7 @@ const UserSubmitSurvey = () => {
         switch (currentItem.formType) {
             case 'SinglePointForm':
                 return (
-                    <div className=' w-full'>
+                    <div className=" w-11/12 h-4/6">
                         {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
                             <KeyboardBackspaceIcon fontSize='large' />
                         </Button>}
@@ -490,7 +497,7 @@ const UserSubmitSurvey = () => {
                 );
             case 'SelectDropDownForm':
                 return (
-                    <div className=' w-full'>
+                    <div className=" w-11/12 h-4/6">
                         {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
                             <KeyboardBackspaceIcon fontSize='large' />
                         </Button>}
@@ -513,7 +520,8 @@ const UserSubmitSurvey = () => {
 
             case 'SingleCheckForm':
                 return (
-                    <div className=' w-full'>
+                    // <div className=' w-full'>
+                    <div className=" w-11/12 h-4/6">
                         {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
                             <KeyboardBackspaceIcon fontSize='large' />
                         </Button>}
@@ -1039,8 +1047,8 @@ const UserSubmitSurvey = () => {
 
             case 'MultiScalePoint':
                 return (
-                    // <div className=" w-11/12 h-4/6">
-                    <div className=" w-full">
+                    <div className=" w-11/12 h-4/6">
+                    {/* <div className=" w-full"> */}
                         {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
                             <KeyboardBackspaceIcon fontSize='large' />
                         </Button>}
@@ -1145,6 +1153,33 @@ const UserSubmitSurvey = () => {
                 {(surveyData.surveyForms && !introduction) && renderCurrentComponent()}
 
             </div>
+            <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '10px 20px',
+        backgroundColor: '#1976d2',
+        borderTop: '1px solid #ddd',
+        position: 'fixed',
+        bottom: 0,
+        width: '100%',
+      }}
+    >
+      <Typography variant="body2" color="white">
+        Powered by Dubai Analytica
+      </Typography>
+      <Stack  spacing={0}>
+      <Typography variant="body2" color="white">
+        Create Your Own Survey
+      </Typography>
+      <Button variant='contained' color='warning' onClick={()=>navigate('/login')}>
+        Create Survey
+      </Button>
+      </Stack>
+      <Typography variant="body2" color="white">
+        Report Abuse
+      </Typography>
+    </Box>
         </ThemeProvider >
     )
 }

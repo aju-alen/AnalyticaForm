@@ -6,8 +6,10 @@ import { lazy, Suspense } from 'react';
 const Layout = ({ children }) => {
   const location = useLocation();
   const hideNavBarPages = ['/', '/register', '/login', '/forget-password'];
+  const hideFooterPages = ['/user-survey'];
   const isDynamicRoute = (path) => /^\/user-survey\/.+$/.test(path);
   const shouldHideNavBar = hideNavBarPages.includes(location.pathname) || isDynamicRoute(location.pathname);
+  const shouldHideFooter = hideFooterPages.includes(location.pathname) || isDynamicRoute(location.pathname);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", maxWidth: "100vw" }}>
@@ -15,8 +17,8 @@ const Layout = ({ children }) => {
       <div style={{ flex: 1 }}>
         {children}
       </div>
-      <Footer />
-    </div>
+     {!shouldHideFooter && <Footer />}  
+       </div>
   );
 };
 

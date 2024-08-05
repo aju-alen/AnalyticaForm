@@ -73,7 +73,7 @@ export const postSingleSurveyDataForUser = async (req, res) => {
         });
         console.log(getResponseCount);
         await prisma.$disconnect();
-        if(getResponseCount.surveyResponses > 410){ //change to 450
+        if(getResponseCount.surveyResponses === 450 || getResponseCount.surveyResponses === 475){ //change to 450
             console.log(getResponseCount.user.firstName,getResponseCount.user.email,'nameeeeee-----email');
             updateUserOf450Response(getResponseCount.user.firstName,getResponseCount.user.email);
 
