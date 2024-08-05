@@ -60,6 +60,24 @@ function HomeNavBar() {
       }}
     >
       <Container maxWidth="lg" sx={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+      <Toolbar
+          variant="regular"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0,
+            backgroundColor: '#DBE9B9',
+            borderRadius: '999px',
+            bgcolor: 'rgba(255, 255, 255, 0.1)',
+            // backdropFilter: 'blur(200px)',
+            maxHeight: 40,
+            // border: '1px solid',
+            borderColor: 'divider',
+            width: '100%',
+            // boxShadow: `0 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
+          }}
+        >
       <img
               src="https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png"
               style={logoStyle}
@@ -67,23 +85,7 @@ function HomeNavBar() {
               onClick={() => navigate('/')}
 
             />
-        <Toolbar
-          variant="regular"
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexShrink: 0,
-            borderRadius: '999px',
-            // bgcolor: 'rgba(255, 255, 255, 0.4)',
-            backdropFilter: 'blur(24px)',
-            maxHeight: 40,
-            // border: '1px solid',
-            borderColor: 'divider',
-            width: '80%',
-            // boxShadow: `0 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
-          }}
-        >
+       
           
           <Box
             sx={{

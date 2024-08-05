@@ -174,7 +174,7 @@ const Hero = () => {
                         spacing={2}
                         direction={{ xs: 'column', md: 'row' }}
                     >
-                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={570} alt="My GIF" />
+                        <img src='https://i.postimg.cc/qB2kr4gL/analytics.jpg' width={570}  alt="My GIF" />
                         <Stack
                             spacing={3}
                         >
@@ -255,7 +255,7 @@ const Hero = () => {
                         spacing={2}
                         direction={{ xs: 'column', md: 'row' }}
                     >
-                        <img src='https://i.postimg.cc/7LC9QbRX/first.png' width={570} alt="My GIF" />
+                        <img src='https://i.postimg.cc/Z55Z6NH7/contact.jpg' width={570} alt="My GIF" />
 
                         <Stack
                             spacing={3}

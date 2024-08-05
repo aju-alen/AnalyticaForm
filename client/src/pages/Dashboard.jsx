@@ -44,7 +44,7 @@ const Dashboard = () => {
         try {
             setInputFeildVisible(true);
             if (input && inputFeildVisible && inputText.length > 0) {
-                if (userSurveyData.length > 5) {
+                if (userSurveyData.length > 6) {
                     alert('You can only create 5 surveys with a free account. Please upgrade to premium to create more surveys.');
                     return;
                 }

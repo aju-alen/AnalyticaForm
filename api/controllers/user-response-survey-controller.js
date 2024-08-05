@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { updateUserOf450Response } from './auth-controllers.js';
 const prisma = new PrismaClient();
 
 export const getSingleSurveyDataForUser = async (req, res) => {
@@ -37,7 +38,9 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 userEmail:req.body.userEmail,
                 formQuestions:req.body.formQuestions,
                 introduction:req.body.introduction,
-                ipAddress:userIP.split(',')[0]
+                ipAddress:userIP.split(',')[0],
+                userResponseTime:req.body.userResponseTime
+
 
             }
         });
@@ -52,7 +55,31 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 }
             }
         });
+        const getResponseCount = await prisma.survey.findUnique({
+            where:{
+                id:surveyId
+            },
+            select: {
+                surveyResponses: true, // Select the specific field from the Survey model
+                user: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                  },
+                },
+              },
+            
+        });
+        console.log(getResponseCount);
         await prisma.$disconnect();
+        if(getResponseCount.surveyResponses > 410){ //change to 450
+            console.log(getResponseCount.user.firstName,getResponseCount.user.email,'nameeeeee-----email');
+            updateUserOf450Response(getResponseCount.user.firstName,getResponseCount.user.email);
+
+
+          
+        }
         res.status(201).send({message:'User response submitted successfully',createUserResponse});
 
     }

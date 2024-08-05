@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -23,7 +23,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Typography } from '@mui/material';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 
 
@@ -34,16 +34,45 @@ export function MySurvery({ userSurveyData }) {
   dayjs.extend(relativeTime);
 
   const [open, setOpen] = React.useState(false);
-  const [surveyId, setSurveyId] = React.useState(''); 
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [surveyId, setSurveyId] = React.useState('');
 
   const handleClickOpen = (surveyId) => {
     setSurveyId(surveyId);
     setOpen(true);
   };
 
+  const handleDeleteOpen = (surveyId) => {
+    setSurveyId(surveyId);
+    setDeleteOpen(true);
+  };
+
   const handleClose = () => {
     setOpen(false);
+    setDeleteOpen(false);
   };
+
+  const handleDeleteSurvey = async (surveyId) => {
+    try{
+      await refreshToken();
+      const deleteSurvey = await axiosWithAuth.delete(`${backendUrl}/api/survey/delete-survey/${surveyId}`);
+      console.log('delete survey', deleteSurvey);
+      setDeleteOpen(false);
+
+
+    }
+    catch{
+      if (err.response.status === 401) {
+        console.log('unauthorized');
+        localStorage.removeItem('userAccessToken');
+        navigate('/login');
+      }
+      else {
+        console.log(err);
+
+    }
+  }
+}
 
 
   const handleConvertToExcelAnswer = async (surveyId) => {
@@ -132,6 +161,7 @@ export function MySurvery({ userSurveyData }) {
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Response</TableCell>
                   <TableCell align="center">Export to Excel</TableCell>
+                  <TableCell align="center">Delete Survey</TableCell>
                   {/* <TableCell align="center">Export to Excel(Display answers)</TableCell>
                   <TableCell align="center">Export to Excel(Display Index)</TableCell> */}
                 </TableRow>
@@ -148,7 +178,7 @@ export function MySurvery({ userSurveyData }) {
                           variant='text'
                           color="primary"
                         >
-                        {survey.surveyTitle}
+                          {survey.surveyTitle}
                         </Button>
                       </Link>
                     </TableCell>
@@ -158,35 +188,63 @@ export function MySurvery({ userSurveyData }) {
                     <TableCell align="center">{survey.surveyResponses}</TableCell>
 
                     <TableCell align="center">
-                    <Button variant="" onClick={()=>handleClickOpen(survey.id)}>
-                    <img src={excelIcon} alt="excel icon" className='cursor-pointer' />
-                    </Button>
+                      <Button variant="" onClick={() => handleClickOpen(survey.id)}>
+                        <img src={excelIcon} alt="excel icon" className='cursor-pointer' />
+                      </Button>
 
-                    <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"You can download the user response in two formats"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-          >
-           Display as Answers- This will display the user response in the excel sheet as answers.
-          </DialogContentText>
-          <DialogContentText>
-            Display as Index- This will display the user response in the excel sheet as index.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => handleConvertToExcelAnswer(surveyId)}>Display as Answers</Button>
-          <Button onClick={() => handleConvertToExcelIndex(surveyId)} autoFocus>
-            Display as Index
-          </Button>
-        </DialogActions>
-      </Dialog>
+                      <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                      >
+                        <DialogTitle id="alert-dialog-title">
+                          {"You can download the user response in two formats"}
+                        </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText
+                          >
+                            Display as Answers- This will display the user response in the excel sheet as answers.
+                          </DialogContentText>
+                          <DialogContentText>
+                            Display as Index- This will display the user response in the excel sheet as index.
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={() => handleConvertToExcelAnswer(surveyId)}>Display as Answers</Button>
+                          <Button onClick={() => handleConvertToExcelIndex(surveyId)} autoFocus>
+                            Display as Index
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button variant="" onClick={() => handleDeleteOpen(survey.id)}>
+                        <HighlightOffIcon color='error' />
+                      </Button>
+
+                      <Dialog
+                        open={deleteOpen}
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                      >
+                        <DialogTitle id="alert-dialog-title">
+                          {"Are you sure you want to delete this survey?"}
+                        </DialogTitle>
+                        <DialogContent>
+                          
+                          <DialogContentText>
+                            If you continue, you will not only loose your survey but also the responses from the participants.
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={() => handleDeleteSurvey(surveyId)}>Continue to delete</Button>
+                          <Button onClick={handleClose} variant='contained'  autoFocus>
+                            Cancel and go back
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
                     </TableCell>
 
                     {/* <TableCell align="center">

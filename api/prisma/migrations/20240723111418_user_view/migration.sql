@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Survey` ADD COLUMN `surveyViews` INTEGER NOT NULL DEFAULT 0;

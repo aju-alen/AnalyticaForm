@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { backendUrl } from '../utils/backendUrl.js';
+import { frontendURL } from '../utils/corsFe.js';
+
 const prisma = new PrismaClient();
 
 
@@ -137,7 +139,7 @@ export const verifyEmail = async (req, res) => {
         await prisma.$disconnect()
             sendWelcomeEmail(updatedUser.email, updatedUser.firstName);
         console.log(updatedUser, 'updatedUser');
-        res.redirect(`${originUrl}/login`);
+        res.redirect(`${frontendURL}/login`);
     }
     catch (err) {
         console.log(err);

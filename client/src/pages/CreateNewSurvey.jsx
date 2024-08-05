@@ -20,8 +20,20 @@ import StarRating from '../components/StarRating';
 import SmileyRating from '../components/SmileyRating';
 import ThumbsUpDown from '../components/ThumbsUpDown';
 import SliderText from '../components/SliderText';
+import Calender from '../components/Calender';
 import DateTime from '../components/DateTime';
-import { Stack } from '@mui/material';
+import CountrySlect from '../components/CountrySlect';
+import RankOrder from '../components/RankOrder';
+import ConstantSum from '../components/ConstantSum';
+import NumericSlider from '../components/NumericSlider';
+import SelectOneImage from '../components/SelectOneImage';
+import SelectMultipleImage from '../components/SelectMultipleImage';
+import RankOrderImage from '../components/RankOrderImage';
+import PresentationText from '../components/PresentationText';
+import SectionHeading from '../components/SectionHeading';
+import SectionSubHeading from '../components/SectionSubHeading';
+import PickAndRank from '../components/PickAndRank';
+import { Paper, Stack } from '@mui/material';
 import { uid } from 'uid';
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox';
@@ -31,13 +43,23 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import CircularProgress from '@mui/material/CircularProgress';
 import SelectDropdownMenu from '../components/SelectDropdownMenu';
 import SurveyIntro from '../components/SurveyIntro';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../utils/theme';
 import { ContentCopy } from '@mui/icons-material';
+
+
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
   const navigate = useNavigate();
   const { surveyId } = useParams();
 
+  const [showInfo, setShowInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [addIntro, setAddIntro] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
@@ -65,6 +87,7 @@ const CreateNewSurvey = () => {
   };
 
   const handleItemSelect = (item) => {
+    console.log(item, 'item in handleItemSelect');
     setSelectedItems([...selectedItems, item]);
     setSurveyData({ ...surveyData, surveyForms: [...surveyData.surveyForms, { id: uid(5), formType: item }] })
   };
@@ -249,6 +272,7 @@ const CreateNewSurvey = () => {
     try {
       // handleSaveSinglePointForm();
       await refreshToken();
+      console.log(surveyData, 'surveyData in Create Survey Form');
       const updateSurveyData = await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, surveyData);
       navigate('/dashboard');
     }
@@ -299,16 +323,36 @@ const CreateNewSurvey = () => {
     getSurveyData();
   }, []);
 
+  useEffect(() => {
+    const handlePopState = () => {
+      setShowInfo(true);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  const handleClose = () => {
+    setShowInfo(false);
+    navigate(1); // Move forward in history, essentially canceling the back navigation
+  };
+
+
   const selectItem = surveyData.surveyForms.map((item, index) => {
     console.log(item, 'item in selectItem mapppppppp',index);
     if (item.formType === 'SinglePointForm') {
 
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} onSaveIndicator={setIsSaved} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -317,11 +361,12 @@ const CreateNewSurvey = () => {
     }
     else if (item.formType === 'SingleCheckForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -330,11 +375,12 @@ const CreateNewSurvey = () => {
     }
     else if (item.formType === 'MultiScalePoint') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -344,11 +390,12 @@ const CreateNewSurvey = () => {
 
     else if (item.formType === 'MultiScaleCheckBox') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -372,11 +419,12 @@ const CreateNewSurvey = () => {
 
     else if (item.formType === 'SelectDropDownForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SelectDropdownMenu key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -386,11 +434,12 @@ const CreateNewSurvey = () => {
 
     else if (item.formType === 'CommentBoxForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <CommentBox key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -400,11 +449,12 @@ const CreateNewSurvey = () => {
 
     else if (item.formType === 'SingleRowTextForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SingleRowText key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -414,11 +464,12 @@ const CreateNewSurvey = () => {
 
     else if (item.formType === 'EmailAddressForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <EmailAddress key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -427,11 +478,12 @@ const CreateNewSurvey = () => {
     }
     else if (item.formType === 'ContactInformationForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <ContactInformation key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -440,38 +492,57 @@ const CreateNewSurvey = () => {
     }
     else if (item.formType === 'StarRatingForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <StarRating key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
+        </Stack>
+        
+        <Button
+                  sx={{
+                    width: { xs: '100%', md: '90%' },
+                    mt: 2,
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={toggleDrawer}>
+                  Add Form
+                </Button>
         </Stack>
       )
     }
     else if (item.formType === 'SmileyRatingForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SmileyRating key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
         </Stack>
+
+</Stack>
       )
     }
 
     else if (item.formType === 'ThumbUpDownForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <ThumbsUpDown key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -481,8 +552,66 @@ const CreateNewSurvey = () => {
 
     else if (item.formType === 'SliderTextForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SliderText key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'NumericSliderForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <NumericSlider key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'SelectOneImageForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <SelectOneImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'SelectMultipleImageForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <SelectMultipleImage key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'RankOrderImageForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <RankOrderImage key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -493,10 +622,100 @@ const CreateNewSurvey = () => {
       )
     }
 
+    else if (item.formType === 'PresentationTextForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <PresentationText key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'SectionHeadingForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <SectionHeading key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'SectionSubHeadingForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <SectionSubHeading key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
     else if (item.formType === 'DateTimeForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <DateTime key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'GoogleRecaptchaForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <GoogleRecaptcha key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'CalenderForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <Calender
+           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    
+    else if (item.formType === 'CountrySelectForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row'>
+          <CountrySlect
+           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -506,13 +725,47 @@ const CreateNewSurvey = () => {
         </Stack>
       )
     }
-    else if (item.formType === 'GoogleRecaptchaForm') {
+
+    else if (item.formType === 'RankOrderForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
-          <GoogleRecaptcha key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <RankOrder
+           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'PickAndRankForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <PickAndRank
+           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+
+    else if (item.formType === 'ConstantSumForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <ConstantSum
+           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -529,9 +782,39 @@ const CreateNewSurvey = () => {
         <CircularProgress />
       </Box>
     ) : (
-      <React.Fragment>
+      <ThemeProvider theme={theme}>
         <CssBaseline />
+        <Box
+        sx={{
+          backgroundColor:'#F4F3F6'
+        }}
+          >
         <Container maxWidth="lg">
+              <AppBar position='sticky' >
+                <Toolbar 
+                  sx={
+                    {
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                    }
+                  }
+                >
+                  <Button
+                    variant='contained'
+                    color='warning'
+                    onClick={toggleDrawer}>
+                    Add Question
+                  </Button>
+                  
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={handleSubmitForm}
+                  >
+                    Submit Your Survey
+                  </Button>
+                </Toolbar>
+              </AppBar>
           <TextField
             fullWidth
             id="standard-basic"
@@ -547,7 +830,7 @@ const CreateNewSurvey = () => {
               <TextField
                 id="outlined-basic"
                 label="Survey URL"
-                variant='filled'
+                variant='outlined'
                 sx={{
                   mt: 2,
                   width: { xs: '100%', md: '42%' },
@@ -569,7 +852,7 @@ const CreateNewSurvey = () => {
 
           }
 
-          <Stack spacing={12}>
+          <Stack spacing={4}>
             {addIntro && <Stack spacing={2} direction='row'>
               <SurveyIntro onSaveForm={handleSaveIntro} data={surveyData.surveyIntroduction} disableText={false} disableButtons={false} />
               <Button
@@ -579,23 +862,29 @@ const CreateNewSurvey = () => {
                 <CancelIcon />
               </Button>
             </Stack>}
+
             {selectItem}
+            
             <div className="flex justify-center">
-              <Stack spacing={2} direction='row'>
-                <Button
+              <Stack spacing={1} direction='row'>
+                {/* <Button
                   sx={{
-                    width: { xs: '100%', md: '90%' },
-                    mt: 2,
+                    width: { xs: '100%', md: '100%' },
+                    height: { xs: '100%', md: '70%' },
                   }}
                   variant="contained"
                   color="primary"
                   onClick={toggleDrawer}>
-                  Add Form
-                </Button>
-                <Button
+                  Add Question
+                </Button> */}
+
+
+
+                {/* <Button
                   sx={{
                     width: { xs: '100%', md: '100%' },
-                    mt: 2,
+                    height: { xs: '100%', md: '50%' },
+                    fontSize: { xs: 12, md: 10 },
                   }}
                   variant="contained"
                   color="primary"
@@ -603,7 +892,7 @@ const CreateNewSurvey = () => {
                     handleAddIntro
                   }>
                   Show Form Intro
-                </Button>
+                </Button> */}
               </Stack>
             </div>
           </Stack>
@@ -623,18 +912,30 @@ const CreateNewSurvey = () => {
           }} >
           </Box> */}
 
-          <Button
+            <div className="flex justify-center">
+          {/* <Button
             fullWidth
-            sx={{ mt: 2, }}
+            sx={{ 
+              width: { xs: '100%', md: '50%' },
+             }}
             variant="contained" color="success" onClick={handleSubmitForm}>
             Submit Your Survey
-          </Button>
+          </Button> */}
+          </div>
           {/* <Button variant="contained" color="secondary" onClick={() => navigate(`/user-survey/${surveyId}`)}>Survey Link </Button> */}
         </Container>
+        {showInfo && (
+        <div style={{ position: 'fixed', top: '0', left: '0', width: '100%', background: '#fff' }}>
+          <div style={{ padding: '20px' }}>
+            <p>This is the information component.</p>
+            <button onClick={handleClose}>Close</button>
+          </div>
+        </div>
+      )}
 
         <TemporaryDrawer open={isDrawerOpen} toggleDrawer={toggleDrawer} handleItemSelect={handleItemSelect} />
-
-      </React.Fragment>
+            </Box>
+      </ThemeProvider>
     )
   );
 

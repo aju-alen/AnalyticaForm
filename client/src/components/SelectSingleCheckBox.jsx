@@ -8,6 +8,10 @@ import Checkbox from '@mui/material/Checkbox';
 import ClearIcon from '@mui/icons-material/Clear';
 import Button from '@mui/material/Button';
 import { uid } from 'uid';
+import theme from '../utils/theme';
+import { ThemeProvider } from '@mui/material/styles';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+
 
 
 
@@ -24,19 +28,19 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
     formType: 'SingleCheckForm'
   });
 
-  // const [debouncedValue, setDebouncedValue] = React.useState('');
+  const [debouncedValue, setDebouncedValue] = React.useState('');
 
-  // useEffect(() => {
-  //   const handler = setTimeout(() => {
-  //     setDebouncedValue(formData);
-  //     onSaveForm(formData);
-  //   }, 1000); // 500ms delay
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(formData);
+      onSaveForm(formData);
+    }, 1000); // 500ms delay
 
-  //   // Cleanup function to cancel the timeout if value changes before delay
-  //   return () => {
-  //     clearTimeout(handler);
-  //   };
-  // }, [formData]);
+    // Cleanup function to cancel the timeout if value changes before delay
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [formData]);
 
   const handleAddOptions = () => {
     setFormData({
@@ -91,21 +95,47 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container maxWidth="lg">
-        <Box sx={{
-          bgcolor: '',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexGrow: 1,
-          height: "100%",
-          mt: { xs: 4, md: 8 },
-          width: '100%',
-          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Updated box shadow for a subtle effect
-          borderRadius: 8, // Increased border radius for rounded corners
-          p: 3, // Increased padding for inner content
-        }} >
+      <Container maxWidth="xl">
+      <Box sx={{
+  bgcolor: 'white',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexGrow: 1,
+  height: "100%",
+  mt: { xs: 4, md: 0 },
+  width: '100%',
+  boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
+  borderRadius: 2, // Increased border radius for rounded corners
+  p: 2, // Increased padding for inner content
+  overflowX: 'auto',
+  border: '2px solid #f0fbf0', // Added border for more distinction
+  transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
+  position: 'relative', // Make sure the box is positioned relative for the pseudo-element
+  backgroundColor:'#F4F3F6',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '0%', // Set initial left position for the line
+    transform: 'translateX(-50%)',
+    height: '100%',
+    width: '12px', // Adjust the width of the line
+    bgcolor: '#1976d2', // Change to your desired color
+    opacity: 0, // Initially hidden
+    transition: 'opacity 0.3s ease-in-out', // Smooth transition for the line
+  },
+  
+  '&:hover::before': {
+    opacity: 1, // Make the lines visible on hover
+  },
+  '&:hover': {
+    boxShadow: '0px 1px rgba(0, 0, 0, 0.2)', // Updated box shadow on hover
+    transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
+    backgroundColor:'#F4FFF8',
+  },
+}}>
           <TextField
             fullWidth id="standard-basic"
             label={!disableText ? "Insert input" : ''}
@@ -116,7 +146,10 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
               readOnly: disableText,
             }}
           />
-          <Stack spacing={2}>
+           <Stack spacing={1} sx={{
+            width: '20%',
+            marginRight: 'auto',
+          }} >
             {formData.options.map((opt) => {
               console.log(formData.selectedValue.includes(opt.id), 'selectedValue');
               return (
@@ -127,10 +160,21 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                     onChange={() => handleCheckboxChange(opt.id)}
 
                   />
+                   <Box
+               sx={{
+                 position: 'relative',
+                 display: 'flex',
+                 alignItems: 'center',
+                 width: '100%',
+                 '&:hover .delete-button': {
+                   visibility: 'visible',
+                 },
+               }}
+             >
                   <TextField
                     fullWidth
                     id="standard-basic"
-                    label={!disableText ? "Type Your Response Here" : ''}
+                    placeholder={!disableText ? "Type Your Response Here" : ''}
                     variant="standard"
                     value={opt.value}
                     onChange={(e) =>
@@ -146,23 +190,49 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                     InputProps={{
                       readOnly: disableText,
                     }}
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        fontSize: '0.8rem',
+                      },
+                      '& .MuiInput-underline:before': {
+                        borderBottom: 'none',
+                      },
+                      // '& .MuiInput-underline:after': {
+                      //   borderBottom: 'none',
+                      // },
+                      '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                        borderBottom: 'none',
+                      },
+                    }}
                   />
                  
 
-                  {!disableButtons && (<Button
-                    color='error'
-                    variant='outlined'
-                    onClick={() => handleDeleteOptions(opt.id)}><ClearIcon
-                      fontSize='small'
-                    /></Button>)}
+                 {!disableButtons && (
+                 <Button
+                   className="delete-button"
+                   color="error"
+                   variant="text"
+                   sx={{
+                     position: 'absolute',
+                     left: '100%',
+                     visibility: 'hidden',
+                     transition: 'visibility 0.1s ease-in-out',
+
+                   }}
+                   onClick={() => handleDeleteOptions(option.id)}
+                 >
+                   <HighlightOffIcon fontSize="small" />
+                 </Button>
+               )}
+               </Box>
                 </Stack>
               )
             })}
-
-          </Stack>
-          <Stack spacing={2} direction='row'>
-            {!disableButtons && (
+             {!disableButtons && (
               <Button
+                sx={{
+                  width: '70%',
+                }}
                 onClick={handleAddOptions}
                 variant='outlined'
                 color="primary"
@@ -170,12 +240,23 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
               >Add new row</Button>
             )}
 
-            <Button
+          </Stack>
+          <Stack spacing={2} direction='row'>
+            {/* {!disableButtons && (
+              <Button
+                onClick={handleAddOptions}
+                variant='outlined'
+                color="primary"
+                size="small"
+              >Add new row</Button>
+            )} */}
+
+{disableButtons && <Button
               variant='contained'
               color="success"
               onClick={handleSaveForm}>
-              {!disableButtons ? 'Save This Form' : 'Next Question'}
-            </Button>
+               Next Question
+            </Button>}
 
             {/* {!disableButtons && <Button
               variant='contained'
@@ -187,8 +268,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
           </Stack>
         </Box>
       </Container>
-    </React.Fragment>
-
+      </React.Fragment>
   )
 }
 

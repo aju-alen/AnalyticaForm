@@ -9,6 +9,8 @@ import userResponseSurveyRoute from './routes/user-response-survey.route.js';
 import excelRoute from './routes/excel-route.js';
 import stripeRoute from './routes/stripe-route.js';
 import superAdminData from './routes/superadmin-data-route.js';
+import awsS3Route from './routes/awsS3-route.js';
+import sendEmailRoute from './routes/sendEmail-route.js';
 import bodyParser from 'body-parser';
 import stripe from 'stripe';
 import { PrismaClient } from '@prisma/client'
@@ -139,6 +141,8 @@ app.use('/api/user-response-survey', userResponseSurveyRoute)
 app.use('/api/stripe',stripeRoute)
 app.use('/api/excel',excelRoute)
 app.use('/api/superadmin-data',superAdminData)
+app.use('/api/s3',awsS3Route)
+app.use('/api/send-email',sendEmailRoute)
 
 
 

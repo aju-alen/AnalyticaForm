@@ -208,7 +208,7 @@ const ProductDisplayy = () => {
                     <input type="hidden" name="lookup_key" value={tier.lookup_key} />
                     <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="emailId" value={emailId} />
-                    <Button id="checkout-and-portal-button" type="submit">
+                    <Button id="checkout-and-portal-button" type="submit" variant='contained'>
                       Proceed to checkout
                     </Button>
                   </form>

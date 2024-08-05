@@ -60,6 +60,8 @@ model Survey {
   surveyStatus String @default("Draft")
   surveyForms Json  @default("[]")
   selectedItems Json @default("[]")
+  surveyViews Int   @default(0)
+  surveyCompleted Int   @default(0)
   surveyResponses Int   @default(0)
   surveyIntroduction  String?  @db.LongText
   formQuestions Json @default("[]") 
@@ -78,6 +80,7 @@ model UserSurveyResponse{
   userName String @default("Anonymous")
   userResponse Json
   ipAddress String @default("")
+  userResponseTime Int @default(0)
   formQuestions Json
   introduction Boolean
   createdAt DateTime @default(now())

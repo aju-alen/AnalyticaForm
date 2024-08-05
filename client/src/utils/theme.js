@@ -5,9 +5,10 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   typography: {
     fontFamily: [
-      'Poppins', // Add the Poppins font
-      'Arial',
+      'Montserrat',
       'sans-serif',
+      'Arial',
+      'Poppins', // Add the Poppins font
     ].join(','),
   },
 });

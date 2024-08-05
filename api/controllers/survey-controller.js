@@ -97,4 +97,115 @@ export const getAllSurveyResponse = async (req, res) => {
     }
 }
 
+export const getAllSurveyOfOneUser = async (req, res) => {
+    try{
+        const userId = req.params.userId;
+        const getAllSurvey = await prisma.survey.findMany({
+            where: {
+                userId
+            },
+            select:{
+                surveyTitle:true,
+                surveyStatus:true,
+                surveyIntroduction:true,
+                createdAt:true,
+                updatedAt:true,
+                surveyResponses:true,
+                id:true,
+                userId:true,
+                surveyViews:true,
+                surveyCompleted:true,
+            }
+        });
+        await prisma.$disconnect();
+        res.status(200).send(getAllSurvey);
+
+    }
+    catch (err){
+        console.log(err);
+        res.status(500).send({ message: 'Could not get all surveys of one user' });
+    }
+}
+
+export const updateUserView = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try {
+        const updateView = await prisma.survey.update({
+            where: {
+                id: surveyId
+            },
+            data: {
+                surveyViews: {
+                    increment: 1
+                }
+            }
+        });
+        await prisma.$disconnect();
+        res.status(200).send({ message: 'Survey view updated successfully' });
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+}
+
+export const updateUserCompleted = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try {
+        const updateCompleted = await prisma.survey.update({
+            where: {
+                id: surveyId
+            },
+            data: {
+                surveyCompleted: {
+                    increment: 1
+                }
+            }
+        });
+        await prisma.$disconnect();
+        res.status(200).send({ message: 'Survey completed updated successfully' });
+        
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+}
+
+export const deleteUserSurvey = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    console.log(surveyId, 'surveyId');
+    console.log(req.tokenId,'req.tokenId');
+    try{
+        const confirmUserIsOwner = await prisma.survey.findUnique({
+            where:{
+                id:surveyId
+            },
+            select:{
+                userId:true
+            }
+        });
+        if(confirmUserIsOwner.userId !== req.tokenId){
+            return res.status(403).send({message:'Unauthorized'});
+        }
+        const deleteUserResponse = await prisma.userSurveyResponse.deleteMany({
+            where:{
+                surveyId:surveyId
+            }
+        });
+        const deleteUserSurvey = await prisma.survey.delete({
+            where:{
+                id:surveyId
+            }
+        });
+        await prisma.$disconnect();
+        res.status(200).send({message:'Survey deleted successfully'});
+
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send({message:'Internal server error'});
+    }
+}
 

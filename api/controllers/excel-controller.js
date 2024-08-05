@@ -10,8 +10,8 @@ export const exportToExcel = async (req, res) => {
         const formQuestions = data[0].formQuestions;
 
         // Create headers
-        const headers = ['Name', 'Email ID'];
-        const subHeaders = ['', ''];
+        const headers = ['Name', 'Email ID','Response Id','IP Address'];
+        const subHeaders = ['', '','',''];
         const questionMap = [];
 
         formQuestions.forEach(formQuestion => {
@@ -49,9 +49,9 @@ export const exportToExcel = async (req, res) => {
         worksheet.addRow([]);
 
         // Add user data to the worksheet
+        console.log(data, 'data in fiunal dataaaaaa');
         data.forEach(user => {
-            const userInfo = [user.userName, user.userEmail];
-
+            const userInfo = [user.userName, user.userEmail,user.id,user.ipAddress];
             // Initialize user responses with empty strings for each header
             const userResponses = new Array(questionMap.length).fill('');
 
@@ -63,7 +63,7 @@ export const exportToExcel = async (req, res) => {
                         console.log(selected,'inside !== MultiScaleCheckBox');
                         const subHeaderIndex = subHeaders.indexOf(selected.question);
                         if (subHeaderIndex !== -1) {
-                            userResponses[subHeaderIndex - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
+                            userResponses[subHeaderIndex - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     }
                     else if ( response.formType === "ContactInformationForm") {
@@ -71,20 +71,20 @@ export const exportToExcel = async (req, res) => {
                         console.log(selected,'inside !== MultiScaleCheckBox');
                         const subHeaderIndex = subHeaders.indexOf(selected.question);   
                         if (subHeaderIndex !== -1) {
-                            userResponses[subHeaderIndex - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
+                            userResponses[subHeaderIndex - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     }
                     else if (response.formType === "SingleCheckForm") {
                         const subHeaderIndex = subHeaders.indexOf(selected.rowQuestion);
                         if (subHeaderIndex !== -1) {
-                            userResponses[subHeaderIndex - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
+                            userResponses[subHeaderIndex - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     } else if (response.formType === "MultiScaleCheckBox") {
                         const headerRowIdx = headers.indexOf(response.question + ' ' + selected.question);
                         const subHeaderIdx = subHeaders.indexOf(selected.answer, headerRowIdx);
                         console.log(subHeaderIdx, 'subHeaderIdx', headerRowIdx, 'headerRowIdx');
                         if (subHeaderIdx !== -1) {
-                            userResponses[subHeaderIdx - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
+                            userResponses[subHeaderIdx - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     } else {
                         console.log('inside else');
@@ -92,7 +92,7 @@ export const exportToExcel = async (req, res) => {
                         const headerIndex = headers.indexOf(response.question);
                         console.log(headerIndex, 'headerIndex');
                         if (headerIndex !== -1) {
-                            userResponses[headerIndex - 2] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
+                            userResponses[headerIndex - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     }
                 });
