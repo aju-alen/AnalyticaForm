@@ -492,7 +492,7 @@ const CreateNewSurvey = () => {
     }
     else if (item.formType === 'StarRatingForm') {
       return (
-        <Stack>
+        
         <Stack spacing={2} key={index} direction='row' position='relative'>
           <StarRating key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
@@ -502,18 +502,6 @@ const CreateNewSurvey = () => {
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
-        </Stack>
-        
-        <Button
-                  sx={{
-                    width: { xs: '100%', md: '90%' },
-                    mt: 2,
-                  }}
-                  variant="contained"
-                  color="primary"
-                  onClick={toggleDrawer}>
-                  Add Form
-                </Button>
         </Stack>
       )
     }
