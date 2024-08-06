@@ -95,6 +95,15 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
         console.log(updateSubscription, 'updateSubscription in invoice succeed');
       }
       else{
+
+        const findUserId = await prisma.user.findFirst({
+          where: { 
+            email: invoicePaymentSucceeded.customer_email 
+          },
+          select: {
+            id: true,
+        }});
+
         const subscription = await prisma.proMember.create({
           data: {
               isSubscribed: true,
@@ -106,6 +115,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }),async 
               hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
               invoiceId: invoicePaymentSucceeded.id,
               customerId: invoicePaymentSucceeded.subscription,
+              userId: findUserId.id
               
           }
         });
