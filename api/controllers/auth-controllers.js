@@ -425,12 +425,12 @@ export const getUserData = async (req, res) => {
     }
 }
 
-export const updateUserOf450Response = async (name,email) => {
+export const updateUserResponseLimit = async (name,email,title,response) => {
     const transporter = createTransport;
     const mailOptions = {
         from: process.env.GMAIL_AUTH_USER,
         to: email,
-        subject: 'Response limit is closeby',
+        subject: 'Your Survey is Almost at Capacity - Keep Track of Responses!',
         html: `
     <html>
     <body>
@@ -441,16 +441,23 @@ export const updateUserOf450Response = async (name,email) => {
 
         </div>
         <div>
-            <p>Hey ${name},</p>
-            <p>This is to let you know that your survey response limit close to reaching the limit.</p>
+            <p>Dear ${name},</p>
+            <p>We hope you're finding our survey tool valuable for your research! We wanted to inform you that your survey, “${title},” is approaching the response limit of ${response}.</p>
             <br>
-            <p>To increase the response limit, you can purchase our premium service.</p>
+            <p>Current Response Count: ${response}</p>
             <br>
-            <p><a href="https://dubaianalytica.com/pricing">View our pricing options</a></p>
+            <p>With just [500 - Current Count: ${response}] responses left, now might be a good time to review your results or consider how you want to proceed. If you need additional features or more responses, we have a range of plans to suit your needs.</p>
             <br>
-            <p>--------------------</p>
-            <p>Copyright © 2024, Dubai Analytica, its licensors and distributors. All rights are reserved, including those for text and data mining.</p>
+            <p>If you have any questions or need assistance, please don't hesitate to reach out.</p>
             <br>
+            <p>Thank you for using Dubai Analytica, the best survey software that helps UAE-based companies and individual teams with audience surveys.</p>
+            <br>
+            <br>
+            <p>Best regards,</p>
+            <br>
+            <p>Dubai Analytica Team</p>
+            <p>Dubai Analytica</p>
+            <p>Innovation Hub, Level 1, South Zone - Gate Avenue, DIFC, PO Box 00000, Dubai, UAE</p>
         </div>
     </body>
     </html>`

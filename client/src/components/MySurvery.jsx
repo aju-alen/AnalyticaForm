@@ -199,22 +199,22 @@ export function MySurvery({ userSurveyData }) {
                         aria-describedby="alert-dialog-description"
                       >
                         <DialogTitle id="alert-dialog-title">
-                          {"You can download the user response in two formats"}
+                          {"You can download the user response"}
                         </DialogTitle>
                         <DialogContent>
                           <DialogContentText
                           >
                             Display as Answers- This will display the user response in the excel sheet as answers.
                           </DialogContentText>
-                          <DialogContentText>
+                          {/* <DialogContentText>
                             Display as Index- This will display the user response in the excel sheet as index.
-                          </DialogContentText>
+                          </DialogContentText> */}
                         </DialogContent>
                         <DialogActions>
                           <Button onClick={() => handleConvertToExcelAnswer(surveyId)}>Display as Answers</Button>
-                          <Button onClick={() => handleConvertToExcelIndex(surveyId)} autoFocus>
+                          {/* <Button onClick={() => handleConvertToExcelIndex(surveyId)} autoFocus>
                             Display as Index
-                          </Button>
+                          </Button> */}
                         </DialogActions>
                       </Dialog>
                     </TableCell>

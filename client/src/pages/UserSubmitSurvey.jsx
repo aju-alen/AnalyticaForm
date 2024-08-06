@@ -5,7 +5,7 @@ import { useParams,useNavigate } from 'react-router-dom'
 import SelectSingleCheckBox from '../components/SelectSingleCheckBox'
 import SelectSingleRadio from '../components/SelectSingleRadio'
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
-import { Button, TextField,Box,Typography, Stack } from '@mui/material'
+import { Button, TextField,Box,Typography, Stack, AppBar,Toolbar} from '@mui/material'
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
 import GoogleRecaptcha from '../components/GoogleRecaptcha'
 import SelectDropdownMenu from '../components/SelectDropdownMenu'
@@ -1153,33 +1153,27 @@ const UserSubmitSurvey = () => {
                 {(surveyData.surveyForms && !introduction) && renderCurrentComponent()}
 
             </div>
-            <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        padding: '10px 20px',
-        backgroundColor: '#1976d2',
-        borderTop: '1px solid #ddd',
-        position: 'fixed',
-        bottom: 0,
-        width: '100%',
-      }}
-    >
-      <Typography variant="body2" color="white">
-        Powered by Dubai Analytica
-      </Typography>
-      <Stack  spacing={0}>
-      <Typography variant="body2" color="white">
-        Create Your Own Survey
-      </Typography>
-      <Button variant='contained' color='warning' onClick={()=>navigate('/login')}>
-        Create Survey
-      </Button>
-      </Stack>
-      <Typography variant="body2" color="white">
-        Report Abuse
-      </Typography>
-    </Box>
+            <AppBar position="fixed" >
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography variant="body2" color="inherit">
+            Powered by 
+            <Button onClick={()=>navigate('/')} variant='text' sx={{color:'white'}}>
+            Dubai Analytica
+            </Button>
+          </Typography>
+          <Stack spacing={1} direction="row" alignItems="center">
+            <Typography variant="body2" color="inherit">
+              Create Your Own Survey
+            </Typography>
+            <Button variant='contained' color='warning' onClick={() => navigate('/login')}>
+              Create Survey
+            </Button>
+          </Stack>
+          <Button variant="body2" color="inherit">
+            Report Abuse
+          </Button>
+        </Toolbar>
+      </AppBar>
         </ThemeProvider >
     )
 }
