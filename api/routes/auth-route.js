@@ -17,6 +17,7 @@ router.get('/verify/:token', verifyEmail); //verify email logic
 router.post('/reset/:resetToken',resetPassword)
 
 router.get('/get-user',apiCallLimiter,verifyJwt,getUserData);
+router.get('/get-user-promember',apiCallLimiter,verifyJwt,getUserData);
 
 
 //Testing route

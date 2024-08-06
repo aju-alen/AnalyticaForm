@@ -88,7 +88,7 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
       options: [...formData.options, {
         id: genRowUid,
         rowQuestion: '',
-        columns: formData.columnTextField.map((column) => ({ id: column.id, value: '' })),
+        columns: formData.columnTextField?.map((column) => ({ id: column.id, value: '' })),
 
       }],
       selectedValue: [...formData.selectedValue, { id: genRowUid, question: '', answer: '', value: '', index: '' }],

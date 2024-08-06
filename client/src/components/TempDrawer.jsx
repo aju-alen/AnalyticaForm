@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import Badge from '@mui/material/Badge';
+
 
 const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
   const handleItemClick = (text) => {
@@ -12,11 +14,15 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
     toggleDrawer(); // Close the drawer after item selection
   };
 
+  useEffect(() => {
+    
+  }, []);
+
   return (
     <Drawer open={open} onClose={toggleDrawer}>
       <Box
         sx={{
-          width: 250,
+          width: 300,
           bgcolor: '#f5f5f5', // Light background color
           padding: 2,         // Add padding around the content
         }}
@@ -206,33 +212,6 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
           </ListItem>
 
           <ListItem disablePadding>
-            <ListItemButton onClick={() => handleItemClick('SelectOneImageForm')}>
-              <ListItemText
-                primary={'Select One Image'}
-                sx={{ fontSize: '0.875rem' }}
-              />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => handleItemClick('SelectMultipleImageForm')}>
-              <ListItemText
-                primary={'Select Multiple Image'}
-                sx={{ fontSize: '0.875rem' }}
-              />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => handleItemClick('RankOrderImageForm')}>
-              <ListItemText
-                primary={'Rank Order Image'}
-                sx={{ fontSize: '0.875rem' }}
-              />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
             <ListItemButton onClick={() => handleItemClick('PresentationTextForm')}>
               <ListItemText
                 primary={'Presentation Text'}
@@ -276,6 +255,40 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect }) => {
               />
             </ListItemButton>
           </ListItem>
+
+          <ListItem disablePadding>
+          <Badge badgeContent='Premium' color="primary">
+            <ListItemButton onClick={() => handleItemClick('SelectOneImageForm')}>
+              <ListItemText
+                primary={'Select One Image'}
+                sx={{ fontSize: '0.875rem' }}
+              />
+            </ListItemButton>
+          </Badge>
+          </ListItem>
+
+          <ListItem disablePadding>
+          <Badge badgeContent='Premium' color="primary">
+            <ListItemButton onClick={() => handleItemClick('SelectMultipleImageForm')}>
+              <ListItemText
+                primary={'Select Multiple Image'}
+                sx={{ fontSize: '0.875rem' }}
+              />
+            </ListItemButton>
+          </Badge>
+          </ListItem>
+
+          <ListItem disablePadding>
+          <Badge badgeContent='Premium' color="primary">
+            <ListItemButton onClick={() => handleItemClick('RankOrderImageForm')}>
+              <ListItemText
+                primary={'Rank Order Image'}
+                sx={{ fontSize: '0.875rem' }}
+              />
+            </ListItemButton>
+          </Badge>
+          </ListItem>
+
         </List>
       </Box>
     </Drawer>

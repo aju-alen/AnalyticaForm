@@ -36,6 +36,11 @@ import SectionHeading from '../components/SectionHeading'
 import SectionSubHeading from '../components/SectionSubHeading'
 import { axiosWithAuth } from '../utils/customAxios'
 import CircularProgress from '@mui/material/CircularProgress'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 
 const UserSubmitSurvey = () => {
@@ -54,6 +59,15 @@ const UserSubmitSurvey = () => {
     const [skippedFields, setSkippedFields] = useState([]);
     const [startDate, setStartDate] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
 
 
     const handleSaveSinglePointForm = (formData) => {
@@ -1169,11 +1183,62 @@ const UserSubmitSurvey = () => {
               Create Survey
             </Button>
           </Stack>
-          <Button variant="body2" color="inherit" >
+          <Button variant="body2" color="inherit" onClick={handleClickOpen}>
             Report Abuse
           </Button>
         </Toolbar>
       </AppBar>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const formJson = Object.fromEntries(formData.entries());
+            const email = formJson.email;
+            const comment = formJson.comment;
+            console.log(email, comment,'email, comment');
+            const reportAbuse = axiosWithAuth.post(`${backendUrl}/api/send-email/report-abuse/${surveyId}`, {email, comment});
+            handleClose();
+          },
+        }}
+      >
+        <DialogTitle >Dubai Analytica Report Abuse</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+          Thank you for taking the time to report the misuse of Dubai Analytica surveys!
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            name="email"
+            label="Email Address"
+            type="email"
+            fullWidth
+            variant="standard"
+          />
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="comment"
+            name="comment"
+            label="Give us the detail of the abuse"
+            type="text"
+            fullWidth
+            variant='filled'
+            multiline
+            rows={4}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button type="submit">Send Report</Button>
+        </DialogActions>
+      </Dialog>
         </ThemeProvider >
     )
 }

@@ -25,6 +25,7 @@ const tiers = [
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
     lookup_key: 'dubai_analytica_monthly',
+    dev_lookup_key: 'dev_monthly_dubai',
   },
   {
     title: 'Annual Subscription',
@@ -37,6 +38,7 @@ const tiers = [
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
     lookup_key: 'dubai_analytica_annual',
+    dev_lookup_key: 'dev_yearly_dubai',
   },
 ];
 
@@ -205,7 +207,7 @@ const ProductDisplayy = () => {
                   <form action="https://analyticaform-api.onrender.com/api/stripe/create-checkout-session" method="POST">
                   {/* <form action="http://localhost:3001/api/stripe/create-checkout-session" method="POST"> */}
                     {/* Add a hidden field with the lookup_key of your Price */}
-                    <input type="hidden" name="lookup_key" value={tier.lookup_key} />
+                    <input type="hidden" name="lookup_key" value={tier.dev_lookup_key} />
                     <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="emailId" value={emailId} />
                     <Button id="checkout-and-portal-button" type="submit" variant='contained'>

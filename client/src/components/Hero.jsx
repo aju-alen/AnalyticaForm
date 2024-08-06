@@ -57,7 +57,7 @@ const Hero = () => {
                             display: 'flex',
                             flexDirection: { xs: 'column', sm: 'row' },
                             justifyContent: 'center',
-                            fontSize: 'clamp(2rem, 10vw, 3.0rem)',
+                            fontSize: 'clamp(2rem, 10vw, 3.9rem)',
                             textAlign: 'center',
                             mt: 6,
                         }}
@@ -78,7 +78,7 @@ const Hero = () => {
                             sx={{ width: { sm: '100%', md: '100%' } }}
                             fontSize={'clamp(1.3rem, 3vw, 1rem)'}
                         >
-                            <b>Dubai Analytica</b>, the best survey software that helps UAE based companies and individual teams with audience surveys. Create employee engagement surveys, customer surveys, market research surveys and more.
+                            <b>Dubai Analytica</b>, the best survey software that helps UAE based companies, individuals, and teams with audience surveys. Create employee engagement surveys, customer surveys, market research surveys and more.
                         </Typography>
 
                         <Button
