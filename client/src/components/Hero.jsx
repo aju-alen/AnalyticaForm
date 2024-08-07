@@ -41,7 +41,7 @@ const Hero = () => {
             >
                 <SEO
                     title='Online Survey Data Collection Software | Dubai Analytica'
-                    description='Easy to create, distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions.'
+                    description='Easy to distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions.'
                     name='Dubai Analytica'
                     type='Homepage' />
                 <Stack
