@@ -43,7 +43,38 @@ const Hero = () => {
                     title='Online Survey Data Collection Software | Dubai Analytica'
                     description='Easy to distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions.'
                     name='Dubai Analytica'
-                    type='Homepage' />
+                    type='Homepage'
+                    schema={`<script type="application/ld+json">
+[
+  {
+    "@context": "http://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Dubai Analytica",
+    "image": "https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png",
+    "url": "/login",
+    "screenshot": [
+      "https://i.postimg.cc/7LC9QbRX/first.png",
+      "https://i.postimg.cc/qB2kr4gL/analytics.jpg",
+      "https://i.postimg.cc/dtcqL7dC/second.jpg",
+      "https://i.postimg.cc/Z55Z6NH7/contact.jpg"
+    ]
+  },
+  {
+    "@context": "http://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Dubai Analytica",
+    "image": "https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png",
+    "url": "",
+    "screenshot": [
+      "https://i.postimg.cc/7LC9QbRX/first.png",
+      "https://i.postimg.cc/qB2kr4gL/analytics.jpg",
+      "https://i.postimg.cc/dtcqL7dC/second.jpg",
+      "https://i.postimg.cc/Z55Z6NH7/contact.jpg"
+    ]
+  }
+]
+</script>`}
+                    />
                 <Stack
                     spacing={4}
                     borderwidth='10px'

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-export default function SEO({title, description, name, type}) {
+export default function SEO({title, description, name, type,schema}) {
 return (
 <Helmet>
 { /* Standard metadata tags */ }
@@ -19,6 +19,11 @@ return (
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 { /* End Twitter tags */ }
+{schema && (
+        <script type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      )}
 </Helmet>
 )
 }
