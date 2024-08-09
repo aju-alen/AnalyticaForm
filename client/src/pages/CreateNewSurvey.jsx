@@ -65,6 +65,7 @@ const CreateNewSurvey = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
   const [selectedItems, setSelectedItems] = useState([]); // selected items 
   const [isSaved, setIsSaved] = useState('Saved'); // saved or not
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState('');
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
@@ -72,6 +73,8 @@ const CreateNewSurvey = () => {
     selectedItems: [],
     surveyIntroduction: ''
   });
+
+  
 
   const handleCopy = () => {
     navigator.clipboard.writeText(`${frontendUrl}user-survey/${surveyId}`).then(() => {
@@ -336,6 +339,29 @@ const CreateNewSurvey = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const getUserIsProMember = async () => {
+      const userId = JSON.parse(localStorage.getItem('userAccessToken')).id;
+      console.log(userId, 'userId in CreateNewSurvey');
+      
+
+      const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
+      console.log(userProMember.data, 'userProMember in CreateNewSurvey');
+      if(userProMember.data === null) {
+        setSubscriptionEndDate(0);
+      }
+      else{
+        setSubscriptionEndDate(userProMember?.data?.subscriptionPeriodEnd);
+
+      }
+      
+    }
+    getUserIsProMember();
+  }, []);
+
+  console.log(subscriptionEndDate, 'subscriptionEndDate in CreateNewSurvey');
+  
+
   const handleClose = () => {
     setShowInfo(false);
     navigate(1); // Move forward in history, essentially canceling the back navigation
@@ -585,11 +611,12 @@ const CreateNewSurvey = () => {
 
     else if (item.formType === 'SelectMultipleImageForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <SelectMultipleImage key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -598,11 +625,12 @@ const CreateNewSurvey = () => {
     }
     else if (item.formType === 'RankOrderImageForm') {
       return (
-        <Stack spacing={2} key={index} direction='row'>
+        <Stack spacing={2} key={index} direction='row' position='relative'>
           <RankOrderImage key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
+            sx={{ position: 'absolute', right: 30 }}
             onClick={() => handleDeleteSelectOneForm(item.id)}>
             <CancelIcon />
           </Button>
@@ -921,7 +949,7 @@ const CreateNewSurvey = () => {
         </div>
       )}
 
-        <TemporaryDrawer open={isDrawerOpen} toggleDrawer={toggleDrawer} handleItemSelect={handleItemSelect} />
+        <TemporaryDrawer open={isDrawerOpen} toggleDrawer={toggleDrawer} handleItemSelect={handleItemSelect} subscriptionEndDate={subscriptionEndDate} />
             </Box>
       </ThemeProvider>
     )
