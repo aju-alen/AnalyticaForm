@@ -26,6 +26,29 @@ const Dashboard = () => {
     const [open, setOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('');
+    const [isSubscribed, setIsSubscribed] = useState(false);
+
+
+    useEffect(() => {
+        const getUserIsProMember = async () => {
+          const userId = JSON.parse(localStorage.getItem('userAccessToken')).id;
+          console.log(userId, 'userId in CreateNewSurvey');
+          
+    
+          const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
+          console.log(userProMember?.data, 'userProMember in CreateNewSurvey');
+          const date = new Date();
+          const unixTimestamp = Math.floor(date.getTime() / 1000);
+
+          if(userProMember?.data?.subscriptionPeriodEnd && userProMember?.data?.subscriptionPeriodEnd > unixTimestamp){
+            setIsSubscribed(true);
+        }
+
+        }
+        getUserIsProMember();
+      }, []);
+
+      
 
 
     const handleClick = () => {
@@ -44,7 +67,7 @@ const Dashboard = () => {
         try {
             setInputFeildVisible(true);
             if (input && inputFeildVisible && inputText.length > 0) {
-                if (userSurveyData.length > 6) {
+                if (userSurveyData.length > 5) {
                     alert('You can only create 5 surveys with a free account. Please upgrade to premium to create more surveys.');
                     return;
                 }
@@ -147,7 +170,7 @@ const Dashboard = () => {
                         />
                     </Grid>}
                 </Grid>
-                <MySurvery userSurveyData={userSurveyData} />
+                <MySurvery userSurveyData={userSurveyData} isSubscribed={isSubscribed}  />
 
                 <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                     <Alert

@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { userRegister,login,refresh,logout,test,verifyEmail,forgetPassword,resetPassword,getUserData } from '../controllers/auth-controllers.js';
+import { userRegister,login,refresh,logout,test,verifyEmail,forgetPassword,resetPassword,getUserData,getUserIsProMember } from '../controllers/auth-controllers.js';
 import { apiCallLimiter } from '../middleware/rateLimiter.js'
 import { verifyJwt } from '../middleware/verifyJwt.js';
 
@@ -17,7 +17,7 @@ router.get('/verify/:token', verifyEmail); //verify email logic
 router.post('/reset/:resetToken',resetPassword)
 
 router.get('/get-user',apiCallLimiter,verifyJwt,getUserData);
-router.get('/get-user-promember',apiCallLimiter,verifyJwt,getUserData);
+router.get('/get-user-promember/:userId',apiCallLimiter,verifyJwt,getUserIsProMember);
 
 
 //Testing route

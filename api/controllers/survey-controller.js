@@ -81,12 +81,16 @@ export const updateSurveyById = async (req, res) => {
 };
 
 export const getAllSurveyResponse = async (req, res) => {
-    const surveyId = req.params.surveyId;
+
+    const {surveyId,isSubscribed} = req.params;
+    
     try {
+
         const getAllResponse = await prisma.userSurveyResponse.findMany({
             where: {
                 surveyId
-            }
+            },
+            ...(!isSubscribed ? { take: 500 } : {}),
         });
         await prisma.$disconnect();
         res.status(200).send(getAllResponse);
@@ -150,28 +154,7 @@ export const updateUserView = async (req, res) => {
     }
 }
 
-export const updateUserCompleted = async (req, res) => {
-    const surveyId = req.params.surveyId;
-    try {
-        const updateCompleted = await prisma.survey.update({
-            where: {
-                id: surveyId
-            },
-            data: {
-                surveyCompleted: {
-                    increment: 1
-                }
-            }
-        });
-        await prisma.$disconnect();
-        res.status(200).send({ message: 'Survey completed updated successfully' });
-        
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send({ message: 'Internal server error' });
-    }
-}
+
 
 export const deleteUserSurvey = async (req, res) => {
     const surveyId = req.params.surveyId;

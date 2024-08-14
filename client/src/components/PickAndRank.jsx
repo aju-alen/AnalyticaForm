@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import { Button, Stack } from '@mui/material';
-import Radio from '@mui/material/Radio';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { uid } from 'uid';
 import { DndContext } from '@dnd-kit/core';
@@ -23,13 +22,13 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     question: '',
     formMandate: false,
     options: [
-      { id: uid(5), value: '',text:'Pikachu',container:'draggable' },
-      { id: uid(5), value: '',text:'Charmander',container:'draggable' },
-        { id: uid(5), value: '',text:'Bulbasaur',container:'draggable' },
-        { id: uid(5), value: '',text:'Squirtle',container:'draggable' },
+      { id: uid(5), value:'',container:'draggable' },
+      { id: uid(5), value:'',container:'draggable' },
+      { id: uid(5), value:'',container:'draggable' },
+      { id: uid(5), value:'',container:'draggable' },
 
     ],
-    selectedValue: [{ question: '', answer: '', value: '', index: '' }],
+    selectedValue: [],
     formType: 'PickAndRankForm'
   });
   const [items, setItems] = useState([
@@ -45,27 +44,39 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     console.log(event,'event in handleDragEnd');
 
     if (over) {
-      setItems((items) => {
-        const oldIndex = items.findIndex(item => item.id === active.id);
-        const newIndex = items.findIndex(item => item.id === over.id);
+      setFormData((prevFormData) => {
+        console.log(prevFormData.options, 'options in handleDragEnd');
+        
+        const oldIndex = prevFormData.options.findIndex(option => option.id === active.id);
+        const newIndex = prevFormData.options.findIndex(option => option.id === over.id);
 
-
-        if (items[oldIndex].container === 'draggable' && over.id === 'droppable') {
-          return items.map((item) => 
-            item.id === active.id ? { ...item, container: 'droppable' } : item
-          );
-        } else if (items[oldIndex].container === 'droppable' && over.id !== 'droppable') {
-          const updatedItems = arrayMove(items, oldIndex, newIndex);
-          return updatedItems;
+        console.log(oldIndex, 'oldIndex in handleDragEnd');
+        console.log(newIndex, 'newIndex in handleDragEnd');
+        
+    
+        let updatedOptions;
+    
+        if (prevFormData.options[oldIndex].container === 'draggable' && over.id === 'droppable') {
+            updatedOptions = prevFormData.options.map((option) => 
+                option.id === active.id ? { ...option, container: 'droppable' } : option
+            );
+        } else if (prevFormData.options[oldIndex].container === 'droppable' && over.id !== 'droppable') {
+            updatedOptions = arrayMove(prevFormData.options, oldIndex, newIndex);
         } else {
-          return items;
+            updatedOptions = prevFormData.options;
         }
-      });
+    
+        return {
+            ...prevFormData,
+            options: updatedOptions,
+            selectedValue: updatedOptions.filter((option) => option.container === 'droppable').map((option,idx) => ({ answer: option.value, question: idx + 1 }))
+        };
+    });
     }
   };
 
-  const draggableItems = items.filter(item => item.container === 'draggable');
-  const droppableItems = items.filter(item => item.container === 'droppable');
+  const draggableItems = formData.options.filter(item => item.container === 'draggable');
+  const droppableItems = formData.options.filter(item => item.container === 'droppable');
 
   const [debouncedValue, setDebouncedValue] = useState('');
 
@@ -187,22 +198,123 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
           />
 
 
-<DndContext onDragEnd={handleDragEnd}>
+{ !disableForm &&
+ <DndContext onDragEnd={handleDragEnd}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <DraggableContainer items={draggableItems} />
         <DroppableContainer items={droppableItems} />
       </div>
-    </DndContext>
+  </DndContext>}
   
+   {disableForm && <Stack spacing={1} sx={{
+            width: '20%',
+            marginRight: 'auto',
+          }} >
+            {formData.options.map((option) => (
+             <Stack direction="row" spacing={2} key={option.id}>
+              
+               <Box
+               sx={{
+                 position: 'relative',
+                 display: 'flex',
+                 alignItems: 'center',
+                 width: '100%',
+                 '&:hover .delete-button': {
+                   visibility: 'visible',
+                 },
+               }}
+             >
+               <TextField
+  fullWidth
+  id="standard-basic"
+  placeholder={!disableText ? "Type Your Response Here" : ''}
+  variant="standard"
+  name={option.text}
+  value={option.value}
+  sx={{
+    '& .MuiInputBase-root': {
+      fontSize: '0.8rem',
+    },
+    '& .MuiInput-underline:before': {
+      borderBottom: 'none',
+    },
+    // '& .MuiInput-underline:after': {
+    //   borderBottom: 'none',
+    // },
+    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+      borderBottom: 'none',
+    },
+  }}
+  onChange={(e) => {
+    const newOptions = formData.options.map((opt) => {
+      if (opt.id === option.id) {
+        return { ...opt, value: e.target.value };
+      }
+      return opt;
+    });
+    setFormData({ ...formData, options: newOptions });
+  }}
+  InputProps={{
+    readOnly: disableText,
+  }}
+/>
+               {!disableButtons && (
+                 <Button
+                   className="delete-button"
+                   color="error"
+                   variant="text"
+                   sx={{
+                     position: 'absolute',
+                     left: '100%',
+                     visibility: 'hidden',
+                     transition: 'visibility 0.1s ease-in-out',
 
+                   }}
+                   onClick={() => handleDeleteOptions(option.id)}
+                 >
+                   <HighlightOffIcon fontSize="small" />
+                 </Button>
+               )}
+             </Box>
+             
+           </Stack>
+            ))
+            }
+            {!disableButtons && (
+              <Button
+                sx={{
+                  width: '70%',
+                }}
+                onClick={handleAddOptions}
+                variant='outlined'
+                color="primary"
+                size="small"
+              >Add new row</Button>
+            )}
+          </Stack>}
+          <Stack spacing={2} direction='row'>
+            {/* {!disableButtons && (
+              <Button
+                onClick={handleAddOptions}
+                variant='outlined'
+                color="primary"
+                size="small"
+              >Add new row</Button>
+            )} */}
 
-
-
-
-
-
-
-          
+            {disableButtons &&<Button
+              variant='contained'
+              color="success"
+              onClick={handleSaveForm}>
+               Next Question
+            </Button>}
+            {/* {!disableButtons && <Button
+              variant='contained'
+              color="primary"
+              onClick={handleMandateForm}>
+               Mandate This Form
+            </Button>} */}
+          </Stack>
         </Box>
       </Container>
       </React.Fragment>

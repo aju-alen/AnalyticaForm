@@ -1,3 +1,5 @@
+import React,{useEffect} from 'react';
+
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -17,6 +19,7 @@ import SEO from './SEO';
 
 const Hero = () => {
     const navigate = useNavigate();
+   
     return (
         <ThemeProvider theme={theme}>
       <CssBaseline />

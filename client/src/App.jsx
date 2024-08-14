@@ -37,6 +37,7 @@ const Error404 = lazy(() => import('./pages/404Error'));
 const UserAnalytics = lazy(() => import('./pages/UserAnalytics'));
 const Usersurveyanalytics = lazy(() => import('./pages/User-survey-analytics'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
+const AdminSurveyData = lazy(() => import('./pages/AdminSurveyData'));
 
 
 const App = () => {
@@ -126,6 +127,10 @@ const App = () => {
         {
           path: "/admin-analytics",
           element: <SuperAdminProtectedRoute element={<Analytics />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/admin-analytics/:surveyId",
+          element: <SuperAdminProtectedRoute element={<AdminSurveyData />} />, // Wrap Dashboard inside ProtectedRoute
         },
         {
           path: "/user-analytics",

@@ -1,3 +1,7 @@
+
+
+
+
 import  React,{useEffect,useState} from 'react';
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
@@ -20,7 +24,7 @@ import { Button, Container } from '@mui/material';
 import { refreshToken } from '../utils/refreshToken';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams } from 'react-router-dom';
 
 
 
@@ -86,8 +90,9 @@ function createData(name, calories, fat) {
 }
 
 
-export default function Analytics() {
+export default function AdminSurveyData() {
     const navigate = useNavigate();
+    const {surveyId} = useParams();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [customerData, setCustomerData] = useState([]);
@@ -97,8 +102,8 @@ export default function Analytics() {
    const getAnalyticsData = async () => {
     try{
         await refreshToken();
-        const getAllUserData = await axiosWithAuth.get(`${backendUrl}/api/superadmin-data/get-user-data`);
-        setCustomerData(getAllUserData.data);
+        const getAllUserData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`);
+        setCustomerData(getAllUserData.data.surveyForms);
 
 
     }
@@ -140,14 +145,10 @@ getAnalyticsData();
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
       <TableHead>
           <TableRow>
-            <TableCell>User Name</TableCell>
-            <TableCell align="right">User Email</TableCell>
-            <TableCell align="right">Survey Title</TableCell>
-            <TableCell align="right">Is Premium Member</TableCell>
-            <TableCell align="right">Receive email marketting</TableCell>
-            <TableCell align="right">Total Surveys Created</TableCell>
-            <TableCell align="right">Total Surveys Responses</TableCell>
-            <TableCell align="right">Total Surveys Viewed</TableCell>
+            <TableCell>Form Question</TableCell>
+            <TableCell>Form Type</TableCell>
+            <TableCell >Options</TableCell>
+            
 
           </TableRow>
         </TableHead>
@@ -158,33 +159,21 @@ getAnalyticsData();
           ).map((row) => (
             <TableRow key={row.id}>
               <TableCell component="th" scope="row">
-                {row.firstName}
+                {row.question}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.email}
+              <TableCell component="th" scope="row">
+                {row.formType}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.surveys.map((survey) => (
-                  <Button key={survey.id} onClick={() => navigate(`/admin-analytics/${survey.id}`)}>
-                    {survey.surveyTitle}
-                  </Button>
+              <TableCell component="th" scope="row">
+                {row.options.map((option) => (
+                  <div className="">
+                    {option.rowQuestion? option.rowQuestion : option.value}
+                  </div>
                 ))}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.isAProMember ? 'Yes' : 'No'}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.receiveMarketingEmails ? 'Yes' : 'No'}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.surveys.length}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.surveys.reduce((acc, survey) => acc + survey.surveyResponses, 0)} 
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.surveys.reduce((acc, survey) => acc + survey.surveyViews, 0)} 
-              </TableCell>
+            
+            
+              
             </TableRow>
           ))}
           {emptyRows > 0 && (

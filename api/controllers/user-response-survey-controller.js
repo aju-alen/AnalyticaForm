@@ -39,7 +39,7 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 formQuestions:req.body.formQuestions,
                 introduction:req.body.introduction,
                 ipAddress:userIP.split(',')[0],
-                userResponseTime:req.body.userResponseTime
+                userTimeSpent:req.body.userTimeSpent
 
 
             }
@@ -52,6 +52,9 @@ export const postSingleSurveyDataForUser = async (req, res) => {
             data:{
                 surveyResponses:{
                     increment:1
+                },
+                surveyCompleted: {
+                    increment: 1
                 }
             }
         });

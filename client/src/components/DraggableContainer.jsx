@@ -6,7 +6,7 @@ function DraggableContainer({ items }) {
     <div style={{ width: '45%', border: '1px solid gray', padding: '10px' }}>
       <h3>Draggable Items</h3>
       {items.map((item) => (
-        <DraggableItem key={item.id} id={item.id} text={item.text} />
+        <DraggableItem key={item.id} id={item.id} text={item.value} />
       ))}
     </div>
   );

@@ -11,6 +11,7 @@ export const getSingleSurveyDataForUser = async (req, res) => {
                       id: true,
                       surveyResponses:true,
                       surveyViews:true,
+                      surveyTitle:true,
                     }
             }
         }

@@ -425,6 +425,27 @@ export const getUserData = async (req, res) => {
     }
 }
 
+export const getUserIsProMember = async (req, res) => {
+    const {userId} = req.params;
+    try{
+        const user = await prisma.proMember.findFirst({
+            where:{
+                userId:userId
+            },
+            select:{
+                subscriptionPeriodEnd:true
+            }
+        })
+        await prisma.$disconnect()
+        res.status(200).json(user)
+
+    }
+    catch(err){
+        console.log(err);
+        res.status(400).send('An error occoured')
+    }
+}
+
 export const updateUserResponseLimit = async (name,email,title,response) => {
     const transporter = createTransport;
     const mailOptions = {

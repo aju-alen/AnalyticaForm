@@ -173,7 +173,14 @@ const UserSubmitSurvey = () => {
         e.preventDefault();
 
         try {
+            //response time calculation
             const finishedDate = Date.now();
+            const timeSpent = finishedDate - startDate;
+            const timeSpentInSeconds = Math.round((finishedDate - startDate) / 1000);
+            const minutes = Math.floor(timeSpentInSeconds / 60);
+            const seconds = timeSpentInSeconds % 60;
+            const timeSpentString = `${minutes}m ${seconds}s`;
+            //
             console.log(finishedDate, 'finishedDate',startDate,'startDate');
             const mandatoryFields = surveyData.surveyForms.filter(form => form.formMandate);
             console.log(mandatoryFields, 'mandatoryFields');
@@ -255,6 +262,18 @@ const UserSubmitSurvey = () => {
                     console.log(form, 'form in StarRatingForm');
                     return {
                         [form.subheading ? form.subheading : form.question]: form.options.map(option => {
+                            console.log(option, 'option StarRatingForm');
+                            return option.question;
+
+                        }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
+
+                    }
+                }
+
+                else if (form.formType === "PickAndRankForm") {
+                    console.log(form, 'form in PickAndRankForm');
+                    return {
+                        [form.subheading ? form.subheading : form.question]: form.selectedValue.map(option => {
                             console.log(option, 'option StarRatingForm');
                             return option.question;
 
@@ -372,13 +391,6 @@ const UserSubmitSurvey = () => {
                 }
             }).flat(); // Flatten the array since MultiScaleCheckBox returns an array of objects
 
-            const differenceInMillis = finishedDate - startDate;
-
-// Convert milliseconds to minutes
-            const differenceInMinutes = differenceInMillis / (1000 );
-
-            
-
             console.log(formQuestions, 'formQuestions');
             const finalData = {
                 userResponse: data,
@@ -386,7 +398,7 @@ const UserSubmitSurvey = () => {
                 userEmail: formData.userEmail,
                 formQuestions: formQuestions,
                 introduction: introduction,
-                userResponseTime: differenceInMinutes
+                userTimeSpent: timeSpentString
 
 
             }
@@ -395,8 +407,6 @@ const UserSubmitSurvey = () => {
             
 
             const sendUserResp = await axios.post(`${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`, finalData);
-            const updateCompletedSurvey = await axiosWithAuth.put(`${backendUrl}/api/survey/update-survey-completed/${surveyId}`);
-            console.log(updateCompletedSurvey, 'updateCompletedSurvey');
             setResponseSubmitted(true);
             console.log(sendUserResp, 'sendUserResp');
         }

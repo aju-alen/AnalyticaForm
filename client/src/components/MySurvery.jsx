@@ -29,9 +29,10 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 
 
-export function MySurvery({ userSurveyData }) {
+export function MySurvery({ userSurveyData,isSubscribed }) {
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
+console.log('isSubscribed',isSubscribed);
 
   const [open, setOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
@@ -79,7 +80,9 @@ export function MySurvery({ userSurveyData }) {
     console.log(surveyId);
     try {
       await refreshToken();
-      const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}`);
+      console.log('isSubscribed',isSubscribed);
+      
+      const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
       console.log(getAllUserResponse.data, 'response in export excel');
 
       if (getAllUserResponse.data.length === 0) {

@@ -5,12 +5,12 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import { Button, Stack } from '@mui/material';
 import { uid } from 'uid';
-import theme from '../utils/theme';
-import { ThemeProvider } from '@mui/material/styles';
-import ClearIcon from '@mui/icons-material/Clear';
 import { styled } from '@mui/material/styles';
 import { backendUrl } from '../utils/backendUrl';
 import { axiosWithAuth } from '../utils/customAxios';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import Grid from '@mui/material/Grid';
+
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
     clipPath: 'inset(50%)',
@@ -22,7 +22,6 @@ const VisuallyHiddenInput = styled('input')({
     whiteSpace: 'nowrap',
     width: 1,
 });
-
 
 
 const SelectMultipleImage = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext, onSaveIndicator }) => {
@@ -44,19 +43,19 @@ const SelectMultipleImage = ({ onSaveForm, data, id, options, disableForm, disab
     const [debouncedValue, setDebouncedValue] = useState('');
 
 
-    // useEffect(() => {
-    //   const handler = setTimeout(() => {
-    //     setDebouncedValue(formData);
-    //     onSaveForm(formData);
-    //     // onSaveIndicator('Saved')
-    //   }, 1000); // 500ms delay
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(formData);
+        onSaveForm(formData);
+        // onSaveIndicator('Saved')
+      }, 1000); // 500ms delay
 
-    //   // Cleanup function to cancel the timeout if value changes before delay
-    //   return () => {
-    //     // onSaveIndicator('Not Saaved')
-    //     clearTimeout(handler);
-    //   };
-    // }, [formData]);
+      // Cleanup function to cancel the timeout if value changes before delay
+      return () => {
+        // onSaveIndicator('Not Saaved')
+        clearTimeout(handler);
+      };
+    }, [formData]);
 
     const handleAddOptions = () => {
         setFormData({
@@ -65,9 +64,6 @@ const SelectMultipleImage = ({ onSaveForm, data, id, options, disableForm, disab
         })
     }
 
-    const handleChangeIssue = (event) => {
-        setFiles(prev => [...prev, event.target.files]);
-    }
 
     const handleDeleteOptions = (id) => {
         // console.log(id,'id in delete');
@@ -76,17 +72,16 @@ const SelectMultipleImage = ({ onSaveForm, data, id, options, disableForm, disab
         setFormData({ ...formData, options: newOptions });
     }
 
-    const handleUploadImageAWS = async () => {
-        try{
+   const handleImageUpload = async (event,id) => {
+    const file = event.target.files[0];
+    console.log(file, 'file');
+
+    try{
+        if (file) {
+            console.log(file,'fileeeeee');
             const awsId = uid(5);
             const fileData = new FormData();
-            console.log(files, 'finalfiles');
-            for (const file of files) {
-                console.log(file[0], 'file in submit');
-                fileData.append('s3Image', file[0])
-                console.log(fileData, 'file data inside');
-            }
-            console.log(fileData, 'file data');
+            fileData.append('s3', file)
             const fileResp = await axiosWithAuth.post(`${backendUrl}/api/s3/upload-image/${awsId}`, fileData)
             console.log(fileResp, 'file response');
             const getUrlFromAWS = await axiosWithAuth.get(`${backendUrl}/api/s3/get-image/${awsId}`)
@@ -94,15 +89,21 @@ const SelectMultipleImage = ({ onSaveForm, data, id, options, disableForm, disab
             const filesUrl = getUrlFromAWS.data.files
             console.log(filesUrl, 'filesUrl');
             const newOptions = formData.options.map((option, index) => {
-                return { ...option, imageURL: filesUrl[index] }
+                if (option.id === id) {
+                    return { ...option, imageURL: filesUrl[0] }
+                }
+                return option
+
             })
             setFormData({ ...formData, options: newOptions })
         }
-        catch(err){
-            console.log(err,'error in upload image');
-
-        }
     }
+    catch(err){
+        console.log(err);
+    }
+   }
+
+   
 
     const handleSaveForm = async() => {
         try {
@@ -135,223 +136,211 @@ const SelectMultipleImage = ({ onSaveForm, data, id, options, disableForm, disab
     console.log(formData, 'formData in select one IMAGE form');
     console.log(disableForm, 'disableForm in select one IMAGE form');
     return (
-        <ThemeProvider theme={theme}>
             <React.Fragment>
                 <CssBaseline />
-                <Container maxWidth="lg">
-                    <Box sx={{
-                        bgcolor: 'white',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        flexGrow: 1,
-                        height: "100%",
-                        mt: { xs: 4, md: 8 },
-                        width: '100%',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
-                        borderRadius: 8, // Increased border radius for rounded corners
-                        p: 3, // Increased padding for inner content
-                        overflowX: 'auto',
-                        border: '2px solid #f0f0f0', // Added border for more distinction
-                        transition: 'box-shadow 0.3s ease-in-out', // Added transition effect for box shadow
-                        '&:hover': {
-                            boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.3)', // Updated box shadow on hover
-                        },
-                    }} >
-                        <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" name='question' value={formData.question}
+                <Container maxWidth='xl'>
+        <Box sx={{
+          bgcolor: 'white',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexGrow: 1,
+          height: "100%",
+          mt: { xs: 4, md: 0 },
+          width: '100%',
+          boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)',
+          borderRadius: 2,
+          p: 2,
+          overflowX: 'auto',
+          border: '2px solid #f0fbf0',
+          transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
+          position: 'relative',
+          backgroundColor: '#F4F3F6',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: '0%',
+            transform: 'translateX(-50%)',
+            height: '100%',
+            width: '12px',
+            bgcolor: '#1976d2',
+            opacity: 0,
+            transition: 'opacity 0.3s ease-in-out',
+          },
+          '&:hover::before': {
+            opacity: 1,
+          },
+          '&:hover': {
+            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)',
+            transform: 'scale(0.98)',
+            backgroundColor: '#F4FFF8',
+          },
+        }}>
+                        <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" size='small' required name='question' value={formData.question}
                             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
                             InputProps={{
                                 readOnly: disableText,
                             }}
                         />
-                        <Stack spacing={2} direction='row'>
-                            {formData.options.map((option) => {
-                                console.log(option, 'option in select one image form');
-                                return(
-                                    <div>
-                                  {!disableForm &&  <Button 
-                                        onClick={
-                                            () => {
-                                                if(option.isChecked){
-                                                    const newOptions = formData.options.map((opt) => {
-                                                        if (opt.id === option.id) {
-                                                            return { ...opt, isChecked: false }
-                                                        }
-                                                        return opt
-                                                    })
-                                                    const selectedValue = formData.selectedValue.filter((opt) => opt.value !== option.value)
-                                                    setFormData({ ...formData, options: newOptions, selectedValue })
-                                                }
-                                                else{
-                                                    const newOptions = formData.options.map((opt) => {
-                                                        if (opt.id === option.id) {
-                                                            return { ...opt, isChecked: true }
-                                                        }
-                                                        return opt
-                                                    })
-                                                    const selectedValue = formData.selectedValue.filter((opt) => opt.value !== option.value)
-                                                    setFormData({ ...formData, options: newOptions, selectedValue: [...selectedValue, { question: formData.question, answer: option.value, value: option.value, index: option.id }] })
-
-
-                                            }
-
-                                        }
-                                    }
-                                    sx={{
-                                        backgroundColor: option.isChecked ? 'primary.main' : 'white',
-                                    }}
-                                    >
-                                <Stack  spacing={2} key={option.id}>
-                                    <Box
-                                        component="img"
-                                        sx={{
-                                            height: 233,
-                                            width: 350,
-                                            maxHeight: { xs: 233, md: 167 },
-                                            maxWidth: { xs: 350, md: 250 },
-                                        }}
-                                        alt="The house from the offer."
-                                        src={option.imageURL}
-                                    />
-                                    <Button
-                                        component="label"
-                                        role={undefined}
-                                        variant="contained"
-                                        tabIndex={-1}
-                                        onChange={handleChangeIssue}
-                                    >
-                                        Upload Image
-                                        <VisuallyHiddenInput type="file" />
-                                    </Button>
-                                    <TextField
-                                        fullWidth
-                                        id="standard-basic"
-                                        label={!disableText ? "Type Your Response Here" : ''}
-                                        variant="standard"
-                                        name={option.text}
-                                        value={option.value}
-                                        onChange={(e) => {
-                                            const newOptions = formData.options.map((opt) => {
-                                                if (opt.id === option.id) {
-                                                    return { ...opt, value: e.target.value }
-                                                }
-                                                return opt
-                                            })
-                                            setFormData({ ...formData, options: newOptions })
-                                        }}
-                                        InputProps={{
-                                            readOnly: disableText,
-                                        }}
-                                    />
-
-
-
-                                    {!disableButtons && (<Button
-                                        color='error'
-                                        variant='outlined'
-                                        onClick={() => handleDeleteOptions(option.id)}>
-                                        <ClearIcon
-                                            fontSize='small'
-                                        />
-                                    </Button>)}
-                                    
-
-                                </Stack>
-                                </Button>}
-
-
-
-
-
-
-                                {disableForm && 
-                                <Stack  spacing={2} key={option.id}>
-                                    <Box
-                                        component="img"
-                                        sx={{
-                                            height: 233,
-                                            width: 350,
-                                            maxHeight: { xs: 233, md: 167 },
-                                            maxWidth: { xs: 350, md: 250 },
-                                        }}
-                                        alt="The house from the offer."
-                                        src={option.imageURL}
-                                    />
-                                    <Button
-                                        component="label"
-                                        role={undefined}
-                                        variant="contained"
-                                        tabIndex={-1}
-                                        onChange={handleChangeIssue}
-                                    >
-                                        Upload Image
-                                        <VisuallyHiddenInput type="file" />
-                                    </Button>
-                                    <TextField
-                                        fullWidth
-                                        id="standard-basic"
-                                        label={!disableText ? "Type Your Response Here" : ''}
-                                        variant="standard"
-                                        name={option.text}
-                                        value={option.value}
-                                        onChange={(e) => {
-                                            const newOptions = formData.options.map((opt) => {
-                                                if (opt.id === option.id) {
-                                                    return { ...opt, value: e.target.value }
-                                                }
-                                                return opt
-                                            })
-                                            setFormData({ ...formData, options: newOptions })
-                                        }}
-                                        InputProps={{
-                                            readOnly: disableText,
-                                        }}
-                                    />
-
-
-
-                                    {!disableButtons && (<Button
-                                        color='error'
-                                        variant='outlined'
-                                        onClick={() => handleDeleteOptions(option.id)}>
-                                        <ClearIcon
-                                            fontSize='small'
-                                        />
-                                    </Button>)}
-                                    
-
-                                </Stack>
-                                }
-                                </div>
-                                )
-})
+                        <Stack spacing={1} sx={{ width: '94%', marginRight: 'auto' }}>
+            <Grid container spacing={2}>
+              {formData.options.map((option, index) => {
+                console.log(option, 'optionnnnnnnnnnnnnn');
+                
+                return(
+                <Grid item xs={6} key={option.id}>
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      '&:hover .delete-button': {
+                        visibility: 'visible',
+                      },
+                      '&:hover .upload-button': {
+                        visibility: 'visible',
+                      },
+                    }}
+                  >
+                    <Button onClick={(event)=> 
+                    {
+                      const newOptions = formData.options.map((opt) => {
+                        if (opt.id === option.id) {
+                          return { ...opt, isChecked: !opt.isChecked };
+                        }
+                        return opt;
+                      });
+                      const selectedValue = newOptions.filter((opt) => opt.isChecked).map((opt) => {
+                        return (
+                            { question: formData.question, answer: option.value, value: '', index: '' }
+                        )
+                      });
+                        setFormData({ ...formData, options: newOptions, selectedValue });}
+                     }>
+                    <Stack spacing={1} width='100%'>
+                      <Box
+                        component="div"
+                        sx={{
+                          position: 'relative',
+                          width: '100%',
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            maxHeight: 300,
+                            minHeight: 300,
+                            objectFit: 'contain',
+                            borderRadius: 1,
+                            display: 'block' 
+                          }}
+                          src={option.imageURL || 'https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg'}
+                          alt="Uploaded"
+                        />
+                        {disableForm &&<Button
+                          className="upload-button"
+                          component='label'
+                          variant='contained'
+                          sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                            color: 'white',
+                            visibility: 'hidden',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 1,
+                          }}
+                        >
+                          Upload Image
+                          <VisuallyHiddenInput
+                            type='file'
+                             accept="image/png, image/jpeg"
+                            onChange={(event) => handleImageUpload(event, option.id)}
+                          />
+                        </Button>}
+                      </Box>
+                      <TextField
+                        fullWidth
+                        id="standard-basic"
+                        placeholder={!disableText ? "Type Your Response Here" : ''}
+                        variant="standard"
+                        name={option.text}
+                        value={option.value}
+                        sx={{
+                          '& .MuiInputBase-root': {
+                            fontSize: '0.8rem',
+                          },
+                          '& .MuiInput-underline:before': {
+                            borderBottom: 'none',
+                          },
+                          '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                            borderBottom: 'none',
+                          },
+                        }}
+                        onChange={(e) => {
+                          const newOptions = formData.options.map((opt) => {
+                            if (opt.id === option.id) {
+                              return { ...opt, value: e.target.value };
                             }
-                        </Stack>
+                            return opt;
+                          });
+                          setFormData({ ...formData, options: newOptions });
+                        }}
+                        InputProps={{
+                          readOnly: disableText,
+                        }}
+                      />
+                    </Stack>
+                    </Button>
+                    {!disableButtons && (
+                      <Button
+                        className="delete-button"
+                        color="error"
+                        variant="text"
+                        sx={{
+                          position: 'absolute',
+                          left: '100%',
+                          visibility: 'hidden',
+                          transition: 'visibility 0.1s ease-in-out',
+                        }}
+                        onClick={() => handleDeleteOptions(option.id)}
+                      >
+                        <HighlightOffIcon fontSize="small" />
+                      </Button>
+                    )}
+                  </Box>
+                </Grid>)
+})}
+            </Grid>
+            {!disableButtons && (
+              <Button
+                sx={{ width: '70%' }}
+                onClick={handleAddOptions}
+                variant='outlined'
+                color="primary"
+                size="small"
+              >
+                Add new row
+              </Button>
+            )}
+          </Stack>
                         <Stack spacing={2} direction='row'>
-                            {!disableButtons && (
-                                <Button
-                                    onClick={handleUploadImageAWS}
-                                    variant='outlined'
-                                    color="primary"
-                                    size="small"
-                                >Save Image</Button>
-                            )}
-                            {!disableButtons && (
-                                <Button
-                                    onClick={handleAddOptions}
-                                    variant='outlined'
-                                    color="primary"
-                                    size="small"
-                                >Add new row</Button>
-                            )}
-
-                            <Button
-                                variant='contained'
-                                color="success"
-                                onClick={handleSaveForm}>
-                                {!disableButtons ? 'Save This Form' : 'Next Question'}
-                            </Button>
+                        {disableButtons && <Button
+                            variant='contained'
+                            color="success"
+                            onClick={handleSaveForm}>
+                            Next Question
+                        </Button>}
                             {/* {!disableButtons && <Button
               variant='contained'
               color="primary"
@@ -362,7 +351,6 @@ const SelectMultipleImage = ({ onSaveForm, data, id, options, disableForm, disab
                     </Box>
                 </Container>
             </React.Fragment>
-        </ThemeProvider>
 
     )
 }

@@ -21,7 +21,7 @@ function DroppableContainer({ items }) {
       <h3>Droppable Area</h3>
       <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
         {items.map((item) => (
-          <DroppableItem key={item.id} id={item.id} text={item.text} />
+          <DroppableItem key={item.id} id={item.id} text={item.value} />
         ))}
       </SortableContext>
     </div>

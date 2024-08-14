@@ -16,11 +16,37 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 const tiers = [
   {
+    title: 'Free Tier',
+    price: 'FREE',
+    description: [
+      'Surveys: 5',
+      'Users: 1',
+      'Responses: 500',
+      'Questions: 26',
+      'Logic: Advanced',
+      'Integrations: Custom',
+      'Analysis: Comprehensive tools',
+      'Data Center: Global',
+      'Support: 24/7 chat & email',
+    ],
+    buttonText: 'Sign up for free',
+    buttonVariant: 'outlined',
+    lookup_key: 'dubai_analytica_monthly',
+    dev_lookup_key: 'dev_monthly_dubai',
+  },
+  {
     title: 'Monthly Subscription',
     price: '200.00',
     description: [
-      'Access to creating unlimited surveys',
-      'Access to unlimited responses',
+      'Surveys: Unlimited',
+      'Users: 1',
+      'Responses: Unlimited',
+      'Questions: 28',
+      'Logic: Advanced',
+      'Integrations: Custom',
+      'Analysis: Comprehensive tools',
+      'Data Center: Global',
+      'Support: 24/7 chat & email',
     ],
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
@@ -32,8 +58,15 @@ const tiers = [
     originalPrice: '2400.00',
     discountedPrice: (2400 * 0.83).toFixed(2), // Apply 17% discount
     description: [
-      'Access to creating unlimited surveys',
-      'Access to unlimited responses',
+      'Surveys: Unlimited',
+      'Users: 1',
+      'Responses: Unlimited',
+      'Questions: 28',
+      'Logic: Advanced',
+      'Integrations: Custom',
+      'Analysis: Comprehensive tools',
+      'Data Center: Global',
+      'Support: 24/7 chat & email',
     ],
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
@@ -81,7 +114,7 @@ const ProductDisplayy = () => {
           }}
         >
           <Typography component="h2" variant="h4" color="text.primary">
-            Pricing
+          Plans and Pricing
           </Typography>
           <Typography variant="body1" color="text.secondary">
           </Typography>
@@ -164,7 +197,7 @@ const ProductDisplayy = () => {
                   </>
                 ) : (
                   <Typography component="h3" variant="p">
-                    AED{tier.price}
+                    {tier.price === 'FREE' ? 'FREE' : `AED${tier.price}`}
                   </Typography>
                 )}
               </Box>
@@ -203,18 +236,18 @@ const ProductDisplayy = () => {
                 </Box>
               ))}
             </CardContent>
-                <CardActions>
+               {tier.price!=='FREE' && <CardActions>
                   <form action="https://analyticaform-api.onrender.com/api/stripe/create-checkout-session" method="POST">
                   {/* <form action="http://localhost:3001/api/stripe/create-checkout-session" method="POST"> */}
                     {/* Add a hidden field with the lookup_key of your Price */}
-                    <input type="hidden" name="lookup_key" value={tier.dev_lookup_key} />
+                    <input type="hidden" name="lookup_key" value={tier.lookup_key} />
                     <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="emailId" value={emailId} />
                     <Button id="checkout-and-portal-button" type="submit" variant='contained'>
                       Proceed to checkout
                     </Button>
                   </form>
-                </CardActions>
+                </CardActions>}
               </Card>
             </Grid>
           ))}

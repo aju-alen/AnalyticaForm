@@ -137,7 +137,7 @@ const EmailAddress = ({ onSaveForm, data, id, options, disableForm, disableText,
                                         <TextField
                                             fullWidth
                                             id="standard-basic"
-                                            label={!disableText ? "Insert input" : ''}
+                                            label={!disableText ? "Enter Email Address" : ''}
                                             variant="standard"
                                             name='question'
                                             value={option.question}

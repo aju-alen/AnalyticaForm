@@ -83,7 +83,7 @@ model UserSurveyResponse{
   userName String @default("Anonymous")
   userResponse Json
   ipAddress String @default("")
-  userResponseTime Int @default(0)
+  userTimeSpent String @default("0")
   formQuestions Json
   introduction Boolean
   createdAt DateTime @default(now())
