@@ -27,18 +27,7 @@ const ContactUs = () => {
     message: '',
     contact: '',
   });
-  useEffect(() => {
-
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/66bae8bb0cca4f8a7a7538b5/1i551q806';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
-  }, []);
+ 
   const handleFormChange = (event) => {
     const { name, value } = event.target
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -108,14 +97,14 @@ const ContactUs = () => {
                   
                   <Button variant='contained' color='primary'   sx={{
                     fontWeight:'bold',
-                  }}>AI Help </Button>
+                  }}>Website Help </Button>
                   <Typography variant='p'  gutterBottom sx={{
                     fontWeight:'300',
                     fontSize: '0.9rem',
                     textDecoration:'line-through',
                     
                   }}>
-                  Get in touch with our AI assistant for immediate help 
+                  Get in touch with our assistant for immediate help 
                   </Typography>
                   <Typography variant='p'  gutterBottom sx={{
                     fontWeight:'300',
