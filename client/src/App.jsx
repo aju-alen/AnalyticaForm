@@ -38,6 +38,8 @@ const UserAnalytics = lazy(() => import('./pages/UserAnalytics'));
 const Usersurveyanalytics = lazy(() => import('./pages/User-survey-analytics'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
 const AdminSurveyData = lazy(() => import('./pages/AdminSurveyData'));
+const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 
 
 const App = () => {
@@ -107,6 +109,14 @@ const App = () => {
         {
           path: '/reset-password/:resetToken',
           element: <ResetPassword />,
+        },
+        {
+          path: '/terms-of-use',
+          element: <TermsOfUse />,
+        },
+        {
+          path: '/privacy-policy',
+          element: <PrivacyPolicy />,
         },
         {
           path: "/dashboard",
