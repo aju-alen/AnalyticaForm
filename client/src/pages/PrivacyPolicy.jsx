@@ -13,7 +13,19 @@ import { ThemeProvider } from '@mui/material/styles';
 const PrivacyPolicy = () => {
   return (
     <ThemeProvider theme={theme}>
-  <Box sx={{ minWidth: 100, }} className='p-20'>
+  <Box sx={{ display: { xs: '', md: 'none' } }} className='p-5'>
+    <Typography variant='h5' color='#1976d2' gutterBottom>
+    Dubai Analytica Privacy Policy (DAPP)
+    </Typography>
+    <Typography variant='p' gutterBottom>
+    Dubai Analytica Privacy Policy (DAPP)Effective Date: September 2nd, 2024</Typography>
+    
+    <Divider variant='fullWidth' sx={{
+      // backgroundColor: '#1976d2',
+      height: 1.5,
+    }}  />
+    </Box>
+  <Box sx={{ display: { xs: 'none', md: 'block' } }} className='p-20'>
     <Typography variant='h2' color='#1976d2' gutterBottom>
     Dubai Analytica Privacy Policy (DAPP)
     </Typography>
