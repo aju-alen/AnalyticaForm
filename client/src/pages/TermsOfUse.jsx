@@ -14,22 +14,29 @@ const TermsOfUse = () => {
   return (
     <ThemeProvider theme={theme}>
   <Box sx={{ display: { xs: '', md: 'none' } }} className='p-5'>
-    <Typography variant='h5' color='#1976d2' gutterBottom>
+    <Typography variant='h5' color='#1976d2' gutterBottom  sx={{
+        fontSize: 24,
+    }} >
       Terms of Use
     </Typography>
     <Typography variant='p' gutterBottom>
-      Last updated: September 02, 2024</Typography>
+      Last updated: September 02, 2024
+      </Typography>
+      <br />
     <Typography variant='p' gutterBottom>
     Welcome to Dubai Analytica, a division of RISE Ltd. (“Dubai Analytica or DA,” “we,” “us,” “our”) and thank you for using our products and services (“Services”). The following Terms and Conditions of Use (“Terms”) govern all use of the Services, so please read carefully.
     </Typography>
-    <Divider variant='middle' sx={{
+    <Divider variant='fullWidth' sx={{
       // backgroundColor: '#1976d2',
       height: 1.5,
+      marginTop: 2,
     }}  />
     </Box>
 
   <Box sx={{ display: { xs: 'none', md: 'block' } }} className='p-20'>
-    <Typography variant='h2' color='#1976d2' gutterBottom>
+    <Typography variant='h2' color='#1976d2' gutterBottom sx={{
+        fontSize: '3rem',
+    }}>
       Terms of Use
     </Typography>
     <Typography variant='p' gutterBottom>
@@ -37,9 +44,11 @@ const TermsOfUse = () => {
     <Typography variant='h6' gutterBottom>
     Welcome to Dubai Analytica, a division of RISE Ltd. (“Dubai Analytica or DA,” “we,” “us,” “our”) and thank you for using our products and services (“Services”). The following Terms and Conditions of Use (“Terms”) govern all use of the Services, so please read carefully.
     </Typography>
+    
     <Divider variant='middle' sx={{
       // backgroundColor: '#1976d2',
       height: 1.5,
+      marginTop: 2,
     }}  />
     </Box>
     <Container maxWidth='md'  >

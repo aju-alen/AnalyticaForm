@@ -14,7 +14,9 @@ const PrivacyPolicy = () => {
   return (
     <ThemeProvider theme={theme}>
   <Box sx={{ display: { xs: '', md: 'none' } }} className='p-5'>
-    <Typography variant='h5' color='#1976d2' gutterBottom>
+    <Typography variant='h1' color='#1976d2' gutterBottom sx={{
+        fontSize: 24,
+    }} >
     Dubai Analytica Privacy Policy (DAPP)
     </Typography>
     <Typography variant='p' gutterBottom>
@@ -23,10 +25,13 @@ const PrivacyPolicy = () => {
     <Divider variant='fullWidth' sx={{
       // backgroundColor: '#1976d2',
       height: 1.5,
+      marginTop: 2,
     }}  />
     </Box>
-  <Box sx={{ display: { xs: 'none', md: 'block' } }} className='p-20'>
-    <Typography variant='h2' color='#1976d2' gutterBottom>
+  <Box sx={{ display: { xs: 'none', md: 'block' } }}  className='p-20'>
+    <Typography variant='h1' color='#1976d2' gutterBottom sx={{
+        fontSize: '3rem',
+    }}>
     Dubai Analytica Privacy Policy (DAPP)
     </Typography>
     <Typography variant='p' gutterBottom>
@@ -35,6 +40,7 @@ const PrivacyPolicy = () => {
     <Divider variant='middle' sx={{
       // backgroundColor: '#1976d2',
       height: 1.5,
+      marginTop: 2,
     }}  />
     </Box>
     <Container maxWidth='md'  >
@@ -46,6 +52,7 @@ const PrivacyPolicy = () => {
           <Typography variant='p'  gutterBottom>
           This Privacy Statement describes how Dubai Analytica collects and uses the personal information you provide. It also describes the choices available to you regarding the use of, your access to, and how to update and correct your personal information.
             </Typography>
+            <br />
             <Typography variant='p'  gutterBottom>
             Dubai Analytica strives to conform its privacy practices, policies and/or procedures with any and all applicable international, country-specific, UAE Federal Decree Laws, state, and/or local laws, codes, regulations, and requirements, and the industry codes, standards, and regulations of various market and opinion research professional associations and/or organizations, including, without limitation, the ICC/ESOMAR International Code on Market and Social Research and the Code of Standards and Ethics for Survey Research of the Council of American Survey Research Organizations (CASRO). Dubai Analytica is committed to protecting the security and integrity of all personal information collected by or disclosed to Dubai Analytica. Dubai Analytica will not use any personal information for direct marketing or advertising purposes, and membership as a panel member and/or participation in any survey(s) are completely voluntary. This privacy policy identifies the personal information that Dubai Analytica collects; how such personal information will be used and protected; and your rights.
             </Typography>
@@ -111,7 +118,7 @@ const PrivacyPolicy = () => {
             FORWARD TO FRIEND/ADD A USER
           </Typography>
           <Typography variant='p'  gutterBottom>
-          A respondent may share a survey with other users by providing email addresses after completing the survey. Dubai Analytica will automatically send a survey link to those addresses and a one-time email that introduces and invites the addressee to the Dubai Analytica site. We will not share these email addresses with customers or survey administrators and will not send future mailings unless the addressee requests further communication. Any addressee who has been referred to our site or surveys may contact support@dubaianalytica.com (or use the “Contact Us” link on our homepage) and request to be removed from the database. When you add a new user to your account, such as the “Add User” function on your  account, we collect that user’s name, email address and other contact information. Dubai Analytica stores this information for the sole purpose of providing this service to you as our Dubai Analytica customer. You or the added user may request to delete this submitted information by contacting us at support@dubaianalytica.com.
+          A respondent may share a survey with other users by providing email addresses after completing the survey. Dubai Analytica will automatically send a survey link to those addresses and a one-time email that introduces and invites the addressee to the Dubai Analytica site. We will not share these email addresses with customers or survey administrators and will not send future mailings unless the addressee requests further communication. Any addressee who has been referred to our site or surveys may contact <b>support@dubaianalytica.com</b> (or use the “Contact Us” link on our homepage) and request to be removed from the database. When you add a new user to your account, such as the “Add User” function on your  account, we collect that user’s name, email address and other contact information. Dubai Analytica stores this information for the sole purpose of providing this service to you as our Dubai Analytica customer. You or the added user may request to delete this submitted information by contacting us at <b>support@dubaianalytica.com</b>.
             </Typography>
 
             <Typography variant='h5' color='#1976d2' gutterBottom>
@@ -129,7 +136,7 @@ const PrivacyPolicy = () => {
             </Typography>
 
           <Typography variant='p'  gutterBottom>
-          We will occasionally send you information on product enhancements, new services, and additional instruction on utilizing our services. These communications are designed to educate our users on the services offered. Out of respect for your privacy, we present the option not to receive these types of communications. Please see “Choice and Opt-out” in “Information Sharing and Disclosure.” Service-related Announcements We will send you strictly service-related announcements when it is necessary to do so. For instance, if our service is temporarily suspended for maintenance, we might send you an email. Service-related emails are also sent confirming billing transactions, account upgrades, and account cancellations. Generally, you may not opt-out of these communications, which are not promotional in nature. If you do not wish to receive them, you have the option to cancel your account.
+          We will occasionally send you information on product enhancements, new services, and additional instruction on utilizing our services. These communications are designed to educate our users on the services offered. Out of respect for your privacy, we present the option not to receive these types of communications. Please see “Choice and Opt-out” in “Information Sharing and Disclosure.” <b>Service-related Announcements</b> We will send you strictly service-related announcements when it is necessary to do so. For instance, if our service is temporarily suspended for maintenance, we might send you an email. Service-related emails are also sent confirming billing transactions, account upgrades, and account cancellations. Generally, you may not opt-out of these communications, which are not promotional in nature. If you do not wish to receive them, you have the option to cancel your account.
             </Typography>
 
             <Typography variant='h5' color='#1976d2' gutterBottom>
@@ -182,7 +189,7 @@ const PrivacyPolicy = () => {
             BULLETIN BOARDS/CHAT ROOMS/ FORUM
           </Typography>
           <Typography variant='p'  gutterBottom>
-          If you use a bulletin board or chat room or public forum on this site, you should be aware that any personally identifiable information you submit it here can be read, collected, or used by other users of these forums, and could be used to send you unsolicited messages. We are not responsible for the personally identifiable information you choose to submit in these forums. To request removal of your personal information from our blog or public forum, contact us at privacy@dubaianalytica.com. In some cases, we may not be able to remove your personal information, in which case we will let you know if we are unable to do so and why.
+          If you use a bulletin board or chat room or public forum on this site, you should be aware that any personally identifiable information you submit it here can be read, collected, or used by other users of these forums, and could be used to send you unsolicited messages. We are not responsible for the personally identifiable information you choose to submit in these forums. To request removal of your personal information from our blog or public forum, contact us at <b>privacy@dubaianalytica.com</b>. In some cases, we may not be able to remove your personal information, in which case we will let you know if we are unable to do so and why.
             </Typography>
             <Typography variant='p'  gutterBottom>
           •AI-Enhanced Survey Design and Analysis: Dubai Analytica utilizes Artificial Intelligence (AI) technologies to assist clients in building sophisticated surveys, dashboards, and performing sentiment analysis. Our AI tools recommend survey structures, question types, and analysis models based on the industry and specific objectives of the client.
@@ -193,7 +200,7 @@ const PrivacyPolicy = () => {
             TESTIMONIALS
           </Typography>
           <Typography variant='p'  gutterBottom>
-          We display personal testimonials of satisfied customers on our site in addition to other endorsements. With your consent, we may post your testimonial along with your name. If you wish to update or delete your testimonial, you can contact us at privacy@dubaianalytica.com.
+          We display personal testimonials of satisfied customers on our site in addition to other endorsements. With your consent, we may post your testimonial along with your name. If you wish to update or delete your testimonial, you can contact us at <b>privacy@dubaianalytica.com</b>.
             </Typography>
 
             <Typography variant='h5' color='#1976d2' gutterBottom>
@@ -211,7 +218,7 @@ const PrivacyPolicy = () => {
           </Typography>
 
           <Typography variant='p'  gutterBottom>
-          Under the General Data Protection Regulation (GDPR), the survey respondents have a right to access or challenge the processing of their personal data being held and managed by the administrator of the survey. They can exercise these rights by submitting an individual rights request by sending an email to support@dubaianalytica.com.
+          Under the General Data Protection Regulation (GDPR), the survey respondents have a right to access or challenge the processing of their personal data being held and managed by the administrator of the survey. They can exercise these rights by submitting an individual rights request by sending an email to <b>support@dubaianalytica.com</b>.
           </Typography>
 
           <Typography variant='h5' color='#1976d2' gutterBottom>
