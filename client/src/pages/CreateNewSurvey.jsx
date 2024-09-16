@@ -26,7 +26,7 @@ import CountrySlect from '../components/CountrySlect';
 import RankOrder from '../components/RankOrder';
 import ConstantSum from '../components/ConstantSum';
 import NumericSlider from '../components/NumericSlider';
-import SelectOneImage from '../components/SelectOneImage';
+// import SelectOneImage from '../components/SelectOneImage';
 import SelectMultipleImage from '../components/SelectMultipleImage';
 import RankOrderImage from '../components/RankOrderImage';
 import PresentationText from '../components/PresentationText';
@@ -443,20 +443,20 @@ const CreateNewSurvey = () => {
         </Stack>
       )
     }
-    // else if (item.formType === 'MapForm') {
-    //   return (
-    //     <Stack spacing={2} key={index} direction='row' position='relative'>
-    //       <MapForm key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-    //       <Button
-    //         color="secondary"
-    //         size='large'
-    //         sx={{ position: 'absolute', right: 30 }}
-    //         onClick={() => handleDeleteSelectOneForm(item.id)}>
-    //         <CancelIcon />
-    //       </Button>
-    //     </Stack>
-    //   )
-    // }
+    else if (item.formType === 'MapForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <MapForm key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
 
     else if (item.formType === 'SelectDropDownForm') {
       return (
