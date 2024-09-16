@@ -42,7 +42,7 @@ import GoogleRecaptcha from '../components/GoogleRecaptcha';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CircularProgress from '@mui/material/CircularProgress';
 import SelectDropdownMenu from '../components/SelectDropdownMenu';
-// import MapForm from '../components/MapForm';
+import MapForm from '../components/MapForm';
 import SurveyIntro from '../components/SurveyIntro';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
