@@ -6,9 +6,6 @@ import axios from 'axios';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import theme from '../utils/theme';
@@ -16,6 +13,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { backendUrl } from '../utils/backendUrl';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
+import FloatingButton from '../components/chatbot/FloatingButton';
+
 
 const ContactUs = () => {
   const [open, setOpen] = useState(false);
@@ -57,6 +56,7 @@ const ContactUs = () => {
   };
   return (
     <ThemeProvider theme={theme}>
+        <FloatingButton />
       <Box sx={{ minWidth: 100, }} className='p-20'>
         <Typography variant='h2' color='#1976d2' gutterBottom>
           Contact Us
@@ -207,6 +207,7 @@ const ContactUs = () => {
             {alertText}
           </Alert>
         </Snackbar>
+      
       </Box>
     </ThemeProvider>
   )

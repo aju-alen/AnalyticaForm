@@ -319,7 +319,9 @@ If you will be using the Services on behalf of a company or any other entity, yo
             <Typography variant='h5' color='#1976d2' gutterBottom>
             26. MISCELLANEOUS
           </Typography>
-          <Typography variant='p'  gutterBottom>
+          <Typography variant='p'  gutterBottom sx={{
+            paddingBottom: '20px',
+          }}>
           The failure of either party to exercise or enforce any right contained in these Terms, is not a waiver of either parties’ right to do so later. Dubai Analytica shall not be liable for any failure to perform its obligations in these Terms where such failure results from any cause beyond Dubai Analytica’s reasonable control, including, without limitation, mechanical, electronic or communications failure or degradation. If any provision of these Terms is found to be unenforceable or invalid, that provision shall be limited or eliminated to the minimum extent necessary so that these Terms shall otherwise remain in full force and effect and enforceable. These Terms are not assignable, transferable, or sublicensable by you, except with our prior written consent. We may transfer, assign, or delegate these Terms and their rights and obligations without consent. Both parties agree that these Terms are the complete and exclusive statement of the mutual understanding of the parties and supersedes and cancels all previous written and oral agreements, communications, and other understandings relating to the subject matter of these Terms, and that all modifications must be in a writing signed by both parties, except as otherwise provided herein. No agency, partnership, joint venture, or employment is created as a result of these Terms and you do not have any authority of any kind to bind Dubai Analytica in any respect whatsoever.
             </Typography>
 

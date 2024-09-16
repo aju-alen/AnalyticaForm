@@ -384,6 +384,16 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                     </ListItemButton>
                   </ListItem>
                 </Grid>
+                <Grid item xs={12}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleItemClick('MapForm')}>
+                      <ListItemText
+                        primary={'Map'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
               </Grid>
             </Grid>
 

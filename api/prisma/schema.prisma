@@ -19,10 +19,11 @@ model User {
   email     String   @unique
   firstName String
   lastName  String
-  password  String
+  password  String?
   receiveMarketingEmails Boolean 
   resetToken String @unique @db.VarChar(255) @default(cuid())  
-  emailVerificationToken String 
+  emailVerificationToken String
+  isGoogleUser Boolean @default(false) 
   emailVerified Boolean @default(false)
   isAdmin   Boolean @default(false)
   isSuperAdmin Boolean @default(false)

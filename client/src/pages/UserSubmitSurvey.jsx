@@ -34,6 +34,7 @@ import RankOrderImage from '../components/RankOrderImage'
 import PresentationText from '../components/PresentationText'
 import SectionHeading from '../components/SectionHeading'
 import SectionSubHeading from '../components/SectionSubHeading'
+import MapForm from '../components/MapForm'
 import { axiosWithAuth } from '../utils/customAxios'
 import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog';
@@ -509,6 +510,28 @@ const UserSubmitSurvey = () => {
                         </Button>}
 
                         <SelectSingleRadio
+                            data={currentItem}
+                            onSaveForm={handleSaveSinglePointForm}
+                            onHandleNext={handleNext}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true} />
+                    </div>
+                );
+            case 'MapForm':
+                return (
+                    <div className=" w-11/12 h-4/6">
+                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        <MapForm
                             data={currentItem}
                             onSaveForm={handleSaveSinglePointForm}
                             onHandleNext={handleNext}

@@ -30,7 +30,7 @@ const uploadWithMulterImage = (awsId) => multer({
             console.log(file, 'file');
         },
         key: function (req, file, cb) {
-            const fileName = `fullIssue/${awsId}/${file.originalname}`;
+            const fileName = `imageForm/${awsId}/${file.originalname}`;
             cb(null, fileName);
         }
     })
@@ -70,7 +70,7 @@ export const fetchImageDetails = async (req, res) => {
         let baseUrl = `https://dubai-analytica.s3.ap-south-1.amazonaws.com/`
         let urlArr = []
         console.log(data,'data from s3');
-        const filteredData = data.Contents.filter((file) =>  file.Key.includes(`fullIssue/${awsId}/`) )
+        const filteredData = data.Contents.filter((file) =>  file.Key.includes(`imageForm/${awsId}/`) )
         console.log(baseUrl, 'baseUrl', filteredData, 'filteredData');
         filteredData.map((file) => {
            

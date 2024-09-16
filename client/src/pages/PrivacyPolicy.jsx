@@ -298,7 +298,9 @@ const PrivacyPolicy = () => {
             <Typography variant='h5' color='#1976d2' gutterBottom>
             CONTACT US
           </Typography>
-          <Typography variant='p'  gutterBottom>
+          <Typography variant='p'  gutterBottom sx={{
+            paddingBottom: '20px',
+          }}>
           Dubai Analytica is committed to working with individuals to obtain a fair resolution to any complaints or disputes about privacy and personal information. Dubai Analytica commitment to privacy is demonstrated and documented by our internal Privacy Compliance Officer, by our adherence to the applicable laws and codes. If you have any complaints or concerns about this privacy policy you can contact:
             </Typography>
 

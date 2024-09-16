@@ -137,3 +137,55 @@ const reportAbuseEmail = async (email,comment,surveyTitle,surveyOwner) => {
         console.log(err);
     }
 }
+
+export const reportNfswImage = async (req, res) => {
+    console.log(req.body, 'req.body');
+    const {awsId,filesUrl,email,id,firstName} = req.body;
+    try{
+        reportNSFWEmail(awsId,filesUrl,email,id,firstName);
+        res.status(200).json({message: 'Email sent successfully'});
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send({message:'Internal server error'});
+    }
+}
+
+const reportNSFWEmail = async (awsId,filesUrl,email,id,firstName) => {
+    const transporter = createTransport;
+    const mailOptions = {
+        from: process.env.GMAIL_AUTH_USER,
+        to: process.env.GMAIL_AUTH_USER,
+        subject: 'Report NSFW Image for Image Form',
+        html: `
+    <html>
+    <body>
+        <div>
+
+            <img src="https://i.postimg.cc/8cpfZ5sP/215b7754-0e37-41b2-be2f-453d190af861.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <p>Dubai Analytica</p>
+
+        </div>
+        <div>
+            <p>Hello</p>
+            <p>An admin has uploaded an image that needs to be reviewed</p>
+            <br>
+            <p>Uploaded By : ${email}</p>
+            <p>First Name : ${firstName}</p>
+            <p>UserId : ${id}</p>
+            <p>Image Id in aws : ${awsId}</p>
+            <p>Image Url : ${filesUrl}</p>
+            <br>
+            <p>Click on the link below to view the image</p>
+            <p>Check the image and take necessary action</p>
+        </div>
+    </body>
+    </html>`
+    }
+    try{
+        const response = await transporter.sendMail(mailOptions);
+    }
+    catch(err){
+        console.log(err);
+    }
+}

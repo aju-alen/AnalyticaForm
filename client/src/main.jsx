@@ -11,10 +11,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>    
     <App />
-    </GoogleOAuthProvider>
     </LocalizationProvider>
     </HelmetProvider>
   </React.StrictMode>,

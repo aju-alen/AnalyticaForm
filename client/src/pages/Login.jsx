@@ -17,9 +17,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { backendUrl } from '../utils/backendUrl';
-import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { axiosWithCredentials } from '../utils/customAxios';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -29,6 +29,8 @@ import Alert from '@mui/material/Alert';
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
+
+const clientId = import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID;
 
 export default function Login() {
   const navigate = useNavigate();
@@ -49,10 +51,10 @@ export default function Login() {
     setOpen(false);
   };
 
-  
+
   const handleSubmit = async (event) => {
 
-    try{
+    try {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
       const resp = await axiosWithCredentials.post(`${backendUrl}/api/auth/login`, {
@@ -63,17 +65,40 @@ export default function Login() {
       handleClick();
       setAlertMessage(resp.data.message);
       setAlertColor('success');
-  
-      localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken, isSuperAdmin: resp.data.isSuperAdmin}));
+
+      localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.id, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken, isSuperAdmin: resp.data.isSuperAdmin }));
       navigate('/dashboard');
     }
-    catch(err){
-      console.log(err.response.data.message,'error text');
+    catch (err) {
+      console.log(err.response.data.message, 'error text');
       handleClick();
       setAlertMessage(err.response.data.message);
       setAlertColor('error');
     }
-   
+
+  };
+
+  const handleLoginSuccess = async (credentialResponse) => {
+    const token = credentialResponse.credential;
+    console.log('Google token:', token);
+
+    const resp = await axios.post(`${backendUrl}/api/auth/google-login`, { token });
+
+    console.log('Google login response:', resp.data);
+
+    handleClick();
+      setAlertMessage(resp.data.message);
+      setAlertColor('success');
+
+      localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.userId, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken, isSuperAdmin: resp.data.isSuperAdmin }));
+      navigate('/dashboard');
+
+    // You can send the token to your backend server for further processing
+    // e.g., axios.post('/api/auth/google', { token });
+  };
+
+  const handleLoginError = () => {
+    console.log('Login Failed');
   };
 
   return (
@@ -127,21 +152,23 @@ export default function Login() {
             >
               Login
             </Button>
-            <Box 
-              sx={{ mt: 1 ,
-              display: 'flex',
-              justifyContent: 'center',}}
-             
+            <Box
+              sx={{
+                mt: 1,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+
             >
-            <GoogleLogin
-              onSuccess={credentialResponse => {
-                const decoded = jwtDecode(JSON.stringify(credentialResponse))
-                console.log(decoded);
-              }}
-              onError={() => {
-                console.log('Login Failed');
-              }}
-            />
+             <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID}>
+                <div>
+                  <h1>Google Login</h1>
+                  <GoogleLogin
+                    onSuccess={handleLoginSuccess}
+                    onError={handleLoginError}
+                  />
+                </div>
+              </GoogleOAuthProvider>
             </Box>
             <Grid container>
               <Grid item xs>
@@ -158,17 +185,17 @@ export default function Login() {
           </Box>
         </Box>
         <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-        <Alert
-          onClose={handleClose}
-          severity={alertColor}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-         {alertMessage}
-        </Alert>
-      </Snackbar>
+          <Alert
+            onClose={handleClose}
+            severity={alertColor}
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
+            {alertMessage}
+          </Alert>
+        </Snackbar>
       </Container>
-     
+
     </ThemeProvider>
   );
 }

@@ -36,7 +36,9 @@ const SelectOneImage = ({ onSaveForm, data, id, options, disableForm, disableTex
     selectedValue: [{ question: '', answer: '', value: '', index: '' }],
     formType: 'SelectOneImageForm'
   });
+  const [userId, setUserId] = useState('');
   const [debouncedValue, setDebouncedValue] = useState('');
+
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -48,6 +50,13 @@ const SelectOneImage = ({ onSaveForm, data, id, options, disableForm, disableTex
       clearTimeout(handler);
     };
   }, [formData]);
+
+  useEffect(() => {
+      const local = JSON.parse(localStorage.getItem('userAccessToken'));
+      console.log(userId, 'userId in CreateNewSurvey');
+      setUserId(local);
+      
+  }, []);
 
   const handleAddOptions = () => {
     setFormData({
@@ -85,7 +94,7 @@ const SelectOneImage = ({ onSaveForm, data, id, options, disableForm, disableTex
 
         const getPathFromUrl = (filesUrl) => {
           const parts = filesUrl.split('/');
-          const index = parts.findIndex(part => part === 'fullIssue');
+          const index = parts.findIndex(part => part === 'imageForm');
           if (index !== -1) {
             return parts.slice(index).join('/');
           }
@@ -123,22 +132,27 @@ const SelectOneImage = ({ onSaveForm, data, id, options, disableForm, disableTex
         try {
           const result = await rekognition.detectLabels(params).promise();
           console.log('Rekognition Response:', result); // Log the result
-          alert('Rekognition is working: ' + JSON.stringify(result));
-      
-          // Check if any of the labels indicate nudity or suggestive content
-          const moderationLabels = result.ModerationLabels;
-          const isExplicit = moderationLabels.some(label => 
-            label.Name === 'Explicit Nudity' || label.Name === 'Suggestive'
-          );
-      
-          if (isExplicit) {
-            alert('The image contains explicit or suggestive content.');
-          } else {
-            alert('The image is safe.');
+          const boolean = result.Labels.some(label => label.Name === 'Nudity' || label.Name === 'Suggestive' || label.Name === "Underwear" || label.Name === "Lingerie" || label.Name === "Bra" );
+          
+          console.log(boolean, 'boolean');
+          if (boolean) {
+            alert('We suspect this image might be against our Terms & Condition. You can continue with the image but it will be reviewed by our team.');
+            console.log(awsId, 'awsId');
+            console.log(filesUrl, 'filesUrl');
+            console.log(userId, 'userId');
+            const email = userId.email;
+            const id = userId.id;
+            const firstName = userId.firstName;
+            
+            
+            const sendEmail = await axiosWithAuth.post(`${backendUrl}/api/send-email/report-nsfw`,{awsId,filesUrl,email,id,firstName});
+            return;
           }
         } catch (err) {
           console.error('Rekognition Error:', err); // Log the error
           alert('Error analyzing image: ' + err.message);
+          console.log(sendEmail,'sendEmail');
+
         }
       }
     } catch (err) {

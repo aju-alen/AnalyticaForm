@@ -115,7 +115,7 @@ const App = () => {
           element: <TermsOfUse />,
         },
         {
-          path: '/privacy-policy',
+          path: 'dapp/privacy-policy',
           element: <PrivacyPolicy />,
         },
         {
