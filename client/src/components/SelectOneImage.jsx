@@ -10,7 +10,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { uid } from 'uid';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
-import rekognition from '../utils/aws-config';
+// import rekognition from '../utils/aws-config';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -129,31 +129,31 @@ const SelectOneImage = ({ onSaveForm, data, id, options, disableForm, disableTex
           MinConfidence: 75,
         };
 
-        try {
-          const result = await rekognition.detectLabels(params).promise();
-          console.log('Rekognition Response:', result); // Log the result
-          const boolean = result.Labels.some(label => label.Name === 'Nudity' || label.Name === 'Suggestive' || label.Name === "Underwear" || label.Name === "Lingerie" || label.Name === "Bra" );
+        // try {
+        //   const result = await rekognition.detectLabels(params).promise();
+        //   console.log('Rekognition Response:', result); // Log the result
+        //   const boolean = result.Labels.some(label => label.Name === 'Nudity' || label.Name === 'Suggestive' || label.Name === "Underwear" || label.Name === "Lingerie" || label.Name === "Bra" );
           
-          console.log(boolean, 'boolean');
-          if (boolean) {
-            alert('We suspect this image might be against our Terms & Condition. You can continue with the image but it will be reviewed by our team.');
-            console.log(awsId, 'awsId');
-            console.log(filesUrl, 'filesUrl');
-            console.log(userId, 'userId');
-            const email = userId.email;
-            const id = userId.id;
-            const firstName = userId.firstName;
+        //   console.log(boolean, 'boolean');
+        //   if (boolean) {
+        //     alert('We suspect this image might be against our Terms & Condition. You can continue with the image but it will be reviewed by our team.');
+        //     console.log(awsId, 'awsId');
+        //     console.log(filesUrl, 'filesUrl');
+        //     console.log(userId, 'userId');
+        //     const email = userId.email;
+        //     const id = userId.id;
+        //     const firstName = userId.firstName;
             
             
-            const sendEmail = await axiosWithAuth.post(`${backendUrl}/api/send-email/report-nsfw`,{awsId,filesUrl,email,id,firstName});
-            return;
-          }
-        } catch (err) {
-          console.error('Rekognition Error:', err); // Log the error
-          alert('Error analyzing image: ' + err.message);
-          console.log(sendEmail,'sendEmail');
+        //     const sendEmail = await axiosWithAuth.post(`${backendUrl}/api/send-email/report-nsfw`,{awsId,filesUrl,email,id,firstName});
+        //     return;
+        //   }
+        // } catch (err) {
+        //   console.error('Rekognition Error:', err); // Log the error
+        //   alert('Error analyzing image: ' + err.message);
+        //   console.log(sendEmail,'sendEmail');
 
-        }
+        // }
       }
     } catch (err) {
       console.log(err);

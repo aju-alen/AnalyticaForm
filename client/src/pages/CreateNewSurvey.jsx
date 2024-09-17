@@ -26,7 +26,7 @@ import CountrySlect from '../components/CountrySlect';
 import RankOrder from '../components/RankOrder';
 import ConstantSum from '../components/ConstantSum';
 import NumericSlider from '../components/NumericSlider';
-// import SelectOneImage from '../components/SelectOneImage';
+import SelectOneImage from '../components/SelectOneImage';
 import SelectMultipleImage from '../components/SelectMultipleImage';
 import RankOrderImage from '../components/RankOrderImage';
 import PresentationText from '../components/PresentationText';
