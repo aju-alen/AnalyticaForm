@@ -236,7 +236,7 @@ const Hero = () => {
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
                 fontSize: 'clamp(1.3rem, 3vw, 1rem)',
-                paddingX:10,
+                paddingX:{xs:1,md:10},
               }}
             >
               Reach your desired target audience by creating incredible surveys. Choose from multiple-choice question types, add logic, and customize with your branding. Your creativity sets the boundaries. And yes, it&apos;s incredibly easy! Discover how we make it happen.
@@ -295,7 +295,7 @@ const Hero = () => {
             width={500}
             alt="My GIF"
             style={{
-              marginLeft: '80px',
+              marginLeft: {xs:'1px',md:'80px'},
             }}
           />
           <Stack spacing={3}>
@@ -381,7 +381,7 @@ const Hero = () => {
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
                 fontSize: 'clamp(1.3rem, 3vw, 1rem)',
-                paddingX:10,
+                paddingX:{xs:1,md:10},
               }}
             >
               We meet all the needs of today&apos;s modern enterprise. From robust security and time-saving integrations to advanced collaboration features, we've got it covered. Plus, our world-class account service team is here to support you every step of the way.
@@ -441,7 +441,7 @@ const Hero = () => {
             width={570}
             alt="My GIF"
             style={{
-              marginLeft: '80px',
+              marginLeft: {xs:'1px',md:'80px'},
             }}
           />
           <Stack spacing={3}>
