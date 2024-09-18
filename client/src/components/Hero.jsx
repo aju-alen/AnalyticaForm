@@ -44,8 +44,6 @@ const shinePaper = keyframes`
   }
 `;
 
-
-
 const Hero = () => {
     const navigate = useNavigate();
    
@@ -235,7 +233,7 @@ const Hero = () => {
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.3rem, 3vw, 1rem)',
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
                 paddingX:{xs:1,md:10},
               }}
             >
@@ -257,7 +255,7 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 14, sm: 4 },
+        pt: { xs: 4, sm: 4 },
         pb: { xs: 8, sm: 4 },
       }}
     >
@@ -313,7 +311,7 @@ const Hero = () => {
               color="text.secondary"
               sx={{
                 width: { sm: '100%', md: '100%' },
-                fontSize: 'clamp(1.3rem, 3vw, 1rem)',
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
               }}
             >
               Our reports simplify your analysis. With real-time, shareable dashboards and a complete analytics suite, we empower you to quickly transform data into actionable insights.
@@ -380,7 +378,7 @@ const Hero = () => {
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.3rem, 3vw, 1rem)',
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
                 paddingX:{xs:1,md:10},
               }}
             >
@@ -459,7 +457,7 @@ const Hero = () => {
               color="text.secondary"
               sx={{
                 width: { sm: '100%', md: '80%' },
-                fontSize: 'clamp(1.3rem, 3vw, 1rem)',
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
               }}
             >
               Working late into the night? Our support team is available 24/7. From dedicated enterprise account managers to live chat, we&apos;re committed to ensuring your research is successful, no matter the hour.
