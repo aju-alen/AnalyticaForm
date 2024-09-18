@@ -187,7 +187,7 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                 <Grid item xs={12}>
                   <ListItem disablePadding>
                     <Badge badgeContent='Premium' color="primary">
-                      <ListItemButton disabled={!isProMember ? false : true} onClick={() => handleItemClick('SelectMultipleImageForm')}>
+                      <ListItemButton disabled={isProMember ? false : true} onClick={() => handleItemClick('SelectMultipleImageForm')}>
                         <ListItemText
                           primary={'Select Multiple Image'}
                           sx={{ fontSize: '0.875rem' }}
