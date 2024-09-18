@@ -543,7 +543,7 @@ const Hero = () => {
                         sx={{ height: 'full'}}
                         fontWeight={300}
                         fontSize={'clamp(1.5rem, 5vw, 2.5rem)'}
-                        paddingX={12}
+                        paddingX={{xs:1,md:12}}
                     >
                     The online survey software and data collection tool you need to uncover the right insights
                     </Typography>
@@ -570,7 +570,7 @@ const Hero = () => {
                     >
                        
 
-                        <Card sx={{ minWidth: 275 }}>
+                        <Card sx={{ minWidth: {xs:350,md:275} }}>
                             <CardContent>
                                 <Typography variant='h3' gutterBottom 
                                 fontSize={'clamp(1.5rem, 3vw, 1.5rem)'}
