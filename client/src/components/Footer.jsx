@@ -49,10 +49,10 @@ const Footer = () => {
           color: '#000',
           fontSize: '0.8rem',
           width: {xs:'80%',md:'50%'},
-
           marginLeft: {xs:'10px',md:'114px'}
-
-        }}>
+        }}
+        align=''
+        >
         Dubai Analytica is revolutionising data collection with advanced online survey solutions designed for businesses, researchers, and organisations. Our survey software offers a user-friendly interface, is analytics-enabled, and strong data security, Dubai Analytica enables users to create customized surveys that gather valuable insights efficiently. With pre-built templates, diverse question types, and powerful response analysis, the platform simplifies the process of collecting and interpreting data. Whether you’re seeking customer feedback, conducting market research, or assessing employee satisfaction, Dubai Analytica helps turn survey data into actionable strategies that drive growth and enhance decision-making.
         </Typography>
         <Stack direction='row' spacing={2} sx={{

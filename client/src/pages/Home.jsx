@@ -31,7 +31,7 @@ export default function Home() {
   );
   return (
       //  <ThemeProvider theme={theme}>
-    <div>
+    <div className='w-screen'>
       <CssBaseline />
       <HomeNavBar />
       {/* <Switch

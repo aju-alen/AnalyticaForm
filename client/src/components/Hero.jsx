@@ -209,7 +209,7 @@ const Hero = () => {
       >
         <Stack
           spacing={2}
-          direction={{ xs: 'column', md: 'row' }}
+          direction={{ xs: 'column-reverse', md: 'row' }}
           sx={{ position: 'relative', zIndex: 2 }}
         >
           <Stack spacing={3} >
@@ -356,7 +356,7 @@ const Hero = () => {
       >
         <Stack
           spacing={2}
-          direction={{ xs: 'column', md: 'row' }}
+          direction={{ xs: 'column-reverse', md: 'row' }}
           sx={{ position: 'relative', zIndex: 2 }}
         >
           <Stack spacing={3}>
@@ -564,7 +564,7 @@ const Hero = () => {
                     <Stack
                         spacing={2}
                         direction={{ xs: 'column', md: 'row' }}
-                        paddingX={12}
+                        paddingX={0}
                     >
                        
 
