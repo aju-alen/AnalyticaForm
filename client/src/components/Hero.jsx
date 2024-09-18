@@ -180,7 +180,7 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 14, sm: 10 },
+        pt: { xs: 4, sm: 10 },
         pb: { xs: 8, sm: 4},
       }}
     >
@@ -327,7 +327,7 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 14, sm: 4 },
+        pt: { xs: 4, sm: 4 },
         pb: { xs: 8, sm: 4 },
       }}
     >
@@ -401,7 +401,7 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 14, sm: 4 },
+        pt: { xs: 4, sm: 4 },
         pb: { xs: 8, sm: 4 },
       }}
     >
@@ -472,7 +472,7 @@ const Hero = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        pt: { xs: 14, sm: 5 },
+                        pt: { xs: 4, sm: 5 },
                         pb: { xs: 8, sm: 5 },
                         backgroundImage:
                             'radial-gradient(ellipse 40% 100% at 50% 40%, hsl(210, 100%, 90%), transparent)',
@@ -527,7 +527,7 @@ const Hero = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        pt: { xs: 14, sm: 5 },
+                        pt: { xs: 4, sm: 5 },
                         pb: { xs: 8, sm: 12 },
 
                     }}
@@ -540,7 +540,7 @@ const Hero = () => {
                         textAlign="center"
                         sx={{ height: 'full'}}
                         fontWeight={300}
-                        fontSize={'clamp(1.5rem, 5vw, 2.5rem)'}
+                        fontSize={'clamp(1.8rem, 5vw, 2.5rem)'}
                         paddingX={{xs:1,md:12}}
                     >
                     The online survey software and data collection tool you need to uncover the right insights
