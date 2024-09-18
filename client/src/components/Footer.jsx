@@ -70,7 +70,7 @@ const Footer = () => {
         <Typography sx={{
           color: '#000',
           fontSize: '0.8rem',
-          marginLeft: '114px'
+          marginLeft: {xs:'10px',md:'114px'}
         }}>
           Copyright © 2024 <Link to='/' >Dubai Analytica</Link>
         </Typography>
