@@ -184,43 +184,27 @@ const Hero = () => {
         pb: { xs: 8, sm: 4},
       }}
     >
-      <Paper
-        elevation={10}
-        sx={{
-          padding: 4,
-          borderRadius: 4,
-          backgroundColor: 'rgba(255, 255, 255, 0.2)', // Translucent effect
-          backdropFilter: 'blur(10px)', // Adds blur to the background
-          position: 'relative',
-          overflow: 'hidden',
-          '&:before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(120deg, rgba(25, 255, 255, 0.1), rgba(190, 25, 255, 0.2), rgba(255, 255, 255, 0.1))',
-            backgroundSize: '200% 200%',
-            animation: `${shinePaper} 4s ease infinite`,
-            zIndex: 1,
-          },
-        }}
-      >
+     
         <Stack
           spacing={2}
           direction={{ xs: 'column-reverse', md: 'row' }}
           sx={{ position: 'relative', zIndex: 2 }}
         >
-          <Stack spacing={3} >
+          <Stack spacing={3} sx={{
+            width: { xs: '100%', sm: '80%' },
+            display: 'flex',
+            flexDirection: 'column',
+            // alignItems: 'center',
+            justifyContent: 'center',
+
+          }} >
             <Typography
               variant="h3"
               sx={{
                 display: 'flex',
                 flexDirection: { xs: 'column', sm: 'row' },
-                justifyContent: 'center',
-
-                width: { xs: '100%', sm: '66%' },
+                // justifyContent: 'center',
+                width: { xs: '100%', sm: '80%' },
                 fontWeight: 700,
                 fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               }}
@@ -234,36 +218,16 @@ const Hero = () => {
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
                 fontSize: 'clamp(1.0rem, 3vw, 1rem)',
-                paddingX:{xs:1,md:10},
+                paddingX:{xs:1,md:0},
               }}
             >
               Reach your desired target audience by creating incredible surveys. Choose from multiple-choice question types, add logic, and customize with your branding. Your creativity sets the boundaries. And yes, it&apos;s incredibly easy! Discover how we make it happen.
             </Typography>
           </Stack>
-          <Box
-            component="img"
-            src="https://i.postimg.cc/7LC9QbRX/first.png"
-            width={510}
-            alt="My GIF"
-          />
-        </Stack>
-      </Paper>
-    </Container>
-    <Container
-      maxWidth="xl"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        pt: { xs: 4, sm: 4 },
-        pb: { xs: 8, sm: 4 },
-      }}
-    >
-      <Paper
-        elevation={10}
+          <Paper
+        elevation={6}
         sx={{
-          padding: 4,
-          borderRadius: 4,
+          borderRadius: 2,
           backgroundColor: 'rgba(255, 255, 255, 0.2)', // Translucent effect
           backdropFilter: 'blur(10px)', // Adds blur to the background
           position: 'relative',
@@ -275,32 +239,85 @@ const Hero = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(120deg, rgba(25, 255, 255, 0.1), rgba(190, 25, 255, 0.2), rgba(255, 255, 255, 0.1))',
+            background: 'linear-gradient(120deg, rgba(81, 189, 215, 0.1), rgba(40, 130, 160, 0.2), rgba(200, 230, 240, 0.1))',
             backgroundSize: '200% 200%',
             animation: `${shinePaper} 4s ease infinite`,
             zIndex: 1,
           },
         }}
       >
+          <Box
+            component="img"
+            src="https://i.postimg.cc/7LC9QbRX/first.png"
+            width={1110}
+            alt="My GIF"
+          />
+      </Paper>
+        </Stack>
+    </Container>
+    <Container
+      maxWidth="xl"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        pt: { xs: 4, sm: 10 },
+        pb: { xs: 8, sm: 4 },
+      }}
+    >
+      
         <Stack
           spacing={2}
           direction={{ xs: 'column', md: 'row' }}
           sx={{ position: 'relative', zIndex: 2 }}
         >
+          <Paper
+        elevation={6}
+        sx={{
+          borderRadius: 2,
+          backgroundColor: 'rgba(255, 255, 255, 0.2)', // Translucent effect
+          backdropFilter: 'blur(10px)', // Adds blur to the background
+          position: 'relative',
+          overflow: 'hidden',
+          '&:before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(120deg, rgba(81, 189, 215, 0.1), rgba(40, 130, 160, 0.2), rgba(200, 230, 240, 0.1))',
+            backgroundSize: '200% 200%',
+            animation: `${shinePaper} 4s ease infinite`,
+            zIndex: 1,
+          },
+        }}
+      >
           <Box
             component="img"
             src="https://i.postimg.cc/qB2kr4gL/analytics.jpg"
-            width={500}
+            width={1110}
             alt="My GIF"
             style={{
-              marginLeft: {xs:'1px',md:'80px'},
             }}
           />
-          <Stack spacing={3}>
+          </Paper>
+          <Stack spacing={3}
+          sx={{
+            width: { xs: '100%', sm: '80%' },
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems:'end',
+            justifyContent: 'center',
+          }}
+          >
             <Typography
               variant="h3"
               sx={{
-                width: { xs: '100%', sm: '100%' },
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                // justifyContent: 'center',
+                width: { xs: '100%', sm: '80%' },
                 fontWeight: 700,
                 fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               }}
@@ -308,17 +325,20 @@ const Hero = () => {
               Fast-track better decision-making
             </Typography>
             <Typography
+              variant="body1"
               color="text.secondary"
               sx={{
-                width: { sm: '100%', md: '100%' },
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
                 fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
               }}
             >
               Our reports simplify your analysis. With real-time, shareable dashboards and a complete analytics suite, we empower you to quickly transform data into actionable insights.
             </Typography>
           </Stack>
         </Stack>
-      </Paper>
+      
     </Container>
 
     <Container
@@ -327,46 +347,31 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 4, sm: 4 },
+        pt: { xs: 4, sm: 10 },
         pb: { xs: 8, sm: 4 },
       }}
     >
-      <Paper
-        elevation={10}
-        sx={{
-          padding: 4,
-          borderRadius: 4,
-          backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          backdropFilter: 'blur(10px)',
-          position: 'relative',
-          overflow: 'hidden',
-          '&:before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(120deg, rgba(25, 255, 255, 0.1), rgba(190, 25, 255, 0.2), rgba(255, 255, 255, 0.1))',
-            backgroundSize: '200% 200%',
-            animation: `${shinePaper} 4s ease infinite`,
-            zIndex: 1,
-          },
-        }}
-      >
+     
         <Stack
           spacing={2}
           direction={{ xs: 'column-reverse', md: 'row' }}
           sx={{ position: 'relative', zIndex: 2 }}
         >
-          <Stack spacing={3}>
+           <Stack spacing={3} sx={{
+            width: { xs: '100%', sm: '80%' },
+            display: 'flex',
+            flexDirection: 'column',
+            // alignItems: 'center',
+            justifyContent: 'center',
+
+          }} >
             <Typography
               variant="h3"
               sx={{
                 display: 'flex',
                 flexDirection: { xs: 'column', sm: 'row' },
-                justifyContent: 'center',
-                width: { xs: '100%', sm: '66%' },
+                // justifyContent: 'center',
+                width: { xs: '100%', sm: '80%' },
                 fontWeight: 700,
                 fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               }}
@@ -374,44 +379,24 @@ const Hero = () => {
               Designed for enterprise use
             </Typography>
             <Typography
+              variant="body1"
               color="text.secondary"
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
                 fontSize: 'clamp(1.0rem, 3vw, 1rem)',
-                paddingX:{xs:1,md:10},
+                paddingX:{xs:1,md:0},
               }}
             >
               We meet all the needs of today&apos;s modern enterprise. From robust security and time-saving integrations to advanced collaboration features, we've got it covered. Plus, our world-class account service team is here to support you every step of the way.
             </Typography>
           </Stack>
-          <Box
-            component="img"
-            src="https://i.postimg.cc/dtcqL7dC/second.jpg"
-            width={510}
-            alt="My GIF"
-          />
-        </Stack>
-      </Paper>
-    </Container>
-
-    <Container
-    maxWidth="xl"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        pt: { xs: 4, sm: 4 },
-        pb: { xs: 8, sm: 4 },
-      }}
-    >
-      <Paper
-        elevation={10}
+          <Paper
+        elevation={6}
         sx={{
-          padding: 4,
-          borderRadius: 4,
-          backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          backdropFilter: 'blur(10px)',
+          borderRadius: 2,
+          backgroundColor: 'rgba(255, 255, 255, 0.2)', // Translucent effect
+          backdropFilter: 'blur(10px)', // Adds blur to the background
           position: 'relative',
           overflow: 'hidden',
           '&:before': {
@@ -421,32 +406,84 @@ const Hero = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(120deg, rgba(25, 255, 255, 0.1), rgba(190, 25, 255, 0.2), rgba(255, 255, 255, 0.1))',
+            background: 'linear-gradient(120deg, rgba(81, 189, 215, 0.1), rgba(40, 130, 160, 0.2), rgba(200, 230, 240, 0.1))',
             backgroundSize: '200% 200%',
             animation: `${shinePaper} 4s ease infinite`,
             zIndex: 1,
           },
         }}
       >
+          <Box
+            component="img"
+            src="https://i.postimg.cc/dtcqL7dC/second.jpg"
+            width={1110}
+            alt="My GIF"
+          />
+      </Paper>
+        </Stack>
+    </Container>
+
+    <Container
+    maxWidth="xl"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        pt: { xs: 4, sm: 10 },
+        pb: { xs: 8, sm: 4 },
+      }}
+    >
+      
         <Stack
           spacing={2}
           direction={{ xs: 'column', md: 'row' }}
           sx={{ position: 'relative', zIndex: 2 }}
         >
+          <Paper
+        elevation={6}
+        sx={{
+          borderRadius: 2,
+          backgroundColor: 'rgba(255, 255, 255, 0.2)', // Translucent effect
+          backdropFilter: 'blur(10px)', // Adds blur to the background
+          position: 'relative',
+          overflow: 'hidden',
+          '&:before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(120deg, rgba(81, 189, 215, 0.1), rgba(40, 130, 160, 0.2), rgba(200, 230, 240, 0.1))',
+            backgroundSize: '200% 200%',
+            animation: `${shinePaper} 4s ease infinite`,
+            zIndex: 1,
+          },
+        }}
+      >
           <Box
             component="img"
             src="https://i.postimg.cc/Z55Z6NH7/contact.jpg"
-            width={570}
+            width={1100}
             alt="My GIF"
-            style={{
-              marginLeft: {xs:'1px',md:'80px'},
-            }}
           />
-          <Stack spacing={3}>
-            <Typography
+          </Paper>
+          <Stack spacing={3}
+          sx={{
+            width: { xs: '100%', sm: '80%' },
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'end',
+            justifyContent: 'center',
+          }}
+          >
+             <Typography
               variant="h3"
               sx={{
-                width: { xs: '100%', sm: '100%' },
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                // justifyContent: 'center',
+                width: { xs: '100%', sm: '80%' },
                 fontWeight: 700,
                 fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               }}
@@ -454,17 +491,20 @@ const Hero = () => {
               All round support
             </Typography>
             <Typography
+              variant="body1"
               color="text.secondary"
               sx={{
-                width: { sm: '100%', md: '80%' },
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
                 fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
               }}
             >
               Working late into the night? Our support team is available 24/7. From dedicated enterprise account managers to live chat, we&apos;re committed to ensuring your research is successful, no matter the hour.
             </Typography>
           </Stack>
         </Stack>
-      </Paper>
+      
     </Container>
                 <Container
                     maxWidth='md'
