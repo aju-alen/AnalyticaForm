@@ -78,6 +78,7 @@ export default function Register() {
       <CssBaseline />
       <Box
         sx={{
+          height: '100vh',
           marginTop: 8,
           display: 'flex',
           flexDirection: 'column',

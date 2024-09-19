@@ -108,6 +108,7 @@ export default function Login() {
         <Box
           sx={{
             marginTop: 8,
+            height: '100vh',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
