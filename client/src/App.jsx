@@ -152,7 +152,7 @@ const App = () => {
         },
         {
           path: "/contact-us",
-          element: <ProtectedRoute element={<ContactUs />} />, // Wrap Dashboard inside ProtectedRoute
+          element: <ContactUs /> // Wrap Dashboard inside ProtectedRoute
         },
         {
           path: "/404",
