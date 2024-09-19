@@ -16,16 +16,9 @@ import Divider from '@mui/material/Divider';
 import { Helmet } from 'react-helmet-async';
 import { keyframes } from '@mui/system';
 import SEO from './SEO';
-
-const fadeIn = keyframes`
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-`;
-
-const textSlideIn = keyframes`
-  0% { opacity: 0; transform: translateX(-20px); }
-  100% { opacity: 1; transform: translateX(0); }
-`;
+import first from '../assets/first.gif';
+import contactFinal from '../assets/contactFinal.gif';
+import functions from '../assets/functions.gif';
 
 const buttonPulse = keyframes`
   0% { transform: scale(1); }
@@ -66,7 +59,6 @@ const Hero = () => {
           alignItems: 'center',
           pt: { xs: 14, sm: 20 },
           pb: { xs: 8, sm: 12 },
-          animation: `${fadeIn} 2s ease-out`,
         }}
       >
         <SEO
@@ -82,7 +74,6 @@ const Hero = () => {
           useFlexGap
           sx={{
             width: { xs: '100%', sm: '70%' },
-            animation: `${textSlideIn} 1.5s ease-out`,
           }}
         >
           <Typography
@@ -246,12 +237,7 @@ const Hero = () => {
           },
         }}
       >
-          <Box
-            component="img"
-            src="https://i.postimg.cc/7LC9QbRX/first.png"
-            width={1110}
-            alt="My GIF"
-          />
+           <img src={first} alt="My Animation" style={{ width: 1110, height: 'auto' }} />
       </Paper>
         </Stack>
     </Container>
@@ -413,12 +399,7 @@ const Hero = () => {
           },
         }}
       >
-          <Box
-            component="img"
-            src="https://i.postimg.cc/dtcqL7dC/second.jpg"
-            width={1110}
-            alt="My GIF"
-          />
+           <img src={functions} alt="My Animation" style={{ width: 1110, height: 'auto' }} />
       </Paper>
         </Stack>
     </Container>
@@ -461,12 +442,7 @@ const Hero = () => {
           },
         }}
       >
-          <Box
-            component="img"
-            src="https://i.postimg.cc/Z55Z6NH7/contact.jpg"
-            width={1100}
-            alt="My GIF"
-          />
+           <img src={contactFinal} alt="My Animation" style={{ width: 1110, height: 'auto' }} />
           </Paper>
           <Stack spacing={3}
           sx={{

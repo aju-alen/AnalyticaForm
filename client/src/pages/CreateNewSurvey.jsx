@@ -47,6 +47,7 @@ import SurveyIntro from '../components/SurveyIntro';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
 import { ContentCopy } from '@mui/icons-material';
+import Tooltip from '@mui/material/Tooltip';
 
 
 import AppBar from '@mui/material/AppBar';
@@ -856,32 +857,56 @@ const CreateNewSurvey = () => {
             onChange={handleFormChange}
             sx={{ mt: 2 }}
           />
-          {surveyData.surveyForms.length > 0 &&
-            (<div className=' flex flex-row justify-center items-center'>
-              <TextField
-                id="outlined-basic"
-                label="Survey URL"
-                variant='outlined'
-                sx={{
-                  mt: 2,
-                  width: { xs: '100%', md: '42%' },
-                }}
-                value={`${frontendUrl}user-survey/${surveyId}`}
-              />
-              <Button
-                sx={{ mt: 2 }}
-                variant='text'
-                onClick={handleCopy}
-                startIcon={<ContentCopy />}
-              >
-              </Button>
-
-              { isSaved }
-
-            </div>
-            )
-
-          }
+         {surveyData.surveyForms.length > 0 && (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 2,
+      mt: 2,
+    }}
+  >
+    <TextField
+      id="outlined-basic"
+      label="Survey URL"
+      variant='outlined'
+      sx={{
+        width: { xs: '100%', md: '50%' },
+      }}
+      value={`${frontendUrl}user-survey/${surveyId}`}
+      InputProps={{
+        readOnly: true,
+      }}
+    />
+    
+    <Tooltip title="Copy URL">
+      <Button
+        variant='contained'
+        onClick={handleCopy}
+        startIcon={<ContentCopy />}
+        sx={{ 
+          minWidth: 'auto',
+          px: 2, 
+          py: 1, 
+          bgcolor: 'primary.main',
+          '&:hover': {
+            bgcolor: 'primary.dark',
+          },
+        }}
+      >
+        Copy
+      </Button>
+    </Tooltip>
+    
+    {isSaved && (
+      <Typography variant="body2" color="success.main" sx={{ ml: 2 }}>
+        {isSaved}
+      </Typography>
+    )}
+  </Box>
+)}
 
           <Stack spacing={4}>
             {addIntro && <Stack spacing={2} direction='row'>

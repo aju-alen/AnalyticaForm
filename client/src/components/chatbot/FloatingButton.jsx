@@ -23,7 +23,7 @@ const FloatingButton = () => {
         </button>
       )}
       {isChatbotVisible && (
-        <div className="chatbot-container">
+        <div className="chatbot-container ">
           <Chatbot
         config={config}
         messageParser={MessageParser}
