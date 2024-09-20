@@ -117,7 +117,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container sx={{ display: { xs: "none", md: "block" } }} maxWidth='xl' >
+      <Container sx={{ display: { xs: "", md: "block" } }} maxWidth='xl' >
         <Box sx={{
           bgcolor: 'white',
           display: 'flex',
@@ -160,6 +160,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
         }}>
           <TextField
             fullWidth
+            multiline
             id="standard-basic"
             label={!disableText ? "Insert input" : ''}
             variant="standard"
@@ -334,7 +335,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           </Stack>
         </Box>
       </Container>
-      <Container
+      {/* <Container
         sx={{ display: { xs: "block", md: "none" } }}
       >
         <Box sx={{
@@ -450,7 +451,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           </Stack>
         </Box>
 
-      </Container>
+      </Container> */}
     </React.Fragment>
   )
 }

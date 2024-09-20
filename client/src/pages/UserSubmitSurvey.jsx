@@ -42,11 +42,21 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import MenuIcon from '@mui/icons-material/Menu';
+import Drawer from '@mui/material/Drawer';
+import Divider from '@mui/material/Divider';
+import MenuItem from '@mui/material/MenuItem';
 
 
 const UserSubmitSurvey = () => {
     const { surveyId } = useParams();
     const navigate = useNavigate();
+
+    const [openDrawer, setOpenDrawer] = React.useState(false);
+
+    const toggleDrawer = (newOpen) => () => {
+      setOpenDrawer(newOpen);
+    };
 
     const [surveyData, setSurveyData] = React.useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -1200,7 +1210,7 @@ const UserSubmitSurvey = () => {
                 {(surveyData.surveyForms && !introduction) && renderCurrentComponent()}
 
             </div>
-            <AppBar position="fixed" >
+            <AppBar position="fixed" sx={{ display: { xs: "none", md: "block" } }} >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="body2" color="inherit">
             Powered by 
@@ -1219,6 +1229,58 @@ const UserSubmitSurvey = () => {
           <Button variant="body2" color="inherit" onClick={handleClickOpen}>
             Report Abuse
           </Button>
+        </Toolbar>
+      </AppBar>
+
+            <AppBar position="fixed" sx={{ display: { xs: "", md: "none" } }} >
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography variant="body2" color="inherit">
+            Powered by 
+            <Button onClick={()=>navigate('/')} variant='text' sx={{color:'white'}}>
+            Dubai Analytica
+            </Button>
+          </Typography>
+
+          <Button
+              variant="text"
+              color="error"
+              aria-label="menu"
+              onClick={toggleDrawer(true)}
+              sx={{ minWidth: '30px', p: '4px' }}
+            >
+               <MenuIcon />
+
+             </Button>
+
+             <Drawer anchor="right" open={openDrawer} onClose={toggleDrawer(false)}>
+
+<Box
+     sx={{
+       minWidth: '60dvw',
+       p: 2,
+       backgroundColor: 'background.paper',
+       flexGrow: 1,
+     }}
+   >
+     
+      <Divider />
+      
+        
+
+        <MenuItem>
+           <Button variant="body2" color="inherit" onClick={() => navigate('/login')}>
+              Create Your Own Survey
+            </Button>
+    </MenuItem>
+
+        <MenuItem>
+           <Button variant="body2" color="inherit" onClick={handleClickOpen}>
+            Report Abuse
+          </Button>
+    </MenuItem>
+        
+    </Box>
+  </Drawer>
         </Toolbar>
       </AppBar>
       <Dialog

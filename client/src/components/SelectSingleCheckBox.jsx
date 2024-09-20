@@ -140,6 +140,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
             fullWidth id="standard-basic"
             label={!disableText ? "Insert input" : ''}
             variant="standard"
+            multiline
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
@@ -147,7 +148,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
             }}
           />
            <Stack spacing={1} sx={{
-            width: '20%',
+            width: { xs: '100%', md: '20%' },
             marginRight: 'auto',
           }} >
             {formData.options.map((opt) => {
@@ -176,6 +177,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                     id="standard-basic"
                     placeholder={!disableText ? "Type Your Response Here" : ''}
                     variant="standard"
+                    multiline
                     value={opt.value}
                     onChange={(e) =>
                       setFormData({

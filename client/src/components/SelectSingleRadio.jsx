@@ -133,7 +133,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     backgroundColor:'#F4FFF8',
   },
 }}>
-          <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant='standard' size='small' required name='question' value={formData.question}
+          <TextField fullWidth multiline id="standard-basic" label={!disableText ? "Insert input" : ''} variant='standard' size='small' required name='question' value={formData.question}
             sx={{
               '& .MuiInputBase-root': {
                 fontWeight: isBold? 'bold' : 'normal',
@@ -152,7 +152,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
           </Button> */}
 
           <Stack spacing={1} sx={{
-            width: '20%',
+            width: { xs: '100%', md: '20%' },
             marginRight: 'auto',
           }} >
             {formData.options.map((option) => (
@@ -176,6 +176,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
              >
                <TextField
   fullWidth
+  multiline
   id="standard-basic"
   placeholder={!disableText ? "Type Your Response Here" : ''}
   variant="standard"
