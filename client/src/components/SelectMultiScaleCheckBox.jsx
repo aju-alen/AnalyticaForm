@@ -12,6 +12,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 const initialFormData = {
     id: uid(5),
     question: '',
+    formMandate: false,
     options: [
         {
             id: "ak52b",
@@ -111,6 +112,11 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
         onHandleNext();
     };
 
+    const handleMandateForm = () => {
+        console.log('mandate handleMandateForm');
+        setFormData({ ...formData, formMandate: true })
+    }
+
     useEffect(() => {
         if (options) {
             setFormData(data);
@@ -124,7 +130,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
     return (
         <React.Fragment>
             <CssBaseline />
-            <Container maxWidth='xl'>
+            <Container sx={{ display: { xs: "", md: "block" } }} maxWidth='xl' >
                 <Box sx={{
                     bgcolor: 'white',
                     display: 'flex',
@@ -166,7 +172,9 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                     },
                 }}>
                     <TextField
-                        fullWidth id="standard-basic"
+                        fullWidth
+                        multiline
+                        id="standard-basic"
                         label={!disableText ? "Insert input" : ''} variant="standard"
                         name='question'
                         value={formData.question}
@@ -261,6 +269,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
 
                                             <TextField
                                                 id="standard-basic"
+                                                multiline
                                                 placeholder={!disableText ? "Type Your Sub Question" : ''}
                                                 variant="standard"
                                                 name='rowQuestion'
@@ -340,6 +349,15 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                             onClick={handleSaveForm}>
                             Next Question
                         </Button>}
+
+                        {!disableButtons && <Button
+                            variant='contained'
+                            color="primary"
+                            onClick={handleMandateForm}>
+                            Mandate This Form
+                        </Button>}
+
+
                     </Stack>
                 </Box>
             </Container>

@@ -63,10 +63,10 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     onHandleNext()
   }
 
-  // const handleMandateForm = () => {
-  //   console.log('mandate handleMandateForm');
-  //   setFormData({ ...formData, formMandate: true })
-  // }
+  const handleMandateForm = () => {
+    console.log('mandate handleMandateForm');
+    setFormData({ ...formData, formMandate: true })
+  }
 
   const handleRadioChange = (id) => {
     const newOptions = formData.options.map((option, idx) => {
@@ -259,12 +259,12 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
               onClick={handleSaveForm}>
                Next Question
             </Button>}
-            {/* {!disableButtons && <Button
+            {!disableButtons && <Button
               variant='contained'
               color="primary"
               onClick={handleMandateForm}>
                Mandate This Form
-            </Button>} */}
+            </Button>}
           </Stack>
         </Box>
       </Container>

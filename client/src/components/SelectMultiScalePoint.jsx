@@ -15,6 +15,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 const initialFormData = {
   id: uid(5),
   question: '',
+  formMandate: false,
   options: [
     {
       id: "az56j",
@@ -100,6 +101,11 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
     onSaveForm(formData);
     onHandleNext();
   };
+
+  const handleMandateForm = () => {
+    console.log('mandate handleMandateForm');
+    setFormData({ ...formData, formMandate: true })
+  }
 
   const handleRadioChange = (rowIndex, columnIndex) => {
     const newSelectedValue = [...formData.selectedValue];
@@ -331,6 +337,12 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
               Next Question
             </Button>}
 
+            {!disableButtons && <Button
+              variant='contained'
+              color="primary"
+              onClick={handleMandateForm}>
+               Mandate This Form
+            </Button>}
 
           </Stack>
         </Box>

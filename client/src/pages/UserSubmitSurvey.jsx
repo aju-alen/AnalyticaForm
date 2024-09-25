@@ -200,11 +200,19 @@ const UserSubmitSurvey = () => {
                 console.log(form, 'form');
             })
 
-            const skippedMandatoryFields = mandatoryFields.filter(form => form.selectedValue[0]?.answer === '' || form.selectedValue.length === 0);
+            const skippedMandatoryFields = mandatoryFields.filter((form) => {
+                // Check if 'selectedValue' exists and has items
+                if (form.selectedValue && form.selectedValue.length > 0) {
+                  // Check if any item in 'selectedValue' has an empty 'answer'
+                  return form.selectedValue.some((value) => value.answer === '');
+                }
+                // If 'selectedValue' is empty, consider this form as skipped
+                return true;
+              });
             console.log(skippedMandatoryFields, 'skippedMandatoryFields');
+            
 
-
-            if (skippedMandatoryFields.length > 0) {
+            if (skippedMandatoryFields.length > 0  ) {
                 alert('Please fill the mandatory fields');
                 // Optionally, you can set the currentIndex to the first skipped mandatory field index
                 setCurrentIndex(surveyData.surveyForms.findIndex(form => form === skippedMandatoryFields[0]));
@@ -500,6 +508,13 @@ const UserSubmitSurvey = () => {
         }
 
         const hasMandatoryFields = currentItem.formMandate && currentItem.selectedValue.length === 0;
+
+        console.log(currentItem, 'currentItem--in--mandate field');
+        console.log(currentItem.selectedValue.length, 'skippedFields--in--mandate field');
+        console.log(hasMandatoryFields, 'hasMandatoryFields--in--mandate field');
+        
+        
+        
 
         if (hasMandatoryFields && skippedFields.includes(currentItem.id)) {
             // Show alert if mandatory fields are not filled and not skipped

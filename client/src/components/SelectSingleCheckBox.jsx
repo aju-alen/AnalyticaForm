@@ -71,10 +71,10 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
     })
   };
 
-  // const handleMandateForm = () => {
-  //   console.log('mandate handleMandateForm');
-  //   setFormData({ ...formData, formMandate: true })
-  // }
+  const handleMandateForm = () => {
+    console.log('mandate handleMandateForm');
+    setFormData({ ...formData, formMandate: true })
+  }
 
   const handleSaveForm = () => {
     console.log('save handleSaveForm');
@@ -260,12 +260,12 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                Next Question
             </Button>}
 
-            {/* {!disableButtons && <Button
+            {!disableButtons && <Button
               variant='contained'
               color="primary"
               onClick={handleMandateForm}>
                Mandate This Form
-            </Button>} */}
+            </Button>}
 
           </Stack>
         </Box>
