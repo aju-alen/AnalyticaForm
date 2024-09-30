@@ -123,7 +123,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container sx={{ display: { xs: "", md: "block" } }} maxWidth='xl' >
+      <Container sx={{ display: { xs: "none", md: "block" } }} maxWidth='xl' >
         <Box sx={{
           bgcolor: 'white',
           display: 'flex',
@@ -347,10 +347,11 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           </Stack>
         </Box>
       </Container>
-      {/* <Container
+      <Container
         sx={{ display: { xs: "block", md: "none" } }}
       >
-        <Box sx={{
+     <Box sx={{
+        
           bgcolor: 'white',
           display: 'flex',
           flexDirection: 'column',
@@ -358,19 +359,45 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           justifyContent: 'space-between',
           flexGrow: 1,
           height: "100%",
-          mt: { xs: 4, md: 8 },
+          mt: { xs: 4, md: 0 },
           width: '100%',
-          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Updated box shadow for a subtle effect
-          borderRadius: 8, // Increased border radius for rounded corners
-          p: 3, // Increased padding for inner content
+          boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
+          borderRadius: 2, // Increased border radius for rounded corners
+          p: 2, // Increased padding for inner content
           overflowX: 'auto',
-        }} >
+          border: '2px solid #f0fbf0', // Added border for more distinction
+          transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
+          position: 'relative', // Make sure the box is positioned relative for the pseudo-element
+          backgroundColor: '#F4F3F6',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: '0%', // Set initial left position for the line
+            transform: 'translateX(-50%)',
+            height: '100%',
+            width: '12px', // Adjust the width of the line
+            bgcolor: '#1976d2', // Change to your desired color
+            opacity: 0, // Initially hidden
+            transition: 'opacity 0.3s ease-in-out', // Smooth transition for the line
+          },
+
+          '&:hover::before': {
+            opacity: 1, // Make the lines visible on hover
+          },
+          '&:hover': {
+            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)', // Updated box shadow on hover
+            transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
+            backgroundColor: '#F4FFF8',
+          },
+        }}>
           <TextField
             fullWidth
             id="standard-basic"
             label={!disableText ? "Insert input" : ''}
             variant="standard"
             name='question'
+            multiline
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
@@ -463,7 +490,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           </Stack>
         </Box>
 
-      </Container> */}
+      </Container>
     </React.Fragment>
   )
 }

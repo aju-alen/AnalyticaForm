@@ -1119,7 +1119,7 @@ const UserSubmitSurvey = () => {
 
             case 'MultiScalePoint':
                 return (
-                    <div className=" w-11/12 h-4/6">
+                    <div className=" w-full h-4/6">
                     {/* <div className=" w-full"> */}
                         {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
                             <KeyboardBackspaceIcon fontSize='large' />
@@ -1144,7 +1144,7 @@ const UserSubmitSurvey = () => {
 
             case 'MultiScaleCheckBox':
                 return (
-                    <div className=" w-11/12 h-4/6">
+                    <div className=" w-full h-4/6">
                         {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
                             <KeyboardBackspaceIcon fontSize='large' />
                         </Button>}
