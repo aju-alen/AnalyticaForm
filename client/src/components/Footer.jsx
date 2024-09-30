@@ -1,11 +1,20 @@
 
-import React from 'react'
+import React,{useState} from 'react'
 import { Link } from 'react-router-dom'
 import theme from '../utils/theme'
 import { ThemeProvider } from '@mui/material/styles';
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import { FormControl } from '@mui/material'
+import { axiosWithAuth } from '../utils/customAxios'
+import { refreshToken } from '../utils/refreshToken'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+
+import { backendUrl } from '../utils/backendUrl'
 
 const logoStyle = {
   width: '240px',
@@ -15,6 +24,44 @@ const logoStyle = {
 };
 
 const Footer = () => {
+  const [formData, setFormData] = React.useState({
+    username: '',
+    email: '',
+    message: '',
+    contact: '',
+  });
+  const [open, setOpen] = useState(false);
+
+  const [alertStatus, setAlertStatus] = useState('success');
+  const [alertText, setAlertText] = useState('');
+
+  const handleFormChange = (event) => {
+    const { name, value } = event.target
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  }
+
+  const handleSubmitContact = async () => {
+    try {
+      await refreshToken();
+      const surveyResp = await axiosWithAuth.post(`${backendUrl}/api/send-email/contact-us`, formData);
+      setOpen(true);
+      setAlertStatus('success');
+      setAlertText('Message Sent Successfully');
+    } catch (error) {
+      console.log(error);
+      setOpen(true);
+      setAlertStatus('error');
+      setAlertText('Message Sent Failed, Try again later');
+    }
+  }
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
+
   return (
     <ThemeProvider theme={theme}>
     <Container 
@@ -28,11 +75,10 @@ const Footer = () => {
       }}
     > 
     <Stack 
-      direction="row" 
+      direction={{ xs: 'column', md: 'row' }} 
       spacing={2} 
     >
 
-      {/* First section */}
       <Stack 
         direction="column" 
         spacing={1}
@@ -77,10 +123,72 @@ const Footer = () => {
         </Container>
 
       </Stack>
-      {/* End of First section */}
 
-    </Stack>
+      <Container maxWidth='sm' sx={{
+      }}>
+          <FormControl fullWidth>
+            <div className="mt-5">
+              <TextField fullWidth
+                id="outlined-basic"
+                label="Given Name"
+                variant="standard"
+                name='username'
+                value={formData.username}
+                onChange={handleFormChange} />
+            </div>
+            <div className="mt-5">
+              <TextField fullWidth
+                id="outlined-basic"
+                label="Email Address"
+                variant="standard"
+                name='email'
+                value={formData.email}
+                onChange={handleFormChange} />
+            </div>
+            <div className="mt-5">
+              <TextField fullWidth
+                id="outlined-basic"
+                label="Your Message"
+                variant='filled'
+                name='message'
+                value={formData.message}
+                multiline
+                rows={4}
+                onChange={handleFormChange} />
+            </div>
+            <div className="mt-5">
+              <TextField fullWidth
+                id="outlined-basic"
+                label="Contact Number"
+                variant="standard"
+                name='contact'
+                value={formData.contact}
+                onChange={handleFormChange} />
+            </div>
+
+            <Button 
+             variant="contained"
+             onClick={handleSubmitContact}
+             sx={{ mt: 3,
+               mb: 2,
+                width: {xs: '100%',md: '30%'} }}
+             >
+              Send Message
+            </Button>
+          </FormControl>
+        </Container>
+        </Stack>
     </Container>
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity={alertStatus}
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
+            {alertText}
+          </Alert>
+        </Snackbar>
     </ThemeProvider>
   )
 }
