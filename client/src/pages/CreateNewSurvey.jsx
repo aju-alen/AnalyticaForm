@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import TemporaryDrawer from '../components/TempDrawer';
 import SelectSingleRadio from '../components/SelectSingleRadio';
 import SelectSingleCheckBox from '../components/SelectSingleCheckBox';
+import IntroductionForm from '../components/IntroductionForm';
 import CommentBox from '../components/CommentBox';
 import SingleRowText from '../components/SingleRowText';
 import EmailAddress from '../components/EmailAddress';
@@ -93,8 +94,18 @@ const CreateNewSurvey = () => {
 
   const handleItemSelect = (item) => {
     console.log(item, 'item in handleItemSelect');
-    setSelectedItems([...selectedItems, item]);
-    setSurveyData({ ...surveyData, surveyForms: [...surveyData.surveyForms, { id: uid(5), formType: item }] })
+    console.log(selectedItems, 'selectedItems in handleItemSelect');
+    console.log(surveyData, 'surveyData in handleItemSelect');
+    if(item === 'IntroductionForm') {
+      setSelectedItems([item,...selectedItems]);
+      setSurveyData({ ...surveyData, surveyForms: [ { id: uid(5), formType: item },...surveyData.surveyForms] })
+
+    }
+    else{
+      setSelectedItems([...selectedItems, item]);
+      setSurveyData({ ...surveyData, surveyForms: [...surveyData.surveyForms, { id: uid(5), formType: item }] })
+
+    }
   };
 
   const handleFormChange = (e) => {
@@ -391,6 +402,20 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
           <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <Button
+            color="secondary"
+            size='large'
+            sx={{ position: 'absolute', right: 30 }}
+            onClick={() => handleDeleteSelectOneForm(item.id)}>
+            <CancelIcon />
+          </Button>
+        </Stack>
+      )
+    }
+    else if (item.formType === 'IntroductionForm') {
+      return (
+        <Stack spacing={2} key={index} direction='row' position='relative'>
+          <IntroductionForm key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'

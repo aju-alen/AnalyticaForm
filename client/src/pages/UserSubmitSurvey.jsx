@@ -4,6 +4,7 @@ import { backendUrl } from '../utils/backendUrl'
 import { useParams,useNavigate } from 'react-router-dom'
 import SelectSingleCheckBox from '../components/SelectSingleCheckBox'
 import SelectSingleRadio from '../components/SelectSingleRadio'
+import IntroductionForm from '../components/IntroductionForm'
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
 import { Button, TextField,Box,Typography, Stack, AppBar,Toolbar} from '@mui/material'
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
@@ -220,6 +221,8 @@ const UserSubmitSurvey = () => {
             }
             const introduction = surveyData.surveyIntroduction === null ? false : true;
             console.log(introduction, 'introduction');
+            console.log(surveyData.surveyForms, 'surveyData--surveyForm');
+            
             const data = surveyData.surveyForms.map(form =>
             ({
                 formType: form.formType,
@@ -389,6 +392,9 @@ const UserSubmitSurvey = () => {
                         }).filter((item, index) => form.formType !== "CalenderForm" || index === 0)
                     };
                 }
+                else if (form.formType === 'IntroductionForm') {
+                    return {}
+                }
 
                 else if (form.formType !== "MultiScaleCheckBox") {
 
@@ -472,11 +478,12 @@ const UserSubmitSurvey = () => {
             return (
                 <div className="">
                     <h1 className=' font-bold text-blue-500 text-2xl text-center mb-2'>Thank You for your response</h1>
-                    {(!responseSubmitted && !isLoading) && <h1 className=' font-bold text-blue-500 text-md mb-2'>Please enter your details. You can still proceed if you wish not to enter the details.  </h1>}
+                    {(!responseSubmitted && !isLoading) && <h1 className=' font-bold text-blue-500 text-md mb-2 text-center'>Please enter your details. You can still proceed if you wish not to enter the details.  </h1>}
 
                     {!responseSubmitted &&
                         <div className=" text-center">
-                            <form onSubmit={handleSaveForm}>
+                            <form onSubmit={handleSaveForm} className='flex flex-col gap-5 mx-2'>
+
                             <TextField
                                 label='Please Enter your name'
                                 value={formData.userName}
@@ -535,6 +542,28 @@ const UserSubmitSurvey = () => {
                         </Button>}
 
                         <SelectSingleRadio
+                            data={currentItem}
+                            onSaveForm={handleSaveSinglePointForm}
+                            onHandleNext={handleNext}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true} />
+                    </div>
+                );
+            case 'IntroductionForm':
+                return (
+                    <div className=" w-full h-5/6">
+                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        <IntroductionForm
                             data={currentItem}
                             onSaveForm={handleSaveSinglePointForm}
                             onHandleNext={handleNext}
@@ -1199,7 +1228,7 @@ const UserSubmitSurvey = () => {
                     <Button
                         variant='contained'
 
-                        onClick={handleChangeWelcome}>
+                        onClick={handleChangeIntroduction}>
                         Start Survey
                     </Button>
                 </div>)}
