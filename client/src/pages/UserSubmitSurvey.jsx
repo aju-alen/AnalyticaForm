@@ -29,6 +29,7 @@ import RankOrder from '../components/RankOrder'
 import ConstantSum from '../components/ConstantSum'
 import NumericSlider from '../components/NumericSlider'
 // import SelectOneImage from '../components/SelectOneImage'
+import SEO from '../components/SEO'
 import SelectMultipleImage from '../components/SelectMultipleImage'
 import PickAndRank from '../components/PickAndRank'
 import RankOrderImage from '../components/RankOrderImage'
@@ -50,7 +51,7 @@ import MenuItem from '@mui/material/MenuItem';
 
 
 const UserSubmitSurvey = () => {
-    const { surveyId } = useParams();
+    const { surveyId,surveyTitle } = useParams();
     const navigate = useNavigate();
 
     const [openDrawer, setOpenDrawer] = React.useState(false);
@@ -1210,10 +1211,17 @@ const UserSubmitSurvey = () => {
     }
 
     
-
-    console.log(surveyData.surveyForms, 'surveyForms');
+    
+    
+    console.log(surveyData, 'surveyForms-forms');
     return (
         <ThemeProvider theme={theme}>
+              <SEO
+          title={surveyData.surveyTitle}
+          description="Dubai Analytica Survey Page"
+          name="Dubai Analytica"
+          type="Web Form"
+        />
             <CssBaseline />
             <div className=" flex justify-center items-center h-screen">
                 {(surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'> This survey has exceeded it's alloted responses. Please contact host.</h1>)}
