@@ -230,7 +230,7 @@ const UserSubmitSurvey = () => {
                 question: form.question,
                 selectedValue: form.selectedValue.map(option => option),
 
-            }));
+            })).filter(ans => ans.formType !== "IntroductionForm");
 
             const formQuestions = surveyData.surveyForms.map(form => {
 
@@ -394,7 +394,7 @@ const UserSubmitSurvey = () => {
                     };
                 }
                 else if (form.formType === 'IntroductionForm') {
-                    return {}
+                    return null;
                 }
 
                 else if (form.formType !== "MultiScaleCheckBox") {
@@ -415,7 +415,7 @@ const UserSubmitSurvey = () => {
                         };
                     });
                 }
-            }).flat(); // Flatten the array since MultiScaleCheckBox returns an array of objects
+            }).filter(ans=>ans!==null).flat(); // Flatten the array since MultiScaleCheckBox returns an array of objects
 
             console.log(formQuestions, 'formQuestions');
             const finalData = {
