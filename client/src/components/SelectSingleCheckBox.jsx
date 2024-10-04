@@ -141,6 +141,12 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
             label={!disableText ? "Insert input" : ''}
             variant="standard"
             multiline
+            sx={{
+              '& .MuiInputBase-root': {
+                fontWeight: 'bold',
+                fontSize: '1.3rem',
+              }
+            }}
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             InputProps={{
@@ -194,7 +200,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                     }}
                     sx={{
                       '& .MuiInputBase-root': {
-                        fontSize: '0.8rem',
+                        fontSize: '0.9rem',
                       },
                       '& .MuiInput-underline:before': {
                         borderBottom: 'none',

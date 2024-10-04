@@ -170,6 +170,12 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
             id="standard-basic"
             label={!disableText ? "Insert input" : ''}
             variant="standard"
+            sx={{
+              '& .MuiInputBase-root': {
+                fontWeight: 'bold',
+                fontSize: '1.3rem',
+              }
+            }}
             name='question'
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
@@ -216,7 +222,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                           }}
                           sx={{
                             '& .MuiInputBase-root': {
-                              fontSize: '0.8rem',
+                              fontSize: '0.9rem',
                             },
                             '& .MuiInput-underline:before': {
                               borderBottom: 'none',
@@ -275,7 +281,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                         }}
                         sx={{
                           '& .MuiInputBase-root': {
-                            fontSize: '0.8rem',
+                            fontSize: '0.9rem',
                           },
                           '& .MuiInput-underline:before': {
                             borderBottom: 'none',

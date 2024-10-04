@@ -136,7 +136,8 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
           <TextField fullWidth multiline id="standard-basic" label={!disableText ? "Insert input" : ''} variant='standard' size='small' required name='question' value={formData.question}
             sx={{
               '& .MuiInputBase-root': {
-                fontWeight: isBold? 'bold' : 'normal',
+                fontWeight: 'bold',
+                fontSize: '1.3rem',
               }
             }}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
@@ -184,7 +185,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
   value={option.value}
   sx={{
     '& .MuiInputBase-root': {
-      fontSize: '0.8rem',
+      fontSize: '0.9rem',
     },
     '& .MuiInput-underline:before': {
       borderBottom: 'none',
