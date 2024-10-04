@@ -7,7 +7,7 @@ export const exportToExcel = async (req, res) => {
         const worksheet = workbook.addWorksheet('User Data');
 
         // Extract form questions dynamically
-        const formQuestions = data[0].formQuestions;
+        const formQuestions = data[data.length - 1].formQuestions;
 
         // Create headers
         const headers = ['Name', 'Email ID','Response Id','IP Address'];
@@ -32,6 +32,7 @@ export const exportToExcel = async (req, res) => {
 
         // Add headers to the worksheet
         console.log(headers, 'headers');
+
         const headerRow = worksheet.addRow(headers);
         headerRow.eachCell((cell, colNumber) => {
             cell.fill = {
@@ -49,7 +50,7 @@ export const exportToExcel = async (req, res) => {
         worksheet.addRow([]);
 
         // Add user data to the worksheet
-        console.log(data, 'data in fiunal dataaaaaa');
+        // console.log(data, 'data in fiunal dataaaaaa');
         data.forEach(user => {
             const userInfo = [user.userName, user.userEmail,user.id,user.ipAddress];
             // Initialize user responses with empty strings for each header
@@ -57,40 +58,46 @@ export const exportToExcel = async (req, res) => {
 
             // Map user responses to the correct headers or sub-headers
             user.userResponse.forEach(response => {
+                
                 response.selectedValue.forEach(selected => {
+                    // console.log(selected, 'selected--api--');
+                    
                     if (selected.question && selected.question !== response.question && response.formType !== "MultiScaleCheckBox") {
                         // Find the index in the sub-headers
-                        console.log(selected,'inside !== MultiScaleCheckBox');
-                        const subHeaderIndex = subHeaders.indexOf(selected.question);
+                        // console.log(selected,'inside !== MultiScaleCheckBox');
+                        const subHeaderIndex = subHeaders.findIndex(header =>  header.includes(selected.question));
+                        
                         if (subHeaderIndex !== -1) {
                             userResponses[subHeaderIndex - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     }
                     else if ( response.formType === "ContactInformationForm") {
                         // Find the index in the sub-headers
-                        console.log(selected,'inside !== MultiScaleCheckBox');
-                        const subHeaderIndex = subHeaders.indexOf(selected.question);   
+                        // console.log(selected,'inside !== MultiScaleCheckBox');
+                        const subHeaderIndex = subHeaders.findIndex(header =>  header.includes(selected.question));   
                         if (subHeaderIndex !== -1) {
                             userResponses[subHeaderIndex - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     }
                     else if (response.formType === "SingleCheckForm") {
-                        const subHeaderIndex = subHeaders.indexOf(selected.rowQuestion);
+
+                        const subHeaderIndex = subHeaders.findIndex(header =>  header.includes(selected.rowQuestion));
+                        
                         if (subHeaderIndex !== -1) {
                             userResponses[subHeaderIndex - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     } else if (response.formType === "MultiScaleCheckBox") {
                         const headerRowIdx = headers.indexOf(response.question + ' ' + selected.question);
                         const subHeaderIdx = subHeaders.indexOf(selected.answer, headerRowIdx);
-                        console.log(subHeaderIdx, 'subHeaderIdx', headerRowIdx, 'headerRowIdx');
+                        // console.log(subHeaderIdx, 'subHeaderIdx', headerRowIdx, 'headerRowIdx');
                         if (subHeaderIdx !== -1) {
                             userResponses[subHeaderIdx - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
                     } else {
-                        console.log('inside else');
+                        // console.log('inside else');
                         // Find the index in the headers
-                        const headerIndex = headers.indexOf(response.question);
-                        console.log(headerIndex, 'headerIndex');
+                        const headerIndex = headers.findIndex(header =>  header.includes(response.question));
+                        // console.log(headerIndex, 'headerIndex');
                         if (headerIndex !== -1) {
                             userResponses[headerIndex - 4] = selected.answer; // Offset by 2 for 'Name' and 'Email ID'
                         }
