@@ -48,7 +48,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
-
+import { LinkPreview } from '@dhaiwat10/react-link-preview';
 
 const UserSubmitSurvey = () => {
     const { surveyId,surveyTitle } = useParams();
@@ -1231,6 +1231,7 @@ const UserSubmitSurvey = () => {
             "url": "https://www.dubaianalytica.com/user-survey/clxl91ta500018xf57ty8g6fl"
           }}
         />
+        <LinkPreview url='https://www.dubaianalytica.com/user-survey/clxl91ta500018xf57ty8g6fl' width='400px' />
             <CssBaseline />
             <div className=" flex justify-center items-center h-screen">
                 {(surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'> This survey has exceeded it's alloted responses. Please contact host.</h1>)}
