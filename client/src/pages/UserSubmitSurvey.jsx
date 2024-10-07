@@ -1221,6 +1221,15 @@ const UserSubmitSurvey = () => {
           description="Dubai Analytica Survey Page"
           name="Dubai Analytica"
           type="Web Form"
+          surveyImage='https://i.postimg.cc/X7fPCLRg/Untitled-design.png'
+          surveyUrl="https://www.dubaianalytica.com/user-survey/clxl91ta500018xf57ty8g6fl"
+          schema={{
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": `${surveyData.surveyTitle}`,
+            "description": "A page to gather user survey responses",
+            "url": "https://www.dubaianalytica.com/user-survey/clxl91ta500018xf57ty8g6fl"
+          }}
         />
             <CssBaseline />
             <div className=" flex justify-center items-center h-screen">
