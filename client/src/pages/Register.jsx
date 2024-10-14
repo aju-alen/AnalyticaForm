@@ -16,6 +16,7 @@ import { backendUrl } from '../utils/backendUrl';
 import { useNavigate } from 'react-router-dom';
 import HomeNavBar from '../components/HomeNavBar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 const defaultTheme = createTheme();
 
@@ -41,6 +42,29 @@ export default function Register() {
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
+  };
+
+  const handleLoginSuccess = async (credentialResponse) => {
+    const token = credentialResponse.credential;
+    console.log('Google token:', token);
+
+    const resp = await axios.post(`${backendUrl}/api/auth/google-login`, { token });
+
+    console.log('Google login response:', resp.data);
+
+    handleClick();
+      setAlertMessage(resp.data.message);
+      setAlertColor('success');
+
+      localStorage.setItem('userAccessToken', JSON.stringify({ email: resp.data.email, id: resp.data.userId, firstName: resp.data.firstName, isAdmin: resp.data.isAdmin, token: resp.data.accessToken, isSuperAdmin: resp.data.isSuperAdmin }));
+      navigate('/dashboard');
+
+    // You can send the token to your backend server for further processing
+    // e.g., axios.post('/api/auth/google', { token });
+  };
+
+  const handleLoginError = () => {
+    console.log('Login Failed');
   };
 
   const handleSubmit = async(event) => {
@@ -95,6 +119,7 @@ export default function Register() {
         <Typography component="h1" variant="h5">
           Register
         </Typography>
+       
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -156,8 +181,27 @@ export default function Register() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
+           
             Sign Up
           </Button>
+          <Box
+            sx={{
+              mt: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              
+            }}
+            >
+          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID}>
+                <div >
+                  
+                  <GoogleLogin
+                    onSuccess={handleLoginSuccess}
+                    onError={handleLoginError}
+                  />
+                </div>
+              </GoogleOAuthProvider>
+              </Box>
           <Grid  container justifyContent="flex-end">
             <Grid item>
               <Link href="#" variant="body2">
