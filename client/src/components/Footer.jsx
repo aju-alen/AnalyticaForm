@@ -13,6 +13,7 @@ import { axiosWithAuth } from '../utils/customAxios'
 import { refreshToken } from '../utils/refreshToken'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
+import { useNavigate } from 'react-router-dom';
 
 import { backendUrl } from '../utils/backendUrl'
 
@@ -24,6 +25,7 @@ const logoStyle = {
 };
 
 const Footer = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = React.useState({
     username: '',
     email: '',
