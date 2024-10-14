@@ -14,8 +14,10 @@ import Container from '@mui/material/Container';
 import axios from 'axios';
 import { backendUrl } from '../utils/backendUrl';
 import { useNavigate } from 'react-router-dom';
+import HomeNavBar from '../components/HomeNavBar';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-
+const defaultTheme = createTheme();
 
 export default function Register() {
   const navigate = useNavigate();
@@ -74,6 +76,8 @@ export default function Register() {
   };
 
   return (
+    <ThemeProvider theme={defaultTheme}>
+      <HomeNavBar />
     <Container component="main" maxWidth="sm">
       <CssBaseline />
       <Box
@@ -164,5 +168,6 @@ export default function Register() {
         </Box>
       </Box>
     </Container>
+    </ThemeProvider>
   );
 }

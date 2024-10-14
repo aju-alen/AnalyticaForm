@@ -19,7 +19,8 @@ import axios from 'axios';
 import { backendUrl } from '../utils/backendUrl';
 import { jwtDecode } from 'jwt-decode';
 import { axiosWithCredentials } from '../utils/customAxios';
-// import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import HomeNavBar from '../components/HomeNavBar';
 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -103,6 +104,7 @@ export default function Login() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
+      <HomeNavBar />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -161,7 +163,7 @@ export default function Login() {
               }}
 
             >
-             {/* <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID}>
+             <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID}>
                 <div>
                   <h1>Google Login</h1>
                   <GoogleLogin
@@ -169,7 +171,7 @@ export default function Login() {
                     onError={handleLoginError}
                   />
                 </div>
-              </GoogleOAuthProvider> */}
+              </GoogleOAuthProvider>
             </Box>
             <Grid container>
               <Grid item xs>
