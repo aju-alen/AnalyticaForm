@@ -273,7 +273,7 @@ function HomeNavBar() {
     // </AppBar>
 <div className="">
     <div className=" hidden md:block">
-        <nav className={` h-28 p-4 flex justify-between items-center fixed z-50 w-full transition-all duration-500 ease-in-out ${userExists ? 'bg-[#b9e4ee]' : 'bg-[#b9e4ee]'} `}>
+        <nav className={` h-28 p-4 flex justify-between items-center fixed z-50 w-full transition-all duration-500 ease-in-out ${userExists ? 'bg-[#d8f0f7]' : 'bg-[#d8f0f7]'} `}>
           {/* Logo on the left */}
           <Link className="text-black text-lg font-light" to="/">
           <img    
@@ -296,7 +296,6 @@ function HomeNavBar() {
                 component="a"
                 onClick={() => navigate('/login')}
                 target="_blank"
-                href='/login'
               >
                  Log in
                </Button>
