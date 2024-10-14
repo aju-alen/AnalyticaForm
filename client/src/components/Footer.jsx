@@ -94,6 +94,7 @@ const Footer = () => {
         <Typography sx={{
           color: '#000',
           fontSize: '0.8rem',
+          textAlign: 'justify',
           width: {xs:'80%',md:'70%'},
           marginLeft: {xs:'10px',md:'114px'}
         }}
