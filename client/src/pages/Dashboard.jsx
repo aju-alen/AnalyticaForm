@@ -98,6 +98,13 @@ const Dashboard = () => {
         }
     }, [userSurveyData]);
 
+    const handleDeleteSurveyFromParent = (surveyId) => {
+        console.log('delete survey from parent', surveyId);
+        
+        setUserSurveyData(userSurveyData.filter((survey) => survey.id !== surveyId));
+      };
+    
+
     return isLoading ? (
        
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
@@ -160,7 +167,7 @@ const Dashboard = () => {
 </Grid>
 
            
-            <MySurvery userSurveyData={userSurveyData} isSubscribed={isSubscribed} />
+            <MySurvery userSurveyData={userSurveyData} isSubscribed={isSubscribed}  onDeleteSurvey={handleDeleteSurveyFromParent} />
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity={alertColor} variant="filled" sx={{ width: '100%' }}>
                     {alertMessage}

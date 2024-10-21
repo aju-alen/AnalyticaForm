@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { createNewSurvey,getUserSurvey,getSurveyById,updateSurveyById,getAllSurveyResponse,getAllSurveyOfOneUser,updateUserView,deleteUserSurvey} from '../controllers/survey-controller.js';
+import { createNewSurvey,getUserSurvey,getSurveyById,updateSurveyById,getAllSurveyResponse,getAllSurveyOfOneUser,updateUserView,deleteUserSurvey,updateUserStatus} from '../controllers/survey-controller.js';
 import { apiCallLimiter } from '../middleware/rateLimiter.js'
 import { verifyJwt } from '../middleware/verifyJwt.js';
 
@@ -13,6 +13,7 @@ router.get('/get-all-sruvey-from-oneuser/:userId',apiCallLimiter,verifyJwt, getA
 router.put('/update-user-view/:surveyId',apiCallLimiter,verifyJwt, updateUserView); // Get all the survey of a particular user
 
 router.delete('/delete-survey/:surveyId',apiCallLimiter,verifyJwt, deleteUserSurvey); // Get all the survey of a particular user
+router.put('/update-survey-status/:surveyId',apiCallLimiter,verifyJwt, updateUserStatus)
 
 
 export default router;

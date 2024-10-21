@@ -11,6 +11,7 @@ export const createNewSurvey = async (req, res) => {
                 surveyTitle,
                 surveyDescription: "Test",
                 userId,
+                surveyStatus: 'Active',
             }
         });
         await prisma.$disconnect();
@@ -192,3 +193,22 @@ export const deleteUserSurvey = async (req, res) => {
     }
 }
 
+export const updateUserStatus = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try {
+        const updateStatus = await prisma.survey.update({
+            where: {
+                id: surveyId
+            },
+            data: {
+                surveyStatus: req.body.surveyStatus
+            }
+        });
+        await prisma.$disconnect();
+        res.status(200).send({ message: 'Survey status updated successfully' });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+}

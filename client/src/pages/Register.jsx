@@ -192,7 +192,7 @@ export default function Register() {
               
             }}
             >
-          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID}>
+          {/* <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID}>
                 <div >
                   
                   <GoogleLogin
@@ -200,7 +200,7 @@ export default function Register() {
                     onError={handleLoginError}
                   />
                 </div>
-              </GoogleOAuthProvider>
+              </GoogleOAuthProvider> */}
               </Box>
           <Grid  container justifyContent="flex-end">
             <Grid item>

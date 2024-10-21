@@ -160,18 +160,19 @@ export default function Login() {
                 mt: 1,
                 display: 'flex',
                 justifyContent: 'center',
+                
               }}
 
             >
-             <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID}>
-                <div>
-                  <h1>Google Login</h1>
+             {/* <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_CLIENT_ID}>
+                <div >
+                  
                   <GoogleLogin
                     onSuccess={handleLoginSuccess}
                     onError={handleLoginError}
                   />
                 </div>
-              </GoogleOAuthProvider>
+              </GoogleOAuthProvider> */}
             </Box>
             <Grid container>
               <Grid item xs>
