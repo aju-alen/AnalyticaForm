@@ -7,6 +7,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import CssBaseline from '@mui/material/CssBaseline';
 import excelIcon from '../assets/icons/excel.svg';
 import Box from '@mui/material/Box';
@@ -25,8 +28,13 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export function MySurvey({ userSurveyData, isSubscribed }) {
+export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey }) {
+  console.log(userSurveyData,'--userSurveyData--');
+  
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
 
@@ -34,14 +42,37 @@ export function MySurvey({ userSurveyData, isSubscribed }) {
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [surveyId, setSurveyId] = React.useState('');
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const [surveyURLStatus, setSurveyURLStatus] = React.useState('');
+
+  const handleChangeSelect = async(event,surveyId) => {
+    const updateSurveyStatus = await axiosWithAuth.put(`${backendUrl}/api/survey/update-survey-status/${surveyId}`,{surveyStatus:event.target.value});
+    
+    console.log(event.target.value);
+    
+  };
+  const openMenu = Boolean(anchorEl);
+  const handleClickMenu = (event,surveyId) => {
+    setSurveyId(surveyId);
+    
+
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   const handleClickOpen = (surveyId) => {
     setSurveyId(surveyId);
     setOpen(true);
+    handleCloseMenu();
   };
 
   const handleDeleteOpen = (surveyId) => {
     setSurveyId(surveyId);
     setDeleteOpen(true);
+    handleCloseMenu();
   };
 
   const handleClose = () => {
@@ -55,6 +86,7 @@ export function MySurvey({ userSurveyData, isSubscribed }) {
       const deleteSurvey = await axiosWithAuth.delete(`${backendUrl}/api/survey/delete-survey/${surveyId}`);
       console.log('delete survey', deleteSurvey);
       setDeleteOpen(false);
+      onDeleteSurvey(surveyId);
     } catch (err) {
       if (err.response.status === 401) {
         console.log('unauthorized');
@@ -71,10 +103,12 @@ export function MySurvey({ userSurveyData, isSubscribed }) {
     try {
       await refreshToken();
       const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
+      console.log(getAllUserResponse.data,'--getAllUserResponse--');
       if (getAllUserResponse.data.length === 0) {
         alert('No response available for this survey');
         return;
       }
+      
       const response = await axiosWithAuth.post(`${backendUrl}/api/excel/export-to-excel`, getAllUserResponse.data, {
         responseType: 'blob'
       });
@@ -111,8 +145,8 @@ export function MySurvey({ userSurveyData, isSubscribed }) {
                   <TableCell align="center" sx={{ fontWeight: 'bold' }}>Modified At</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 'bold' }}>Status</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 'bold' }}>Response</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold' }}>Export to Excel</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold' }}>Delete Survey</TableCell>
+                  
+                  <TableCell align="center" sx={{ fontWeight: 'bold' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -130,13 +164,71 @@ export function MySurvey({ userSurveyData, isSubscribed }) {
                     </TableCell>
                     <TableCell align="center">{dayjs(survey.createdAt).fromNow()}</TableCell>
                     <TableCell align="center">{dayjs(survey.updatedAt).fromNow()}</TableCell>
-                    <TableCell align="center">{survey.surveyStatus}</TableCell>
+                    <TableCell align="center">
+                    <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={survey.surveyStatus}
+          label="Age"
+          onChange={(event)=>handleChangeSelect(event,survey.id)}
+          variant='standard'
+        >
+          <MenuItem value={'Active'}>Active</MenuItem>
+          <MenuItem value={'Disable'}>Disable</MenuItem>
+          <MenuItem value={'Draft'}>Draft</MenuItem>
+        </Select>
+                    </TableCell>
                     <TableCell align="center">{survey.surveyResponses}</TableCell>
 
+             
+
                     <TableCell align="center">
-                      <Button onClick={() => handleClickOpen(survey.id)}>
-                        <img src={excelIcon} alt="excel icon" style={{ width: 70 }} />
-                      </Button>
+                    <Button
+        id="basic-button"
+        aria-controls={openMenu ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={openMenu ? 'true' : undefined}
+        onClick={(event)=>handleClickMenu(event,survey.id)}
+      >
+        <MoreVertIcon color='warning' />
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={openMenu}
+        onClose={handleCloseMenu}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem onClick={() => handleDeleteOpen(surveyId)}>Delete</MenuItem>
+        <MenuItem onClick={() => handleClickOpen(surveyId)}>Export to Excel</MenuItem>
+      </Menu>
+                      <Dialog open={deleteOpen} onClose={handleClose}>
+                        <DialogTitle>{"Are you sure you want to delete this survey?"}</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            If you delete this survey, all data including participant responses will be lost.
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                        <Button
+  onClick={() => {
+    const confirmed = window.confirm("Are you sure you want to delete this survey?");
+    if (confirmed) {
+      handleDeleteSurvey(surveyId);
+    }
+  }}
+  color="error"
+>
+  Delete
+</Button>
+                          <Button onClick={handleClose} variant="contained">
+                            Cancel
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+
                       <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>{"Export User Responses"}</DialogTitle>
                         <DialogContent>
@@ -149,28 +241,6 @@ export function MySurvey({ userSurveyData, isSubscribed }) {
                             Display as Answers
                           </Button>
                           <Button onClick={handleClose} color="secondary">
-                            Cancel
-                          </Button>
-                        </DialogActions>
-                      </Dialog>
-                    </TableCell>
-
-                    <TableCell align="center">
-                      <Button onClick={() => handleDeleteOpen(survey.id)}>
-                        <HighlightOffIcon color="error" />
-                      </Button>
-                      <Dialog open={deleteOpen} onClose={handleClose}>
-                        <DialogTitle>{"Are you sure you want to delete this survey?"}</DialogTitle>
-                        <DialogContent>
-                          <DialogContentText>
-                            If you delete this survey, all data including participant responses will be lost.
-                          </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={() => handleDeleteSurvey(surveyId)} color="error">
-                            Confirm Delete
-                          </Button>
-                          <Button onClick={handleClose} variant="contained">
                             Cancel
                           </Button>
                         </DialogActions>
