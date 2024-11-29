@@ -1234,7 +1234,9 @@ const UserSubmitSurvey = () => {
             <div className=" flex justify-center items-center h-screen">
                 {(surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'> This survey has exceeded it's alloted responses. Please contact host.</h1>)}
 
-                {(surveyData.surveyStatus !== 'Active') && (<h1 className=' font-bold text-blue-500 text-xl'> This survey is not active. Please contact host.</h1>)}
+              
+
+                {(surveyData.surveyStatus === 'Disable') ? (<h1 className=' font-bold text-blue-500 text-xl'> This survey is not active. Please contact host.</h1>) : null}
 
                 {(introduction && welcomePage && surveyData.surveyResponses <= 500 && surveyData.surveyStatus==='Active') && (<div className=" flex flex-col">
                     <h1 className=' font-bold text-blue-500 text-xl text-center'>Hello, welcome to the survey!</h1>
