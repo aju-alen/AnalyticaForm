@@ -5,6 +5,10 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { backendUrl } from '../utils/backendUrl.js';
 import { frontendURL } from '../utils/corsFe.js';
+import dotenv from 'dotenv';
+
+// Load environment variables from the .env file
+dotenv.config();
 
 const prisma = new PrismaClient();
 
@@ -294,7 +298,7 @@ export const userRegister = async (req, res, next) => {
                 return res.status(400).json({ message: "Invalid password. Try again." });
             }
             if (passwordMatch && user && !user.emailVerified) {
-                return res.status(401).json({ message: "You have not verified your email. Please check for your verification email on your registered inbox." })
+                return res.status(401).json({ message: "You have not verified your email. Please check for your verification email on your registered inbox. If you feel there is somethig wrong, contact us." })
             }
 
 
