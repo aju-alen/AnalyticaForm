@@ -67,13 +67,14 @@ const Footer = () => {
   return (
     <ThemeProvider theme={theme}>
     <Container 
-      maxWidth='xl'
+      maxWidth={false}
       sx={{ 
         // backgroundImage: 'radial-gradient(ellipse 100% 200% at 50% 5%, hsl(210, 100%, 90%), transparent)',
         // backgroundRepeat: 'no-repeat',
         // backgroundSize: 'cover',
         backgroundColor:'#E0ECF5',
         color: '#495057', 
+        width: '100%',
       }}
     > 
     <Stack 
