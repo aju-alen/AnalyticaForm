@@ -367,23 +367,23 @@ export const userRegister = async (req, res, next) => {
 
     export const logout = async (req, res, next) => {
         try {
-            const cookies = req.cookies;
-            if (!cookies.refreshToken) {
-                return res.status(204)
-            }
-            res.clearCookie('refreshToken', {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-            })
-            res.json({ message: "Logout successful, Cookie has been cleared" })
+          const cookies = req.cookies;
+          
+          if (!cookies.refreshToken) {
+            return res.status(204).send(); 
+          }
+          res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: true, 
+            sameSite: 'none',
+          });
+          res.json({ message: "Logout successful, cookie has been cleared" });
+        } catch (err) {
+          console.error("Logout error:", err); // More specific logging
+          res.status(500).json({ message: "An error occurred during logout" });
         }
-        catch (err) {
-            console.log(err);
-            res.status(500).json({ message: "An error has occoured" })
-
-        }
-    }
+      };
+      
 
     //just for testing purpose of the middleware
     export const test = async (req, res, next) => {
