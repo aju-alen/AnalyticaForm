@@ -13,27 +13,44 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { backendUrl } from '../utils/backendUrl';
-
-
-
-// TODO remove, this demo shouldn't need to reset the theme.
+import { Oval } from 'react-loader-spinner';
+import Alert from '@mui/material/Alert';
 
 const defaultTheme = createTheme();
 
 export default function ForgetPassword() {
+  const [open, setOpen] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState('');
+  const [alertColor, setAlertColor] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  const handleClick = () => setOpen(true);
+  const handleClose = (event, reason) => {
+    if (reason !== 'clickaway') setOpen(false);
+  };
+
   
   const handleSubmit = async (event) => {
 
     try{
       event.preventDefault();
+      setLoading(true);
       const data = new FormData(event.currentTarget);
       const resp = await axios.post(`${backendUrl}/api/auth/forget-password`, {
         email: data.get('email'),
       });
-      console.log(resp.data);
+      setLoading(false);
+      setAlertMessage(resp.data.message);
+      setAlertColor('success');
+      handleClick();
     }
     catch(err){
       console.log(err);
+      setLoading(false);
+      setAlertMessage(err.response.data.message);
+      setAlertColor('error');
+      handleClick();
+
     }
   };
 
@@ -75,8 +92,19 @@ export default function ForgetPassword() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
-              Login
+              {loading?(
+                 <Oval
+                 visible={true}
+                 height="30"
+                 width="20"
+                 color="#fff"
+                 ariaLabel="oval-loading"
+                 wrapperStyle={{}}
+                 wrapperClass=""
+                 />
+              ):"Login"}
             </Button>
             <Box 
               sx={{ mt: 1 ,
@@ -101,7 +129,13 @@ export default function ForgetPassword() {
                   Remember Password?
                 </Link>
               </Grid>
+              {open && (
+          <Alert onClose={handleClose} severity={alertColor} variant="filled" sx={{ width: '100%' }}>
+            {alertMessage}
+          </Alert>
+        )}
           </Box>
+          
         </Box>
       </Container>
     </ThemeProvider>

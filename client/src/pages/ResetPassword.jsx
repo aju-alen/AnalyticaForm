@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -14,8 +12,9 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate, useParams } from 'react-router-dom';
 import { backendUrl } from '../utils/backendUrl';
-import { axiosWithCredentials } from '../utils/customAxios';
+
 import axios from 'axios';
+import { Oval } from 'react-loader-spinner';
 
 
 
@@ -27,21 +26,35 @@ export default function ResetPassword() {
   const navigate = useNavigate();
   const {resetToken} = useParams()
   console.log(resetToken,'resetToken');
+  const [open, setOpen] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState('');
+  const [alertColor, setAlertColor] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
   const [formData, setFormData] = React.useState({
     password: '',
     retypePassword: '',
   })
 
+  const handleClick = () => setOpen(true);
+  const handleClose = (event, reason) => {
+    if (reason !== 'clickaway') setOpen(false);
+  };
+
   
   const handleSubmit = async (event) => {
     try{
       event.preventDefault();
+      setLoading(true);
       const resp = await axios.post(`${backendUrl}/api/auth//reset/${resetToken}`, formData);
-      console.log(resp.data);
+      setLoading(false);
+      setAlertMessage(resp.data.message);
+      setAlertColor('success');
+      handleClick();
       navigate('/login');
     }
     catch(err){
       console.log(err);
+      setLoading(false);
     }
     
   };
@@ -96,7 +109,17 @@ export default function ResetPassword() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Reset Password
+              {loading ?(
+                 <Oval
+                 visible={true}
+                 height="30"
+                 width="20"
+                 color="#fff"
+                 ariaLabel="oval-loading"
+                 wrapperStyle={{}}
+                 wrapperClass=""
+                 />
+              ): "Reset Password"}
             </Button>
             <Box 
               sx={{ mt: 1 ,
@@ -123,6 +146,11 @@ export default function ResetPassword() {
               </Grid>
             </Grid>
           </Box>
+          {open && (
+          <Alert onClose={handleClose} severity={alertColor} variant="filled" sx={{ width: '100%' }}>
+            {alertMessage}
+          </Alert>
+        )}
         </Box>
       </Container>
     </ThemeProvider>
