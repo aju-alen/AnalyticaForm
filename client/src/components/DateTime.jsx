@@ -134,7 +134,7 @@ const DateTime = ({ onSaveForm, data, id, options, disableForm, disableText, dis
     backgroundColor:'#F4FFF8',
   },
 }}>
-                        <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} size='small' variant="standard" name='question' value={formData.question}
+                        <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} size='small' variant="standard" name='question' value={formData.question} multiline
                             onChange={(e) => {
                                 setFormData({ ...formData, question: e.target.value })
                             }}
@@ -146,7 +146,7 @@ const DateTime = ({ onSaveForm, data, id, options, disableForm, disableText, dis
             width: '40%',
             marginY: 2,
           }} >
-               <Stack direction="row" spacing={2} >
+               <Stack direction="column" spacing={2} >
                         <Box sx={{ minWidth: 120 }}>
                                 <FormControl fullWidth>
                                     <InputLabel id="demo-simple-select-label">Date</InputLabel>

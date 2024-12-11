@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Button, Stack } from '@mui/material';
+import { Button, Divider, Stack } from '@mui/material';
 import { uid } from 'uid';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Slider from '@mui/material/Slider';
@@ -199,6 +199,7 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                         InputProps={{
                             readOnly: disableText,
                         }}
+                        multiline
                     />
 
                     <Stack spacing={6} sx={{
@@ -213,6 +214,7 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                                     sx={{
                                         position: 'relative',
                                         display: 'flex',
+                                        flexDirection: { xs: 'column', md: 'row' },
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
                                         width: '100%',
@@ -225,6 +227,7 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                                     <TextField
                                         fullWidth
                                         id="standard-basic"
+                                        multiline
                                         placeholder={!disableText ? "Type Your Response Here" : ''}
                                         variant="standard"
                                         name={option.text}
@@ -261,7 +264,7 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                                             '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
                                                 borderBottom: 'none',
                                             },
-                                            width: '20%'
+                                            width: { xs: '100%', md: '30%' },
                                         }}
                                     />
                                     <Slider
@@ -270,7 +273,7 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                                         aria-labelledby="input-slider"
                                         disabled={disableForm}
                                         sx={{
-                                            width: '50%',
+                                            width: { xs: '100%', md: '50%' },
                                         }}
                                         size='medium'
                                     />
@@ -283,9 +286,10 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                                         inputProps={{ min: 0, max: 100 }}
                                         disabled={disableForm}
                                         sx={{
-                                            width: '10%'
+                                            width: { xs: '30%', md: '20%' },
                                         }}
                                     />
+                                    <Divider orientation="horizontal" flexItem />
 
 
 

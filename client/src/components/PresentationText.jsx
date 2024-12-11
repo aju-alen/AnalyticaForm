@@ -113,6 +113,7 @@ const PresentationText = ({ onSaveForm, data, id, options, disableForm, disableT
             InputProps={{
               readOnly: disableText,
             }}
+            multiline
           />
 
 <Stack spacing={2} direction='row'>

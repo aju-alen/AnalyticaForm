@@ -117,6 +117,7 @@ const Calender = ({ onSaveForm, data, id, options, disableForm, disableText, dis
             InputProps={{
               readOnly: disableText,
             }}
+            multiline
           />
              <LocalizationProvider dateAdapter={AdapterDayjs}>
              <DatePicker value={value} onChange={(newValue) => 

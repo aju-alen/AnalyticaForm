@@ -121,7 +121,7 @@ const SectionSubHeading = ({ onSaveForm, data, id, options, disableForm, disable
     readOnly: disableText,
   }}
   
-  
+  multiline
 />
 <Stack spacing={2} direction='row'>
             {/* {!disableButtons && (

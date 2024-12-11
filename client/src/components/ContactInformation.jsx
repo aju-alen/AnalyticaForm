@@ -138,7 +138,7 @@ const ContactInformation = ({ onSaveForm, data, id, options, disableForm, disabl
                         />
 
 <Stack spacing={1} sx={{
-            width: '20%',
+            width:{xs :'100%', md: '20%'},
             marginRight: 'auto',
           }} >
                             {formData.options.map((option) => (

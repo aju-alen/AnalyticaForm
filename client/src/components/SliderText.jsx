@@ -115,14 +115,14 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
     setFormData({ ...formData, selectedValue: newSelectedValue });
   };
 
-  
+
   const handleSliderChange = (value, rowIndex) => {
     console.log(value, 'value in slider');
     console.log(rowIndex, 'rowIndex in slider');
 
 
     const totalColumns = formData.columnTextField.length; // Total number of columns
-    const columnIndex = getColumnIndex(value, totalColumns) -1;
+    const columnIndex = getColumnIndex(value, totalColumns) - 1;
 
     const newSelectedValue = [...formData.selectedValue];
     newSelectedValue[rowIndex].value = columnIndex;
@@ -138,7 +138,7 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
   const getColumnIndex = (value, totalColumns) => {
     if (value <= 0) return 1;
     if (value >= 100) return totalColumns;
-    
+
     const step = 100 / (totalColumns - 1);
     return Math.floor(value / step) + 1;
   };
@@ -147,7 +147,7 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
     if (numColumns <= 1) return 100; // Fallback for edge cases
     return 100 / (numColumns - 1);
   };
-  
+
   // Example usage within your component
   const numberOfColumns = formData.columnTextField.length; // This gets the number of columns
   const sliderValue = getSliderValue(numberOfColumns);
@@ -157,8 +157,8 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container sx={{ display: { xs: "none", md: "block" } }} maxWidth='xl' >
-      <Box sx={{
+      <Container  >
+        <Box sx={{
           bgcolor: 'white',
           display: 'flex',
           flexDirection: 'column',
@@ -209,296 +209,247 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
             InputProps={{
               readOnly: disableText,
             }}
-          />
-          <div style={{ width: '100%' }}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-  <TableHead>
-    <TableRow>
-    <TableCell
-                    colSpan={1}
-                  ></TableCell>
-      {formData.columnTextField.map((column) => (
-        <TableCell
-          key={column.id}
-          sx={{ width: 'auto ', overflowX: 'auto', position: 'relative', }}
-        >
-           <Box
-                        sx={{
-
-                          display: 'flex',
-                          alignItems: 'center',
-                          width: '100%',
-                          '&:hover .delete-button': {
-                            visibility: 'visible',
-                          },
-                        }}
-                      >
-         
-            <TextField
-              key={column.id}
-              id="standard-basic"
-              placeholder={!disableText ? "Type Your Response Here" : ''}
-              variant="standard"
-              name='columnTextField'
-              value={column.value}
-              onChange={(e) => setFormData({
-                ...formData,
-                columnTextField: formData.columnTextField.map((item) =>
-                  item.id === column.id ? { ...item, value: e.target.value } : item
-                )
-              })}
-              InputProps={{
-                readOnly: disableText,
-                inputProps: {
-                  style: { textAlign: 'center' }, // Center the text
-                },
-              }}
-              sx={{
-                '& .MuiInputBase-root': {
-                  fontSize: '0.8rem',
-                  alignContent: 'center',
-                  alignItems: 'center',
-                },
-                '& .MuiInput-underline:before': {
-                  borderBottom: 'none',
-                },
-                // '& .MuiInput-underline:after': {
-                //   borderBottom: 'none',
-                // },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottom: 'none',
-                },
-                minWidth: { xs: 100, md: 200 },
-              }}
-              fullWidth
-              multiline
-            />
-            {!disableButtons && (
-                          <HighlightOffIcon fontSize="small" className="delete-button"
-                            color="error"
-                            variant="text"
-                            sx={{
-                              position: 'absolute',
-                              top: '0%',
-                              left: '0%',
-                              right: '0%',
-                              bottom: '0%',
-                              visibility: 'hidden',
-                              transition: 'visibility 0.1s ease-in-out',
-
-                            }}
-                            onClick={() => handleDeleteColumn(column.id)} />
-
-                        )}
-          </Box>
-        </TableCell>
-      ))}
-       
-    </TableRow>
-  </TableHead>
-  <TableBody>
-    {formData.options.map((row, rowIndex) => (
-      <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-        <TableCell component="th" scope="row" sx={{ width: '30%' }}>
-          <TextField
-            id="standard-basic"
-            placeholder={!disableText ? "Type Your Sub Question" : ''}
-            variant="standard"
-            name='rowQuestion'
-            value={row.rowQuestion}
-            onChange={(e) => setFormData({
-              ...formData,
-              options: formData.options.map((item) =>
-                item.id === row.id ? { ...item, rowQuestion: e.target.value } : item
-              )
-            })}
-            InputProps={{
-              readOnly: disableText,
-            }}
-            sx={{
-              '& .MuiInputBase-root': {
-                fontSize: '0.8rem',
-              },
-              '& .MuiInput-underline:before': {
-                borderBottom: 'none',
-              },
-              // '& .MuiInput-underline:after': {
-              //   borderBottom: 'none',
-              // },
-              '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                borderBottom: 'none',
-              },
-              minWidth: { xs: 100, md: 200 },
-            }}
             multiline
           />
-        </TableCell>
-        <TableCell colSpan={formData.columnTextField.length}>
-          <Slider
-            disabled={disableForm}
-            aria-label="Restricted values"
-            defaultValue={0}
-            step={sliderValue}
-            valueLabelDisplay="off"
-            onChange={(e, value) => handleSliderChange(value, rowIndex)}
-          />
-        </TableCell>
-        <TableCell align="center">
-                      {!disableButtons && (<Button
-                        variant='text'
-                        color='error'
-                        onClick={() => handleDeleteRow(row.id)}>
-                        <HighlightOffIcon fontSize="small" />
-                      </Button>)}
-                    </TableCell>
-      </TableRow>
-    ))}
-    
-  </TableBody>
-</Table>
-{!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddRow}>Add Row</Button>)}
-          </div>
+          <Container sx={{ display: { xs: "none", md: "block" } }} maxWidth='xl'>
 
-          <Stack direction="row" spacing={2}>
+            <div style={{ width: '100%' }}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      colSpan={1}
+                    ></TableCell>
+                    {formData.columnTextField.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        sx={{ width: 'auto ', overflowX: 'auto', position: 'relative', }}
+                      >
+                        <Box
+                          sx={{
 
-            {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddColumn}>Add Column</Button>)}
+                            display: 'flex',
+                            alignItems: 'center',
+                            width: '100%',
+                            '&:hover .delete-button': {
+                              visibility: 'visible',
+                            },
+                          }}
+                        >
 
-{disableButtons && <Button
-              variant='contained'
-              color="success"
-              onClick={handleSaveForm}>
-              Next Question
-            </Button>}
+                          <TextField
+                            key={column.id}
+                            id="standard-basic"
+                            placeholder={!disableText ? "Type Your Response Here" : ''}
+                            variant="standard"
+                            name='columnTextField'
+                            value={column.value}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              columnTextField: formData.columnTextField.map((item) =>
+                                item.id === column.id ? { ...item, value: e.target.value } : item
+                              )
+                            })}
+                            InputProps={{
+                              readOnly: disableText,
+                              inputProps: {
+                                style: { textAlign: 'center' }, // Center the text
+                              },
+                            }}
+                            sx={{
+                              '& .MuiInputBase-root': {
+                                fontSize: '0.8rem',
+                                alignContent: 'center',
+                                alignItems: 'center',
+                              },
+                              '& .MuiInput-underline:before': {
+                                borderBottom: 'none',
+                              },
+                              // '& .MuiInput-underline:after': {
+                              //   borderBottom: 'none',
+                              // },
+                              '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                                borderBottom: 'none',
+                              },
+                              minWidth: { xs: 100, md: 200 },
+                            }}
+                            fullWidth
+                            multiline
+                          />
+                          {!disableButtons && (
+                            <HighlightOffIcon fontSize="small" className="delete-button"
+                              color="error"
+                              variant="text"
+                              sx={{
+                                position: 'absolute',
+                                top: '0%',
+                                left: '0%',
+                                right: '0%',
+                                bottom: '0%',
+                                visibility: 'hidden',
+                                transition: 'visibility 0.1s ease-in-out',
 
-           
-          </Stack>
-        </Box>
-      </Container>
-      <Container
-        sx={{ display: { xs: "block", md: "none" } }}
-      >
-        <Box sx={{
-          bgcolor: 'white',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexGrow: 1,
-          height: "100%",
-          mt: { xs: 4, md: 8 },
-          width: '100%',
-          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Updated box shadow for a subtle effect
-          borderRadius: 8, // Increased border radius for rounded corners
-          p: 3, // Increased padding for inner content
-          overflowX: 'auto',
-        }} >
-          <TextField
-            fullWidth
-            id="standard-basic"
-            label={!disableText ? "Insert input" : ''}
-            variant="standard"
-            name='question'
-            value={formData.question}
-            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-            InputProps={{
-              readOnly: disableText,
-            }}
-          />
-           <div style={{ width: '100%' }}>
-            {formData.options.map((row, rowIndex) => (
-              <Accordion key={row.id} sx={{
-                overflowX: 'auto',
-              }}>
+                              }}
+                              onClick={() => handleDeleteColumn(column.id)} />
+
+                          )}
+                        </Box>
+                      </TableCell>
+                    ))}
+
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {formData.options.map((row, rowIndex) => (
+                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell component="th" scope="row" sx={{ width: '30%' }}>
+                        <TextField
+                          id="standard-basic"
+                          placeholder={!disableText ? "Type Your Sub Question" : ''}
+                          variant="standard"
+                          name='rowQuestion'
+                          value={row.rowQuestion}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            options: formData.options.map((item) =>
+                              item.id === row.id ? { ...item, rowQuestion: e.target.value } : item
+                            )
+                          })}
+                          InputProps={{
+                            readOnly: disableText,
+                          }}
+                          sx={{
+                            '& .MuiInputBase-root': {
+                              fontSize: '0.8rem',
+                            },
+                            '& .MuiInput-underline:before': {
+                              borderBottom: 'none',
+                            },
+                            // '& .MuiInput-underline:after': {
+                            //   borderBottom: 'none',
+                            // },
+                            '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                              borderBottom: 'none',
+                            },
+                            minWidth: { xs: 100, md: 200 },
+                          }}
+                          multiline
+                        />
+                      </TableCell>
+                      <TableCell colSpan={formData.columnTextField.length}>
+                        <Slider
+                          disabled={disableForm}
+                          aria-label="Restricted values"
+                          defaultValue={0}
+                          step={sliderValue}
+                          valueLabelDisplay="off"
+                          onChange={(e, value) => handleSliderChange(value, rowIndex)}
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        {!disableButtons && (<Button
+                          variant='text'
+                          color='error'
+                          onClick={() => handleDeleteRow(row.id)}>
+                          <HighlightOffIcon fontSize="small" />
+                        </Button>)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                </TableBody>
+              </Table>
+              {!disableButtons && (<Button
+                variant='outlined'
+                color="primary"
+                size='small'
+                onClick={handleAddRow}>Add Row</Button>)}
+            </div>
+
+            <Stack direction="row" spacing={2}>
+
+              {!disableButtons && (<Button
+                variant='outlined'
+                color="primary"
+                size='small'
+                onClick={handleAddColumn}>Add Column</Button>)}
+
+              {disableButtons && <Button
+                variant='contained'
+                color="success"
+                onClick={handleSaveForm}>
+                Next Question
+              </Button>}
+
+
+            </Stack>
+          </Container>
+          <Container sx={{ display: { xs: "block", md: "none" } }} maxWidth='xl'>
+          {formData.options.map((row, rowIndex) => (
+              <Accordion>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel1-content"
                   id="panel1-header"
                 >
-                  <div className=" w-full">
-                  <h3>{row.rowQuestion}</h3>
-                  </div>
+                  {row.rowQuestion}
                 </AccordionSummary>
+                
                 <AccordionDetails>
-                  <div className="">
-                  <Table 
-                    sx={{ minWidth: 650 }}
-                    aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        {formData.columnTextField.map((column) => (
-                          <TableCell
-                            key={column.id}
-                            sx={{ width: 'auto ', overflowX: 'auto', }}>
-                            <Stack direction="column" spacing={2} >
-                              <TextField
-                                key={column.id}
-                                id="standard-basic"
-                                label={!disableText ? "Type Your Response Here" : ''} variant="standard"
-                                name='columnTextField'
-                                value={column.value}
-                                onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
-                                InputProps={{
-                                  readOnly: disableText,
-                                }}
-                                fullWidth
-                                multiline
-                              />
-                            </Stack>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      <TableRow
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                        {row.columns.map((column, columnIndex) =>
-                          <TableCell key={column.id} align='center' >
-                            <Radio
-                              disabled={disableForm}
-                              key={column.id}
-                              checked={formData.selectedValue[rowIndex].value === columnIndex}
-                              onChange={() => handleRadioChange(rowIndex, columnIndex)}
-                            />
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                  </div>
-                </AccordionDetails>
-              </Accordion>
-            ))}
-          </div>
-          <Stack direction="row" spacing={2}>
-            {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddColumn}>Add Column</Button>)}
-            <Button
-              variant='contained'
-              color="success"
-              onClick={handleSaveForm}>
-              {!disableButtons ? 'Save This Form' : 'Next Question'}
-            </Button>
-            {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddRow}>Add Row</Button>)}
-          </Stack>
-        </Box>
+                  <TextField
+                    fullWidth
+                    id="standard-basic"
+                    label={!disableText ? "Insert input" : ''}
+                    variant="standard"
+                    name='question'
+                    value={formData.selectedValue[rowIndex].answer}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      options: formData.options.map((item) =>
+                        item.id === row.id ? { ...item, rowQuestion: e.target.value } : item
+                      )
+                    })}
+                    InputProps={{
+                      readOnly: disableText,
+                    }}
+                    multiline
 
+                  />
+                <Slider
+                          disabled={disableForm}
+                          aria-label="Restricted values"
+                          defaultValue={0}
+                          step={sliderValue}
+                          valueLabelDisplay="off"
+                          onChange={(e, value) => handleSliderChange(value, rowIndex)}
+                        />
+                </AccordionDetails>
+                
+                </Accordion>
+          ))}
+              <Stack direction="row" spacing={2}>
+
+{!disableButtons && (<Button
+  variant='outlined'
+  color="primary"
+  size='small'
+  onClick={handleAddColumn}>Add Column</Button>)}
+
+{disableButtons && <Button
+  variant='contained'
+  color="success"
+  onClick={handleSaveForm}>
+  Next Question
+</Button>}
+
+
+</Stack>
+          </Container>
+          
+
+        </Box>
       </Container>
+
     </React.Fragment>
   )
 }

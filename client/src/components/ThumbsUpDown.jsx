@@ -14,18 +14,23 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+
 
 
 const iconMapping = {
   ThumbDown: <ThumbDownIcon
     color='error'
-    sx={{ fontSize: 100, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
+    sx={{ fontSize: {xs:50,md:100}, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
     
   />,
 
   ThumbUp: <ThumbUpIcon 
     color='success'
-    sx={{ fontSize: 100, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
+    sx={{ fontSize: {xs:50,md:100}, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
   />,
 };
 
@@ -122,7 +127,7 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
   return (
     <React.Fragment>
     <CssBaseline />
-    <Container sx={{ display: { xs: "none", md: "block" } }} maxWidth='xl' >
+    <Container  >
       <Box sx={{
         bgcolor: 'white',
         display: 'flex',
@@ -163,11 +168,13 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
           backgroundColor: '#F4FFF8',
         },
       }}>
+        <Container sx={{ display: { xs: "none", md: "block" } }} maxWidth='xl'>
             <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" name='question' value={formData.question}
               onChange={(e) => setFormData({ ...formData, question: e.target.value })}
               InputProps={{
                 readOnly: disableText,
               }}
+              multiline
             />
          
          <div style={{ width: '100%' }}>
@@ -330,6 +337,101 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
               Next Question
             </Button>}
             </Stack>
+            </Container>
+            <Container sx={{ display: { xs: "", md: "none" } }} maxWidth='xl'>
+            <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" name='question' value={formData.question}
+              onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+              InputProps={{
+                readOnly: disableText,
+              }}
+              multiline
+            />
+            {formData.options.map((row, rowIndex) => (
+
+               <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          {row.rowQuestion}
+        </AccordionSummary>
+              
+              {formData.columnTextField.map((column, columnIndex) =>(
+        <AccordionDetails sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          width: '100%',
+          '&:hover .delete-button': {
+            visibility: 'visible',
+          },
+        }} >
+          <Radio
+                          disabled={disableForm}
+                          key={column.id}
+                          checked={formData.selectedValue[rowIndex].value === columnIndex}
+                          onChange={() => handleRadioChange(rowIndex, columnIndex)}
+                          size='small'
+                        />
+          <Box 
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          width: '100%',
+                          '&:hover .delete-button': {
+                            visibility: 'visible',
+                          },
+                        }}
+          >
+          { column.icon === 'LI' ? iconMapping.ThumbUp : iconMapping.ThumbDown}
+          <TextField
+                          key={column.id}
+                          id="standard-basic"
+                          placeholder={!disableText ? "Type Your Response Here" : ''} variant="standard"
+                          name='columnTextField'
+                          value={column.value}
+                          onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
+                          InputProps={{
+                            readOnly: disableText,
+                            inputProps: {
+                              style: { textAlign: 'center' }, // Center the text
+                            },
+                          }}
+                          sx={{
+                            '& .MuiInputBase-root': {
+                              fontSize: '0.8rem',
+                            },
+                            '& .MuiInput-underline:before': {
+                              borderBottom: 'none',
+                            },
+                            // '& .MuiInput-underline:after': {
+                            //   borderBottom: 'none',
+                            // },
+                            '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                              borderBottom: 'none',
+                            },
+                            minWidth: { xs: 100, md: 100 },
+                          }}
+                          fullWidth
+                          multiline
+                        />
+                        </Box>
+          </AccordionDetails>
+              ))}
+
+      </Accordion>))}
+      <Stack spacing={2} direction='row'>
+            {disableButtons && <Button
+              variant='contained'
+              color="success"
+              onClick={handleSaveForm}>
+              Next Question
+            </Button>}
+            </Stack>
+
+            </Container>
           </Box>
         </Container>
       </React.Fragment>

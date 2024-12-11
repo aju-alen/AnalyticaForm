@@ -154,7 +154,7 @@ const RankOrder = ({ onSaveForm, data, id, options, disableForm, disableText, di
                     />
 
                     <Stack spacing={1} sx={{
-                        width: '50%',
+                        width: { xs: '100%', md: '50%' },
                         marginY: '1rem',
                     }} >
                         {formData.options.map((option) => (
@@ -173,6 +173,7 @@ const RankOrder = ({ onSaveForm, data, id, options, disableForm, disableText, di
                                     <TextField
                                         fullWidth
                                         id="standard-basic"
+                                        multiline
                                         placeholder={!disableText ? "Type Your Response Here" : ''}
                                         variant="standard"
                                         name={option.text}

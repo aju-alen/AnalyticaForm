@@ -120,6 +120,16 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                 Text Inputs
               </Typography>
               <Grid container spacing={1}>
+              <Grid item xs={12}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleItemClick('IntroductionForm')}>
+                      <ListItemText
+                        primary={'Survey Introduction'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
                 <Grid item xs={12}>
                   <ListItem disablePadding>
                     <ListItemButton onClick={() => handleItemClick('CommentBoxForm')}>
@@ -160,16 +170,7 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                     </ListItemButton>
                   </ListItem>
                 </Grid>
-                <Grid item xs={12}>
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={() => handleItemClick('IntroductionForm')}>
-                      <ListItemText
-                        primary={'Survey Introduction'}
-                        sx={{ fontSize: '0.875rem' }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                </Grid>
+               
               </Grid>
             </Grid>
 
@@ -399,6 +400,16 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                     <ListItemButton onClick={() => handleItemClick('MapForm')}>
                       <ListItemText
                         primary={'Map'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleItemClick('TestFunctionForm')}>
+                      <ListItemText
+                        primary={'Test Function'}
                         sx={{ fontSize: '0.875rem' }}
                       />
                     </ListItemButton>

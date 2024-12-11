@@ -21,7 +21,7 @@ const logoStyle = {
   width: '240px',
   height: '120px',
   cursor: 'pointer',
-  marginLeft: '114px'
+  marginLeft: {xs:'40px',md:'114px'}
 };
 
 const Footer = () => {
@@ -85,13 +85,20 @@ const Footer = () => {
         direction="column" 
         spacing={1}
       >
-        <Container maxWidth='md'>
+        <Container maxWidth='md' sx={{
+          marginLeft: {xs:'10px'},
+        }}>
         <img
               src="https://i.postimg.cc/hG57FFyC/Untitled-design-1-removebg-preview.png"
-              style={logoStyle}
+              style={{
+                width: '240px',
+                height: '120px',
+                marginLeft: {xs:'40px',md:'114px'},
+                cursor: 'pointer',
+              }
+              }
               alt="logo of sitemark"
               onClick={() => navigate('/')}
-
             />
         <Typography sx={{
           color: '#000',
@@ -99,6 +106,7 @@ const Footer = () => {
           textAlign: 'justify',
           width: {xs:'80%',md:'70%'},
           marginLeft: {xs:'10px',md:'114px'}
+
         }}
         align=''
         >

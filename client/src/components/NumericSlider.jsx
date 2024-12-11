@@ -192,6 +192,7 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                             InputProps={{
                                 readOnly: disableText,
                             }}
+                            multiline
                         />
 
 <Stack spacing={6} sx={{
@@ -200,27 +201,14 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                         marginX: 'auto',
                     }} >
                             {formData.options.map((option) => (
-                                <Stack direction="row" spacing={2} key={option.id}>
-
-<Box
-                                    sx={{
-                                        position: 'relative',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        width: '100%',
-                                        '&:hover .delete-button': {
-                                            visibility: 'visible',
-                                        },
-                                    }}
-                                >
-
-                                    <TextField
+                                <Stack direction="column" spacing={2} key={option.id}>
+                                     <TextField
                                         fullWidth
                                         id="standard-basic"
                                         placeholder={!disableText ? "Type Your Response Here" : ''}
                                         variant="standard"
                                         name={option.text}
+                                        multiline
                                         value={option.rowQuestion}
                                         onChange={(e) => {
                                             const newOptions = formData.options.map((opt) => {
@@ -254,14 +242,29 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                                             '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
                                                 borderBottom: 'none',
                                             },
-                                            width: '20%'
+                                            width: {xs:'100%',md:'30%'},
                                         }}
                                     />
+
+<Box
+                                    sx={{
+                                        position: 'relative',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        width: '100%',
+                                        '&:hover .delete-button': {
+                                            visibility: 'visible',
+                                        },
+                                    }}
+                                >
+
+                                   
                                             <TextField
                                                fullWidth
                                                size='small'
                                                sx={{
-                                                   width: '10%'
+                                                   width: {xs:'30%',md:'20%'},
                                                }}
                                                type="number"
                                                value={formData.selectedValue.find(opt => opt.id === option.id).answer}

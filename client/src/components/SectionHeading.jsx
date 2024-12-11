@@ -113,6 +113,7 @@ const SectionHeading = ({ onSaveForm, data, id, options, disableForm, disableTex
   id="standard-basic"
   label={!disableText ? "Insert input" : ''}
   variant="standard"
+  multiline
   name='question'
   value={formData.question}
   onChange={(e) => setFormData({ ...formData, question: e.target.value })}
@@ -122,8 +123,11 @@ const SectionHeading = ({ onSaveForm, data, id, options, disableForm, disableTex
       color: '#ffffff', // Change font color here
       fontWeight: 600, // Change font weight here
       fontSize: 40, // Change font size here
-    }
-  }}
+    },
+    
+  }
+  
+}
   
   sx={{
     backgroundColor: '#1565c0',

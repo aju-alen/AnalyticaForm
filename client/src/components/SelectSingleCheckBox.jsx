@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,memo } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';

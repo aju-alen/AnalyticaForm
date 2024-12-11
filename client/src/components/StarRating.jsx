@@ -131,10 +131,11 @@ const StarRating = ({ onSaveForm, data, id, options, disableForm, disableText, d
                             InputProps={{
                                 readOnly: disableText,
                             }}
+                            multiline
                         />
 
                         <Stack spacing={4} sx={{
-                            width: '40%',
+                            width: { xs: '100%', md: '60%' },
                             // marginRight: 'auto',
                         }} >
                             {formData.options.map((option) => (
@@ -158,6 +159,7 @@ const StarRating = ({ onSaveForm, data, id, options, disableForm, disableText, d
                                             id="standard-basic"
                                             placeholder={!disableText ? "Type Your Response Here" : ''}
                                             variant="standard"
+                                            multiline
                                             name={option.text}
                                             value={option.question}
                                             onChange={(e) => {
@@ -244,7 +246,7 @@ const StarRating = ({ onSaveForm, data, id, options, disableForm, disableText, d
                             {!disableButtons && (
                                 <Button
                                     sx={{
-                                        width: '70%',
+                                        width: '40%',
                                     }}
                                     onClick={handleAddOptions}
                                     variant='outlined'

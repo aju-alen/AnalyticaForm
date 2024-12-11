@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { uid } from 'uid'
 import CssBaseline from '@mui/material/CssBaseline'
 import Container from '@mui/material/Container'
@@ -15,8 +15,8 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 
 const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
-  
-console.log(disableForm, disableText, disableButtons, 'disableForm, disableText, disableButtons in select one choice form');
+
+  console.log(disableForm, disableText, disableButtons, 'disableForm, disableText, disableButtons in select one choice form');
   const [formData, setFormData] = useState({
     id: id,
     question: '',
@@ -91,75 +91,76 @@ console.log(disableForm, disableText, disableButtons, 'disableForm, disableText,
 
 
   return (
-    
-      <React.Fragment>
-        <CssBaseline />
-        <Container maxWidth="xl">
-        <Box sx={{
-  bgcolor: 'white',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  flexGrow: 1,
-  height: "100%",
-  mt: { xs: 4, md: 0 },
-  width: '100%',
-  boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
-  borderRadius: 2, // Increased border radius for rounded corners
-  p: 2, // Increased padding for inner content
-  overflowX: 'auto',
-  border: '2px solid #f0fbf0', // Added border for more distinction
-  transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
-  position: 'relative', // Make sure the box is positioned relative for the pseudo-element
-  backgroundColor:'#F4F3F6',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: '0%', // Set initial left position for the line
-    transform: 'translateX(-50%)',
-    height: '100%',
-    width: '12px', // Adjust the width of the line
-    bgcolor: '#1976d2', // Change to your desired color
-    opacity: 0, // Initially hidden
-    transition: 'opacity 0.3s ease-in-out', // Smooth transition for the line
-  },
-  
-  '&:hover::before': {
-    opacity: 1, // Make the lines visible on hover
-  },
-  '&:hover': {
-    boxShadow: '0px 1px rgba(0, 0, 0, 0.2)', // Updated box shadow on hover
-    transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
-    backgroundColor:'#F4FFF8',
-  },
-}}>
-            <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" size='small' name='question' value={formData.question}
-              onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-              InputProps={{
-                readOnly: disableText,
-              }}
-            />
 
-            <Stack spacing={1} sx={{
+    <React.Fragment>
+      <CssBaseline />
+      <Container maxWidth="xl">
+        <Box sx={{
+          bgcolor: 'white',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexGrow: 1,
+          height: "100%",
+          mt: { xs: 4, md: 0 },
+          width: '100%',
+          boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
+          borderRadius: 2, // Increased border radius for rounded corners
+          p: 2, // Increased padding for inner content
+          overflowX: 'auto',
+          border: '2px solid #f0fbf0', // Added border for more distinction
+          transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
+          position: 'relative', // Make sure the box is positioned relative for the pseudo-element
+          backgroundColor: '#F4F3F6',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: '0%', // Set initial left position for the line
+            transform: 'translateX(-50%)',
+            height: '100%',
+            width: '12px', // Adjust the width of the line
+            bgcolor: '#1976d2', // Change to your desired color
+            opacity: 0, // Initially hidden
+            transition: 'opacity 0.3s ease-in-out', // Smooth transition for the line
+          },
+
+          '&:hover::before': {
+            opacity: 1, // Make the lines visible on hover
+          },
+          '&:hover': {
+            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)', // Updated box shadow on hover
+            transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
+            backgroundColor: '#F4FFF8',
+          },
+        }}>
+          <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" size='small' name='question' value={formData.question}
+            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+            InputProps={{
+              readOnly: disableText,
+            }}
+            multiline
+          />
+
+          <Stack spacing={1} sx={{
             width: '20%',
             marginRight: 'auto',
           }}>
-              {disableForm && formData.options.map((option) => (
-                <Stack direction="row" spacing={2} key={option.id}>
-                   <Box
-               sx={{
-                 position: 'relative',
-                 display: 'flex',
-                 alignItems: 'center',
-                 width: '100%',
-                 '&:hover .delete-button': {
-                   visibility: 'visible',
-                 },
-               }}
-             >
-                 
+            {disableForm && formData.options.map((option) => (
+              <Stack direction="row" spacing={2} key={option.id}>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    '&:hover .delete-button': {
+                      visibility: 'visible',
+                    },
+                  }}
+                >
+
                   <TextField
                     fullWidth
                     id="standard-basic"
@@ -195,32 +196,32 @@ console.log(disableForm, disableText, disableButtons, 'disableForm, disableText,
                     }}
                   />
 
-                   
 
-{!disableButtons && (
-                 <Button
-                   className="delete-button"
-                   color="error"
-                   variant="text"
-                   sx={{
-                     position: 'absolute',
-                     left: '100%',
-                     visibility: 'hidden',
-                     transition: 'visibility 0.1s ease-in-out',
 
-                   }}
-                   onClick={() => handleDeleteOptions(option.id)}
-                 >
-                   <HighlightOffIcon fontSize="small" />
-                 </Button>
-               )}
-                  </Box>
-                  
-                </Stack>
-                
-              ))
-              }
-               {!disableButtons && (
+                  {!disableButtons && (
+                    <Button
+                      className="delete-button"
+                      color="error"
+                      variant="text"
+                      sx={{
+                        position: 'absolute',
+                        left: '100%',
+                        visibility: 'hidden',
+                        transition: 'visibility 0.1s ease-in-out',
+
+                      }}
+                      onClick={() => handleDeleteOptions(option.id)}
+                    >
+                      <HighlightOffIcon fontSize="small" />
+                    </Button>
+                  )}
+                </Box>
+
+              </Stack>
+
+            ))
+            }
+            {!disableButtons && (
               <Button
                 sx={{
                   width: '70%',
@@ -231,26 +232,36 @@ console.log(disableForm, disableText, disableButtons, 'disableForm, disableText,
                 size="small"
               >Add new row</Button>
             )}
-            </Stack>
-            {disableButtons && (
-                    <FormControl fullWidth sx={{mt:4}}>
-                       <InputLabel id="demo-simple-select-label">Select an option</InputLabel>
-                       <Select
-                         labelId="demo-simple-select-label"
-                         id="demo-simple-select"
-                         value={age}
-                         label="Age"
-                         onChange={handleChange}
-                       >
-                         {formData.options.map((option) => (
-                         <MenuItem key={option.id} value={option.value}>{option.value}</MenuItem>
-                          ))}
-                       </Select>
-                      </FormControl>
-                    )}
+          </Stack>
+          {disableButtons && (
+            <FormControl fullWidth sx={{ mt: 4 }}>
+              <InputLabel id="demo-simple-select-label">Select an option</InputLabel>
+              <Select
+                 labelId="demo-simple-select-label"
+                 id="demo-simple-select"
+                 value={age}
+                 variant="filled"
+                 label="Age"
+                 onChange={handleChange}
+                 sx={{ width: 'auto' }} // or specify a value like '300px'
+              >
+                {formData.options.map((option) => (
+                  <MenuItem
+                    key={option.id}
+                    value={option.value}
+                    sx={{
+                      width: '100%',
+                    }}
+                  >
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
 
-            <Stack spacing={2} direction='row'>
-              {/* {!disableButtons && (
+          <Stack spacing={2} direction='row'>
+            {/* {!disableButtons && (
                 <Button
                   onClick={handleAddOptions}
                   variant='outlined'
@@ -259,22 +270,24 @@ console.log(disableForm, disableText, disableButtons, 'disableForm, disableText,
                 >Add new row</Button>
               )} */}
 
-               {disableButtons &&   <Button
-                variant='contained'
-                color="success"
-                onClick={handleSaveForm}>
+            {disableButtons && <Button
+              variant='contained'
+              color="success"
+              sx={{
+              }}
+              onClick={handleSaveForm}>
               Next Question
-              </Button>}
-              {/* {!disableButtons && <Button
+            </Button>}
+            {/* {!disableButtons && <Button
               variant='contained'
               color="primary"
               onClick={handleMandateForm}>
                Mandate This Form
             </Button>} */}
-            </Stack>
-          </Box>
-        </Container>
-      </React.Fragment>
+          </Stack>
+        </Box>
+      </Container>
+    </React.Fragment>
   )
 }
 

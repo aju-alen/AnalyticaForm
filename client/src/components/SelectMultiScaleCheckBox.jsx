@@ -8,6 +8,12 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+
+
 
 const initialFormData = {
     id: uid(5),
@@ -130,7 +136,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
     return (
         <React.Fragment>
             <CssBaseline />
-            <Container sx={{ display: { xs: "", md: "block" } }} maxWidth='xl' >
+            <Container maxWidth='xl' >
                 <Box sx={{
                     bgcolor: 'white',
                     display: 'flex',
@@ -171,6 +177,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                         backgroundColor: '#F4FFF8',
                     },
                 }}>
+                    <Container sx={{ display: { xs: 'none', md: "block" } }} maxWidth='xl' >
                     <TextField
                         fullWidth
                         multiline
@@ -359,6 +366,124 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
 
 
                     </Stack>
+                    </Container>
+
+                    <Container sx={{ display: { xs: '', md: "none" } }} maxWidth='xl' >
+                    <TextField
+                        fullWidth
+                        multiline
+                        id="standard-basic"
+                        label={!disableText ? "Insert input" : ''} variant="standard"
+                        name='question'
+                        value={formData.question}
+                        onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+                        InputProps={{
+                            readOnly: disableText,
+                        }}
+                    />
+                         {formData.options.map((row, rowIndex) => (
+              <Accordion key={row.id} sx={{
+                overflowX: 'auto',
+              }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                >
+                  <div className=" w-full">
+                    <h3>{row.rowQuestion}</h3>
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div className="">
+                    <Table
+                      sx={{ minWidth: 650 }}
+                      aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          {formData.columnTextField.map((column) => (
+                            <TableCell
+                              key={column.id}
+                              sx={{ width: 'auto ', overflowX: 'auto', }}>
+                              <Stack direction="column" spacing={2} >
+                                <TextField
+                                  key={column.id}
+                                  id="standard-basic"
+                                  label={!disableText ? "Type Your Response Here" : ''} variant="standard"
+                                  name='columnTextField'
+                                  value={column.value}
+                                  onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
+                                  InputProps={{
+                                    readOnly: disableText,
+                                  }}
+                                  fullWidth
+                                  multiline
+                                />
+                              </Stack>
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          {row.columns.map((column, columnIndex) =>
+                            <TableCell key={column.id} align='center' >
+                              <Checkbox
+                                                    disabled={disableForm}
+                                                    key={column.id}
+                                                    onChange={() => handleCheckBoxChange(row.id, column.id, columnIndex)}
+                                                    checked={formData.selectedValue.some((item) => item.rowId === row.id && item.colId === column.id)}
+                                                    size='small'
+                                                />
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </AccordionDetails>
+                </Accordion>
+                ))}
+                    <div style={{ width: '100%' }}>
+                       
+                        {!disableButtons && (<Button
+                            variant='outlined'
+                            color="primary"
+                            size='small'
+                            onClick={handleAddRow}>Add Row</Button>)}
+                    </div>
+
+
+
+
+
+                    <Stack direction="row" spacing={2}>
+
+                        {!disableButtons && (<Button
+                            variant='outlined'
+                            color="primary"
+                            size='small'
+                            onClick={handleAddColumn}>Add Column</Button>)}
+
+                        {disableButtons && <Button
+                            variant='contained'
+                            color="success"
+                            onClick={handleSaveForm}>
+                            Next Question
+                        </Button>}
+
+                        {!disableButtons && <Button
+                            variant='contained'
+                            color="primary"
+                            onClick={handleMandateForm}>
+                            Mandate This Form
+                        </Button>}
+
+
+                    </Stack>
+                    </Container>
                 </Box>
             </Container>
         </React.Fragment>

@@ -121,6 +121,7 @@ const GoogleRecaptcha = ({ onSaveForm, data, id, options, disableForm, disableTe
             InputProps={{
               readOnly: disableText,
             }}
+            multiline
           />
           <ReCAPTCHA
         sitekey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY} // Replace with your site key
