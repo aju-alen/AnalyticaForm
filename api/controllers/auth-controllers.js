@@ -209,7 +209,7 @@ export const userRegister = async (req, res, next) => {
             })
             console.log(userToken, 'userToken');
             if (!userToken) {
-                return res.status(400).json({ message: 'Invalid token' })
+                return res.status(400).json({ message: 'Invalid token or verification has been complete. Please login' })
             }
 
             const updatedUser = await prisma.user.update({
