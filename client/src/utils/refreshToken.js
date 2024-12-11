@@ -4,7 +4,7 @@ import {jwtDecode} from 'jwt-decode';
 //function to refresh accesstoken if expired 
 
 export const refreshToken = async () => {
-    const accessToken = JSON.parse(localStorage.getItem('userAccessToken')).token
+    const accessToken = JSON.parse(localStorage.getItem('userAccessToken')).accessToken;
     const decoded = jwtDecode(accessToken).exp;
     // console.log(decoded);
     if(Date.now() >= decoded * 1000) {
