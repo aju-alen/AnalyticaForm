@@ -34,7 +34,7 @@ import PresentationText from '../components/PresentationText';
 import SectionHeading from '../components/SectionHeading';
 import SectionSubHeading from '../components/SectionSubHeading';
 import PickAndRank from '../components/PickAndRank';
-import { Paper, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { uid } from 'uid';
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox';
@@ -49,13 +49,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
 import { ContentCopy } from '@mui/icons-material';
 import Tooltip from '@mui/material/Tooltip';
-
-
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
@@ -143,34 +139,7 @@ const CreateNewSurvey = () => {
 
 
   const handleSaveSinglePointForm = (formData) => {
-    console.log(formData, 'formData in the parent');
 
-    // Check if the formData id exists in the surveyForms array
-    const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
-
-    if (existingFormIndex !== -1) {
-      // If the form data already exists, update it
-      setSurveyData(prevSurveyData => ({
-        ...prevSurveyData,
-        surveyForms: prevSurveyData.surveyForms.map((form, index) => {
-          if (index === existingFormIndex) {
-            return formData; // Update existing form data
-          }
-          return form; // Leave other form data unchanged
-        })
-      }));
-    } else {
-      // If the form data doesn't exist, add it to the surveyForms array
-      setSurveyData(prevSurveyData => ({
-        ...prevSurveyData,
-        surveyForms: [...prevSurveyData.surveyForms, formData]
-      }));
-    }
-  };
-
-
-
-  const handleSaveSingleCheckForm = (formData) => {
 
     const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
 
@@ -193,82 +162,6 @@ const CreateNewSurvey = () => {
       }));
     }
 
-  }
-
-  const handleSaveMultiScalePointForm = (formData) => {
-
-    const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
-
-    if (existingFormIndex !== -1) {
-      // If the form data already exists, update it
-      setSurveyData(prevSurveyData => ({
-        ...prevSurveyData,
-        surveyForms: prevSurveyData.surveyForms.map((form, index) => {
-          if (index === existingFormIndex) {
-            return formData; // Update existing form data
-          }
-          return form; // Leave other form data unchanged
-        })
-      }));
-    } else {
-      // If the form data doesn't exist, add it to the surveyForms array
-      setSurveyData(prevSurveyData => ({
-        ...prevSurveyData,
-        surveyForms: [...prevSurveyData.surveyForms, formData]
-      }));
-    }
-
-  }
-
-  const handleSaveMultiScaleCheckboxForm = (formData) => {
-
-    const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
-
-    if (existingFormIndex !== -1) {
-      // If the form data already exists, update it
-      setSurveyData(prevSurveyData => ({
-        ...prevSurveyData,
-        surveyForms: prevSurveyData.surveyForms.map((form, index) => {
-          if (index === existingFormIndex) {
-            return formData; // Update existing form data
-          }
-          return form; // Leave other form data unchanged
-        })
-      }));
-    } else {
-      // If the form data doesn't exist, add it to the surveyForms array
-      setSurveyData(prevSurveyData => ({
-        ...prevSurveyData,
-        surveyForms: [...prevSurveyData.surveyForms, formData]
-      }));
-    }
-
-  }
-
-  const handleSaveDropdown = (formData) => {
-    console.log(formData, 'formData in the parent');
-
-    // Check if the formData id exists in the surveyForms array
-    const existingFormIndex = surveyData.surveyForms.findIndex(form => form.id === formData.id);
-
-    if (existingFormIndex !== -1) {
-      // If the form data already exists, update it
-      setSurveyData(prevSurveyData => ({
-        ...prevSurveyData,
-        surveyForms: prevSurveyData.surveyForms.map((form, index) => {
-          if (index === existingFormIndex) {
-            return formData; // Update existing form data
-          }
-          return form; // Leave other form data unchanged
-        })
-      }));
-    } else {
-      // If the form data doesn't exist, add it to the surveyForms array
-      setSurveyData(prevSurveyData => ({
-        ...prevSurveyData,
-        surveyForms: [...prevSurveyData.surveyForms, formData]
-      }));
-    }
   };
 
   const handleDeleteSelectOneForm = (id) => {
@@ -401,7 +294,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SingleCheckForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -415,7 +308,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'IntroductionForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <IntroductionForm key={index} onSaveForm={handleSaveSingleCheckForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <IntroductionForm key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -429,7 +322,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiScalePoint') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectMultiScalePoint key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SelectMultiScalePoint key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -444,7 +337,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiScaleCheckBox') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -459,7 +352,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MultiSpreadsheet') {
       return (
         <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -472,7 +365,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'MapForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <MapForm key={index} onSaveForm={handleSaveMultiScaleCheckboxForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <MapForm key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -487,7 +380,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SelectDropDownForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectDropdownMenu key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SelectDropdownMenu key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -502,7 +395,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'CommentBoxForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <CommentBox key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <CommentBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -517,7 +410,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SingleRowTextForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SingleRowText key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SingleRowText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -532,7 +425,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'EmailAddressForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <EmailAddress key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <EmailAddress key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -546,7 +439,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'ContactInformationForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <ContactInformation key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <ContactInformation key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -561,7 +454,7 @@ const CreateNewSurvey = () => {
       return (
         
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <StarRating key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <StarRating key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -576,7 +469,7 @@ const CreateNewSurvey = () => {
       return (
         <Stack>
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SmileyRating key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SmileyRating key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -593,7 +486,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'ThumbUpDownForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <ThumbsUpDown key={index} onSaveForm={handleSaveDropdown} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <ThumbsUpDown key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -608,7 +501,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SliderTextForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SliderText key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SliderText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -623,7 +516,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'NumericSliderForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <NumericSlider key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <NumericSlider key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -653,7 +546,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SelectMultipleImageForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectMultipleImage key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SelectMultipleImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -667,7 +560,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'RankOrderImageForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <RankOrderImage key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <RankOrderImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -682,7 +575,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'PresentationTextForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <PresentationText key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <PresentationText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -696,7 +589,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SectionHeadingForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SectionHeading key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SectionHeading key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -711,7 +604,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'SectionSubHeadingForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SectionSubHeading key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <SectionSubHeading key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -726,7 +619,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'DateTimeForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <DateTime key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <DateTime key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -740,7 +633,7 @@ const CreateNewSurvey = () => {
     else if (item.formType === 'GoogleRecaptchaForm') {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
-          <GoogleRecaptcha key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+          <GoogleRecaptcha key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -756,7 +649,7 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
           <Calender
-           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -772,7 +665,7 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row'>
           <CountrySlect
-           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -787,7 +680,7 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
           <RankOrder
-           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -802,7 +695,7 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
           <PickAndRank
-           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -818,7 +711,7 @@ const CreateNewSurvey = () => {
       return (
         <Stack spacing={2} key={index} direction='row' position='relative'>
           <ConstantSum
-           key={index} onSaveForm={handleSaveMultiScalePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
           <Button
             color="secondary"
             size='large'
@@ -843,10 +736,13 @@ const CreateNewSurvey = () => {
         <CssBaseline />
         <Box
         sx={{
-          backgroundColor:'#F4F3F6'
+          backgroundColor:'#F4F3F6',
+          height: '100vh',
         }}
           >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{
+          marginTop:2
+        }}>
               <AppBar position='sticky' >
                 <Toolbar 
                   sx={
