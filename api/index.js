@@ -14,6 +14,8 @@ import sendEmailRoute from './routes/sendEmail-route.js';
 import bodyParser from 'body-parser';
 import stripe from 'stripe';
 import { PrismaClient } from '@prisma/client'
+import dotenv from 'dotenv';
+dotenv.config();
 const prisma = new PrismaClient();
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 

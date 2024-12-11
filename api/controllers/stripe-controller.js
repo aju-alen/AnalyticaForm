@@ -1,5 +1,7 @@
 import stripe from 'stripe';
 import {  stripeFrontendURL } from '../utils/corsFe.js';
+import dotenv from 'dotenv';
+dotenv.config();
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 console.log(process.env.STRIPE_SECRET_KEY,'env key');
 const YOUR_DOMAIN = stripeFrontendURL;
