@@ -134,6 +134,7 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
              >
                                         <TextField
                                             fullWidth
+                                            multiline
                                             id="standard-basic"
                                             label={!disableText ? "Insert input" : ''}
                                             variant="standard"
@@ -157,7 +158,6 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
                                             InputProps={{
                                                 readOnly: disableText,
                                             }}
-                                            multiline
                                         />
 
 {!disableButtons && (
