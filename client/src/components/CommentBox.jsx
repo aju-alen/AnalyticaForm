@@ -157,6 +157,7 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
                                             InputProps={{
                                                 readOnly: disableText,
                                             }}
+                                            multiline
                                         />
 
 {!disableButtons && (
