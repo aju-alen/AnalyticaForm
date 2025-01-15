@@ -5,6 +5,7 @@ return (
 <Helmet>
 { /* Standard metadata tags */ }
 <title>{title}</title>
+<meta name='robots' content={robotText || 'index, follow'} />
 <meta name='description' content={description} />
 { /* End standard metadata tags */ }
 { /* Facebook tags */ }

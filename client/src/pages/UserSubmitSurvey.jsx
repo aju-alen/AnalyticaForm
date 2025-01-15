@@ -1216,8 +1216,9 @@ const UserSubmitSurvey = () => {
     return (
         <ThemeProvider theme={theme}>
               <SEO
+            robotText="noindex, nofollow"
           title={surveyData.surveyTitle}
-          description="Dubai Analytica Survey Page"
+          description={`Dubai Analytica Survey Page - ${surveyData.surveyTitle}`}
           name="Dubai Analytica"
           type="Web Form"
           surveyImage='https://i.postimg.cc/X7fPCLRg/Untitled-design.png'
