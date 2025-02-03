@@ -26,47 +26,19 @@ const createHeadersAndSubHeaders = (formQuestions) => {
             });
         });
     });
-
+  
     return { headers, subHeaders, questionMap };
 };
 
-// Function to add headers with reduced font size and custom font family
+// Function to add headers to a worksheet with custom styles
 const addHeadersToWorksheet = (worksheet, headers) => {
     const headerRow = worksheet.addRow(headers);
-
-    // Adjust row height to make text more visible
-    headerRow.height = 70;  // Adjust row height (in points)
-    
+    headerRow.height = 70;
     headerRow.eachCell((cell, colNumber) => {
-        // Adjust column width based on content or fixed width
-        worksheet.getColumn(colNumber).width = headers[colNumber - 1].length + 5;  // Dynamic width
-
-        // Font styling for header cells
-        cell.font = { 
-            bold: true, 
-            size: 12,  // Increased font size
-            name: 'Arial', 
-            color: { argb: 'FFFFFFFF' }  // White font color for contrast
-        };
-
-        // Centered text alignment
-        cell.alignment = { 
-            vertical: 'middle', 
-            horizontal: 'center', 
-            wrapText: true,  // Wrap text if too long
-            indent: 1, 
-            shrinkToFit: true 
-        };
-
-        // Background color fill
-        cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FF008080' },  // Teal background
-            bgColor: { argb: 'FF008080' }  // Teal background
-        };
-
-        // Adding borders for clearer separation between cells
+        worksheet.getColumn(colNumber).width = headers[colNumber - 1].length + 5;
+        cell.font = { bold: true, size: 12, name: 'Arial', color: { argb: 'FFFFFFFF' } };
+        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF008080' } };
         cell.border = {
             top: { style: 'thin' },
             left: { style: 'thin' },
@@ -76,75 +48,38 @@ const addHeadersToWorksheet = (worksheet, headers) => {
     });
 };
 
-
-// Function to add sub-headers with reduced font size and custom font family
+// Function to add sub-headers to a worksheet with custom styles
 const addSubHeadersToWorksheet = (worksheet, subHeaders) => {
     const subHeaderRow = worksheet.addRow(subHeaders);
     subHeaderRow.eachCell((cell) => {
-        cell.font = { size: 9, name: 'Arial' };  // Reduced font size, Arial font
-        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.font = { size: 9, name: 'Arial' };
+        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0FFFF' } };
         cell.border = {
             top: { style: 'thin' },
             left: { style: 'thin' },
             bottom: { style: 'thin' },
             right: { style: 'thin' }
         };
-        cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'E0FFFF' }  // Light yellow background
-        };
-        cell.alignment.wrapText = true;  // Wrap text if it exceeds cell width
-        cell.alignment.shrinkToFit = true;  // Shrink text to fit cell width
-        cell.alignment.vertical = 'middle';  // Center vertically
-        cell.alignment.horizontal = 'center';  // Center horizontally
-        cell.alignment.indent = 1;  // Indent text
-        cell.alignment.textRotation = 0;  // Rotate text to 0 degrees
-
     });
 };
 
 // Function to style each user data row
 const styleUserRow = (userRow) => {
     userRow.eachCell((cell) => {
-        cell.font = { size: 9, name: 'Arial' };  // Reduced font size, Arial font
-        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.font = { size: 9, name: 'Arial' };
+        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFE0' } };
         cell.border = {
             top: { style: 'thin' },
             left: { style: 'thin' },
             bottom: { style: 'thin' },
             right: { style: 'thin' }
         };
-        cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFFFE0' }  // Light yellow background
-        };
-        cell.alignment.wrapText = true;  // Wrap text if it exceeds cell width
-        cell.alignment.shrinkToFit = true;  // Shrink text to fit cell width
-        cell.alignment.vertical = 'middle';  // Center vertically
-        cell
-        cell.alignment.horizontal = 'center';  // Center horizontally
-        cell.alignment.indent = 1;  // Indent text
-        cell.alignment.textRotation = 0;  // Rotate text to 0 degrees
     });
 };
 
-// Function to adjust column widths
-const adjustColumnWidths = (worksheet) => {
-    worksheet.columns.forEach((column) => {
-        column.width = 25;  // Increase column width to 25 units
-    });
-};
-
-// Function to send Excel response
-const sendExcelResponse = (res, buffer) => {
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=data_dynamic.xlsx');
-    res.send(buffer);
-};
-
-// Function to create a single row of user data including their responses
+// Function to create a single row of user data
 const createUserRow = (user, subHeaders, headers, questionMap) => {
     const userInfo = [user.userName, user.userEmail, user.id, user.ipAddress];
     const userResponses = new Array(questionMap.length).fill('');
@@ -184,42 +119,80 @@ const createUserRow = (user, subHeaders, headers, questionMap) => {
     return userInfo.concat(userResponses);
 };
 
+// Function to create analytics data
+const createAnalyticsData = (data) => {
+    const analytics = {};
+
+    data.forEach(user => {
+        user.userResponse.forEach(response => {
+            const question = response.question;
+            if (!analytics[question]) {
+                analytics[question] = {};
+            }
+            response.selectedValue.forEach(selected => {
+                if (!analytics[question][selected.answer]) {
+                    analytics[question][selected.answer] = 0;
+                }
+                analytics[question][selected.answer] += 1;
+            });
+        });
+    });
+
+    return analytics;
+};
+
+// Function to add analytics data to a worksheet
+const addAnalyticsDataToWorksheet = (worksheet, analytics) => {
+    worksheet.addRow(['Question', 'Answer', 'Count']);
+
+    Object.entries(analytics).forEach(([question, answers]) => {
+        Object.entries(answers).forEach(([answer, count]) => {
+            worksheet.addRow([question, answer, count]);
+        });
+    });
+
+    worksheet.columns.forEach(column => {
+        column.width = 20;
+    });
+};
+
 // Main function for exporting data to Excel
 export const exportToExcel = async (req, res) => {
     try {
         const data = req.body;
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('User Data');
 
+        // User Data Sheet
+        const userDataSheet = workbook.addWorksheet('User Data');
         const formQuestions = extractFormQuestions(data);
         const { headers, subHeaders, questionMap } = createHeadersAndSubHeaders(formQuestions);
 
-        // Add headers and sub-headers to worksheet with custom styles
-        addHeadersToWorksheet(worksheet, headers);
-        addSubHeadersToWorksheet(worksheet, subHeaders);
+        addHeadersToWorksheet(userDataSheet, headers);
+        addSubHeadersToWorksheet(userDataSheet, subHeaders);
+        userDataSheet.addRow([]);
 
-        // Add spacing row
-        worksheet.addRow([]);
-
-        // Add user data rows
         data.forEach(user => {
             const row = createUserRow(user, subHeaders, headers, questionMap);
-            const userRow = worksheet.addRow(row);
-            styleUserRow(userRow);  // Apply styles to each user row
+            const userRow = userDataSheet.addRow(row);
+            styleUserRow(userRow);
         });
 
-        // Adjust column widths
-        adjustColumnWidths(worksheet);
+        // Analytics Sheet
+        const analyticsSheet = workbook.addWorksheet('Analytics');
+        const analyticsData = createAnalyticsData(data);
+        addAnalyticsDataToWorksheet(analyticsSheet, analyticsData);
 
         // Write to buffer and send as response
         const buffer = await workbook.xlsx.writeBuffer();
-        sendExcelResponse(res, buffer);
-
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=data_with_analytics.xlsx');
+        res.send(buffer);
     } catch (err) {
         console.error(err);
         res.status(500).send({ message: 'Internal server error' });
     }
 };
+
 
 export const exportToExcelIndex = async (req, res) => {                             
     try {

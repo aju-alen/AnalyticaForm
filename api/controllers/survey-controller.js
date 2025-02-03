@@ -212,3 +212,28 @@ export const updateUserStatus = async (req, res) => {
         res.status(500).send({ message: 'Internal server error' });
     }
 }
+
+export const getIpOfSingleSurvey = async (req, res) => {
+    const {surveyId} = req.params;
+    try{
+        const getIpOfOneSurvey = await prisma.userSurveyResponse.findMany({
+            where:{
+                surveyId,
+            },
+            select:{
+                ipAddress:true
+            }
+        }); 
+        await prisma.$disconnect();
+        const formatedData = getIpOfOneSurvey.map((data)=>data.ipAddress);
+console.log(formatedData,'formatedData');
+const sendData = JSON.stringify(formatedData)
+
+        res.status(200).json(sendData);
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send({message:'Internal server error'});
+    }
+}
+
