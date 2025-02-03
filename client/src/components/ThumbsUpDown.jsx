@@ -266,6 +266,7 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
                 {formData.options.map((row, rowIndex) => (
                   <TableRow
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    key={row.id}
                   >
 
 
@@ -329,7 +330,9 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
               onClick={handleAddRow}>Add Row</Button>)}
           </div>
        
-            <Stack spacing={2} direction='row'>
+            <Stack spacing={2} direction='row'  sx={{
+                            marginTop: '1rem',
+                        }}>
             {disableButtons && <Button
               variant='contained'
               color="success"
@@ -422,7 +425,9 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
               ))}
 
       </Accordion>))}
-      <Stack spacing={2} direction='row'>
+      <Stack spacing={2} direction='row'  sx={{
+                            marginTop: '1rem',
+                        }}>
             {disableButtons && <Button
               variant='contained'
               color="success"

@@ -41,7 +41,6 @@ const MapForm = ({ onSaveForm, data, id, options, disableForm, disableText, disa
     formMandate: false,
     options: [
       { id: uid(5), value: '' },
-      { id: uid(5), value: '' }
     ],
     selectedValue: [{ question: '', answer: '', value: '', index: '' }],
     formType: 'MapForm'
@@ -87,7 +86,7 @@ const MapForm = ({ onSaveForm, data, id, options, disableForm, disableText, disa
       click: () => {
         console.log('Clicked on:', feature.properties.name); // Handle click event
         if(!disableForm){          
-        setFormData({ ...formData,selectedValue: [{ question: formData.question, answer: feature.properties.name, value: feature.properties.name, index: '' }] });
+        setFormData((prevData)=>({...prevData, selectedValue: [{ question: prevData.question, answer: feature.properties.name, value: feature.properties.name, index: '' }]}));
       }
     }
     });

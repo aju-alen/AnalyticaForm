@@ -271,6 +271,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                 {formData.options.map((row) => (
                                     <TableRow
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        key={row.id}
                                     >
                                         <TableCell component="th" scope="row" sx={{ width: '30%' }}>
 
@@ -342,7 +343,10 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
 
 
 
-                    <Stack direction="row" spacing={2}>
+                    </Container>
+                    <Stack direction="row" spacing={2}  sx={{
+                            marginTop: '1rem',
+                        }}>
 
                         {!disableButtons && (<Button
                             variant='outlined'
@@ -366,7 +370,6 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
 
 
                     </Stack>
-                    </Container>
 
                     <Container sx={{ display: { xs: '', md: "none" } }} maxWidth='xl' >
                     <TextField
@@ -459,7 +462,9 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
 
 
 
-                    <Stack direction="row" spacing={2}>
+                    <Stack direction="row" spacing={2}  sx={{
+                            marginTop: '1rem',
+                        }}>
 
                         {!disableButtons && (<Button
                             variant='outlined'

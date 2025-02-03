@@ -22,12 +22,14 @@ const initialFormData = {
       id: "az56j",
       rowQuestion: '',
       columns: [
+        { id: "p7esd", value: '' },
         { id: "a1f4d", value: '' },
         { id: "a2k9m", value: '' },
       ],
     },
   ],
   columnTextField: [
+    { id: "p7esd", value: 'Slide to answer:' },
     { id: "a1f4d", value: '' },
     { id: "a2k9m", value: '' },
   ],
@@ -301,7 +303,10 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
                 </TableHead>
                 <TableBody>
                   {formData.options.map((row, rowIndex) => (
-                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableRow 
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    key={row.id}
+                    >
                       <TableCell component="th" scope="row" sx={{ width: '30%' }}>
                         <TextField
                           id="standard-basic"
@@ -366,7 +371,9 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
                 onClick={handleAddRow}>Add Row</Button>)}
             </div>
 
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={2}  sx={{
+                            marginTop: '1rem',
+                        }}>
 
               {!disableButtons && (<Button
                 variant='outlined'
@@ -427,7 +434,9 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
                 
                 </Accordion>
           ))}
-              <Stack direction="row" spacing={2}>
+              <Stack direction="row" spacing={2}  sx={{
+                            marginTop: '1rem',
+                        }}>
 
 {!disableButtons && (<Button
   variant='outlined'

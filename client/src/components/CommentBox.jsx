@@ -245,7 +245,11 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
                 size="small"
               >Add new row</Button>
             )}
-                        <Stack spacing={2} direction='row'>
+                        <Stack spacing={2} direction='row' 
+                        sx={{
+                            marginTop: '1rem',
+                        }}
+                        >
                        
 
                           {disableButtons &&  <Button

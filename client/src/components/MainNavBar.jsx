@@ -118,7 +118,7 @@ function ResponsiveAppBar() {
         }}>
           
           <img className='hidden mr-4 md:flex' 
-              src="https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png"
+              src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png"
               style={logoStyleDextop}
               alt="logo of Dubai Analytica"
               onClick={() => navigate('/')}

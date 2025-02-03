@@ -15,7 +15,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 
 
-const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
+const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext, onSetLoading }) => {
   const [formData, setFormData] = React.useState({
     id: id,
     question: '',
@@ -32,10 +32,11 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
 
   useEffect(() => {
     const handler = setTimeout(() => {
+      onSetLoading(false)
       setDebouncedValue(formData);
       onSaveForm(formData);
     }, 1000); // 500ms delay
-
+    onSetLoading(true)
     // Cleanup function to cancel the timeout if value changes before delay
     return () => {
       clearTimeout(handler);
@@ -143,7 +144,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
             multiline
             sx={{
               '& .MuiInputBase-root': {
-                fontWeight: 'bold',
+
                 fontSize: '1.3rem',
               }
             }}
@@ -249,7 +250,9 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
             )}
 
           </Stack>
-          <Stack spacing={2} direction='row'>
+          <Stack spacing={2} direction='row'  sx={{
+                            marginTop: '1rem',
+                        }}>
             {/* {!disableButtons && (
               <Button
                 onClick={handleAddOptions}

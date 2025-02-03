@@ -144,7 +144,7 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
           />
 
           <Stack spacing={1} sx={{
-            width: '20%',
+           width: { xs: '100%', md: '20%' },
             marginRight: 'auto',
           }}>
             {disableForm && formData.options.map((option) => (
@@ -260,7 +260,9 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
             </FormControl>
           )}
 
-          <Stack spacing={2} direction='row'>
+          <Stack spacing={2} direction='row' sx={{
+                marginTop: '1rem',
+              }}>
             {/* {!disableButtons && (
                 <Button
                   onClick={handleAddOptions}
@@ -273,8 +275,7 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
             {disableButtons && <Button
               variant='contained'
               color="success"
-              sx={{
-              }}
+             
               onClick={handleSaveForm}>
               Next Question
             </Button>}

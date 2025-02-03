@@ -318,7 +318,9 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                         }
                     </Stack>
 
-                    <Stack spacing={2} direction='row'>
+                    <Stack spacing={2} direction='row'  sx={{
+                            marginTop: '1rem',
+                        }}>
                         {!disableButtons && (
                             <Button
                                 onClick={handleAddOptions}

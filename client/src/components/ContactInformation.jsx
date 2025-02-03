@@ -278,7 +278,9 @@ const ContactInformation = ({ onSaveForm, data, id, options, disableForm, disabl
               >Add new row</Button>
             )}
                         </Stack>
-                        <Stack spacing={2} direction='row'>
+                        <Stack spacing={2} direction='row'  sx={{
+                            marginTop: '1rem',
+                        }}>
                             {/* {!disableButtons && (
                                 <Button
                                     onClick={handleAddOptions}

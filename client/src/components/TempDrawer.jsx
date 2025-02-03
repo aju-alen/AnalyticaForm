@@ -239,7 +239,7 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                     </ListItemButton>
                   </ListItem>
                 </Grid>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <ListItem disablePadding>
                     <ListItemButton onClick={() => handleItemClick('PickAndRankForm')}>
                       <ListItemText
@@ -248,7 +248,7 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                       />
                     </ListItemButton>
                   </ListItem>
-                </Grid>
+                </Grid> */}
               </Grid>
             </Grid>
 
@@ -405,20 +405,41 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                     </ListItemButton>
                   </ListItem>
                 </Grid>
+               
+              </Grid>
+            </Grid>
+
+            <Grid item xs={6}>
+              <Typography variant="h6" gutterBottom sx={{
+                fontWeight: '500',
+                fontSize: '1.2rem',
+              }}>
+                Survey Template
+              </Typography>
+              <Grid container spacing={1}>
                 <Grid item xs={12}>
                   <ListItem disablePadding>
-                    <ListItemButton onClick={() => handleItemClick('TestFunctionForm')}>
+                    <ListItemButton onClick={() => handleItemClick('DropDownTemplateForm')}>
                       <ListItemText
-                        primary={'Test Function'}
+                        primary={'Drop Down Template'}
                         sx={{ fontSize: '0.875rem' }}
                       />
                     </ListItemButton>
                   </ListItem>
                 </Grid>
+                <Grid item xs={12}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleItemClick('CheckBoxTemplateForm')}>
+                      <ListItemText
+                        primary={'Check Box Template'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
+               
               </Grid>
             </Grid>
-
-
 
 
           </Grid>

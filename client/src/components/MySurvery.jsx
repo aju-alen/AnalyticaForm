@@ -32,7 +32,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey }) {
+export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDataChanged }) {
   console.log(userSurveyData,'--userSurveyData--');
   
   const navigate = useNavigate();
@@ -44,12 +44,13 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey }) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const [surveyURLStatus, setSurveyURLStatus] = React.useState('');
+
 
   const handleChangeSelect = async(event,surveyId) => {
     const updateSurveyStatus = await axiosWithAuth.put(`${backendUrl}/api/survey/update-survey-status/${surveyId}`,{surveyStatus:event.target.value});
     
     console.log(event.target.value);
+    handleDataChanged(prev=>!prev);
     
   };
   const openMenu = Boolean(anchorEl);

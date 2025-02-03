@@ -16,7 +16,6 @@ const PresentationText = ({ onSaveForm, data, id, options, disableForm, disableT
     formMandate: false,
     options: [
       { id: uid(5), value: '' },
-      { id: uid(5), value: '' }
 
     ],
     selectedValue: [{ question: '', answer: '', value: '', index: '' }],
@@ -116,7 +115,9 @@ const PresentationText = ({ onSaveForm, data, id, options, disableForm, disableT
             multiline
           />
 
-<Stack spacing={2} direction='row'>
+<Stack spacing={2} direction='row'  sx={{
+                            marginTop: '1rem',
+                        }}>
             {/* {!disableButtons && (
               <Button
                 onClick={handleAddOptions}

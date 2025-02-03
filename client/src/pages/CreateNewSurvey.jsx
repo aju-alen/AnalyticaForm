@@ -52,6 +52,8 @@ import Tooltip from '@mui/material/Tooltip';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { dropDownTemplate } from '../utils/templateData';
+import { checkBoxTemplate } from '../utils/templateData';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
@@ -65,6 +67,8 @@ const CreateNewSurvey = () => {
   const [selectedItems, setSelectedItems] = useState([]); // selected items 
   const [isSaved, setIsSaved] = useState('Saved'); // saved or not
   const [subscriptionEndDate, setSubscriptionEndDate] = useState('');
+  const [loading, setLoading] = useState(false);
+  
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
@@ -97,6 +101,20 @@ const CreateNewSurvey = () => {
       setSurveyData({ ...surveyData, surveyForms: [ { id: uid(5), formType: item },...surveyData.surveyForms] })
 
     }
+    else if(item === 'DropDownTemplateForm'){
+      console.log('inside test componenenennen');
+      console.log(surveyData, 'surveyData in handleItemSelect-------jk---');
+      setSurveyData({
+        ...surveyData,surveyForms:dropDownTemplate
+      })
+    }
+    else if(item === 'CheckBoxTemplateForm'){
+      console.log('inside test componenenennen');
+      console.log(surveyData, 'surveyData in handleItemSelect-------jk---');
+      setSurveyData({
+        ...surveyData,surveyForms:checkBoxTemplate
+      })
+    }
     else{
       setSelectedItems([...selectedItems, item]);
       setSurveyData({ ...surveyData, surveyForms: [...surveyData.surveyForms, { id: uid(5), formType: item }] })
@@ -120,23 +138,6 @@ const CreateNewSurvey = () => {
     setSurveyData({ ...surveyData, surveyIntroduction: '' });
     setAddIntro(false);
   }
-
-  const handleAddIntro = () => {
-    setAddIntro(true);
-    if (surveyData.surveyIntroduction === '') {
-      setSurveyData({
-        ...surveyData, surveyIntroduction: `Hello:
-    You are invited to participate in our survey [Project Description Here]. In this survey, approximately [Approximate Respondents] people will be asked to complete a survey that asks questions about [General Survey Process]. It will take approximately [Approximate Time] minutes to complete the questionnaire.
-    
-    Your participation in this study is completely voluntary. There are no foreseeable risks associated with this project. However, if you feel uncomfortable answering any questions, you can withdraw from the survey at any point. It is very important for us to learn your opinions.
-    
-    Your survey responses will be strictly confidential and data from this research will be reported only in the aggregate. Your information will be coded and will remain confidential. If you have questions at any time about the survey or the procedures, you may contact [Name of Survey Researcher] at [Phone Number] or by email at the email address specified below.` });
-    }
-    else {
-      setSurveyData({ ...surveyData, surveyIntroduction: surveyData.surveyIntroduction });
-    }
-  }
-
 
   const handleSaveSinglePointForm = (formData) => {
 
@@ -198,6 +199,7 @@ const CreateNewSurvey = () => {
     }
 
   }
+  
 
   useEffect(() => {
 
@@ -274,455 +276,521 @@ const CreateNewSurvey = () => {
   };
 
 
+  const formComponents = {
+    'SinglePointForm': SelectSingleRadio,
+    'SingleCheckForm': SelectSingleCheckBox,
+    'IntroductionForm': IntroductionForm,
+    'MultiScalePoint': SelectMultiScalePoint,
+    'MultiScaleCheckBox': SelectMultiScaleCheckBox,
+    'MultiSpreadsheet': SelectMultiSpreadsheet,
+    'MapForm': MapForm,
+    'SelectDropDownForm': SelectDropdownMenu,
+    'CommentBoxForm': CommentBox,
+    'SingleRowTextForm': SingleRowText,
+    'EmailAddressForm': EmailAddress,
+    'ContactInformationForm': ContactInformation,
+    'StarRatingForm': StarRating,
+    'SmileyRatingForm': SmileyRating,
+    'ThumbUpDownForm': ThumbsUpDown,
+    'SliderTextForm': SliderText,
+    'NumericSliderForm': NumericSlider,
+    'SelectOneImageForm': SelectOneImage,
+    'SelectMultipleImageForm': SelectMultipleImage,
+    'RankOrderForm': RankOrder,
+    'ConstantSumForm':ConstantSum,
+    'PickAndRankForm':PickAndRank,
+    'PresentationTextForm': PresentationText,
+    'SectionHeadingForm': SectionHeading,
+    'SectionSubHeadingForm': SectionSubHeading,
+    'DateTimeForm': DateTime,
+    'GoogleRecaptchaForm': GoogleRecaptcha,
+    'CalenderForm' : Calender,
+
+  };
+  
   const selectItem = surveyData.surveyForms.map((item, index) => {
-    console.log(item, 'item in selectItem mapppppppp',index);
-    if (item.formType === 'SinglePointForm') {
-
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} onSaveIndicator={setIsSaved} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
+    const FormComponent = formComponents[item.formType];
+  
+    if (!FormComponent) {
+      console.log('Unknown form type:', item.formType);
+      
+      return null; // In case of an unknown form type
     }
-    else if (item.formType === 'SingleCheckForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectSingleCheckBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'IntroductionForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <IntroductionForm key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'MultiScalePoint') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectMultiScalePoint key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'MultiScaleCheckBox') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'MultiSpreadsheet') {
-      return (
-        <Stack spacing={2} key={index} direction='row'>
-          <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'MapForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <MapForm key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'SelectDropDownForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectDropdownMenu key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'CommentBoxForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <CommentBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'SingleRowTextForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SingleRowText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'EmailAddressForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <EmailAddress key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'ContactInformationForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <ContactInformation key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'StarRatingForm') {
-      return (
-        
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <StarRating key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'SmileyRatingForm') {
-      return (
-        <Stack>
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SmileyRating key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-
-</Stack>
-      )
-    }
-
-    else if (item.formType === 'ThumbUpDownForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <ThumbsUpDown key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'SliderTextForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SliderText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'NumericSliderForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <NumericSlider key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'SelectOneImageForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectOneImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'SelectMultipleImageForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SelectMultipleImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'RankOrderImageForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <RankOrderImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'PresentationTextForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <PresentationText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'SectionHeadingForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SectionHeading key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'SectionSubHeadingForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <SectionSubHeading key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'DateTimeForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <DateTime key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'GoogleRecaptchaForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <GoogleRecaptcha key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'CalenderForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <Calender
-           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    
-    else if (item.formType === 'CountrySelectForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row'>
-          <CountrySlect
-           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'RankOrderForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <RankOrder
-           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-    else if (item.formType === 'PickAndRankForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <PickAndRank
-           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
-
-    else if (item.formType === 'ConstantSumForm') {
-      return (
-        <Stack spacing={2} key={index} direction='row' position='relative'>
-          <ConstantSum
-           key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
-          <Button
-            color="secondary"
-            size='large'
-            sx={{ position: 'absolute', right: 30 }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}>
-            <CancelIcon />
-          </Button>
-        </Stack>
-      )
-    }
+  
+    return (
+      <Stack spacing={2} key={index} direction="row" position="relative">
+        <FormComponent
+          onSaveForm={handleSaveSinglePointForm}
+          data={item}
+          id={item.id}
+          options={item.options}
+          disableForm={true}
+          disableText={false}
+          disableButtons={false}
+          onHandleNext={() => 1}
+          onSetLoading={setLoading}
+        />
+        <Button
+          color="secondary"
+          size="large"
+          sx={{ position: 'absolute', right: {xs:10,md:30}, top: {xs:30,md:0} }}
+          onClick={() => handleDeleteSelectOneForm(item.id)}
+        >
+          <CancelIcon />
+        </Button>
+      </Stack>
+    );
   });
+
+//   const selectItem = surveyData.surveyForms.map((item, index) => {
+//     console.log(item, 'item in selectItem mapppppppp',index);
+//     if (item.formType === 'SinglePointForm') {
+
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SelectSingleRadio key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} onSaveIndicator={setIsSaved} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'SingleCheckForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SelectSingleCheckBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'IntroductionForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <IntroductionForm key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'MultiScalePoint') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SelectMultiScalePoint key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'MultiScaleCheckBox') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SelectMultiScaleCheckBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'MultiSpreadsheet') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row'>
+//           <SelectMultiSpreadsheet key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'MapForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <MapForm key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'SelectDropDownForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SelectDropdownMenu key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'CommentBoxForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <CommentBox key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'SingleRowTextForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SingleRowText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'EmailAddressForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <EmailAddress key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'ContactInformationForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <ContactInformation key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'StarRatingForm') {
+//       return (
+        
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <StarRating key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'SmileyRatingForm') {
+//       return (
+//         <Stack>
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SmileyRating key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+
+// </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'ThumbUpDownForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <ThumbsUpDown key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'SliderTextForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SliderText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'NumericSliderForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <NumericSlider key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'SelectOneImageForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SelectOneImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'SelectMultipleImageForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SelectMultipleImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'RankOrderImageForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <RankOrderImage key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'PresentationTextForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <PresentationText key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'SectionHeadingForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SectionHeading key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'SectionSubHeadingForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <SectionSubHeading key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'DateTimeForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <DateTime key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'GoogleRecaptchaForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <GoogleRecaptcha key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'CalenderForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <Calender
+//            key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+    
+//     else if (item.formType === 'CountrySelectForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row'>
+//           <CountrySlect
+//            key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'RankOrderForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <RankOrder
+//            key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//     else if (item.formType === 'PickAndRankForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <PickAndRank
+//            key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+
+//     else if (item.formType === 'ConstantSumForm') {
+//       return (
+//         <Stack spacing={2} key={index} direction='row' position='relative'>
+//           <ConstantSum
+//            key={index} onSaveForm={handleSaveSinglePointForm} data={item} id={item.id} options={item.options} disableForm={true} disableText={false} disableButtons={false} onHandleNext={() => 1} />
+//           <Button
+//             color="secondary"
+//             size='large'
+//             sx={{ position: 'absolute', right: 30 }}
+//             onClick={() => handleDeleteSelectOneForm(item.id)}>
+//             <CancelIcon />
+//           </Button>
+//         </Stack>
+//       )
+//     }
+//   });
 
   console.log(surveyData, 'surveyData in the parent');
   // console.log(surveyData.surveyForms, 'surveyFormsssss in surveyData in the parent');
@@ -737,7 +805,6 @@ const CreateNewSurvey = () => {
         <Box
         sx={{
           backgroundColor:'#F4F3F6',
-          height: '100vh',
         }}
           >
         <Container maxWidth="lg" sx={{
@@ -763,6 +830,7 @@ const CreateNewSurvey = () => {
                     variant="contained"
                     color="success"
                     onClick={handleSubmitForm}
+                    disabled={loading}
                   >
                     Submit Your Survey
                   </Button>

@@ -124,6 +124,9 @@ const Footer = () => {
         <Typography fontSize='0.8rem'>
           <Link to='/terms-of-use'>Terms of Use</Link>
         </Typography>
+        <Typography fontSize='0.8rem'>
+          <Link to='/contact-us'>Contact Us</Link>
+        </Typography>
         </Stack>
         <Typography sx={{
           color: '#000',

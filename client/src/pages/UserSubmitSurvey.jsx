@@ -433,6 +433,7 @@ const UserSubmitSurvey = () => {
 
             const sendUserResp = await axios.post(`${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`, finalData);
             setResponseSubmitted(true);
+            setIsLoading(false);
             console.log(sendUserResp, 'sendUserResp');
         }
         catch (err) {
@@ -549,7 +550,9 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading}
+                            />
                     </div>
                 );
             case 'IntroductionForm':
@@ -571,7 +574,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
             case 'MapForm':
@@ -593,7 +597,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
             case 'SelectDropDownForm':
@@ -615,7 +620,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -640,7 +646,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />;
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />;
                     </div>
                 );
 
@@ -664,7 +671,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -688,7 +696,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -712,7 +721,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -736,7 +746,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
             case 'StarRatingForm':
@@ -759,7 +770,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -783,7 +795,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -807,7 +820,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -831,7 +845,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -855,7 +870,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -879,7 +895,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -903,7 +920,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -927,7 +945,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -951,7 +970,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
             case 'SelectMultipleImageForm':
@@ -974,7 +994,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -998,7 +1019,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -1022,7 +1044,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -1046,7 +1069,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -1070,7 +1094,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -1094,7 +1119,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -1118,7 +1144,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -1142,7 +1169,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -1167,7 +1195,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                             />
                     </div>
                 );
 
@@ -1190,7 +1219,8 @@ const UserSubmitSurvey = () => {
                             options={currentItem.options}
                             disableForm={false}
                             disableText={true}
-                            disableButtons={true} />
+                            disableButtons={true}
+                            onSetLoading={setIsLoading} />
                     </div>
                 );
 
@@ -1203,7 +1233,8 @@ const UserSubmitSurvey = () => {
                     options={currentItem.options}
                     disableForm={false}
                     disableText={true}
-                    disableButtons={true} />;
+                    disableButtons={true}
+                    onSetLoading={setIsLoading} />;
             default:
                 return null;
         }

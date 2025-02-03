@@ -172,7 +172,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
             variant="standard"
             sx={{
               '& .MuiInputBase-root': {
-                fontWeight: 'bold',
+
                 fontSize: '1.3rem',
               }
             }}
@@ -265,6 +265,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                 {formData.options.map((row, rowIndex) => (
                   <TableRow
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    key={row.id}
                   >
 
 
@@ -328,7 +329,11 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
               onClick={handleAddRow}>Add Row</Button>)}
           </div>
 
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={2} 
+           sx={{
+            marginTop: '1rem',
+        }}
+          >
 
             {!disableButtons && (<Button
               variant='outlined'

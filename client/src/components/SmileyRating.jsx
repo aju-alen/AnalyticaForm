@@ -298,6 +298,7 @@ const SmileyRating = ({ onSaveForm, data, id, options, disableForm, disableText,
                   {formData.options.map((row, rowIndex) => (
                     <TableRow
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      key={row.id}
                     >
 
 
@@ -361,7 +362,9 @@ const SmileyRating = ({ onSaveForm, data, id, options, disableForm, disableText,
                 onClick={handleAddRow}>Add Row</Button>)}
             </div>
 
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={2}  sx={{
+                            marginTop: '1rem',
+                        }}>
 
 
 
@@ -469,7 +472,9 @@ const SmileyRating = ({ onSaveForm, data, id, options, disableForm, disableText,
               </Accordion>
             ))}
           </Container>
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={2}  sx={{
+                            marginTop: '1rem',
+                        }}>
 
 
 

@@ -25,6 +25,7 @@ import { Button, Stack } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
 import { BarChart } from '@mui/x-charts/BarChart';
+import CountryAnalytics from '../components/CountryAnalytics';
 
 
 
@@ -219,6 +220,7 @@ export default function UserAnalytics() {
               </TableFooter>
             </Table>
           </TableContainer>
+        <Container>
           <Typography variant="h4" align="center" color="primary" gutterBottom sx={{
             mt: 3
           }}>
@@ -262,6 +264,7 @@ export default function UserAnalytics() {
               </Stack>
             </Stack>
 
+          </Container>
           </Container>
         </Container>
       </Box>)}

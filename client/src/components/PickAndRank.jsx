@@ -69,7 +69,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
         return {
             ...prevFormData,
             options: updatedOptions,
-            selectedValue: updatedOptions.filter((option) => option.container === 'droppable').map((option,idx) => ({ answer: option.value, question: idx + 1 }))
+            selectedValue: updatedOptions.filter((option) => option.container === 'droppable').map((option,idx) => ({ answer: option.value, question: JSON.stringify(idx + 1)}))
         };
     });
     }

@@ -16,7 +16,6 @@ const SectionSubHeading = ({ onSaveForm, data, id, options, disableForm, disable
     formMandate: false,
     options: [
       { id: uid(5), value: '' },
-      { id: uid(5), value: '' }
 
     ],
     selectedValue: [{ question: '', answer: '', value: '', index: '' }],
@@ -123,7 +122,9 @@ const SectionSubHeading = ({ onSaveForm, data, id, options, disableForm, disable
   
   multiline
 />
-<Stack spacing={2} direction='row'>
+<Stack spacing={2} direction='row'  sx={{
+                            marginTop: '1rem',
+                        }}>
             {/* {!disableButtons && (
               <Button
                 onClick={handleAddOptions}

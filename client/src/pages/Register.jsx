@@ -18,6 +18,8 @@ import { useNavigate } from 'react-router-dom';
 import HomeNavBar from '../components/HomeNavBar';
 import { backendUrl } from '../utils/backendUrl';
 import { Oval } from 'react-loader-spinner'
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const defaultTheme = createTheme();
 
@@ -29,6 +31,7 @@ export default function Register() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertColor, setAlertColor] = useState('');
   const [loading, setLoading] = useState(false);
+  const[showPassword,setShowPassword] = useState(false);
 
   // Form errors
   const [formErrors, setFormErrors] = useState({
@@ -159,19 +162,30 @@ export default function Register() {
                   helperText={formErrors.email}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={11}>
                 <TextField
                   required
                   fullWidth
                   name="password"
                   label="Password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   autoComplete="new-password"
                   error={!!formErrors.password}
                   helperText={formErrors.password}
                 />
+                
               </Grid>
+              <Grid item xs={1} sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+
+              }}>
+                <Button onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </Button>
+                </Grid>
             </Grid>
             <Button
               type="submit"

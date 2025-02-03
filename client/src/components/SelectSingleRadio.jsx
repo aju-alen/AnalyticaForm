@@ -12,7 +12,7 @@ import { uid } from 'uid';
 
 
 
-const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext,onSaveIndicator }) => {
+const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext,onSaveIndicator,onSetLoading }) => {
   const [isBold, setIsBold] = useState(false);
   const [formData, setFormData] = useState({
     id: id,
@@ -30,12 +30,14 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
   const [debouncedValue, setDebouncedValue] = useState('');
 
   useEffect(() => {
+    
     const handler = setTimeout(() => {
+      onSetLoading(false)
       setDebouncedValue(formData);
       onSaveForm(formData);
       // onSaveIndicator('Saved')
     }, 2000); // 500ms delay
-
+    onSetLoading(true)
     // Cleanup function to cancel the timeout if value changes before delay
     return () => {
       // onSaveIndicator('Not Saaved')
@@ -136,7 +138,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
           <TextField fullWidth multiline id="standard-basic" label={!disableText ? "Insert input" : ''} variant='standard' size='small' required name='question' value={formData.question}
             sx={{
               '& .MuiInputBase-root': {
-                fontWeight: 'bold',
+
                 fontSize: '1.3rem',
               }
             }}
@@ -244,7 +246,10 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
               >Add new row</Button>
             )}
           </Stack>
-          <Stack spacing={2} direction='row'>
+          <Stack spacing={2} direction='row' sx={{
+                            marginTop: '1rem',
+                        }}
+                        >
             {/* {!disableButtons && (
               <Button
                 onClick={handleAddOptions}

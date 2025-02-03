@@ -21,6 +21,7 @@ const Dashboard = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [alertColor, setAlertColor] = useState('');
     const [isSubscribed, setIsSubscribed] = useState(false);
+    const [dataChanged, setDataChanged] = useState(false);
 
     useEffect(() => {
         const getUserIsProMember = async () => {
@@ -47,7 +48,7 @@ const Dashboard = () => {
         try {
             setInputFeildVisible(true);
             if (input && inputFeildVisible && inputText.length > 0) {
-                if (userSurveyData.length > 5) {
+                if (userSurveyData.length > 4) {
                     alert('You can only create 5 surveys with a free account. Please upgrade to premium.');
                     return;
                 }
@@ -87,7 +88,7 @@ const Dashboard = () => {
             }
         };
         getTest();
-    }, []);
+    }, [dataChanged]);
 
     useEffect(() => {
         const adminResponseLimit = userSurveyData.map((survey) => survey.surveyResponses);
@@ -167,7 +168,7 @@ const Dashboard = () => {
 </Grid>
 
            
-            <MySurvery userSurveyData={userSurveyData} isSubscribed={isSubscribed}  onDeleteSurvey={handleDeleteSurveyFromParent} />
+            <MySurvery userSurveyData={userSurveyData} isSubscribed={isSubscribed}  onDeleteSurvey={handleDeleteSurveyFromParent} handleDataChanged={setDataChanged} />
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity={alertColor} variant="filled" sx={{ width: '100%' }}>
                     {alertMessage}

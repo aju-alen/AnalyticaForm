@@ -129,7 +129,9 @@ const GoogleRecaptcha = ({ onSaveForm, data, id, options, disableForm, disableTe
         size='normal'
       />
       
-      <Stack spacing={2} direction='row'>
+      <Stack spacing={2} direction='row'  sx={{
+                            marginTop: '1rem',
+                        }}>
 
       {disableButtons &&<Button
               variant='contained'
