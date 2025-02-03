@@ -131,6 +131,9 @@ const UserSubmitSurvey = () => {
         }
 
     }
+    const handleClick = () => {
+        window.open('https://www.dubaianalytica.com', '_blank');
+      };
 
     const handleSaveMultiScalePointForm = (formData) => {
 
@@ -477,41 +480,122 @@ const UserSubmitSurvey = () => {
 
         if (!currentItem) {
             return (
-                <div className="">
-                    <h1 className=' font-bold text-blue-500 text-2xl text-center mb-2'>Thank You for your response</h1>
-                    {(!responseSubmitted && !isLoading) && <h1 className=' font-bold text-blue-500 text-md mb-2 text-center'>Please enter your details. You can still proceed if you wish not to enter the details.  </h1>}
-
-                    {!responseSubmitted &&
-                        <div className=" text-center">
-                            <form onSubmit={handleSaveForm} className='flex flex-col gap-5 mx-2'>
-
+                <div className="relative min-h-screen flex items-center justify-center pb-40 bg-gray-50">
+                <div className="w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+                  {/* Top decorative bar */}
+                  <div className="h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+                  
+                  <div className="p-8">
+                    <h1 className="font-bold text-blue-500 text-3xl text-center mb-2">
+                      Thank You for your response
+                    </h1>
+                    
+                    {(!responseSubmitted && !isLoading) && (
+                      <h2 className="font-medium text-gray-600 text-lg mb-8 text-center">
+                        Please enter your details to complete the survey
+                      </h2>
+                    )}
+          
+                    {!responseSubmitted && (
+                      <div className="text-center">
+                        <form onSubmit={handleSaveForm} className="flex flex-col gap-6">
+                          <div className="transform transition-all duration-200 hover:scale-102">
                             <TextField
-                                label='Please Enter your name'
-                                value={formData.userName}
-                                onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
-                            ></TextField>
+                              fullWidth
+                              label="Please Enter your name"
+                              value={formData.userName}
+                              onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+                              variant="outlined"
+                            />
+                          </div>
+                          <div className="transform transition-all duration-200 hover:scale-102">
                             <TextField
-                                type='email'
-                                label='Please Enter your Email Id'
-                                value={formData.userEmail}
-                                onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
-                            ></TextField>
-                            <div className=" mt-4">
-                                <Button
-                                    variant='contained'
-
-                                    type="submit" >Submit Response</Button>
-                            </div>
-                            </form>
+                              fullWidth
+                              type="email"
+                              label="Please Enter your Email Id"
+                              value={formData.userEmail}
+                              onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
+                              variant="outlined"
+                            />
+                          </div>
+                          <div className="mt-4">
+                            <Button 
+                              variant="contained" 
+                              type="submit"
+                              className="w-full py-4 text-lg bg-blue-600 hover:bg-blue-700"
+                            >
+                              Submit Response
+                            </Button>
+                          </div>
+                        </form>
+                      </div>
+                    )}
+          
+                    {(responseSubmitted && !isLoading) && (
+                      <div className="text-center py-8">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span className="text-2xl">✓</span>
                         </div>
-                    }
-                    {(isLoading)  && 
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
-                <CircularProgress />
-            </Box>
-         }
-                    {(responseSubmitted && !isLoading) && <h1 className=' font-bold text-blue-500 text-md mb-2'>Response submitted! You can now leave this page</h1>}
+                        <h1 className="font-bold text-green-500 text-xl mb-2">
+                          Response submitted successfully!
+                        </h1>
+                        <p className="text-gray-600">Thank you for your participation</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
+          
+                {/* Enhanced Advertisement Banner */}
+                <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-xl">
+                  <div className="relative max-w-6xl mx-auto p-8">
+                    {/* Main Content */}
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                      {/* Left Section */}
+                      <div className="flex-1 space-y-6">
+                        <div className="flex items-center gap-4">
+
+                          <div>
+                            <h3 className="font-bold text-3xl mb-1">Create Your Perfect Survey</h3>
+                            <p className="text-xl text-gray-100">Get started in minutes, free forever</p>
+                          </div>
+                        </div>
+                        
+                        {/* Features Grid */}
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="w-1 h-1 bg-white rounded-full"/>
+                            <span>Unlimited Responses</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1 h-1 bg-white rounded-full"/>
+                            <span>Real-time Analytics</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1 h-1 bg-white rounded-full"/>
+                            <span>Custom Branding</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1 h-1 bg-white rounded-full"/>
+                            <span>Advanced Reports</span>
+                          </div>
+                        </div>
+                      </div>
+          
+                      {/* Right Section */}
+                      <div className="flex flex-col items-center lg:items-end gap-4">
+                      <Button 
+      variant="contained"
+      className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 text-lg font-bold shadow-lg transform hover:scale-105 transition-transform duration-200"
+      onClick={handleClick}
+    >
+      Start Creating Free
+    </Button>
+                        <p className="text-sm text-gray-200">Join 100+ happy customers</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ); // Handle case when currentIndex is out of bounds
         }
 
