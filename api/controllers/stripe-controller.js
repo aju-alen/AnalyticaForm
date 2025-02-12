@@ -32,7 +32,6 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
             success_url: `${YOUR_DOMAIN}/payment-success?success=true&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${YOUR_DOMAIN}/pricing`,
           });
-          console.log(session,'session');
         
           res.redirect(303, session.url);
     }
@@ -94,4 +93,93 @@ export const stripeWebhook = async (request, response) => {
   // Return a 200 response to acknowledge receipt of the event
   response.send();
   
+};
+
+const calculatePrice = (users) => {
+  let totalPrice = 0;
+  if (users <= 500) {
+    totalPrice = users * 30;
+  } else if (users <= 1000) {
+    totalPrice = (500 * 30) + ((users - 500) * 20);
+  } else {
+    totalPrice = (500 * 30) + (500 * 20) + ((users - 1000) * 10);
+  }
+  return totalPrice;
+};
+
+export const createCheckoutSessionForMarketUser = async (req, res) => {
+  try {
+    const { amount, currency, unit, userId, emailId, name, selectedRegions, selectedIndustries, selectedEducationLevels, selectedPositions, selectedExperience } = req.body;
+    const backendAmount = calculatePrice(unit);
+    console.log(req.body,'bodyyyyyyyyy in');
+    
+    // Ensure the backend amount matches the provided amount
+    if (backendAmount !== Number(amount)) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    // Create a generic product if it doesn't already exist
+    const product = await Stripe.products.create({
+      name: "User Responses", // Generic name
+      description: "Pay for user responses"
+    });
+
+    // Dynamically create a price object in Stripe based on calculated amount
+    const price = await Stripe.prices.create({
+      unit_amount: backendAmount * 100, // Amount in cents
+      currency: currency || "aed", // Use the provided currency or default to AED
+      product: product.id, // Use the created product ID
+      tax_behavior: "exclusive",
+    });
+
+    // Create the checkout session
+    const customer = await Stripe.customers.create({
+      email: emailId,
+      name: name,
+      address: {
+        line1: "123 Main Street",
+        city: "Dubai",
+        country: "AE", // Use a valid 2-letter country code
+        postal_code: "00000",
+      },
+    });
+
+    const session = await Stripe.checkout.sessions.create({
+      customer: customer.id,
+      line_items: [
+        {
+          price: price.id,
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${YOUR_DOMAIN}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${YOUR_DOMAIN}?canceled=true`,
+      automatic_tax: { enabled: true },
+      metadata: {
+        userId: userId,
+        emailId: emailId,
+      },
+      payment_intent_data: {
+        metadata: {
+          userId: userId,
+          emailId: emailId,
+          selectedRegions, 
+          selectedIndustries,
+          selectedEducationLevels,
+          selectedPositions,
+          selectedExperience,
+          unit,
+        },
+      },
+      customer_update: {
+        address: "auto",
+      },
+    });
+    
+    res.redirect(303, session.url);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
 };

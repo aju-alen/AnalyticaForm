@@ -104,7 +104,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
     try {
       await refreshToken();
       const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
-      console.log(getAllUserResponse.data,'--getAllUserResponse--');
+      console.log(getAllUserResponse.data,'--getAllUserResponse--asjhdajhsbd');
       if (getAllUserResponse.data.length === 0) {
         alert('No response available for this survey');
         return;
@@ -117,7 +117,40 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'UserResponse.xlsx';
+      console.log(getAllUserResponse.data[0]["survey"].surveyTitle,'final answer');
+      
+      a.download = `${getAllUserResponse.data[0]["survey"].surveyTitle} Answers.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      if (err.response.status === 401) {
+        console.log('unauthorized');
+        localStorage.removeItem('userAccessToken');
+        navigate('/login');
+      } else {
+        console.log(err);
+      }
+    }
+  };
+  const handleConvertToExcelIndex = async (surveyId) => {
+    console.log(surveyId);
+    try {
+      await refreshToken();
+      const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
+      console.log(getAllUserResponse.data,'--getAllUserResponse--');
+      if (getAllUserResponse.data.length === 0) {
+        alert('No response available for this survey');
+        return;
+      }
+      
+      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/export-to-excel-index`, getAllUserResponse.data, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${getAllUserResponse.data[0]["survey"].surveyTitle} Index.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
@@ -236,10 +269,16 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                           <DialogContentText>
                             Display as Answers - This will show user responses as answers in the Excel sheet.
                           </DialogContentText>
+                          <DialogContentText>
+                            Display as Index - This will show user responses as index in the Excel sheet.
+                          </DialogContentText>
                         </DialogContent>
                         <DialogActions>
                           <Button onClick={() => handleConvertToExcelAnswer(surveyId)} color="primary">
                             Display as Answers
+                          </Button>
+                          <Button onClick={() => handleConvertToExcelIndex(surveyId)} color="primary">
+                            Display as Index
                           </Button>
                           <Button onClick={handleClose} color="secondary">
                             Cancel

@@ -237,8 +237,8 @@ const ProductDisplayy = () => {
               ))}
             </CardContent>
                {tier.price!=='FREE' && <CardActions>
-                  <form action="https://analyticaform-api.onrender.com/api/stripe/create-checkout-session" method="POST">
-                  {/* <form action="http://localhost:3001/api/stripe/create-checkout-session" method="POST"> */}
+                  {/* <form action="https://analyticaform-api.onrender.com/api/stripe/create-checkout-session" method="POST"> */}
+                  <form action="http://localhost:3001/api/stripe/create-checkout-session" method="POST">
                     {/* Add a hidden field with the lookup_key of your Price */}
                     <input type="hidden" name="lookup_key" value={tier.lookup_key} />
                     <input type="hidden" name="userId" value={userId} />

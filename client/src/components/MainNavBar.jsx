@@ -173,7 +173,7 @@ function ResponsiveAppBar() {
           </Box>
           <Box sx={{ flexGrow:0.5 , display: { xs: 'flex', md: 'none' },  }}>
           <img  
-               src="https://i.postimg.cc/BnV5txb5/215b7754-0e37-41b2-be2f-453d190af861-1-removebg-preview.png"
+               src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png"
               style={logoStyle}
               alt="logo of sitemark"
               onClick={() => navigate('/')}
@@ -210,7 +210,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="https://i.postimg.cc/vZMZJJXH/avatar-3814049-640-1-removebg-preview.png" />
+                <Avatar alt="Remy Sharp"  src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" />
               </IconButton>
             </Tooltip>
             <Menu

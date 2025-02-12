@@ -32,6 +32,7 @@ model User {
   updatedAt DateTime @updatedAt
 
    surveys   Survey[]
+   responsePurchases ResponsePurchase[]
 
    proMember ProMember?
 }
@@ -94,4 +95,36 @@ model UserSurveyResponse{
   survey Survey @relation(fields: [surveyId], references: [id])
   surveyId String
  
+}
+
+model ResponsePurchase {
+  id                      String   @id @default(cuid())
+  sessionIdUrl            String @unique
+  userEmail               String
+  responseQuantity        Int
+  amountPaid              Int
+  amountCurrency          String
+  paidStatus              Boolean 
+  stripePaymentIntentId   String
+  stripeRecieptUrl        String
+  selectedRegions         String
+  selectedIndustries      String
+  selectedEducationLevels String
+  selectedPositions       String
+  selectedExperience      String
+
+  stripeName              String
+  stripeCountry           String?
+  stripeAddressLineOne    String?
+  stripeAddressLineTwo    String?
+  stripePostalCode        String?
+  stripeState             String?
+  stripeCardBrand         String?
+  stripeCardLastFourDigit String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }

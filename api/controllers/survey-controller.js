@@ -91,8 +91,17 @@ export const getAllSurveyResponse = async (req, res) => {
             where: {
                 surveyId
             },
+            include: {
+                survey: {
+                    select: {
+                        surveyTitle: true,
+                        surveyForms: true,
+                    }
+                }
+            },
             ...(!isSubscribed ? { take: 500 } : {}),
         });
+        
         await prisma.$disconnect();
         res.status(200).send(getAllResponse);
     }

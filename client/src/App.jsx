@@ -40,6 +40,7 @@ const ContactUs = lazy(() => import('./pages/ContactUs'));
 const AdminSurveyData = lazy(() => import('./pages/AdminSurveyData'));
 const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const UserMarket = lazy(() => import('./pages/UserMarket'));
 
 
 const App = () => {
@@ -153,6 +154,10 @@ const App = () => {
         {
           path: "/contact-us",
           element: <ContactUs /> // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/market",
+          element:  <ProtectedRoute element={<UserMarket />} /> // Wrap Dashboard inside ProtectedRoute
         },
         {
           path: "/404",

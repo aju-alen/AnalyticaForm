@@ -33,9 +33,24 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
   const [debouncedValue, setDebouncedValue] = useState('');
   const [age, setAge] = React.useState('');
 
+
   const handleChange = (event) => {
+    const selectedIndex = formData.options.findIndex(
+      (option) => option.value === event.target.value
+    );
+  
     setAge(event.target.value);
-    setFormData({ ...formData, selectedValue: [{ question: formData.question, answer: event.target.value, value: '', index: '' }] })
+    setFormData({
+      ...formData,
+      selectedValue: [
+        {
+          question: formData.question,
+          answer: event.target.value,
+          value: '',
+          index: selectedIndex + 1, // Adding 1 to make it 1-based index
+        },
+      ],
+    });
   };
 
   useEffect(() => {
@@ -245,7 +260,7 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
                  onChange={handleChange}
                  sx={{ width: 'auto' }} // or specify a value like '300px'
               >
-                {formData.options.map((option) => (
+                {formData.options.map((option,idx) => (
                   <MenuItem
                     key={option.id}
                     value={option.value}

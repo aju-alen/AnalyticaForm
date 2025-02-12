@@ -497,7 +497,9 @@ export const userRegister = async (req, res, next) => {
                 },
                 select: {
                     id: true,
-                    isSuperAdmin: true
+                    isSuperAdmin: true,
+                    email: true,
+                    firstName: true,
                 }
             })
             await prisma.$disconnect()
