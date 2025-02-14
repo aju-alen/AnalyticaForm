@@ -194,7 +194,7 @@ export const exportToExcel = async (req, res) => {
     }
 };
 
-const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
+const createUserRowIndexOld = (user, subHeaders, headers, questionMap) => {
     const userInfo = [user.userName, user.userEmail, user.id, user.ipAddress];
     const userResponses = new Array(questionMap.length).fill('');
 
@@ -272,6 +272,50 @@ const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
     return userInfo.concat(userResponses);
 };
 
+const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
+    const userInfo = [user.userName, user.userEmail, user.id, user.ipAddress];
+    const userResponses = new Array(questionMap.length).fill('');
+
+    user.userResponse.forEach(response => {
+        
+        
+        response.selectedValue.forEach(selected => {
+           
+            if (selected.question && selected.question !== response.question && response.formType !== "MultiScaleCheckBox") {
+                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.question));
+        
+                if (subHeaderIndex !== -1) {
+                    userResponses[subHeaderIndex - 4] = selected.index;
+                }
+            } 
+            else if (response.formType === "ContactInformationForm") {
+                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.question));
+                if (subHeaderIndex !== -1) {
+                    userResponses[subHeaderIndex - 4] = selected.index;
+                }
+            } else if (response.formType === "SingleCheckForm") {
+                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.rowQuestion));
+                if (subHeaderIndex !== -1) {
+                    userResponses[subHeaderIndex - 4] = selected.index;
+                }
+            } else if (response.formType === "MultiScaleCheckBox") {
+                const headerRowIdx = headers.indexOf(response.question + ' ' + selected.question);
+                const subHeaderIdx = subHeaders.indexOf(selected.answer, headerRowIdx);
+                if (subHeaderIdx !== -1) {
+                    userResponses[subHeaderIdx - 4] = selected.index;
+                }
+            } else {
+                const headerIndex = headers.findIndex(header => header.includes(response.question));    
+                if (headerIndex !== -1) {
+                    userResponses[headerIndex - 4] = selected.index;
+                }
+            }
+        });
+    });
+
+    return userInfo.concat(userResponses);
+};
+
 // Modified function to create analytics data using selected.index
 const createAnalyticsDataIndex = (data) => {
     const analytics = {};
@@ -311,6 +355,7 @@ export const exportToExcelIndex = async (req, res) => {
         userDataSheet.addRow([]);
 
         data.forEach(user => {
+            // const row = createUserRowIndexOld(user, subHeaders, headers, questionMap);
             const row = createUserRowIndex(user, subHeaders, headers, questionMap);
             const userRow = userDataSheet.addRow(row);
             styleUserRow(userRow);
