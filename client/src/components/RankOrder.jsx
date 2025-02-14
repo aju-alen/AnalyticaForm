@@ -34,7 +34,7 @@ const RankOrder = ({ onSaveForm, data, id, options, disableForm, disableText, di
         console.log(e.target.value, 'e.target.value');
         const newSelectedValue = formData.selectedValue.map((opt) => {
             if (opt.id === id) {
-                return { ...opt, answer: e.target.value }
+                return { ...opt, answer: e.target.value,index: e.target.value }
             }
             return opt
         })

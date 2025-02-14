@@ -48,6 +48,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
+import { motion } from 'framer-motion';
+import { CheckCircle } from 'lucide-react';
 
 const UserSubmitSurvey = () => {
     const { surveyId,surveyTitle } = useParams();
@@ -546,55 +548,94 @@ const UserSubmitSurvey = () => {
                 </div>
           
                 {/* Enhanced Advertisement Banner */}
-                <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-xl">
-                  <div className="relative max-w-6xl mx-auto p-8">
-                    {/* Main Content */}
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                      {/* Left Section */}
-                      <div className="flex-1 space-y-6">
-                        <div className="flex items-center gap-4">
+                <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-2xl">
+      <div className="absolute inset-0 bg-[url('/api/placeholder/200/200')] opacity-10 bg-repeat mix-blend-overlay" />
+      <div className="relative max-w-6xl mx-auto px-6 py-8">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+          {/* Left Section */}
+          <div className="flex-1 space-y-8">
+            {/* Header */}
+            <div className="flex items-center gap-4">
+              <div className="space-y-2">
+                <h3 className="font-bold text-4xl bg-gradient-to-r from-white to-gray-100 bg-clip-text text-transparent">
+                  Create Your Perfect Survey
+                </h3>
+                <p className="text-xl text-gray-100 font-light">
+                  Get started in minutes, free forever
+                </p>
+              </div>
+            </div>
+            
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-base">
+              {[
+                'Unlimited Responses',
+                'Real-time Analytics',
+                'Custom Branding',
+                'Advanced Reports'
+              ].map((feature, index) => (
+                <motion.div
+                  key={feature}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center gap-3 group"
+                >
+                  <div className="w-2 h-2 bg-white rounded-full group-hover:scale-125 transition-transform duration-200" />
+                  <span className="font-medium tracking-wide">{feature}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
 
-                          <div>
-                            <h3 className="font-bold text-3xl mb-1">Create Your Perfect Survey</h3>
-                            <p className="text-xl text-gray-100">Get started in minutes, free forever</p>
-                          </div>
-                        </div>
-                        
-                        {/* Features Grid */}
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <div className="w-1 h-1 bg-white rounded-full"/>
-                            <span>Unlimited Responses</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1 h-1 bg-white rounded-full"/>
-                            <span>Real-time Analytics</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1 h-1 bg-white rounded-full"/>
-                            <span>Custom Branding</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1 h-1 bg-white rounded-full"/>
-                            <span>Advanced Reports</span>
-                          </div>
-                        </div>
-                      </div>
-          
-                      {/* Right Section */}
-                      <div className="flex flex-col items-center lg:items-end gap-4">
-                      <Button 
-      variant="contained"
-      className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 text-lg font-bold shadow-lg transform hover:scale-105 transition-transform duration-200"
-      onClick={handleClick}
-    >
-      Start Creating Free
-    </Button>
-                        <p className="text-sm text-gray-200">Join 100+ happy customers</p>
-                      </div>
-                    </div>
+          {/* Right Section */}
+          <div className="flex flex-col items-center lg:items-end gap-6">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white text-blue-600 hover:bg-opacity-95 px-8 py-4 rounded-lg text-lg font-bold shadow-xl transition-all duration-200 hover:shadow-2xl hover:text-blue-700"
+              onClick={handleClick}
+            >
+              <span className="flex items-center gap-2">
+                Start Creating Free
+                <svg 
+                  className="w-5 h-5 transition-transform group-hover:translate-x-1" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M13 7l5 5m0 0l-5 5m5-5H6" 
+                  />
+                </svg>
+              </span>
+            </motion.button>
+            <div className="flex flex-col items-center lg:items-end gap-2">
+              <p className="text-sm text-gray-200 font-medium">
+                Join 100+ happy customers
+              </p>
+              <div className="flex -space-x-2">
+                {[...Array(4)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-8 h-8 rounded-full border-2 border-white bg-gray-300"
+                  >
+                    <img
+                      src={`/api/placeholder/32/32`}
+                      alt="User avatar"
+                      className="w-full h-full rounded-full object-cover"
+                    />
                   </div>
-                </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
               </div>
             ); // Handle case when currentIndex is out of bounds
         }
@@ -1325,7 +1366,13 @@ const UserSubmitSurvey = () => {
     }
 
     
-    
+    const features = [
+        {
+          icon: <CheckCircle className="w-6 h-6" />,
+          title: "Anonymous",
+          description: "Your responses are confidential"
+        },
+      ];
     
     console.log(surveyData, 'surveyForms-forms');
     return (
@@ -1354,20 +1401,90 @@ const UserSubmitSurvey = () => {
 
                 {(surveyData.surveyStatus === 'Disable') ? (<h1 className=' font-bold text-blue-500 text-xl'> This survey is not active. Please contact host.</h1>) : null}
 
-                {(introduction && welcomePage && surveyData.surveyResponses <= 500 && surveyData.surveyStatus==='Active') && (<div className=" flex flex-col">
-                    <h1 className=' font-bold text-blue-500 text-xl text-center'>Hello, welcome to the survey!</h1>
-
-
-                    {/* <TextField variant='standard' >
-                    <h2>{surveyData.surveyTitle}</h2>
-                </TextField> */}
-                    <Button
-                        variant='contained'
-
-                        onClick={handleChangeIntroduction}>
-                        Start Survey
-                    </Button>
-                </div>)}
+                {(introduction && welcomePage && surveyData.surveyResponses <= 500 && surveyData.surveyStatus==='Active') && (
+               <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 p-4">
+               <motion.div 
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 className="max-w-3xl w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden"
+               >
+                 {/* Header Section */}
+                 <div className="relative bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-12 text-white">
+                   <div className="absolute inset-0 bg-[url('/api/placeholder/200/200')] opacity-10 bg-repeat mix-blend-overlay" />
+                   <div className="relative">
+                     <motion.div
+                       initial={{ opacity: 0, y: 10 }}
+                       animate={{ opacity: 1, y: 0 }}
+                       transition={{ delay: 0.2 }}
+                       className="text-center"
+                     >
+                       <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                        {surveyData.surveyTitle}
+                       </h1>
+                       {/* <p className="text-blue-100 text-lg max-w-xl mx-auto">
+                        {surveyData.surveyDescription}
+                       </p> */}
+                     </motion.div>
+                   </div>
+                 </div>
+         
+                 {/* Content Section */}
+                 <div className="px-8 py-12">
+                   {/* Features Grid */}
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                     {features.map((feature, index) => (
+                       <motion.div
+                         key={feature.title}
+                         initial={{ opacity: 0, x: -20 }}
+                         animate={{ opacity: 1, x: 0 }}
+                         transition={{ delay: index * 0.1 + 0.4 }}
+                         className="flex items-start space-x-4"
+                       >
+                         <div className="flex-shrink-0 p-2 bg-blue-100 rounded-lg text-blue-600">
+                           {feature.icon}
+                         </div>
+                         <div>
+                           <h3 className="font-semibold text-gray-900">{feature.title}</h3>
+                           <p className="text-gray-600">{feature.description}</p>
+                         </div>
+                       </motion.div>
+                     ))}
+                   </div>
+         
+                   {/* Start Button */}
+                   <motion.div
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     transition={{ delay: 0.8 }}
+                     className="text-center"
+                   >
+                     <button
+                       onClick={handleChangeIntroduction}
+                       className="group relative inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-200 ease-in-out hover:shadow-lg hover:shadow-blue-500/25"
+                     >
+                       <span>Start Survey</span>
+                       <svg 
+                         className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" 
+                         fill="none" 
+                         stroke="currentColor" 
+                         viewBox="0 0 24 24"
+                       >
+                         <path 
+                           strokeLinecap="round" 
+                           strokeLinejoin="round" 
+                           strokeWidth={2} 
+                           d="M13 7l5 5m0 0l-5 5m5-5H6" 
+                         />
+                       </svg>
+                     </button>
+                     <p className="mt-4 text-sm text-gray-500">
+                       Your responses will help us improve our services
+                     </p>
+                   </motion.div>
+                 </div>
+               </motion.div>
+             </div>
+            )}
 
                 {(introduction && !welcomePage) && (<div className=" flex flex-col">
                     <h1 className=' font-bold text-blue-700 text-xl text-center'>Introduction</h1>

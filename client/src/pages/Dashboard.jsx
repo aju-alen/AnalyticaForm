@@ -107,74 +107,115 @@ const Dashboard = () => {
     
 
     return isLoading ? (
-       
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
             <CircularProgress />
         </Box>
     ) : (
         <ThemeProvider theme={theme}>
-        <Box component="section" sx={{ p: { md: 1 }, pt: { xs: 1 }, backgroundColor: '#f1f1f1', minHeight: '100vh' }}>
-            <Typography variant="h4" align="center" gutterBottom sx={{ color: '#333' }}>
-                Survey Dashboard
-            </Typography>
-            <Grid container spacing={3} alignItems="center" justifyContent="center" sx={{ py: 2 }}>
-  <Grid item>
-    <Fab
-      onClick={handleSubmit}
-      variant="extended"
-      size="large"
-      color="primary"
-      sx={{
-        fontWeight: 'bold',
-        boxShadow: 3,
-        textTransform: 'none',
-        transition: '0.3s ease-in-out',
-        '&:hover': {
-          transform: 'scale(1.1)',
-        },
-      }}
-    >
-      <AddIcon sx={{ mr: 1 }} />
-      Create New Survey
-    </Fab>
-  </Grid>
+            <Box component="section" sx={{ p: { md: 1 }, pt: { xs: 1 }, backgroundColor: '#f1f1f1', minHeight: '100vh' }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    mb: 3, 
+                    px: 3 
+                }}>
+                    <Typography variant="h4" sx={{ color: '#333' }}>
+                        Survey Dashboard
+                    </Typography>
+                    <Card sx={{ 
+                        maxWidth: 200,
+                        backgroundColor: isSubscribed ? '#4caf50' : '#2196f3',
+                        color: 'white',
+                        transform: 'rotate(3deg)'
+                    }}>
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                {isSubscribed ? 'Premium Plan' : 'Free Plan'}
+                            </Typography>
+                            <Typography variant="body2">
+                                {isSubscribed 
+                                    ? 'Unlimited surveys & responses' 
+                                    : 'Limited to 5 surveys & 500 responses'}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Box>
 
-  {inputFeildVisible && (
-    <Grid item>
-      <TextField
-        id="outlined-basic"
-        name="inputText"
-        value={inputText}
-        onChange={handleInputText}
-        label="Enter Survey Name"
-        variant="filled"
-        size="small"
-        fullWidth
-        sx={{
-          backgroundColor: 'white',
-          borderRadius: 1,
-          boxShadow: 1,
-          transition: '0.3s',
-          '& .MuiFilledInput-root': {
-            backgroundColor: '#f5f5f5',
-          },
-          '&:hover .MuiFilledInput-root': {
-            backgroundColor: '#e0e0e0',
-          },
-        }}
-      />
-    </Grid>
-  )}
-</Grid>
+                <Grid container spacing={3} alignItems="center" justifyContent="center" sx={{ 
+                    py: 2,
+                    px: 3,
+                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                    borderRadius: 2,
+                    mx: 2,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}>
+                    <Grid item>
+                        <Fab
+                            onClick={handleSubmit}
+                            variant="extended"
+                            size="large"
+                            color="primary"
+                            sx={{
+                                fontWeight: 'bold',
+                                boxShadow: 3,
+                                textTransform: 'none',
+                                transition: '0.3s ease-in-out',
+                                '&:hover': {
+                                    transform: 'scale(1.05)',
+                                    boxShadow: 6,
+                                },
+                            }}
+                        >
+                            <AddIcon sx={{ mr: 1 }} />
+                            Create New Survey
+                        </Fab>
+                    </Grid>
 
-           
-            <MySurvery userSurveyData={userSurveyData} isSubscribed={isSubscribed}  onDeleteSurvey={handleDeleteSurveyFromParent} handleDataChanged={setDataChanged} />
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity={alertColor} variant="filled" sx={{ width: '100%' }}>
-                    {alertMessage}
-                </Alert>
-            </Snackbar>
-        </Box>
+                    {inputFeildVisible && (
+                        <Grid item>
+                            <TextField
+                                id="outlined-basic"
+                                name="inputText"
+                                value={inputText}
+                                onChange={handleInputText}
+                                label="Enter Survey Name"
+                                variant="filled"
+                                size="small"
+                                fullWidth
+                                sx={{
+                                    minWidth: 250,
+                                    backgroundColor: 'white',
+                                    borderRadius: 1,
+                                    boxShadow: 1,
+                                    '& .MuiFilledInput-root': {
+                                        backgroundColor: '#ffffff',
+                                        transition: '0.3s',
+                                    },
+                                    '&:hover .MuiFilledInput-root': {
+                                        backgroundColor: '#f8f8f8',
+                                    },
+                                }}
+                            />
+                        </Grid>
+                    )}
+                </Grid>
+
+                <Box sx={{ px: 3, mt: 3 }}>
+                    <MySurvery 
+                        userSurveyData={userSurveyData} 
+                        isSubscribed={isSubscribed}  
+                        onDeleteSurvey={handleDeleteSurveyFromParent} 
+                        handleDataChanged={setDataChanged} 
+                    />
+                </Box>
+                
+                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                    <Alert onClose={handleClose} severity={alertColor} variant="filled" sx={{ width: '100%' }}>
+                        {alertMessage}
+                    </Alert>
+                </Snackbar>
+            </Box>
         </ThemeProvider>
     );
 };

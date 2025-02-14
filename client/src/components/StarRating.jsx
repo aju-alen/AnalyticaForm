@@ -209,7 +209,7 @@ const StarRating = ({ onSaveForm, data, id, options, disableForm, disableText, d
                                                 })
                                                 const newSelectedValue = formData.selectedValue.map((opt) => {
                                                     if (opt.id === option.id) {
-                                                        return { ...opt, answer: newValue }
+                                                        return { ...opt, answer: newValue,index:newValue }
                                                     }
                                                     return opt
                                                 })

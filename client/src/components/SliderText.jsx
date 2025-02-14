@@ -128,7 +128,7 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
 
     const newSelectedValue = [...formData.selectedValue];
     newSelectedValue[rowIndex].value = columnIndex;
-    newSelectedValue[rowIndex].index = columnIndex + 1;
+    newSelectedValue[rowIndex].index = columnIndex ;
 
 
     newSelectedValue[rowIndex].question = formData.options[rowIndex].rowQuestion;

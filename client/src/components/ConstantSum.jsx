@@ -46,7 +46,7 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
 
         const newSelectedValue = formData.selectedValue.map((opt) => {
             if (opt.id === id) {
-                return { ...opt, answer: newValue };
+                return { ...opt, answer: newValue,index: newValue };
             }
             return opt;
         });
@@ -75,7 +75,7 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
 
         const newSelectedValue = formData.selectedValue.map((opt) => {
             if (opt.id === id) {
-                return { ...opt, answer: newValue };
+                return { ...opt, answer: newValue,index: newValue };
             }
             return opt;
         });

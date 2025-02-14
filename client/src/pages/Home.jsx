@@ -34,12 +34,6 @@ export default function Home() {
     <div className='w-screen'>
       <CssBaseline />
       <HomeNavBar />
-      {/* <Switch
-      sx={{ position: 'fixed', top: 70, right: 0 }}
-      checked={mode}
-      onChange={handleChange}
-      inputProps={{ 'aria-label': 'controlled' }}
-    /> */}
       <Hero />
     </div>
     // </ThemeProvider>
