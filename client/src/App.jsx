@@ -5,7 +5,7 @@ import { lazy, Suspense } from 'react';
 import TagManager from "react-gtm-module";
 
 const tagManagerArgs = {
-  gtmId: "G-0M3CJDEZND", // Replace with your actual GTM ID
+  gtmId: "G-V1K1K7E27L", // Replace with your actual GTM ID
 };
 
 TagManager.initialize(tagManagerArgs);
