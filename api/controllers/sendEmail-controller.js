@@ -94,7 +94,8 @@ export const reportAbuse = async (req, res) => {
       console.log(getSurveyDetail, 'getSurveyDetail');
       
 
-        reportAbuseEmail(email,comment,getSurveyDetail.surveyTitle,getSurveyDetail.user.email);
+        reportAbuseEmailToAdmin(email,comment,getSurveyDetail.surveyTitle,getSurveyDetail.user.email);
+        reportAbuseEmailConfirmation(email,comment,getSurveyDetail.surveyTitle,getSurveyDetail.user.email);
         // reportAbuseEmail(username, email, message,contact);
         res.status(200).json({message: 'Email sent successfully'});
     }
@@ -104,11 +105,12 @@ export const reportAbuse = async (req, res) => {
     }
 };
 
-const reportAbuseEmail = async (email,comment,surveyTitle,surveyOwner) => {
+const reportAbuseEmailToAdmin = async (email,comment,surveyTitle,surveyOwner) => {
+    const mailList = [`${process.env.GMAIL_AUTH_USER}`,`${process.env.GMAIL_AUTH_USER_SUPPORT}`];
     const transporter = createTransport;
     const mailOptions = {
         from: process.env.GMAIL_AUTH_USER,
-        to: process.env.GMAIL_AUTH_USER,
+        to: mailList,
         subject: 'Report Abuse Email',
         html: `
     <html>
@@ -128,6 +130,43 @@ const reportAbuseEmail = async (email,comment,surveyTitle,surveyOwner) => {
             <p>Survey Title : ${surveyTitle}</p>
             <p>Survey Owner : ${surveyOwner}</p>
             <br>
+        </div>
+    </body>
+    </html>`
+    }
+    try{
+        const response = await transporter.sendMail(mailOptions);
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+const reportAbuseEmailConfirmation = async (email,comment,surveyTitle,surveyOwner) => {
+    const transporter = createTransport;
+    const mailOptions = {
+        from: process.env.GMAIL_AUTH_USER,
+        to: email,
+        subject: 'Report Abuse Email Submitted',
+        html: `
+    <html>
+    <body>
+        <div>
+
+            <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <p>Dubai Analytica</p>
+
+        </div>
+        <div>
+            <p>Dear Participant,</p>
+            <p>We have received your abuse report</p>
+            <br>
+            <p>One of our representatives will get back to you shortly.</p>
+            <br>
+            <p>Thank you for contributing to the responsible use of our platform and the safety of our community.</p>
+            <br>
+            <br>
+            <p>The Team at <a href="https://dubaianalytica.com/">Dubai Analytica</a></p>
         </div>
     </body>
     </html>`
