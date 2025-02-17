@@ -3,6 +3,7 @@ import MainNavBar from './components/MainNavBar';
 import Footer from './components/Footer';
 import { lazy, Suspense } from 'react';
 import TagManager from "react-gtm-module";
+import GoogleAnalytics from './components/GoogleAnalytics';
 
 const tagManagerArgs = {
   gtmId: "G-V1K1K7E27L", // Replace with your actual GTM ID
@@ -88,6 +89,7 @@ const App = () => {
       path: "/",
       element: (
         <Layout> {/* Render Layout component here */}
+        <GoogleAnalytics />
           <Suspense fallback={<div>Loading...</div>}>
             <Outlet /> {/* Render Outlet inside Layout */}
           </Suspense>

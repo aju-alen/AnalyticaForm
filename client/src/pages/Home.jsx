@@ -7,8 +7,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import { useLocation } from "react-router-dom";
 import TagManager from "react-gtm-module";
-import { useEffect } from 'react';
-import GoogleAnalytics from '../components/GoogleAnalytics';
 
 
 
@@ -36,7 +34,6 @@ export default function Home() {
   return (
       //  <ThemeProvider theme={theme}>
     <div className='w-screen'>
-      <GoogleAnalytics />
       <CssBaseline />
       <HomeNavBar />
       <Hero />
