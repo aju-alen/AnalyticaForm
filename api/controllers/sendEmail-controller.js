@@ -44,7 +44,7 @@ const contacUsEmail = async (username, email, message,contact) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/8cpfZ5sP/215b7754-0e37-41b2-be2f-453d190af861.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Dubai Analytica</p>
 
         </div>
@@ -115,7 +115,7 @@ const reportAbuseEmail = async (email,comment,surveyTitle,surveyOwner) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/8cpfZ5sP/215b7754-0e37-41b2-be2f-453d190af861.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Dubai Analytica</p>
 
         </div>
@@ -164,7 +164,7 @@ const reportNSFWEmail = async (awsId,filesUrl,email,id,firstName) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/8cpfZ5sP/215b7754-0e37-41b2-be2f-453d190af861.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Dubai Analytica</p>
 
         </div>
