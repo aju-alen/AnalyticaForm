@@ -154,17 +154,13 @@ const reportAbuseEmailConfirmation = async (email,comment,surveyTitle,surveyOwne
         <div>
 
             <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
-            <p>Dubai Analytica</p>
 
         </div>
         <div>
             <p>Dear Participant,</p>
             <p>We have received your abuse report</p>
-            <br>
             <p>One of our representatives will get back to you shortly.</p>
-            <br>
             <p>Thank you for contributing to the responsible use of our platform and the safety of our community.</p>
-            <br>
             <br>
             <p>The Team at <a href="https://dubaianalytica.com/">Dubai Analytica</a></p>
         </div>
