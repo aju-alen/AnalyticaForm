@@ -146,15 +146,13 @@ export const userRegister = async (req, res, next) => {
         port: 587,
         secure: false,
         auth: {
-            user: process.env.GMAIL_AUTH_USER,
+            user: process.env.GMAIL_AUTH_USER_SUPPORT,
             pass: process.env.GMAIL_AUTH_PASS
         }
     })
 
     // not a route controller, function to send verification email
     const sendVerificationEmail = async (email, verificationToken, name) => {
-        console.log(process.env.GMAIL_AUTH_USER);
-        console.log(process.env.GMAIL_AUTH_PASS);
 
         const transporter = createTransport;
         console.log(transporter, 'transporter');

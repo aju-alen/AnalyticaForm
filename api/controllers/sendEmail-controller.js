@@ -10,7 +10,7 @@ const createTransport = nodemailer.createTransport({
     port: 587,
     secure: false,
     auth: {
-        user: process.env.GMAIL_AUTH_USER,
+        user: process.env.GMAIL_AUTH_USER_SUPPORT,
         pass: process.env.GMAIL_AUTH_PASS
     }
 })
@@ -36,8 +36,8 @@ const contacUsEmail = async (username, email, message,contact) => {
     const transporter = createTransport;
     console.log(transporter, 'transporter');
     const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
-        to: process.env.GMAIL_AUTH_USER,
+        from: process.env.GMAIL_AUTH_USER_SUPPORT,
+        to: process.env.GMAIL_AUTH_USER_SUPPORT,
         subject: 'You have got a new query on Dubai Analytica',
         html: `
     <html>
@@ -109,7 +109,7 @@ const reportAbuseEmailToAdmin = async (email,comment,surveyTitle,surveyOwner) =>
     const mailList = [`${process.env.GMAIL_AUTH_USER}`,`${process.env.GMAIL_AUTH_USER_SUPPORT}`];
     const transporter = createTransport;
     const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
+        from: process.env.GMAIL_AUTH_USER_SUPPORT,
         to: mailList,
         subject: 'Report Abuse Email',
         html: `
@@ -145,7 +145,7 @@ const reportAbuseEmailToAdmin = async (email,comment,surveyTitle,surveyOwner) =>
 const reportAbuseEmailConfirmation = async (email,comment,surveyTitle,surveyOwner) => {
     const transporter = createTransport;
     const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
+        from: process.env.GMAIL_AUTH_USER_SUPPORT,
         to: email,
         subject: 'Report Abuse Email Submitted',
         html: `
@@ -191,8 +191,8 @@ export const reportNfswImage = async (req, res) => {
 const reportNSFWEmail = async (awsId,filesUrl,email,id,firstName) => {
     const transporter = createTransport;
     const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
-        to: process.env.GMAIL_AUTH_USER,
+        from: process.env.GMAIL_AUTH_USER_SUPPORT,
+        to: process.env.GMAIL_AUTH_USER_SUPPORT,
         subject: 'Report NSFW Image for Image Form',
         html: `
     <html>
