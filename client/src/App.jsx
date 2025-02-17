@@ -6,7 +6,7 @@ import TagManager from "react-gtm-module";
 import GoogleAnalytics from './components/GoogleAnalytics';
 
 const tagManagerArgs = {
-  gtmId: "G-V1K1K7E27L", // Replace with your actual GTM ID
+  gtmId: "GTM-MS8JP2FD", // Replace with your actual GTM ID
 };
 
 TagManager.initialize(tagManagerArgs);
