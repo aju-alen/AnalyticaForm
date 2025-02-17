@@ -2,6 +2,13 @@ import { createBrowserRouter, RouterProvider, Outlet, Navigate, useLocation } fr
 import MainNavBar from './components/MainNavBar';
 import Footer from './components/Footer';
 import { lazy, Suspense } from 'react';
+import TagManager from "react-gtm-module";
+
+const tagManagerArgs = {
+  gtmId: "G-V1K1K7E27L", // Replace with your actual GTM ID
+};
+
+TagManager.initialize(tagManagerArgs);
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -157,7 +164,7 @@ const App = () => {
         },
         {
           path: "/market",
-          element:  <ProtectedRoute element={<UserMarket />} /> // Wrap Dashboard inside ProtectedRoute
+          element:  <UserMarket /> // Wrap Dashboard inside non-protected Route
         },
         {
           path: "/404",

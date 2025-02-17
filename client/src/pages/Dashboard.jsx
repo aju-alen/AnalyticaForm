@@ -8,7 +8,7 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
-import { Box, Grid, TextField, CircularProgress, Snackbar, Alert, Typography, Card, CardContent } from '@mui/material';
+import { Box, Grid, TextField, CircularProgress, Snackbar, Alert, Typography, Card, CardContent, Button } from '@mui/material';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -130,6 +130,10 @@ const Dashboard = () => {
                         transform: 'rotate(3deg)'
                     }}>
                         <CardContent>
+                        <Button onClick={() => navigate('/pricing')
+                        } sx={{ textTransform: 'none', textDecoration: 'none', color:'#fff' }
+                        }>
+                            <div className=" flex flex-col">
                             <Typography variant="h6" component="div">
                                 {isSubscribed ? 'Premium Plan' : 'Free Plan'}
                             </Typography>
@@ -138,6 +142,19 @@ const Dashboard = () => {
                                     ? 'Unlimited surveys & responses' 
                                     : 'Limited to 5 surveys & 500 responses'}
                             </Typography>
+                                    {!isSubscribed && (
+                                    <Button
+                                    variant='contained'
+                                    color='warning'
+                                    sx={{
+                                        textTransform: 'none',
+                                    }}
+                                    >
+                                        See Plans
+                                    </Button>
+                                )}
+                            </div>
+                        </Button>
                         </CardContent>
                     </Card>
                 </Box>

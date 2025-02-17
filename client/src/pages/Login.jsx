@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -19,6 +19,8 @@ import { axiosWithCredentials } from '../utils/customAxios';
 import { errorHandler } from '../utils/errorHandler';
 import { backendUrl } from '../utils/backendUrl';
 import { Oval } from 'react-loader-spinner';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const defaultTheme = createTheme();
 
@@ -26,6 +28,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState('');
+  const [showPassword, setShowPassword] = React.useState(false);
   const [alertColor, setAlertColor] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
@@ -79,9 +82,31 @@ export default function Login() {
           </Avatar>
           <Typography component="h1" variant="h5">Login</Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus />
-            <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" />
-            <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+            <TextField margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus/>
+            <Grid container spacing={2}  sx={{
+              position: 'relative',
+            }} >
+            <Grid item xs={12}>
+            <TextField margin="normal" required fullWidth name="password" label="Password" type={showPassword? "text":"password"} id="password" autoComplete="current-password" />
+            </Grid>  
+            <Grid item xs={1} sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'absolute',
+                right: 20,
+                top: 25,
+              }}>
+                <Button onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </Button>
+                </Grid>
+            </Grid>
+            <FormControlLabel control={<Checkbox value="remember" color="primary" />
+          
+          }
+            
+            label="Remember me" />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={loading}>
               {loading ?  <Oval
                 visible={true}

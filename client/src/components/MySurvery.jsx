@@ -208,8 +208,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           variant='standard'
         >
           <MenuItem value={'Active'}>Active</MenuItem>
-          <MenuItem value={'Disable'}>Disable</MenuItem>
-          <MenuItem value={'Draft'}>Draft</MenuItem>
+          <MenuItem value={'Disable'}>Inactive</MenuItem>
         </Select>
                     </TableCell>
                     <TableCell align="center">{survey.surveyResponses}</TableCell>

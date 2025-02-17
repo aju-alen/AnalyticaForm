@@ -5,11 +5,15 @@ import Hero from '../components/Hero';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
+import { useLocation } from "react-router-dom";
+import TagManager from "react-gtm-module";
+import { useEffect } from 'react';
 
 
 
 
 export default function Home() {
+  const location = useLocation();
 
   const [mode, setMode] = React.useState(localStorage.getItem('mode') === 'true' ? true : false);
   const prefersDarkMode = useMediaQuery(`(prefers-color-scheme:${mode?"light":"dark"} )`);
@@ -19,6 +23,20 @@ export default function Home() {
     localStorage.setItem('mode', event.target.checked);
 
   };
+  console.log(location,'location.pathname');
+  console.log(TagManager,'TagManager');
+  
+  
+
+  useEffect(() => {
+    // Send page view to GTM
+    TagManager.dataLayer({
+      dataLayer: {
+        event: "pageview",
+        page_path: location.pathname,
+      },
+    });
+  }, [location]);
 
   const theme = React.useMemo(
     () =>

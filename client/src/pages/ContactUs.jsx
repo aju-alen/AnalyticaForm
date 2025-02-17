@@ -77,18 +77,16 @@ const ContactUs = () => {
           Location: Dubai International Financial Centre
           </Typography>
           <Typography variant='p'  gutterBottom>
-          Address: Gate Avenue, Zone D - Level 1 Al Mustaqbal St - Dubai - UAE
+          Address: Gate Avenue, Zone D - Level 1, Al Mustaqbal St - Dubai - UAE
           </Typography>
           </Stack>
         </Container>
         <Container maxWidth='md'  >
           <Stack spacing={2} sx={{ mt: 12 }}>
-            <Paper elevation={3} sx={{ p: 2,
-                width: '100%',
-                backgroundImage:'radial-gradient(ellipse 100% 200% at 50% 5%, hsl(210, 100%, 90%), transparent)',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover' }}>
-                  <Stack spacing={2} direction='row' sx={{
+           
+                  {/* Blue background website help banner */}
+
+                  {/* <Stack spacing={2} direction='row' sx={{
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -113,8 +111,8 @@ const ContactUs = () => {
                   }}>
                   (Coming Soon)
                   </Typography>
-                  </Stack>
-              </Paper>
+                  </Stack> */}
+            
               <Typography variant='p' gutterBottom>
               To have a DA account manager contact you about any queries that you may have, please fill out the following information. We respect your privacy and will only use this information to contact you regarding your specific request and will not share this with any third party.
               </Typography>

@@ -9,15 +9,22 @@ import { Box } from '@mui/material';
 import { Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 const images = [
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/analytica-banner1.jpg', // Replace with your image URLs
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/analytica-banner2.jpg',
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/analytica-banner3.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner1.jpg', // Replace with your image URLs
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner2.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner3.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner4.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner5.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner6.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner7.jpg',
 ];
 
 const verticalImages = [
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/ANALYTICA-POTRAIT1.jpg',
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/ANALYTICA-POTRAIT1.jpg',
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/ANALYTICA-POTRAIT1.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/ANALYTICA-POTRAIT1.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/ANALYTICA-POTRAIT2.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/ANALYTICA-POTRAIT3.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/ANALYTICA-POTRAIT4.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/ANALYTICA-POTRAIT5.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/ANALYTICA-POTRAIT6.jpg',
 ];
 
 const UserMarket = () => {
@@ -55,7 +62,7 @@ const UserMarket = () => {
           prevIndex === verticalImages.length - 1 ? 0 : prevIndex + 1
         );
       }
-    }, 4000);
+    }, 21000);
 
     return () => clearInterval(verticalInterval);
   }, [isCalculating, finalUsersCount]);
@@ -439,7 +446,7 @@ const UserMarket = () => {
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
+              objectFit: 'contain',
               position: 'absolute',
             }}
             alt={`Slide ${currentIndex + 1}`}
@@ -561,7 +568,7 @@ const UserMarket = () => {
         {/* Main Content Card */}
         <div className="bg-white rounded-xl shadow-xl p-8 flex-1 transition-all duration-300 hover:shadow-2xl">
           <h1 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
-            Market Size Calculator
+            Sample Size Calculator
           </h1>
 
           {activeStep < steps.length && (

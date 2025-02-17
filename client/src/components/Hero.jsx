@@ -41,9 +41,13 @@ const shinePaper = keyframes`
 `;
 
 const images = [
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/analytica-banner1.jpg', // Replace with your image URLs
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/analytica-banner2.jpg',
-  'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/da-market/analytica-banner3.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner1.jpg', // Replace with your image URLs
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner2.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner3.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner4.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner5.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner6.jpg',
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner7.jpg',
 ];
 
 const Hero = () => {
@@ -63,6 +67,7 @@ const Hero = () => {
     return (
       <ThemeProvider theme={theme}>
       <CssBaseline />
+
       <Box
         id="hero"
         sx={{
@@ -70,26 +75,59 @@ const Hero = () => {
           backgroundImage: 'radial-gradient(ellipse 100% 200% at 50% 5%, hsl(210, 100%, 90%), transparent)',
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
+          position: 'relative',
         }}
       >
+        <Box sx={
+          {
+            position:'sticky',
+            zIndex:1000,
+            top:0,
+            textAlign:'center',
+            backgroundColor:'#fff',
+          }
+        }>
+        <Typography sx={{
+          fontWeight:'bold', 
+        }}>{`Need help collecting data? Simply click any of the sliding images. Filter your market or target sample, and `}
+          <Button 
+          variant= 'contained'
+          color= 'success'
+          sx={{
+            textTransform: 'none',
+            fontSize: '0.9rem',
+          }}
+
+          onClick={() => navigate('/market')}
+          >
+          Easily Purchase Responses 
+          </Button> 
+          
+          </Typography>
+
+        </Box>
         {/* Slider Banner */}
         <Box 
-  sx={{ 
-    position: 'relative',
-    // Responsive height using viewport units and min-height
-    height: { 
-      xs: '200px',  // Mobile
-      sm: '300px',  // Tablet
-      md: '400px'   // Desktop
-    },
-    minHeight: {
-      xs: '200px',
-      sm: '300px',
-      md: '400px'
-    },
-    overflow: 'hidden',
-    width: '100%',
-  }}
+  sx={{
+          position: 'relative',
+          height: {
+            xs: '200px',
+            sm: '300px',
+            md: '400px'
+          },
+          minHeight: {
+            xs: '200px',
+            sm: '300px',
+            md: '400px'
+          },
+          overflow: 'hidden',
+          width: '100%',
+          mb: { xs: 2, sm: 3, md: 4 },
+          borderRadius: '16px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          mx: 'auto',
+          maxWidth: '1400px',
+        }}
 >
   <AnimatePresence initial={false}>
     <motion.img
@@ -97,6 +135,7 @@ const Hero = () => {
       src={images[currentIndex]}
       initial={{ opacity: 0, x: '100%' }}
       animate={{ opacity: 1, x: 0 }}
+      onClick={() => navigate('/market')}
       exit={{ opacity: 0, x: '-100%' }}
       transition={{ 
         duration: 0.7,
@@ -105,8 +144,9 @@ const Hero = () => {
       style={{
         width: '100%',
         height: '100%',
-        objectFit: 'cover',
+        objectFit: 'contain',
         position: 'absolute',
+        zIndex: 1000000,
       }}
       alt={`Slide ${currentIndex + 1}`}
     />
@@ -143,6 +183,20 @@ const Hero = () => {
         onClick={() => setCurrentIndex(index)} // Add this if you want clickable dots
       />
     ))}
+    {/* <Button 
+  style={{
+    position: 'absolute',
+    zIndex: 1,
+    left: 1000,
+    bottom :170
+  }}
+  onClick={() => navigate('/market')}  
+  variant='contained'
+  >
+  <Typography>
+    Purchase Your Responses
+  </Typography>
+</Button> */}
   </Box>
 
   {/* Optional: Touch swipe area for mobile */}
@@ -223,17 +277,7 @@ const Hero = () => {
     ))}
   </Box>
 </Box>
-<Button 
-  style={{
-    position: 'absolute',
-  }}
-  onClick={() => navigate('/market')}  
-  variant='contained'
-  >
-  <Typography>
-    Purchase Your Responses
-  </Typography>
-</Button>
+
 
 
       <Container
