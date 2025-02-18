@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { uid } from 'uid'
 import { TextField, CssBaseline, Container, Box, Stack, Radio, Button } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 
 
 
@@ -20,6 +22,8 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
     });
 
     const [debouncedValue, setDebouncedValue] = useState('');
+    const [boldFields, setBoldFields] = useState(new Set());
+    const [selection, setSelection] = useState({ start: 0, end: 0, fieldId: null });
 
     const handleAddOptions = () => {
         setFormData({
@@ -44,6 +48,51 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
         onSaveForm(formData);
         onHandleNext()
     }
+
+    const handleBoldToggle = (id) => {
+        const newBoldFields = new Set(boldFields);
+        if (newBoldFields.has(id)) {
+            newBoldFields.delete(id);
+        } else {
+            newBoldFields.add(id);
+        }
+        setBoldFields(newBoldFields);
+    };
+
+    const handleFormat = (formatType, fieldId) => {
+        const field = formData.options.find(opt => opt.id === fieldId);
+        if (!field) return;
+
+        const text = field.question;
+        const before = text.substring(0, selection.start);
+        const selected = text.substring(selection.start, selection.end);
+        const after = text.substring(selection.end);
+
+        const formatChar = formatType === 'bold' ? '**' : '_';
+        const newText = `${before}${formatChar}${selected}${formatChar}${after}`;
+
+        setFormData({
+            ...formData,
+            options: formData.options.map(item => {
+                if (item.id === fieldId) {
+                    return { ...item, question: newText };
+                }
+                return item;
+            }),
+            selectedValue: formData.selectedValue.map(item => {
+                if (item.index === fieldId) {
+                    return { ...item, question: newText };
+                }
+                return item;
+            })
+        });
+    };
+
+    const handleSelect = (e, fieldId) => {
+        const start = e.target.selectionStart;
+        const end = e.target.selectionEnd;
+        setSelection({ start, end, fieldId });
+    };
 
     useEffect(() => {
       const handler = setTimeout(() => {
@@ -132,6 +181,22 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
                  },
                }}
              >
+                                        <Stack direction="row" spacing={1} sx={{ mr: 1 }}>
+                                            <Button
+                                                size="small"
+                                                onClick={() => handleFormat('bold', option.id)}
+                                                disabled={!selection.fieldId || selection.start === selection.end}
+                                            >
+                                                <FormatBoldIcon />
+                                            </Button>
+                                            <Button
+                                                size="small"
+                                                onClick={() => handleFormat('italic', option.id)}
+                                                disabled={!selection.fieldId || selection.start === selection.end}
+                                            >
+                                                <FormatItalicIcon />
+                                            </Button>
+                                        </Stack>
                                         <TextField
                                             fullWidth
                                             multiline
@@ -140,6 +205,7 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
                                             variant="standard"
                                             name='question'
                                             value={option.question}
+                                            onSelect={(e) => handleSelect(e, option.id)}
                                             onChange={(e) => setFormData({
                                                 ...formData, options: formData.options.map((item, index) => {
                                                     if (option.id === item.id) {
@@ -158,6 +224,21 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
                                             InputProps={{
                                                 readOnly: disableText,
                                             }}
+                                            sx={{
+                                                '& .MuiInputBase-root': {
+                                                  fontSize: '1.3rem',
+                                                  fontWeight: boldFields.has('question') ? 'bold' : 'normal',
+                                                },
+                                                '& .MuiInput-underline:before': {
+                                                  borderBottom: 'none',
+                                                },
+                                                // '& .MuiInput-underline:after': {
+                                                //   borderBottom: 'none',
+                                                // },
+                                                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                                                  borderBottom: 'none',
+                                                },
+                                              }}
                                         />
 
 {!disableButtons && (

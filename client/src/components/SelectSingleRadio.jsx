@@ -7,6 +7,7 @@ import { Button, Stack } from '@mui/material';
 import Radio from '@mui/material/Radio';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { uid } from 'uid';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
 
 
 
@@ -28,6 +29,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
   });
 
   const [debouncedValue, setDebouncedValue] = useState('');
+  const [boldFields, setBoldFields] = useState(new Set());
 
   useEffect(() => {
     
@@ -79,6 +81,16 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
       }
     })
   }
+
+  const handleBoldToggle = (id) => {
+    const newBoldFields = new Set(boldFields);
+    if (newBoldFields.has(id)) {
+      newBoldFields.delete(id);
+    } else {
+      newBoldFields.add(id);
+    }
+    setBoldFields(newBoldFields);
+  };
 
   useEffect(() => {
     // console.log(data,'data in select one choice form');
@@ -135,19 +147,59 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     backgroundColor:'#F4FFF8',
   },
 }}>
-          <TextField fullWidth multiline id="standard-basic" label={!disableText ? "Insert input" : ''} variant='standard' size='small' required name='question' value={formData.question}
-            sx={{
-              '& .MuiInputBase-root': {
-
-                fontSize: '1.3rem',
-              }
-            }}
-            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-
-            InputProps={{
-              readOnly: disableText,
-            }}
-          />
+          <Box sx={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            '&:hover .format-button': {
+              visibility: 'visible',
+            },
+          }}>
+            <TextField 
+              fullWidth 
+              multiline 
+              id="standard-basic" 
+              label={!disableText ? "Insert input" : ''} 
+              variant='standard' 
+              size='small' 
+              required 
+              name='question' 
+              value={formData.question}
+              sx={{
+                '& .MuiInputBase-root': {
+                  fontSize: '1.3rem',
+                  fontWeight: boldFields.has('question') ? 'bold' : 'normal',
+                }
+              }}
+              onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+              InputProps={{
+                readOnly: disableText,
+              }}
+            />
+            {!disableButtons && (
+              <Button
+                className="format-button"
+                color="primary"
+                variant="text"
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  visibility: 'hidden',
+                  transition: 'visibility 0.1s ease-in-out',
+                  minWidth: '40px'
+                }}
+                onClick={() => handleBoldToggle('question')}
+              >
+                <FormatBoldIcon 
+                  fontSize="small"
+                  sx={{ 
+                    color: boldFields.has('question') ? 'primary.main' : 'text.secondary'
+                  }}
+                />
+              </Button>
+            )}
+          </Box>
           {/* <Button 
           onClick={() => setIsBold(!isBold)}
           >
@@ -175,6 +227,9 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
                  '&:hover .delete-button': {
                    visibility: 'visible',
                  },
+                 '&:hover .format-button': {
+                   visibility: 'visible',
+                 },
                }}
              >
                <TextField
@@ -188,6 +243,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
   sx={{
     '& .MuiInputBase-root': {
       fontSize: '0.9rem',
+      fontWeight: boldFields.has(option.id) ? 'bold' : 'normal',
     },
     '& .MuiInput-underline:before': {
       borderBottom: 'none',
@@ -213,21 +269,42 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
   }}
 />
                {!disableButtons && (
-                 <Button
-                   className="delete-button"
-                   color="error"
-                   variant="text"
-                   sx={{
-                     position: 'absolute',
-                     left: '100%',
-                     visibility: 'hidden',
-                     transition: 'visibility 0.1s ease-in-out',
-
-                   }}
-                   onClick={() => handleDeleteOptions(option.id)}
-                 >
-                   <HighlightOffIcon fontSize="small" />
-                 </Button>
+                 <>
+                   <Button
+                     className="format-button"
+                     color="primary"
+                     variant="text"
+                     sx={{
+                       position: 'absolute',
+                       right: '40px',
+                       visibility: 'hidden',
+                       transition: 'visibility 0.1s ease-in-out',
+                       minWidth: '40px'
+                     }}
+                     onClick={() => handleBoldToggle(option.id)}
+                   >
+                     <FormatBoldIcon 
+                       fontSize="small"
+                       sx={{ 
+                         color: boldFields.has(option.id) ? 'primary.main' : 'text.secondary'
+                       }}
+                     />
+                   </Button>
+                   <Button
+                     className="delete-button"
+                     color="error"
+                     variant="text"
+                     sx={{
+                       position: 'absolute',
+                       right: 0,
+                       visibility: 'hidden',
+                       transition: 'visibility 0.1s ease-in-out',
+                     }}
+                     onClick={() => handleDeleteOptions(option.id)}
+                   >
+                     <HighlightOffIcon fontSize="small" />
+                   </Button>
+                 </>
                )}
              </Box>
              

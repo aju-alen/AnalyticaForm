@@ -1,4 +1,4 @@
-import React, { useEffect,memo } from 'react';
+import React, { useEffect,memo, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -11,6 +11,7 @@ import { uid } from 'uid';
 import theme from '../utils/theme';
 import { ThemeProvider } from '@mui/material/styles';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
 
 
 
@@ -29,6 +30,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
   });
 
   const [debouncedValue, setDebouncedValue] = React.useState('');
+  const [boldFields, setBoldFields] = useState(new Set());
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -82,6 +84,17 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
     onSaveForm(formData);
     onHandleNext()
   }
+
+  const handleBoldToggle = (id) => {
+    const newBoldFields = new Set(boldFields);
+    if (newBoldFields.has(id)) {
+      newBoldFields.delete(id);
+    } else {
+      newBoldFields.add(id);
+    }
+    setBoldFields(newBoldFields);
+  };
+
   useEffect(() => {
     console.log(data, 'data in select one choice form');
     if (options) {
@@ -137,23 +150,55 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
     backgroundColor:'#F4FFF8',
   },
 }}>
-          <TextField
-            fullWidth id="standard-basic"
-            label={!disableText ? "Insert input" : ''}
-            variant="standard"
-            multiline
-            sx={{
-              '& .MuiInputBase-root': {
-
-                fontSize: '1.3rem',
-              }
-            }}
-            value={formData.question}
-            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-            InputProps={{
-              readOnly: disableText,
-            }}
-          />
+          <Box sx={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            '&:hover .format-button': {
+                visibility: 'visible',
+            },
+          }}>
+            <TextField
+              fullWidth id="standard-basic"
+              label={!disableText ? "Insert input" : ''}
+              variant="standard"
+              multiline
+              sx={{
+                '& .MuiInputBase-root': {
+                  fontSize: '1.3rem',
+                  fontWeight: boldFields.has('question') ? 'bold' : 'normal',
+                }
+              }}
+              value={formData.question}
+              onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+              InputProps={{
+                readOnly: disableText,
+              }}
+            />
+            {!disableButtons && (
+              <Button
+                className="format-button"
+                color="primary"
+                variant="text"
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  visibility: 'hidden',
+                  transition: 'visibility 0.1s ease-in-out',
+                  minWidth: '40px'
+                }}
+                onClick={() => handleBoldToggle('question')}
+              >
+                <FormatBoldIcon 
+                  fontSize="small"
+                  sx={{ 
+                    color: boldFields.has('question') ? 'primary.main' : 'text.secondary'
+                  }}
+                />
+              </Button>
+            )}
+          </Box>
            <Stack spacing={1} sx={{
             width: { xs: '100%', md: '20%' },
             marginRight: 'auto',
@@ -174,6 +219,9 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                  display: 'flex',
                  alignItems: 'center',
                  width: '100%',
+                 '&:hover .format-button': {
+                   visibility: 'visible',
+                 },
                  '&:hover .delete-button': {
                    visibility: 'visible',
                  },
@@ -202,6 +250,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                     sx={{
                       '& .MuiInputBase-root': {
                         fontSize: '0.9rem',
+                        fontWeight: boldFields.has(opt.id) ? 'bold' : 'normal',
                       },
                       '& .MuiInput-underline:before': {
                         borderBottom: 'none',
@@ -214,25 +263,45 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                       },
                     }}
                   />
-                 
+                  {!disableButtons && (
+                    <Button
+                      className="format-button"
+                      color="primary"
+                      variant="text"
+                      sx={{
+                        position: 'absolute',
+                        right: '40px',
+                        visibility: 'hidden',
+                        transition: 'visibility 0.1s ease-in-out',
+                        minWidth: '40px'
+                      }}
+                      onClick={() => handleBoldToggle(opt.id)}
+                    >
+                      <FormatBoldIcon 
+                        fontSize="small"
+                        sx={{ 
+                          color: boldFields.has(opt.id) ? 'primary.main' : 'text.secondary'
+                        }}
+                      />
+                    </Button>
+                  )}
+                  {!disableButtons && (
+                    <Button
+                      className="delete-button"
+                      color="error"
+                      variant="text"
+                      sx={{
+                        position: 'absolute',
+                        left: '100%',
+                        visibility: 'hidden',
+                        transition: 'visibility 0.1s ease-in-out',
 
-                 {!disableButtons && (
-                 <Button
-                   className="delete-button"
-                   color="error"
-                   variant="text"
-                   sx={{
-                     position: 'absolute',
-                     left: '100%',
-                     visibility: 'hidden',
-                     transition: 'visibility 0.1s ease-in-out',
-
-                   }}
-                   onClick={() => handleDeleteOptions(option.id)}
-                 >
-                   <HighlightOffIcon fontSize="small" />
-                 </Button>
-               )}
+                      }}
+                      onClick={() => handleDeleteOptions(opt.id)}
+                    >
+                      <HighlightOffIcon fontSize="small" />
+                    </Button>
+                  )}
                </Box>
                 </Stack>
               )

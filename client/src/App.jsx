@@ -49,6 +49,7 @@ const AdminSurveyData = lazy(() => import('./pages/AdminSurveyData'));
 const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const UserMarket = lazy(() => import('./pages/UserMarket'));
+const About = lazy(() => import('./pages/About'));
 
 
 const App = () => {
@@ -167,6 +168,10 @@ const App = () => {
         {
           path: "/market",
           element:  <UserMarket /> // Wrap Dashboard inside non-protected Route
+        },
+        {
+          path: "/about",
+          element:  <About /> // Wrap Dashboard inside non-protected Route
         },
         {
           path: "/404",

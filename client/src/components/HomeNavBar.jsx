@@ -10,21 +10,52 @@ import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate,Link } from 'react-router-dom';
 
-
-
-
-const logoStyle = {
-  width: '230px',
-  height: '100px',
-  cursor: 'pointer',
-  marginLeft: '10px'
+// Updated styles
+const styles = {
+  logo: {
+    width: '180px',
+    height: 'auto',
+    cursor: 'pointer',
+    transition: 'opacity 0.2s ease',
+  },
+  navbar: {
+    background: 'rgba(255, 255, 255, 0.95)',
+    backdropFilter: 'blur(10px)',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+  },
+  button: {
+    fontSize: '0.95rem',
+    textTransform: 'none',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    fontWeight: 500,
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+      transform: 'translateY(-1px)',
+    }
+  },
+  actionButton: {
+    background: 'linear-gradient(45deg, #2196F3, #1976D2)',
+    color: 'white',
+    fontWeight: 600,
+    '&:hover': {
+      background: 'linear-gradient(45deg, #1976D2, #1565C0)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    }
+  },
+  mobileMenu: {
+    '& .MuiDrawer-paper': {
+      borderRadius: '16px 0 0 16px',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+    }
+  }
 };
 
 function HomeNavBar() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [userExists, setUserExists] = React.useState('');
-
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -45,7 +76,6 @@ function HomeNavBar() {
   };
 
   useEffect(() => {
-
     if (localStorage.getItem('userAccessToken')) {
       setUserExists(JSON.parse(localStorage.getItem('userAccessToken')));
     }
@@ -53,155 +83,196 @@ function HomeNavBar() {
   console.log(userExists);
 
   return (
-<div className="">
-    <div className=" hidden md:block">
-        <nav className={` h-28 p-4 flex justify-between items-center  z-50 w-full transition-all duration-500 ease-in-out ${userExists ? 'bg-[#d8f0f7]' : 'bg-[#d8f0f7]'} `}>
-          {/* Logo on the left */}
-          <Link className="text-black text-lg font-light" to="/">
-          <img    
-              
-              src="https://i.postimg.cc/hG57FFyC/Untitled-design-1-removebg-preview.png"
-              style={logoStyle}
-              alt="logo of sitemark"
-              onClick={() => navigate('/')}
+    <div>
+      {/* Desktop Navigation */}
+      <div className="hidden md:block">
+        <nav className={`h-20 px-6 flex justify-between items-center sticky top-0 z-50 w-full transition-all duration-300`} 
+             style={styles.navbar}>
+          
+          {/* Logo */}
+          <Link to="/" className="flex items-center">
+            <img    
+              src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png"
+              style={styles.logo}
+              alt="logo"
+              className="hover:opacity-80"
             />
           </Link>
 
-          {/* Navigation links on the right */}
-          <div className="flex justify-around items-center space-x-4 text-black font-light">
-            {!userExists ?
-              (<span className=" p-2 space-x-2">
-               <Button
-                color="primary"
-                variant="text"
-                size="small"
-                component="a"
-                onClick={() => navigate('/login')}
-                target="_blank"
-              >
-                 Log in
-               </Button>
-               <Button
-                color='primary'
-                variant="contained"
-                size="small"
-                component="a"
-                onClick={() => navigate('/register')}
-                target="_blank"
-              >
-                Sign up
-              </Button>
-              </span>)
-              :
-              (
-                <span className=" p-2 space-x-2">
-                 <Button
-                color="primary"
-                variant="contained"
-                size="small"
-                component="a"
-                onClick={() => navigate('/dashboard')}
-                target="_blank"
-              >      Dashboard
+          {/* Main Navigation */}
+          <div className="flex items-center space-x-8">
+            <Button
+              color="inherit"
+              onClick={() => navigate('/about')}
+              sx={styles.button}
+            >
+              About
+            </Button>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/menu2')}
+              sx={styles.button}
+            >
+              Features
+            </Button>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/menu3')}
+              sx={styles.button}
+            >
+              Pricing
+            </Button>
+
+            {/* Auth Buttons */}
+            {!userExists ? (
+              <div className="flex items-center space-x-4 ml-8 pl-8 border-l border-gray-200">
+                <Button
+                  color="inherit"
+                  onClick={() => navigate('/login')}
+                  sx={styles.button}
+                >
+                  Log in
                 </Button>
-                
-                </span>
-              )}
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/register')}
+                  sx={{ ...styles.button, ...styles.actionButton }}
+                >
+                  Sign up
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => navigate('/dashboard')}
+                sx={{ ...styles.button, ...styles.actionButton }}
+              >
+                Dashboard
+              </Button>
+            )}
+
+            {/* Contact Button */}
+            <Button
+              color="inherit"
+              href="tel:+971567791074"
+              startIcon={<span role="img" aria-label="phone">📞</span>}
+              sx={styles.button}
+            >
+              056-7791074
+            </Button>
           </div>
         </nav>
       </div>
 
-
-       <div className='md:hidden flex flex-row justify-around bg-[#cff5ff] '>
-       <img    
-              
-              src="https://i.postimg.cc/hG57FFyC/Untitled-design-1-removebg-preview.png"
-              style={logoStyle}
-              alt="logo of sitemark"
-              onClick={() => navigate('/')}
+      {/* Mobile Navigation */}
+      <div className="md:hidden">
+        <nav className="flex items-center justify-between px-4 h-16" style={styles.navbar}>
+          <Link to="/">
+            <img    
+              src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png"
+              style={{ ...styles.logo, width: '140px' }}
+              alt="logo"
+              className="hover:opacity-80"
             />
-         {/* Hamburger icon */}
-         <Button
-              variant="text"
-              color="primary"
-              aria-label="menu"
-              onClick={toggleDrawer(true)}
-              sx={{ minWidth: '30px', p: '4px' }}
-            >
-               <MenuIcon />
-
-             </Button>
- 
-             <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
-
-       <Box
-            sx={{
-              minWidth: '60dvw',
-              p: 2,
-              backgroundColor: 'background.paper',
-              flexGrow: 1,
-            }}
+          </Link>
+          
+          <Button
+            color="inherit"
+            onClick={toggleDrawer(true)}
+            sx={{ minWidth: 'auto', p: 1 }}
           >
-             {/* <MenuItem onClick={() => scrollToSection('features')}>
-             Dubai Analytica
-             </MenuItem> */}
-             {/* <MenuItem onClick={() => scrollToSection('testimonials')}>
-               Testimonials
-             </MenuItem>
-             <MenuItem onClick={() => scrollToSection('highlights')}>
-               Highlights
-             </MenuItem>
-             <MenuItem onClick={() => scrollToSection('pricing')}>
-               Pricing
-             </MenuItem>
-             <MenuItem onClick={() => scrollToSection('faq')}>
-               FAQ
-             </MenuItem> */}
-             <Divider />
-             {!userExists ? (<MenuItem>
-               <Button
-                 color="primary"
-                 variant="contained"
-                 component="a"
-                 onClick={() => navigate('/register')}
-                 target="_blank"
-                 sx={{ width: '100%' }}
-               >
-                 Sign up
-               </Button>
-             </MenuItem>) :
-               (<MenuItem>
-                 <Button
-                   color="primary"
-                   variant="contained"
-                   size="small"
-                   component="a"
-                   onClick={() => navigate('/dashboard')}
-                   target="_blank"
-                   sx={{ width: '100%' }}
-                 >
-                   Dashboard
-                 </Button>
-           </MenuItem>
-               )}
-       {!userExists ? (
-               <MenuItem>
-                 <Button
-                   color="primary"
-                   variant="outlined"
-                   component="a"
-                   onClick={() => navigate('/login')}
-                   target="_blank"
-                   sx={{ width: '100%' }}
-                 >
-                   Sign in
-                 </Button>
-               </MenuItem>) :
-               null}
-           </Box>
-         </Drawer>
-       </div>
-       </div>
+            <MenuIcon />
+          </Button>
+        </nav>
+
+        <Drawer 
+          anchor="right" 
+          open={open} 
+          onClose={toggleDrawer(false)}
+          sx={styles.mobileMenu}
+        >
+          <Box sx={{ width: '280px', p: 3 }}>
+            {['About', 'Features', 'Pricing'].map((text) => (
+              <MenuItem
+                key={text}
+                onClick={() => {
+                  navigate(`/${text.toLowerCase()}`);
+                  setOpen(false);
+                }}
+                sx={{
+                  borderRadius: '8px',
+                  mb: 1,
+                  p: 1.5,
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                  }
+                }}
+              >
+                {text}
+              </MenuItem>
+            ))}
+
+            <Divider sx={{ my: 2 }} />
+
+            {!userExists ? (
+              <div className="space-y-2">
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => {
+                    navigate('/login');
+                    setOpen(false);
+                  }}
+                  sx={styles.button}
+                >
+                  Log in
+                </Button>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={() => {
+                    navigate('/register');
+                    setOpen(false);
+                  }}
+                  sx={{ ...styles.button, ...styles.actionButton }}
+                >
+                  Sign up
+                </Button>
+              </div>
+            ) : (
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={() => {
+                  navigate('/dashboard');
+                  setOpen(false);
+                }}
+                sx={{ ...styles.button, ...styles.actionButton }}
+              >
+                Dashboard
+              </Button>
+            )}
+
+            <MenuItem
+              component="a"
+              href="tel:+971567791074"
+              sx={{
+                borderRadius: '8px',
+                mt: 2,
+                p: 1.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                }
+              }}
+            >
+              <span role="img" aria-label="phone" className="mr-2">📞</span>
+              056-7791074
+            </MenuItem>
+          </Box>
+        </Drawer>
+      </div>
+    </div>
   );
 }
+
 export default HomeNavBar;

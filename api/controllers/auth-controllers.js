@@ -157,7 +157,7 @@ export const userRegister = async (req, res, next) => {
         const transporter = createTransport;
         console.log(transporter, 'transporter');
         const mailOptions = {
-            from: process.env.GMAIL_AUTH_USER,
+            from: process.env.GMAIL_AUTH_USER_SUPPORT,
             to: email,
             subject: 'Verify Your Email Address',
             html: `
@@ -234,7 +234,7 @@ export const userRegister = async (req, res, next) => {
 
         const transporter = createTransport;
         const mailOptions = {
-            from: process.env.GMAIL_AUTH_USER,
+            from: process.env.GMAIL_AUTH_USER_SUPPORT,
             to: email,
             subject: 'Welcome to Dubai Analytica',
             html: `
@@ -424,7 +424,7 @@ export const userRegister = async (req, res, next) => {
 
         const transporter = createTransport;
         const mailOptions = {
-            from: process.env.GMAIL_AUTH_USER,
+            from: process.env.GMAIL_AUTH_USER_SUPPORT,
             to: email,
             subject: 'Reset Password',
             html: `
@@ -533,7 +533,7 @@ export const userRegister = async (req, res, next) => {
     export const updateUserResponseLimit = async (name, email, title, response) => {
         const transporter = createTransport;
         const mailOptions = {
-            from: process.env.GMAIL_AUTH_USER,
+            from: process.env.GMAIL_AUTH_USER_SUPPORT,
             to: email,
             subject: 'Your Survey is Almost at Capacity - Keep Track of Responses!',
             html: `

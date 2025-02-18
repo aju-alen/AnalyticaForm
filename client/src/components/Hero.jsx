@@ -22,6 +22,8 @@ import functions from '../assets/functions.gif';
 import { motion, AnimatePresence } from 'framer-motion';
 import IconButton from '@mui/material/IconButton';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import Grid from '@mui/material/Grid';
+import featuresData from '../utils/featuresData';
 
 const buttonPulse = keyframes`
   0% { transform: scale(1); }
@@ -78,33 +80,86 @@ const Hero = () => {
           position: 'relative',
         }}
       >
-        <Box sx={
-          {
-            position:'sticky',
-            zIndex:1000,
-            top:0,
-            textAlign:'center',
-            backgroundColor:'#fff',
-          }
-        }>
-        <Typography sx={{
-          fontWeight:'bold', 
-        }}>{`Need help collecting data? Simply click any of the sliding images. Filter your market or target sample, and `}
-          <Button 
-          variant= 'contained'
-          color= 'success'
+        <Box 
           sx={{
-            textTransform: 'none',
-            fontSize: '0.9rem',
+            position: 'sticky',
+            zIndex: 1000,
+            top: 0,
+            background: 'linear-gradient(to right, rgba(255,255,255,0.98), rgba(240,249,255,0.98))',
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+            py: { xs: 1.75, sm: 2 },
+            px: { xs: 2, sm: 4 },
+            borderBottom: '1px solid rgba(0,0,0,0.05)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
+            },
           }}
-
-          onClick={() => navigate('/market')}
+        >
+          <Typography 
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: { xs: 1.5, sm: 2 },
+              flexWrap: 'wrap',
+              textAlign: 'center',
+              fontSize: { xs: '0.95rem', sm: '1.05rem' },
+              fontWeight: 500,
+              color: 'text.primary',
+              lineHeight: 1.6,
+              maxWidth: '1200px',
+              margin: '0 auto',
+              '& span': {
+                background: 'linear-gradient(120deg, #2196f3, #1565c0)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 600,
+              },
+            }}
           >
-          Easily Purchase Responses 
-          </Button> 
-          
+            <span>Need help collecting data?</span> Simply click any of the sliding images. Filter your market or target sample, and
+            <Button 
+              variant="contained"
+              color="success"
+              sx={{
+                textTransform: 'none',
+                fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                py: { xs: 1, sm: 1.2 },
+                px: { xs: 2.5, sm: 3 },
+                borderRadius: 3,
+                fontWeight: 600,
+                background: 'linear-gradient(45deg, #2e7d32, #43a047)',
+                boxShadow: '0 4px 12px rgba(46, 125, 50, 0.2)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #43a047, #4caf50)',
+                  boxShadow: '0 6px 16px rgba(46, 125, 50, 0.3)',
+                  transform: 'translateY(-2px)',
+                },
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                position: 'relative',
+                overflow: 'hidden',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: '-100%',
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                  transition: 'all 0.5s ease',
+                },
+                '&:hover::after': {
+                  left: '100%',
+                },
+              }}
+              onClick={() => navigate('/market')}
+            >
+              Easily Purchase Responses
+            </Button>
           </Typography>
-
         </Box>
         {/* Slider Banner */}
         <Box 
@@ -686,9 +741,144 @@ const Hero = () => {
               Working late into the night? Our support team is available 24/7. From dedicated enterprise account managers to live chat, we&apos;re committed to ensuring your research is successful, no matter the hour.
             </Typography>
           </Stack>
-        </Stack>
-      
+        </Stack> 
     </Container>
+
+    <Container
+          maxWidth="xl"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            py: { xs: 8, sm: 12 },
+            background: 'linear-gradient(180deg, rgba(240,249,255,0) 0%, rgba(240,249,255,1) 50%, rgba(240,249,255,0) 100%)',
+          }}
+        >
+          <Typography
+            variant="h2"
+            textAlign="center"
+            sx={{
+              mb: 3,
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: 700,
+            }}
+          >
+            Features
+          </Typography>
+
+          <Typography
+            variant="h3"
+            textAlign="center"
+            sx={{
+              mb: 2,
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              color: 'primary.main',
+              maxWidth: '800px',
+            }}
+          >
+            Data-driven Insights for Smarter Decisions
+          </Typography>
+
+          <Typography
+            variant="body1"
+            textAlign="center"
+            sx={{
+              mb: 8,
+              maxWidth: '800px',
+              fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+              color: 'text.secondary',
+            }}
+          >
+            Dubai Analytica helps businesses, researchers, and decision-makers collect, analyze, and act on data with precision. Our survey tools empower you with real-time insights, ensuring every decision is backed by accurate information.
+          </Typography>
+
+          <Typography
+            variant="h4"
+            textAlign="center"
+            sx={{
+              mb: 6,
+              fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)',
+              fontWeight: 600,
+            }}
+          >
+            Survey software features to help you get work done smarter
+          </Typography>
+
+          <Grid container spacing={4} sx={{ mb: 8 }}>
+            {featuresData.map((feature, index) => (
+              <Grid item xs={12} md={6} lg={4} key={index}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    borderRadius: 2,
+                    transition: 'transform 0.2s ease-in-out',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                    },
+                  }}
+                >
+                  <Typography variant="h1" sx={{ mb: 2, fontSize: '2.5rem' }}>
+                    {feature.icon}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    {feature.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {feature.description}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+
+          <Box
+            sx={{
+              bgcolor: 'primary.main',
+              color: 'white',
+              p: 4,
+              borderRadius: 2,
+              maxWidth: '800px',
+              width: '100%',
+              textAlign: 'center',
+            }}
+          >
+            <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+              Why Choose Dubai Analytica?
+            </Typography>
+            <Stack spacing={2}>
+              {[
+                "Data-driven insights for faster and more accurate analysis",
+                "Secure, scalable, and user-friendly survey platform",
+                "Access to a global and region-specific respondent pool",
+                "Ready-made templates to save time and effort"
+              ].map((point, index) => (
+                <Typography key={index} variant="body1">
+                  • {point}
+                </Typography>
+              ))}
+            </Stack>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="large"
+              sx={{
+                mt: 4,
+                color: 'primary.main',
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.100',
+                },
+              }}
+              onClick={() => navigate('/dashboard')}
+            >
+              Transform Your Data Collection Today
+            </Button>
+          </Box>
+        </Container>
                 <Container
                     maxWidth='md'
                     sx={{
@@ -865,11 +1055,6 @@ const Hero = () => {
                         </Card>
 
                     </Stack>
-
-                            <Button onClick={() => navigate('/market')}>
-                              Test Function
-                            </Button>
-
                 </Container>
             </Container>
         </Box>

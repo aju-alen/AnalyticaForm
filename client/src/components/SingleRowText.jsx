@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { uid } from 'uid'
 import { TextField, CssBaseline, Container, Box, Stack, Radio, Button } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
 
 
 
@@ -20,6 +21,7 @@ const SingleRowText = ({ onSaveForm, data, id, options, disableForm, disableText
     });
 
     const [debouncedValue, setDebouncedValue] = useState('');
+    const [boldFields, setBoldFields] = useState(new Set());
 
     const handleAddOptions = () => {
         setFormData({
@@ -44,6 +46,16 @@ const SingleRowText = ({ onSaveForm, data, id, options, disableForm, disableText
         onSaveForm(formData);
         onHandleNext()
     }
+
+    const handleBoldToggle = (id) => {
+        const newBoldFields = new Set(boldFields);
+        if (newBoldFields.has(id)) {
+            newBoldFields.delete(id);
+        } else {
+            newBoldFields.add(id);
+        }
+        setBoldFields(newBoldFields);
+    };
 
     useEffect(() => {
       const handler = setTimeout(() => {
@@ -131,6 +143,9 @@ const SingleRowText = ({ onSaveForm, data, id, options, disableForm, disableText
                  '&:hover .delete-button': {
                    visibility: 'visible',
                  },
+                 '&:hover .format-button': {
+                     visibility: 'visible',
+                 },
                }}
              >
                                         <TextField
@@ -141,26 +156,44 @@ const SingleRowText = ({ onSaveForm, data, id, options, disableForm, disableText
                                             name='question'
                                             value={option.question}
                                             onChange={(e) => setFormData({
-                                                ...formData, options: formData.options.map((item, index) => {
-                                                    if (option.id === item.id) {
-                                                        return { ...item, question: e.target.value }
-                                                    }
-                                                    return item
-                                                })
-                                                ,
-                                                selectedValue: formData.options.map((item, index) => {
-                                                    if (option.id === item.id) {
-                                                        return { ...item, question: e.target.value }
-                                                    }
-                                                    return item
-                                                })
+                                                ...formData,
+                                                options: formData.options.map((item) => 
+                                                    option.id === item.id ? { ...item, question: e.target.value } : item
+                                                ),
+                                                selectedValue: formData.options.map((item) =>
+                                                    option.id === item.id ? { ...item, question: e.target.value } : item
+                                                )
                                             })}
                                             InputProps={{
                                                 readOnly: disableText,
+                                                style: {
+                                                    fontWeight: boldFields.has(option.id) ? 'bold' : 'normal'
+                                                }
                                             }}
                                         />
 
 {!disableButtons && (
+                 <>
+                 <Button
+                   className="format-button"
+                   color="primary"
+                   variant="text"
+                   sx={{
+                     position: 'absolute',
+                     left: '92%',
+                     visibility: 'hidden',
+                     transition: 'visibility 0.1s ease-in-out',
+                     minWidth: '40px'
+                   }}
+                   onClick={() => handleBoldToggle(option.id)}
+                 >
+                   <FormatBoldIcon 
+                       fontSize="small"
+                       sx={{ 
+                           color: boldFields.has(option.id) ? 'primary.main' : 'text.secondary'
+                       }}
+                   />
+                 </Button>
                  <Button
                    className="delete-button"
                    color="error"
@@ -176,6 +209,7 @@ const SingleRowText = ({ onSaveForm, data, id, options, disableForm, disableText
                  >
                    <HighlightOffIcon fontSize="small" />
                  </Button>
+                 </>
                )}
                                         </Box>
                                     </Stack>
