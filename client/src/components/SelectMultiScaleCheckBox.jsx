@@ -12,7 +12,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
 
 
 
@@ -43,8 +42,6 @@ const initialFormData = {
 const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
     const [formData, setFormData] = useState(initialFormData);
     const [debouncedValue, setDebouncedValue] = useState('');
-    const [boldFields, setBoldFields] = useState(new Set());
-
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedValue(formData);
@@ -126,16 +123,6 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
         setFormData({ ...formData, formMandate: true })
     }
 
-    const handleBoldToggle = (id) => {
-        const newBoldFields = new Set(boldFields);
-        if (newBoldFields.has(id)) {
-            newBoldFields.delete(id);
-        } else {
-            newBoldFields.add(id);
-        }
-        setBoldFields(newBoldFields);
-    };
-
     useEffect(() => {
         if (options) {
             setFormData(data);
@@ -191,56 +178,18 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                     },
                 }}>
                     <Container sx={{ display: { xs: 'none', md: "block" } }} maxWidth='xl' >
-                    <Box sx={{
-                        position: 'relative',
-                        display: 'flex',
-                        alignItems: 'center',
-                        width: '100%',
-                        '&:hover .format-button': {
-                            visibility: 'visible',
-                        },
-                    }}>
-                        <TextField
-                            fullWidth
-                            multiline
-                            id="standard-basic"
-                            label={!disableText ? "Insert input" : ''} variant="standard"
-                            name='question'
-                            value={formData.question}
-                            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                            InputProps={{
-                                readOnly: disableText,
-                            }}
-                            sx={{
-                                '& .MuiInputBase-root': {
-                                    fontSize: '1.3rem',
-                                    fontWeight: boldFields.has('question') ? 'bold' : 'normal',
-                                }
-                            }}
-                        />
-                        {!disableButtons && (
-                            <Button
-                                className="format-button"
-                                color="primary"
-                                variant="text"
-                                sx={{
-                                    position: 'absolute',
-                                    right: 0,
-                                    visibility: 'hidden',
-                                    transition: 'visibility 0.1s ease-in-out',
-                                    minWidth: '40px'
-                                }}
-                                onClick={() => handleBoldToggle('question')}
-                            >
-                                <FormatBoldIcon 
-                                    fontSize="small"
-                                    sx={{ 
-                                        color: boldFields.has('question') ? 'primary.main' : 'text.secondary'
-                                    }}
-                                />
-                            </Button>
-                        )}
-                    </Box>
+                    <TextField
+                        fullWidth
+                        multiline
+                        id="standard-basic"
+                        label={!disableText ? "Insert input" : ''} variant="standard"
+                        name='question'
+                        value={formData.question}
+                        onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+                        InputProps={{
+                            readOnly: disableText,
+                        }}
+                    />
 
                     <div style={{ width: '100%' }}>
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -257,14 +206,11 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
 
                                             <Box
                                                 sx={{
-                                                    position: 'relative',
+
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     width: '100%',
                                                     '&:hover .delete-button': {
-                                                        visibility: 'visible',
-                                                    },
-                                                    '&:hover .format-button': {
                                                         visibility: 'visible',
                                                     },
                                                 }}
@@ -282,12 +228,14 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                                     }}
                                                     sx={{
                                                         '& .MuiInputBase-root': {
-                                                            fontSize: '0.9rem',
-                                                            fontWeight: boldFields.has(column.id) ? 'bold' : 'normal',
+                                                            fontSize: '0.8rem',
                                                         },
                                                         '& .MuiInput-underline:before': {
                                                             borderBottom: 'none',
                                                         },
+                                                        // '& .MuiInput-underline:after': {
+                                                        //   borderBottom: 'none',
+                                                        // },
                                                         '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
                                                             borderBottom: 'none',
                                                         },
@@ -308,30 +256,10 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                                             bottom: '0%',
                                                             visibility: 'hidden',
                                                             transition: 'visibility 0.1s ease-in-out',
+
                                                         }}
                                                         onClick={() => handleDeleteColumn(column.id)} />
-                                                )}
-                                                {!disableButtons && (
-                                                    <Button
-                                                        className="format-button"
-                                                        color="primary"
-                                                        variant="text"
-                                                        sx={{
-                                                            position: 'absolute',
-                                                            right: 0,
-                                                            visibility: 'hidden',
-                                                            transition: 'visibility 0.1s ease-in-out',
-                                                            minWidth: '40px'
-                                                        }}
-                                                        onClick={() => handleBoldToggle(column.id)}
-                                                    >
-                                                        <FormatBoldIcon 
-                                                            fontSize="small"
-                                                            sx={{ 
-                                                                color: boldFields.has(column.id) ? 'primary.main' : 'text.secondary'
-                                                            }}
-                                                        />
-                                                    </Button>
+
                                                 )}
                                             </Box>
                                         </TableCell>
@@ -346,63 +274,36 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                         key={row.id}
                                     >
                                         <TableCell component="th" scope="row" sx={{ width: '30%' }}>
-                                            <Box sx={{
-                                                position: 'relative',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                width: '100%',
-                                                '&:hover .format-button': {
-                                                    visibility: 'visible',
-                                                },
-                                            }}>
-                                                <TextField
-                                                    id="standard-basic"
-                                                    multiline
-                                                    placeholder={!disableText ? "Type Your Sub Question" : ''}
-                                                    variant="standard"
-                                                    name='rowQuestion'
-                                                    value={row.rowQuestion}
-                                                    onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
-                                                    InputProps={{
-                                                        readOnly: disableText,
-                                                    }}
-                                                    sx={{
-                                                        '& .MuiInputBase-root': {
-                                                            fontSize: '0.9rem',
-                                                            fontWeight: boldFields.has(row.id) ? 'bold' : 'normal',
-                                                        },
-                                                        '& .MuiInput-underline:before': {
-                                                            borderBottom: 'none',
-                                                        },
-                                                        '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                                                            borderBottom: 'none',
-                                                        },
-                                                        minWidth: { xs: 100, md: 200 },
-                                                    }}
-                                                />
-                                                {!disableButtons && (
-                                                    <Button
-                                                        className="format-button"
-                                                        color="primary"
-                                                        variant="text"
-                                                        sx={{
-                                                            position: 'absolute',
-                                                            right: 0,
-                                                            visibility: 'hidden',
-                                                            transition: 'visibility 0.1s ease-in-out',
-                                                            minWidth: '40px'
-                                                        }}
-                                                        onClick={() => handleBoldToggle(row.id)}
-                                                    >
-                                                        <FormatBoldIcon 
-                                                            fontSize="small"
-                                                            sx={{ 
-                                                                color: boldFields.has(row.id) ? 'primary.main' : 'text.secondary'
-                                                            }}
-                                                        />
-                                                    </Button>
-                                                )}
-                                            </Box>
+
+                                            <TextField
+                                                id="standard-basic"
+                                                multiline
+                                                placeholder={!disableText ? "Type Your Sub Question" : ''}
+                                                variant="standard"
+                                                name='rowQuestion'
+                                                value={row.rowQuestion}
+                                                onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
+                                                InputProps={{
+                                                    readOnly: disableText,
+                                                }}
+                                                sx={{
+                                                    '& .MuiInputBase-root': {
+                                                        fontSize: '0.8rem',
+                                                    },
+                                                    '& .MuiInput-underline:before': {
+                                                        borderBottom: 'none',
+                                                    },
+                                                    // '& .MuiInput-underline:after': {
+                                                    //   borderBottom: 'none',
+                                                    // },
+                                                    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                                                        borderBottom: 'none',
+                                                    },
+                                                    minWidth: { xs: 100, md: 200 },
+                                                }}
+
+                                            />
+
                                         </TableCell>
                                         {row.columns.map((column, idx) => (
                                             <TableCell key={column.id} align='center' >
@@ -413,7 +314,10 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                                     checked={formData.selectedValue.some((item) => item.rowId === row.id && item.colId === column.id)}
                                                     size='small'
                                                 />
+
                                             </TableCell>
+
+
                                         ))}
                                         <TableCell align="center">
                                             {!disableButtons && (<Button
@@ -423,6 +327,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                                 <HighlightOffIcon fontSize="small" />
                                             </Button>)}
                                         </TableCell>
+
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -467,56 +372,18 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                     </Stack>
 
                     <Container sx={{ display: { xs: '', md: "none" } }} maxWidth='xl' >
-                    <Box sx={{
-                        position: 'relative',
-                        display: 'flex',
-                        alignItems: 'center',
-                        width: '100%',
-                        '&:hover .format-button': {
-                            visibility: 'visible',
-                        },
-                    }}>
-                        <TextField
-                            fullWidth
-                            multiline
-                            id="standard-basic"
-                            label={!disableText ? "Insert input" : ''} variant="standard"
-                            name='question'
-                            value={formData.question}
-                            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                            InputProps={{
-                                readOnly: disableText,
-                            }}
-                            sx={{
-                                '& .MuiInputBase-root': {
-                                    fontSize: '1.3rem',
-                                    fontWeight: boldFields.has('question') ? 'bold' : 'normal',
-                                }
-                            }}
-                        />
-                        {!disableButtons && (
-                            <Button
-                                className="format-button"
-                                color="primary"
-                                variant="text"
-                                sx={{
-                                    position: 'absolute',
-                                    right: 0,
-                                    visibility: 'hidden',
-                                    transition: 'visibility 0.1s ease-in-out',
-                                    minWidth: '40px'
-                                }}
-                                onClick={() => handleBoldToggle('question')}
-                            >
-                                <FormatBoldIcon 
-                                    fontSize="small"
-                                    sx={{ 
-                                        color: boldFields.has('question') ? 'primary.main' : 'text.secondary'
-                                    }}
-                                />
-                            </Button>
-                        )}
-                    </Box>
+                    <TextField
+                        fullWidth
+                        multiline
+                        id="standard-basic"
+                        label={!disableText ? "Insert input" : ''} variant="standard"
+                        name='question'
+                        value={formData.question}
+                        onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+                        InputProps={{
+                            readOnly: disableText,
+                        }}
+                    />
                          {formData.options.map((row, rowIndex) => (
               <Accordion key={row.id} sx={{
                 overflowX: 'auto',
@@ -541,15 +408,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                             <TableCell
                               key={column.id}
                               sx={{ width: 'auto ', overflowX: 'auto', }}>
-                              <Box sx={{
-                                position: 'relative',
-                                display: 'flex',
-                                alignItems: 'center',
-                                width: '100%',
-                                '&:hover .format-button': {
-                                    visibility: 'visible',
-                                },
-                              }}>
+                              <Stack direction="column" spacing={2} >
                                 <TextField
                                   key={column.id}
                                   id="standard-basic"
@@ -560,45 +419,10 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                   InputProps={{
                                     readOnly: disableText,
                                   }}
-                                  sx={{
-                                    '& .MuiInputBase-root': {
-                                      fontSize: '0.9rem',
-                                      fontWeight: boldFields.has(column.id) ? 'bold' : 'normal',
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                      borderBottom: 'none',
-                                    },
-                                    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                                      borderBottom: 'none',
-                                    },
-                                    minWidth: { xs: 100, md: 200 },
-                                  }}
                                   fullWidth
                                   multiline
                                 />
-                                {!disableButtons && (
-                                    <Button
-                                        className="format-button"
-                                        color="primary"
-                                        variant="text"
-                                        sx={{
-                                            position: 'absolute',
-                                            right: 0,
-                                            visibility: 'hidden',
-                                            transition: 'visibility 0.1s ease-in-out',
-                                            minWidth: '40px'
-                                        }}
-                                        onClick={() => handleBoldToggle(column.id)}
-                                    >
-                                        <FormatBoldIcon 
-                                            fontSize="small"
-                                            sx={{ 
-                                                color: boldFields.has(column.id) ? 'primary.main' : 'text.secondary'
-                                            }}
-                                        />
-                                    </Button>
-                                )}
-                              </Box>
+                              </Stack>
                             </TableCell>
                           ))}
                         </TableRow>
