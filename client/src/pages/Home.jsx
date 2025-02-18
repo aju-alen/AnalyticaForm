@@ -31,11 +31,10 @@ export default function Home() {
     
     if (window.gtag) {
       window.gtag("event", "conversion", {
-        send_to: "AW-16870151196/q773CMj48JwaEJyoqOw-",
+        send_to: "AW-16870151196/_36GCMmJ2Z8aEJyoqOw-", // Use the specific conversion ID from your email
       });
     }
   }, []);
-  
   
 
   useEffect(() => {
