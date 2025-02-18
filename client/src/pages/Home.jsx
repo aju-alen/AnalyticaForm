@@ -27,6 +27,8 @@ export default function Home() {
   console.log(TagManager,'TagManager');
 
   useEffect(() => {
+    console.log(window.gtag,'window.gtag');
+    
     if (window.gtag) {
       window.gtag("event", "conversion", {
         send_to: "AW-16870151196/q773CMj48JwaEJyoqOw-",
