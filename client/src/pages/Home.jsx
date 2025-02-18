@@ -25,6 +25,14 @@ export default function Home() {
   };
   console.log(location,'location.pathname');
   console.log(TagManager,'TagManager');
+
+  useEffect(() => {
+    if (window.gtag) {
+      window.gtag("event", "conversion", {
+        send_to: "AW-16870151196/q773CMj48JwaEJyoqOw-",
+      });
+    }
+  }, []);
   
   
 
