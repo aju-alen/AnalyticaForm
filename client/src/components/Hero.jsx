@@ -802,7 +802,14 @@ const Hero = () => {
             Survey software features to help you get work done smarter
           </Typography>
 
-          <Grid container spacing={4} sx={{ mb: 8 }}>
+          <Grid 
+            container 
+            spacing={4} 
+            sx={{ 
+              mb: 8,
+              justifyContent: 'center',
+            }}
+          >
             {featuresData.map((feature, index) => (
               <Grid item xs={12} md={6} lg={4} key={index}>
                 <Paper
