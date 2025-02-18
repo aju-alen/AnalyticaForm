@@ -158,7 +158,7 @@ function HomeNavBar() {
               startIcon={<span role="img" aria-label="phone">📞</span>}
               sx={styles.button}
             >
-              058-2652808
+              058 265 2808
             </Button>
           </div>
         </nav>
@@ -266,7 +266,7 @@ function HomeNavBar() {
               }}
             >
               <span role="img" aria-label="phone" className="mr-2">📞</span>
-              058-2652808
+              058 265 2808
             </MenuItem>
           </Box>
         </Drawer>
