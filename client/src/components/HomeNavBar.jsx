@@ -154,11 +154,11 @@ function HomeNavBar() {
             {/* Contact Button */}
             <Button
               color="inherit"
-              href="tel:+971567791074"
+              href="tel:0582652808"
               startIcon={<span role="img" aria-label="phone">📞</span>}
               sx={styles.button}
             >
-              056-7791074
+              058-2652808
             </Button>
           </div>
         </nav>
@@ -255,7 +255,7 @@ function HomeNavBar() {
 
             <MenuItem
               component="a"
-              href="tel:+971567791074"
+              href="tel:0582652808"
               sx={{
                 borderRadius: '8px',
                 mt: 2,
@@ -266,7 +266,7 @@ function HomeNavBar() {
               }}
             >
               <span role="img" aria-label="phone" className="mr-2">📞</span>
-              056-7791074
+              058-2652808
             </MenuItem>
           </Box>
         </Drawer>
