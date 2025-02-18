@@ -71,7 +71,7 @@ const ContactUs = () => {
           General Inquiries
           </Typography>
           <Typography variant='p'  gutterBottom>
-          United Arab Emirates: +971 58 265 2808
+          United Arab Emirates: +971 (058) 265 2808
           </Typography>
           <Typography variant='p'  gutterBottom>
           Location: Dubai International Financial Centre
