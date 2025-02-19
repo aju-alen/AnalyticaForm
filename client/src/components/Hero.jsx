@@ -42,6 +42,15 @@ const shinePaper = keyframes`
   }
 `;
 
+const slideAnimation = keyframes`
+  0% {
+    transform: translateX(30%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+`;
+
 const images = [
   'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner1.jpg', // Replace with your image URLs
   'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner2.jpg',
@@ -84,80 +93,97 @@ const Hero = () => {
           sx={{
             position: 'sticky',
             display: 'flex',
+            flexDirection: { xs: 'row', sm: 'row' },
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: 2,
-            zIndex: 1000,
+            zIndex: 8,
+            gap: { xs: 2, sm: 2 },
             top: 0,
             background: 'linear-gradient(to right, rgba(255,255,255,0.98), rgba(240,249,255,0.98))',
             backdropFilter: 'blur(12px)',
             boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-            py: { xs: 1.75, sm: 2 },
-            px: { xs: 2, sm: 4 },
+            py: { xs: 1.25, sm: 1.75, md: 2 },
+            px: { xs: 1.5, sm: 2, md: 4 },
             borderBottom: '1px solid rgba(0,0,0,0.05)',
             transition: 'all 0.3s ease',
+            overflow: 'hidden',
             '&:hover': {
               boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
             },
           }}
         >
-          <Typography 
+          <Box
             sx={{
-              display: 'inline',
-              fontSize: { xs: '0.95rem', sm: '1.05rem' },
-              fontWeight: 500,
-              color: 'text.primary',
-              lineHeight: 1.6,
-              '& span': {
-                background: 'linear-gradient(120deg, #2196f3, #1565c0)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontWeight: 600,
-              },
-            }}
-          >
-            <span>Need help collecting data?</span> Simply click any of the sliding images. Filter your market or target sample, and
-          </Typography>
-          <Button 
-            variant="contained"
-            color="success"
-            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 2,
               whiteSpace: 'nowrap',
-              textTransform: 'none',
-              fontSize: { xs: '0.9rem', sm: '0.95rem' },
-              py: { xs: 1, sm: 1.2 },
-              px: { xs: 2.5, sm: 3 },
-              borderRadius: 3,
-              fontWeight: 600,
-              background: 'linear-gradient(45deg, #2e7d32, #43a047)',
-              boxShadow: '0 4px 12px rgba(46, 125, 50, 0.2)',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #43a047, #4caf50)',
-                boxShadow: '0 6px 16px rgba(46, 125, 50, 0.3)',
-                transform: 'translateY(-2px)',
-              },
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              position: 'relative',
-              overflow: 'hidden',
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: '100%',
-                width: '100%',
-                height: '100%',
-                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-                transition: 'all 0.5s ease',
-              },
-              '&:hover::after': {
-                left: '100%',
+              animation: {
+                xs: `${slideAnimation} 25s linear infinite`,
+                sm: 'none'
               },
             }}
-            onClick={() => navigate('/market')}
           >
-            Easily Purchase Responses
-          </Button>
+            <Typography 
+              sx={{
+                display: 'inline',
+                fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1.05rem' },
+                fontWeight: 500,
+                color: 'text.primary',
+                lineHeight: 1.6,
+                whiteSpace: 'nowrap',
+                '& span': {
+                  background: 'linear-gradient(120deg, #2196f3, #1565c0)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: 600,
+                },
+              }}
+            >
+              <span>Need help collecting data?</span> Simply click any of the sliding images. Filter your market or target sample, and
+            </Typography>
+            <Button 
+              variant="contained"
+              color="success"
+              sx={{
+                whiteSpace: 'nowrap',
+                textTransform: 'none',
+                width: { xs: 'auto', sm: 'auto' },
+                fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem' },
+                py: { xs: 0.75, sm: 1, md: 1.2 },
+                px: { xs: 2, sm: 2.5, md: 3 },
+                borderRadius: 3,
+                fontWeight: 600,
+                background: 'linear-gradient(45deg, #2e7d32, #43a047)',
+                boxShadow: '0 4px 12px rgba(46, 125, 50, 0.2)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #43a047, #4caf50)',
+                  boxShadow: '0 6px 16px rgba(46, 125, 50, 0.3)',
+                  transform: 'translateY(-2px)',
+                },
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                position: 'relative',
+                overflow: 'hidden',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: '100%',
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                  transition: 'all 0.5s ease',
+                },
+                '&:hover::after': {
+                  left: '100%',
+                },
+              }}
+              onClick={() => navigate('/market')}
+            >
+              Easily Purchase Responses
+            </Button>
+          </Box>
         </Box>
         {/* Slider Banner */}
         <Box 
@@ -199,14 +225,14 @@ const Hero = () => {
         height: '100%',
         objectFit: 'contain',
         position: 'absolute',
-        zIndex: 1000000,
+        zIndex: 4,
       }}
       alt={`Slide ${currentIndex + 1}`}
     />
   </AnimatePresence>
 
   {/* Navigation Dots */}
-  <Box
+  {/* <Box
     sx={{
       position: 'absolute',
       bottom: { xs: 8, sm: 12, md: 16 },
@@ -235,7 +261,7 @@ const Hero = () => {
         }}
         onClick={() => setCurrentIndex(index)} // Add this if you want clickable dots
       />
-    ))}
+    ))} */}
     {/* <Button 
   style={{
     position: 'absolute',
@@ -250,7 +276,7 @@ const Hero = () => {
     Purchase Your Responses
   </Typography>
 </Button> */}
-  </Box>
+  {/* </Box> */}
 
   {/* Optional: Touch swipe area for mobile */}
   <Box
@@ -338,7 +364,7 @@ const Hero = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          pt: { xs: 14, sm: 20 },
+          pt: { xs: 0, sm: 5 },
           pb: { xs: 8, sm: 12 },
         }}
       >
@@ -365,7 +391,7 @@ const Hero = () => {
               justifyContent: 'center',
               fontSize: 'clamp(2rem, 10vw, 3.9rem)',
               textAlign: 'center',
-              mt: 6,
+              mt: 0,
             }}
           >
             Ask the right questions to find the answers you need with
@@ -801,7 +827,9 @@ const Hero = () => {
           >
             Survey software features to help you get work done smarter
           </Typography>
-
+<Box sx={{
+  marginX:{xs:2,md:20}
+}}>
           <Grid 
             container 
             spacing={4} 
@@ -820,16 +848,17 @@ const Hero = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     borderRadius: 2,
+
                     transition: 'transform 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-4px)',
                     },
                   }}
                 >
-                  <Typography variant="h1" sx={{ mb: 2, fontSize: '2.5rem' }}>
+                  <Typography variant="h1" sx={{ mb: 2, fontSize: '2.0rem', textAlign: { xs: 'left', md: 'center' } }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -839,6 +868,7 @@ const Hero = () => {
               </Grid>
             ))}
           </Grid>
+          </Box>
 
           <Box
             sx={{

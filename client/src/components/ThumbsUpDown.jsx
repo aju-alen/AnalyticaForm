@@ -24,13 +24,22 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 const iconMapping = {
   ThumbDown: <ThumbDownIcon
     color='error'
-    sx={{ fontSize: {xs:50,md:100}, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
-    
+    sx={{ 
+      fontSize: {xs: 30, sm: 40, md: 50},
+      ":hover": { backgroundColor: '#99FFDF' }, 
+      borderRadius: 3, 
+      p: {xs: 0.5, md: 1}
+    }}
   />,
 
   ThumbUp: <ThumbUpIcon 
     color='success'
-    sx={{ fontSize: {xs:50,md:100}, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
+    sx={{ 
+      fontSize: {xs: 30, sm: 40, md: 50},
+      ":hover": { backgroundColor: '#99FFDF' }, 
+      borderRadius: 3, 
+      p: {xs: 0.5, md: 1}
+    }}
   />,
 };
 
@@ -127,7 +136,7 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
   return (
     <React.Fragment>
     <CssBaseline />
-    <Container  >
+    <Container maxWidth="xl" sx={{ px: {xs: 1, sm: 2, md: 3} }}>
       <Box sx={{
         bgcolor: 'white',
         display: 'flex',
@@ -140,7 +149,7 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
         width: '100%',
         boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
         borderRadius: 2, // Increased border radius for rounded corners
-        p: 2, // Increased padding for inner content
+        p: { xs: 1, sm: 1.5, md: 2 },
         overflowX: 'auto',
         border: '2px solid #f0fbf0', // Added border for more distinction
         transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
@@ -168,7 +177,10 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
           backgroundColor: '#F4FFF8',
         },
       }}>
-        <Container sx={{ display: { xs: "none", md: "block" } }} maxWidth='xl'>
+        <Container sx={{ 
+          display: { xs: "none", md: "block" },
+          px: { md: 2, lg: 3 }
+        }} maxWidth='xl'>
             <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" name='question' value={formData.question}
               onChange={(e) => setFormData({ ...formData, question: e.target.value })}
               InputProps={{
@@ -179,7 +191,13 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
          
          <div style={{ width: '100%' }}>
             <Table
-              sx={{ minWidth: 650 }}
+              sx={{ 
+                minWidth: { md: 650, lg: 800 },
+                "& .MuiTableCell-root": {
+                  px: { md: 1, lg: 2 },
+                  py: { md: 1, lg: 1.5 }
+                }
+              }}
               aria-label="simple table">
               <TableHead>
 
@@ -341,7 +359,10 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
             </Button>}
             </Stack>
             </Container>
-            <Container sx={{ display: { xs: "", md: "none" } }} maxWidth='xl'>
+            <Container sx={{ 
+              display: { xs: "block", md: "none" },
+              px: { xs: 1, sm: 2 }
+            }} maxWidth='xl'>
             <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" name='question' value={formData.question}
               onChange={(e) => setFormData({ ...formData, question: e.target.value })}
               InputProps={{
@@ -351,7 +372,12 @@ const ThumbsUpDown = ({ onSaveForm, data, id, options, disableForm, disableText,
             />
             {formData.options.map((row, rowIndex) => (
 
-               <Accordion>
+               <Accordion sx={{
+                 my: { xs: 1, sm: 1.5 },
+                 "& .MuiAccordionSummary-content": {
+                   fontSize: { xs: '0.875rem', sm: '1rem' }
+                 }
+               }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1-content"

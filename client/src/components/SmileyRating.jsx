@@ -21,25 +21,52 @@ import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfi
 const iconMapping = {
   SentimentVeryDissatisfiedIcon: <SentimentVeryDissatisfiedIcon
     color='error'
-    sx={{ fontSize: {xs:50,md:110 }, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
-
+    sx={{ 
+      fontSize: { xs: 24, sm: 32, md: 40 },
+      ":hover": { backgroundColor: '#99FFDF' }, 
+      borderRadius: 3, 
+      p: { xs: 0.3, sm: 0.4, md: 0.5 }
+    }}
   />,
 
-  SentimentDissatisfiedIcon: <SentimentDissatisfiedIcon fontSize='large'
+  SentimentDissatisfiedIcon: <SentimentDissatisfiedIcon 
     color='warning'
-    sx={{ fontSize: {xs:50,md:110 }, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
+    sx={{ 
+      fontSize: { xs: 24, sm: 32, md: 40 }, 
+      ":hover": { backgroundColor: '#99FFDF' }, 
+      borderRadius: 3, 
+      p: { xs: 0.3, sm: 0.4, md: 0.5 }
+    }}
   />,
 
-  SentimentSatisfiedIcon: <SentimentSatisfiedIcon fontSize='large'
-    sx={{ fontSize: {xs:50,md:110 }, color: '#FFFF2B', ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }} />,
-
-  SentimentSatisfiedAltIcon: <SentimentSatisfiedAltIcon fontSize='large'
-    sx={{ fontSize: {xs:50,md:110 }, color: 'yellowgreen', ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
+  SentimentSatisfiedIcon: <SentimentSatisfiedIcon
+    sx={{ 
+      fontSize: { xs: 24, sm: 32, md: 40 }, 
+      color: '#FFFF2B', 
+      ":hover": { backgroundColor: '#99FFDF' }, 
+      borderRadius: 3, 
+      p: { xs: 0.3, sm: 0.4, md: 0.5 }
+    }}
   />,
 
-  SentimentVerySatisfiedIcon: <SentimentVerySatisfiedIcon fontSize='large'
+  SentimentSatisfiedAltIcon: <SentimentSatisfiedAltIcon
+    sx={{ 
+      fontSize: { xs: 24, sm: 32, md: 40 }, 
+      color: 'yellowgreen', 
+      ":hover": { backgroundColor: '#99FFDF' }, 
+      borderRadius: 3, 
+      p: { xs: 0.3, sm: 0.4, md: 0.5 }
+    }}
+  />,
+
+  SentimentVerySatisfiedIcon: <SentimentVerySatisfiedIcon
     color='success'
-    sx={{ fontSize: {xs:50,md:110 }, ":hover": { backgroundColor: '#99FFDF' }, borderRadius: 3, p: 1 }}
+    sx={{ 
+      fontSize: { xs: 24, sm: 32, md: 40 }, 
+      ":hover": { backgroundColor: '#99FFDF' }, 
+      borderRadius: 3, 
+      p: { xs: 0.3, sm: 0.4, md: 0.5 }
+    }}
   />,
 };
 
@@ -223,7 +250,12 @@ const SmileyRating = ({ onSaveForm, data, id, options, disableForm, disableText,
 
                       <TableCell
                         key={column.id}
-                        sx={{ width: 'auto ', overflowX: 'auto', position: 'relative', }}
+                        sx={{ 
+                          width: 'auto',
+                          overflowX: 'auto',
+                          position: 'relative',
+                          p: { xs: 1, sm: 2, md: 2 }  // Adjust padding for different screen sizes
+                        }}
                       >
 
                         <Box
@@ -254,18 +286,15 @@ const SmileyRating = ({ onSaveForm, data, id, options, disableForm, disableText,
                             }}
                             sx={{
                               '& .MuiInputBase-root': {
-                                fontSize: '0.8rem',
+                                fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' },
                               },
                               '& .MuiInput-underline:before': {
                                 borderBottom: 'none',
                               },
-                              // '& .MuiInput-underline:after': {
-                              //   borderBottom: 'none',
-                              // },
                               '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
                                 borderBottom: 'none',
                               },
-                              minWidth: { xs: 100, md: 100 },
+                              minWidth: { xs: 60, sm: 80, md: 100 },
                             }}
                             fullWidth
                             multiline
@@ -379,9 +408,16 @@ const SmileyRating = ({ onSaveForm, data, id, options, disableForm, disableText,
             </Stack>
           </Container>
 
-          <Container sx={{ display: { xs: "block", md: "none" } }} maxWidth='xl' >
+          <Container sx={{ display: { xs: "block", md: "none" }, px: { xs: 1, sm: 2 } }} maxWidth='xl' >
             <TextField
               fullWidth
+              size="small"
+              sx={{
+                '& .MuiInputBase-root': {
+                  fontSize: { xs: '0.9rem', sm: '1rem' }
+                },
+                mb: 2
+              }}
               id="standard-basic"
               label={!disableText ? "Insert input" : ''}
               variant="standard"
@@ -394,99 +430,110 @@ const SmileyRating = ({ onSaveForm, data, id, options, disableForm, disableText,
               multiline
             />
             {formData.options.map((row, rowIndex) => (
-              <Accordion>
+              <Accordion 
+                key={row.id}
+                sx={{
+                  mb: 1,
+                  '& .MuiAccordionSummary-root': {
+                    minHeight: { xs: 48, sm: 56 }
+                  }
+                }}
+              >
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1-content"
-                  id="panel1-header"
+                  sx={{
+                    '& .MuiTypography-root': {
+                      fontSize: { xs: '0.9rem', sm: '1rem' }
+                    }
+                  }}
                 >
-                  {row.rowQuestion}
+                  <TextField
+                    fullWidth
+                    size="small"
+                    placeholder={!disableText ? "Type Your Sub Question" : ''}
+                    variant="standard"
+                    value={row.rowQuestion}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      options: formData.options.map((item) => 
+                        item.id === row.id ? { ...item, rowQuestion: e.target.value } : item
+                      )
+                    })}
+                    InputProps={{ readOnly: disableText }}
+                  />
                 </AccordionSummary>
-                {formData.columnTextField.map((column, columnIndex) =>(
-        <AccordionDetails sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          width: '100%',
-          '&:hover .delete-button': {
-            visibility: 'visible',
-          },
-        }} >
-           <Radio
-                            disabled={disableForm}
-                            key={column.id}
-                            checked={formData.selectedValue[rowIndex].value === columnIndex}
-                            onChange={() => handleRadioChange(rowIndex, columnIndex)}
-                            size='small'
-                          />
-                            <Box 
+                
+                {formData.columnTextField.map((column, columnIndex) => (
+                  <AccordionDetails 
+                    key={column.id}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      py: 1,
+                      borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+                    }}
+                  >
+                    <Radio
+                      disabled={disableForm}
+                      checked={formData.selectedValue[rowIndex].value === columnIndex}
+                      onChange={() => handleRadioChange(rowIndex, columnIndex)}
+                      size="small"
+                    />
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center',
+                      gap: { xs: 1, sm: 2 },
+                      flex: 1
+                    }}>
+                      {column.icon === 'VD' ? iconMapping.SentimentVeryDissatisfiedIcon : column.icon === 'DD' ? iconMapping.SentimentDissatisfiedIcon : column.icon === 'NN' ? iconMapping.SentimentSatisfiedIcon : column.icon === 'SS' ? iconMapping.SentimentSatisfiedAltIcon : iconMapping.SentimentVerySatisfiedIcon}
+                      <TextField
+                        variant="standard"
+                        size="small"
+                        value={column.value}
                         sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          width: '100%',
-                          '&:hover .delete-button': {
-                            visibility: 'visible',
-                          },
+                          flex: 1,
+                          '& .MuiInputBase-root': {
+                            fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                          }
                         }}
-          >
-          {column.icon === 'VD' ? iconMapping.SentimentVeryDissatisfiedIcon : column.icon === 'DD' ? iconMapping.SentimentDissatisfiedIcon : column.icon === 'NN' ? iconMapping.SentimentSatisfiedIcon : column.icon === 'SS' ? iconMapping.SentimentSatisfiedAltIcon : iconMapping.SentimentVerySatisfiedIcon}
-
-          <TextField 
-          key={column.id}
-          id="standard-basic"
-          placeholder={!disableText ? "Type Your Response Here" : ''} variant="standard"
-          name='columnTextField'
-          value={column.value}
-          onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
-          InputProps={{
-            readOnly: disableText,
-            inputProps: {
-              style: { textAlign: 'center' }, // Center the text
-            },
-          }}
-          sx={{
-            '& .MuiInputBase-root': {
-              fontSize: '0.8rem',
-            },
-            '& .MuiInput-underline:before': {
-              borderBottom: 'none',
-            },
-            // '& .MuiInput-underline:after': {
-            //   borderBottom: 'none',
-            // },
-            '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-              borderBottom: 'none',
-            },
-            minWidth: { xs: 100, md: 100 },
-          }}
-          fullWidth
-          multiline
-        />
-
-          </Box>
-
-          </AccordionDetails>
+                        id="standard-basic"
+                        placeholder={!disableText ? "Type Your Response Here" : ''}
+                        name='columnTextField'
+                        onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
+                        InputProps={{
+                          readOnly: disableText,
+                        }}
+                      />
+                    </Box>
+                  </AccordionDetails>
                 ))}
-
               </Accordion>
             ))}
           </Container>
-          <Stack direction="row" spacing={2}  sx={{
-                            marginTop: '1rem',
-                        }}>
-
-
-
-{disableButtons && <Button
-  variant='contained'
-  color="success"
-  onClick={handleSaveForm}>
-  Next Question
-</Button>}
-
-
-</Stack>
+          <Stack 
+            direction="row" 
+            spacing={2}
+            sx={{
+              mt: 2,
+              px: { xs: 1, sm: 2 },
+              justifyContent: 'center'
+            }}
+          >
+            {disableButtons && (
+              <Button
+                variant='contained'
+                color="success"
+                size="small"
+                fullWidth
+                sx={{ maxWidth: { sm: 200 } }}
+                onClick={handleSaveForm}
+              >
+                Next Question
+              </Button>
+            )}
+          </Stack>
         </Box>
         
       </Container>

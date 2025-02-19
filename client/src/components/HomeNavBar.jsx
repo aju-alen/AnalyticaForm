@@ -110,14 +110,14 @@ function HomeNavBar() {
             </Button>
             <Button
               color="inherit"
-              onClick={() => navigate('/menu2')}
+              onClick={() => navigate('/features')}
               sx={styles.button}
             >
               Features
             </Button>
             <Button
               color="inherit"
-              onClick={() => navigate('/menu3')}
+              onClick={() => navigate('/pricing')}
               sx={styles.button}
             >
               Pricing

@@ -18,6 +18,7 @@ import SecurityIcon from '@mui/icons-material/Security';
 import LanguageIcon from '@mui/icons-material/Language';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HomeNavBar from '../components/HomeNavBar';
 
 const About = () => {
   const navigate = useNavigate();
@@ -64,6 +65,8 @@ const About = () => {
   ];
 
   return (
+    <div className="">
+    <HomeNavBar/>
     <Box sx={{ bgcolor: 'background.default', pt: 8, pb: 12, backgroundImage: 'radial-gradient(ellipse 100% 200% at 50% 5%, hsl(210, 100%, 90%), transparent)', }}>
       {/* Hero Section */}
       <Container maxWidth="lg">
@@ -171,6 +174,7 @@ const About = () => {
         </Box>
       </Container>
     </Box>
+    </div>
   );
 };
 

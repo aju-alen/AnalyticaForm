@@ -31,6 +31,7 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDataChanged }) {
   console.log(userSurveyData,'--userSurveyData--');
@@ -38,20 +39,26 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
 
+  const [isloading, setIsLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [surveyId, setSurveyId] = React.useState('');
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [loadingSurveyId, setLoadingSurveyId] = React.useState(null);
 
-
-
-  const handleChangeSelect = async(event,surveyId) => {
-    const updateSurveyStatus = await axiosWithAuth.put(`${backendUrl}/api/survey/update-survey-status/${surveyId}`,{surveyStatus:event.target.value});
-    
-    console.log(event.target.value);
-    handleDataChanged(prev=>!prev);
-    
+  const handleChangeSelect = async(event, surveyId) => {
+    try {
+      setLoadingSurveyId(surveyId);
+      const updateSurveyStatus = await axiosWithAuth.put(`${backendUrl}/api/survey/update-survey-status/${surveyId}`,{surveyStatus:event.target.value});
+      handleDataChanged(prev=>!prev);
+    }
+    catch(err) {
+      console.log(err)
+    }
+    finally {
+      setLoadingSurveyId(null);
+    }
   };
   const openMenu = Boolean(anchorEl);
   const handleClickMenu = (event,surveyId) => {
@@ -83,12 +90,15 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
 
   const handleDeleteSurvey = async (surveyId) => {
     try {
+      setIsLoading(true);
       await refreshToken();
       const deleteSurvey = await axiosWithAuth.delete(`${backendUrl}/api/survey/delete-survey/${surveyId}`);
       console.log('delete survey', deleteSurvey);
       setDeleteOpen(false);
       onDeleteSurvey(surveyId);
+      setIsLoading(false);
     } catch (err) {
+      setIsLoading(false);
       if (err.response.status === 401) {
         console.log('unauthorized');
         localStorage.removeItem('userAccessToken');
@@ -102,11 +112,14 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
   const handleConvertToExcelAnswer = async (surveyId) => {
     console.log(surveyId);
     try {
+      setIsLoading(true);
       await refreshToken();
       const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
       console.log(getAllUserResponse.data,'--getAllUserResponse--asjhdajhsbd');
       if (getAllUserResponse.data.length === 0) {
         alert('No response available for this survey');
+        setIsLoading(false);
+        handleClose();
         return;
       }
       
@@ -122,7 +135,11 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
       a.download = `${getAllUserResponse.data[0]["survey"].surveyTitle} Answers.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
+      setIsLoading(false);
+      handleClose();
     } catch (err) {
+      setIsLoading(false);
+      handleClose();
       if (err.response.status === 401) {
         console.log('unauthorized');
         localStorage.removeItem('userAccessToken');
@@ -135,11 +152,14 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
   const handleConvertToExcelIndex = async (surveyId) => {
     console.log(surveyId);
     try {
+      setIsLoading(true);
       await refreshToken();
       const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
       console.log(getAllUserResponse.data,'--getAllUserResponse--');
       if (getAllUserResponse.data.length === 0) {
         alert('No response available for this survey');
+        setIsLoading(false);
+        handleClose();
         return;
       }
       
@@ -153,7 +173,11 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
       a.download = `${getAllUserResponse.data[0]["survey"].surveyTitle} Index.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
+      setIsLoading(false);
+      handleClose();
     } catch (err) {
+      setIsLoading(false);
+      handleClose();
       if (err.response.status === 401) {
         console.log('unauthorized');
         localStorage.removeItem('userAccessToken');
@@ -207,8 +231,12 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           onChange={(event)=>handleChangeSelect(event,survey.id)}
           variant='standard'
         >
-          <MenuItem value={'Active'}>Active</MenuItem>
-          <MenuItem value={'Disable'}>Inactive</MenuItem>
+          <MenuItem value={'Active'}>
+            {loadingSurveyId === survey.id ? <CircularProgress size={20} /> : "Active"}
+          </MenuItem>
+          <MenuItem value={'Disable'}>
+            {loadingSurveyId === survey.id ? <CircularProgress size={20} /> : "Inactive"}
+          </MenuItem>
         </Select>
                     </TableCell>
                     <TableCell align="center">{survey.surveyResponses}</TableCell>
@@ -254,7 +282,8 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
   }}
   color="error"
 >
-  Delete
+  {isloading? <CircularProgress color='error' /> :"Delete"}
+
 </Button>
                           <Button onClick={handleClose} variant="contained">
                             Cancel
@@ -274,10 +303,10 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                         </DialogContent>
                         <DialogActions>
                           <Button onClick={() => handleConvertToExcelAnswer(surveyId)} color="primary">
-                            Display as Answers
+                           { isloading? <CircularProgress /> :"Display as Answers"}
                           </Button>
                           <Button onClick={() => handleConvertToExcelIndex(surveyId)} color="primary">
-                            Display as Index
+                            {isloading?"" :"Display as Index"}
                           </Button>
                           <Button onClick={handleClose} color="secondary">
                             Cancel

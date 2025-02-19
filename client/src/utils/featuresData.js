@@ -1,6 +1,39 @@
  const featuresData = [
     {
       title: "MultiScale Questions",
+      description: "Capture responses on a scale with flexible answer options.",
+      icon: "📊"
+    },
+    {
+      title: "Sentimental Analysis",
+      description: "Move beyond basic text-based responses.",
+      icon: "🎯"
+    },
+    {
+      title: "Ready-made Templates",
+      description: "No need to start from scratch!",
+      icon: "📝"
+    },
+    {
+      title: "Advanced Mathematical Inputs",
+      description: "Need to collect numerical or scientific data? ",
+      icon: "🔢"
+    },
+    {
+      title: "Targeted Respondents Database",
+      description: "Access a pre-vetted pool of real respondents. ",
+      icon: "👥"
+    }
+  ]
+
+  export default featuresData;
+
+
+
+
+  export const featuresDataInFeaturePage = [
+    {
+      title: "MultiScale Questions",
       description: "Capture responses on a scale with flexible answer options. Whether you need single or multiple selections, our intuitive system allows respondents to express their preferences with precision—perfect for market research, customer feedback, and employee evaluations.",
       icon: "📊"
     },
@@ -25,5 +58,3 @@
       icon: "👥"
     }
   ]
-
-  export default featuresData;

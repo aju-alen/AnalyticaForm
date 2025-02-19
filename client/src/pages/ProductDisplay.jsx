@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-
+import HomeNavBar from '../components/HomeNavBar';
 
 
 const tiers = [
@@ -93,7 +93,11 @@ const ProductDisplayy = () => {
     console.log(userId, 'userId');
  
   return (
-    <div className="h-auto w-auto bg-slate-200 ">
+    <Box>
+    <HomeNavBar/>
+    <Box sx={{
+      bgcolor: 'background.default', pt: 8, pb: 12, backgroundImage: 'radial-gradient(ellipse 100% 200% at 50% 5%, hsl(210, 100%, 90%), transparent)',
+    }}>
 
       <Container
         id="pricing"
@@ -105,6 +109,7 @@ const ProductDisplayy = () => {
           flexDirection: 'column',
           alignItems: 'center',
           gap: { xs: 3, sm: 6 },
+         
         }}
       >
         <Box
@@ -253,7 +258,8 @@ const ProductDisplayy = () => {
           ))}
         </Grid>
       </Container>
-    </div>
+    </Box>
+    </Box>
 
 
   )

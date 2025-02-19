@@ -5,11 +5,8 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import { Stack } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
-import ClearIcon from '@mui/icons-material/Clear';
 import Button from '@mui/material/Button';
 import { uid } from 'uid';
-import theme from '../utils/theme';
-import { ThemeProvider } from '@mui/material/styles';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 
@@ -338,12 +335,12 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                Next Question
             </Button>}
 
-            {!disableButtons && <Button
+            {/* {!disableButtons && <Button
               variant='contained'
               color="primary"
               onClick={handleMandateForm}>
                Mandate This Form
-            </Button>}
+            </Button>} */}
 
           </Stack>
         </Box>

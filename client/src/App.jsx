@@ -13,7 +13,7 @@ TagManager.initialize(tagManagerArgs);
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const hideNavBarPages = ['/', '/register', '/login', '/forget-password'];
+  const hideNavBarPages = ['/', '/register', '/login', '/forget-password','/about','/features','/pricing'];
   const hideFooterPages = ['/user-survey'];
   const isDynamicRoute = (path) => /^\/user-survey\/.+$/.test(path);
   const shouldHideNavBar = hideNavBarPages.includes(location.pathname) || isDynamicRoute(location.pathname);
@@ -50,7 +50,7 @@ const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const UserMarket = lazy(() => import('./pages/UserMarket'));
 const About = lazy(() => import('./pages/About'));
-
+const FeaturesHome = lazy(() => import('./pages/FeaturesHome'));
 
 const App = () => {
 
@@ -172,6 +172,10 @@ const App = () => {
         {
           path: "/about",
           element:  <About /> // Wrap Dashboard inside non-protected Route
+        },
+        {
+          path: "/features",
+          element:  <FeaturesHome /> // Wrap Dashboard inside non-protected Route
         },
         {
           path: "/404",

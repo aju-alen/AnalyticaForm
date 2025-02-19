@@ -1,4 +1,3 @@
-
 import React,{useState} from 'react'
 import { Link } from 'react-router-dom'
 import theme from '../utils/theme'
@@ -69,55 +68,61 @@ const Footer = () => {
     <Container 
       maxWidth={false}
       sx={{ 
-        // backgroundImage: 'radial-gradient(ellipse 100% 200% at 50% 5%, hsl(210, 100%, 90%), transparent)',
-        // backgroundRepeat: 'no-repeat',
-        // backgroundSize: 'cover',
         backgroundColor:'#E0ECF5',
         color: '#495057', 
         width: '100%',
+        padding: { xs: '20px', md: '40px' }
       }}
     > 
-    <Stack 
-      direction={{ xs: 'column', md: 'row' }} 
-      spacing={2} 
-    >
-
-      <Stack 
-        direction="column" 
-        spacing={1}
-      >
-        <Container maxWidth='md' sx={{
-          marginLeft: {xs:'10px'},
-        }}>
-        <img
+     <img
               src="https://i.postimg.cc/hG57FFyC/Untitled-design-1-removebg-preview.png"
               style={{
                 width: '240px',
                 height: '120px',
-                marginLeft: {xs:'40px',md:'114px'},
+                marginLeft: 0,
                 cursor: 'pointer',
-              }
-              }
+              }}
               alt="logo of sitemark"
               onClick={() => navigate('/')}
             />
+    <Stack 
+      direction={{ xs: 'column-reverse', md: 'row' }} 
+      spacing={{ xs: 4, md: 2 }}
+      alignItems={{ xs: 'center', md: 'flex-start' }}
+    >
+
+      <Stack 
+        direction="column" 
+        spacing={2}
+        sx={{ width: { xs: '100%', md: 'auto' } }}
+      >
+        <Container maxWidth='md' sx={{
+          marginLeft: { xs: '0', md: '10px' },
+          padding: { xs: '0 20px', md: '0' }
+        }}>
+       
         <Typography sx={{
           color: '#000',
           fontSize: '0.8rem',
           textAlign: 'justify',
-          width: {xs:'80%',md:'70%'},
-          marginLeft: {xs:'10px',md:'114px'}
-
+          width: { xs: '100%', md: '80%' },
+          marginLeft: 0,
+          marginTop: { xs: '20px', md: '100px' }
         }}
         align=''
         >
-        Dubai Analytica is revolutionising data collection with advanced online survey solutions designed for businesses, researchers, and organisations. Our survey software offers a user-friendly interface, is analytics-enabled, and strong data security, Dubai Analytica enables users to create customized surveys that gather valuable insights efficiently. With pre-built templates, diverse question types, and powerful response analysis, the platform simplifies the process of collecting and interpreting data. Whether you’re seeking customer feedback, conducting market research, or assessing employee satisfaction, Dubai Analytica helps turn survey data into actionable strategies that drive growth and enhance decision-making.
+        Dubai Analytica is revolutionising data collection with advanced online survey solutions designed for businesses, researchers, and organisations. Our survey software offers a user-friendly interface, is analytics-enabled, and strong data security, Dubai Analytica enables users to create customized surveys that gather valuable insights efficiently. With pre-built templates, diverse question types, and powerful response analysis, the platform simplifies the process of collecting and interpreting data. Whether you're seeking customer feedback, conducting market research, or assessing employee satisfaction, Dubai Analytica helps turn survey data into actionable strategies that drive growth and enhance decision-making.
         </Typography>
-        <Stack direction='row' spacing={2} sx={{
-          marginTop: '40px',
-          color: '#000',
-          marginLeft: {xs:'10px',md:'114px'}
-        }}>
+        <Stack 
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2} 
+          sx={{
+            marginTop: '40px',
+            color: '#000',
+            marginLeft: 0,
+            alignItems: { xs: 'center', sm: 'flex-start' }
+          }}
+        >
         <Typography fontSize='0.8rem'>
           <Link to='dapp/privacy-policy'>Privacy Policy</Link>
         </Typography>
@@ -131,7 +136,9 @@ const Footer = () => {
         <Typography sx={{
           color: '#000',
           fontSize: '0.8rem',
-          marginLeft: {xs:'10px',md:'114px'}
+          marginLeft: 0,
+          textAlign: { xs: 'center', md: 'left' },
+          marginTop: { xs: '20px', md: '10px' }
         }}>
           Copyright © 2024 <Link to='/' >Dubai Analytica</Link>
         </Typography>
@@ -140,6 +147,8 @@ const Footer = () => {
       </Stack>
 
       <Container maxWidth='sm' sx={{
+        width: { xs: '100%', md: '100%' },
+        padding: { xs: '0 20px', md: '0' }
       }}>
           <FormControl fullWidth>
             <div className="mt-5">
@@ -184,9 +193,12 @@ const Footer = () => {
             <Button 
              variant="contained"
              onClick={handleSubmitContact}
-             sx={{ mt: 3,
+             sx={{ 
+               mt: 3,
                mb: 2,
-                width: {xs: '100%',md: '30%'} }}
+                width: { xs: '100%', sm: '50%', md: '30%' },
+                alignSelf: { xs: 'center', md: 'flex-start' }
+             }}
              >
               Send Message
             </Button>

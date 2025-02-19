@@ -195,13 +195,15 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                             multiline
                         />
 
-<Stack spacing={6} sx={{
-                        width: '90%',
-                        marginY: '1rem',
+<Stack spacing={{ xs: 3, md: 6 }} sx={{
+                        width: { xs: '100%', md: '90%' },
+                        marginY: { xs: '0.5rem', md: '1rem' },
                         marginX: 'auto',
                     }} >
                             {formData.options.map((option) => (
-                                <Stack direction="column" spacing={2} key={option.id}>
+                                <Stack direction={{ xs: "column", md: "column" }}
+                                      spacing={{ xs: 1, md: 2 }}
+                                      key={option.id}>
                                      <TextField
                                         fullWidth
                                         id="standard-basic"
@@ -231,18 +233,15 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                                         }}
                                         sx={{
                                             '& .MuiInputBase-root': {
-                                                fontSize: '0.8rem',
+                                                fontSize: { xs: '0.75rem', md: '0.8rem' },
                                             },
                                             '& .MuiInput-underline:before': {
                                                 borderBottom: 'none',
                                             },
-                                            // '& .MuiInput-underline:after': {
-                                            //   borderBottom: 'none',
-                                            // },
                                             '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
                                                 borderBottom: 'none',
                                             },
-                                            width: {xs:'100%',md:'30%'},
+                                            width: { xs: '100%', md: '30%' },
                                         }}
                                     />
 
@@ -250,8 +249,9 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                                     sx={{
                                         position: 'relative',
                                         display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
+                                        flexDirection: { xs: 'column', md: 'row' },
+                                        alignItems: { xs: 'flex-start', md: 'center' },
+                                        gap: { xs: 2, md: 0 },
                                         width: '100%',
                                         '&:hover .delete-button': {
                                             visibility: 'visible',
@@ -264,7 +264,8 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                                                fullWidth
                                                size='small'
                                                sx={{
-                                                   width: {xs:'30%',md:'20%'},
+                                                   width: { xs: '100%', md: '20%' },
+                                                   mb: { xs: 1, md: 0 },
                                                }}
                                                type="number"
                                                value={formData.selectedValue.find(opt => opt.id === option.id).answer}
@@ -278,7 +279,7 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                                             aria-labelledby="input-slider"
                                             disabled={disableForm}
                                             sx={{
-                                                width: '50%',
+                                                width: { xs: '100%', md: '50%' },
                                             }}
                                             size='medium'
                                         />
@@ -311,9 +312,13 @@ const NumericSlider = ({ onSaveForm, data, id, options, disableForm, disableText
                             }
                         </Stack>
 
-                        <Stack spacing={2} direction='row'  sx={{
-                            marginTop: '1rem',
-                        }}>
+                        <Stack 
+                            spacing={{ xs: 1, md: 2 }} 
+                            direction={{ xs: 'column', md: 'row' }}
+                            sx={{
+                                marginTop: { xs: '0.5rem', md: '1rem' },
+                                width: { xs: '100%', md: 'auto' },
+                            }}>
                         {!disableButtons && (
                             <Button
                                 onClick={handleAddOptions}

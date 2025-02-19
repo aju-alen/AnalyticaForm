@@ -166,7 +166,7 @@ const UserMarket = () => {
 
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
           {data.map((item) => {
             const value = item[currentStep.key];
             const isSelected = selections.includes(value);
@@ -263,21 +263,19 @@ const UserMarket = () => {
     };
 
     return (
-      <div
-        className="text-center space-y-6"
-      >
-{ finalUsersCount < 1000 || finalUsersCount > 14000 ?(
-   <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg text-white">
-   <h2 className="text-xl font-semibold mb-2">Yes! We can cater to your needs</h2>
-   <div className="text-xl font-bold">Talk to our sales team to get you sorted</div>
-   <Button
-    variant="contained"
-   className="text-blue-100 mt-2"
-   onClick={() => navigate('/contact-us')}
-   >Contact Sales</Button>
- </div>
-)
-:       <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg text-white">
+      <div className="text-center space-y-4 md:space-y-6">
+        {finalUsersCount < 1000 || finalUsersCount > 14000 ?(
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg text-white">
+            <h2 className="text-xl font-semibold mb-2">Yes! We can cater to your needs</h2>
+            <div className="text-xl font-bold">Talk to our sales team to get you sorted</div>
+            <Button
+              variant="contained"
+              className="text-blue-100 mt-2"
+              onClick={() => navigate('/contact-us')}
+            >Contact Sales</Button>
+          </div>
+        )
+        :       <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg text-white">
           <h2 className="text-2xl font-semibold mb-2">Total Addressable Market</h2>
           <div className="text-5xl font-bold">{finalUsersCount.toLocaleString()}</div>
           <p className="text-blue-100 mt-2">Estimated Users</p>
@@ -340,9 +338,7 @@ const UserMarket = () => {
                     )}
                   </ul>
                 </div>
-                {/* <form action="https://analyticaform-api.onrender.com/api/stripe/market/create-checkout-session" method="POST"> */}
                 <form action="http://localhost:3001/api/stripe/market/create-checkout-session" method="POST">
-                  {/* Add a hidden field with the lookup_key of your Price */}
                   <input type="hidden" name="userId" value={userData.id} />
                   <input type="hidden" name="emailId" value={userData.email} />
                   <input type="hidden" name="amount" value={price} />
@@ -353,8 +349,18 @@ const UserMarket = () => {
                   <input type="hidden" name="selectedPositions" value={selectedPositions} />
                   <input type="hidden" name="selectedExperience" value={selectedExperience} />
                   <input type="hidden" name="currency" value='aed' />
-                  <button id="checkout-and-portal-button" type="submit" variant='contained'>
+                  <button 
+                    id="checkout-and-portal-button" 
+                    type="submit"
+                    className="w-full mt-4 px-6 py-3 bg-blue-500 text-white rounded-lg
+                      font-medium transition-all duration-200 hover:bg-blue-600
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                      disabled:opacity-50 disabled:cursor-not-allowed
+                      shadow-sm hover:shadow-md
+                      flex items-center justify-center gap-2"
+                  >
                     Proceed to checkout
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </form>
               </div>
@@ -362,14 +368,7 @@ const UserMarket = () => {
             
           )}
         </div>}
-        {/* 
-        selectedRegions,
-  selectedIndustries,
-  selectedEducationLevels,
-  selectedPositions,
-  selectedExperience, */}
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
           {[
             { label: "Regions", count: selectedRegions.length },
             { label: "Industries", count: selectedIndustries.length },
@@ -564,10 +563,10 @@ const UserMarket = () => {
           ))}
         </Box>
       </Box>
-      <div className="max-w-6xl mx-auto px-4 flex gap-8">
+      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-8">
         {/* Main Content Card */}
-        <div className="bg-white rounded-xl shadow-xl p-8 flex-1 transition-all duration-300 hover:shadow-2xl">
-          <h1 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+        <div className="bg-white rounded-xl shadow-xl p-4 md:p-8 flex-1 transition-all duration-300 hover:shadow-2xl">
+          <h1 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
             Sample Size Calculator
           </h1>
 
@@ -583,7 +582,7 @@ const UserMarket = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
-            className="min-h-[400px]"
+            className="min-h-[300px] md:min-h-[400px]"
           >
             {activeStep === steps.length ? (
               <ResultsView />
@@ -629,9 +628,10 @@ const UserMarket = () => {
           </motion.div>
         </div>
 
-        {/* Vertical Slider with improved styling */}
+        {/* Vertical Slider - Hide on mobile, show on md and up */}
         <Box
           sx={{
+            display: { xs: 'none', md: 'block' },
             position: 'relative',
             width: '159px',
             height: '1015px',

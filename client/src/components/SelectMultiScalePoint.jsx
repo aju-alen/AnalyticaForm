@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, CssBaseline, Container, Box, Stack, Radio, Button } from '@mui/material';
+import { TextField, CssBaseline, Container, Box, Stack, Radio, Button, Typography } from '@mui/material';
 import { uid } from 'uid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -123,7 +123,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container sx={{ display: { xs: "none", md: "block" } }} maxWidth='xl' >
+      <Container maxWidth='xl'>
         <Box sx={{
           bgcolor: 'white',
           display: 'flex',
@@ -132,35 +132,33 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           justifyContent: 'space-between',
           flexGrow: 1,
           height: "100%",
-          mt: { xs: 4, md: 0 },
+          mt: { xs: 2, sm: 3, md: 0 },
           width: '100%',
-          boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
-          borderRadius: 2, // Increased border radius for rounded corners
-          p: 2, // Increased padding for inner content
+          boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)',
+          borderRadius: 2,
+          p: { xs: 1, sm: 2 },
           overflowX: 'auto',
-          border: '2px solid #f0fbf0', // Added border for more distinction
-          transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
-          position: 'relative', // Make sure the box is positioned relative for the pseudo-element
+          border: '2px solid #f0fbf0',
           backgroundColor: '#F4F3F6',
           '&::before': {
             content: '""',
             position: 'absolute',
             top: 0,
-            left: '0%', // Set initial left position for the line
+            left: '0%',
             transform: 'translateX(-50%)',
             height: '100%',
-            width: '12px', // Adjust the width of the line
-            bgcolor: '#1976d2', // Change to your desired color
-            opacity: 0, // Initially hidden
-            transition: 'opacity 0.3s ease-in-out', // Smooth transition for the line
+            width: '12px',
+            bgcolor: '#1976d2',
+            opacity: 0,
+            transition: 'opacity 0.3s ease-in-out',
           },
 
           '&:hover::before': {
-            opacity: 1, // Make the lines visible on hover
+            opacity: 1,
           },
           '&:hover': {
-            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)', // Updated box shadow on hover
-            transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
+            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)',
+            transform: 'scale(0.98)',
             backgroundColor: '#F4FFF8',
           },
         }}>
@@ -172,9 +170,9 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
             variant="standard"
             sx={{
               '& .MuiInputBase-root': {
-
-                fontSize: '1.3rem',
-              }
+                fontSize: { xs: '1rem', sm: '1.1rem', md: '1.3rem' },
+              },
+              mb: { xs: 2, sm: 3 }
             }}
             name='question'
             value={formData.question}
@@ -183,12 +181,11 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
               readOnly: disableText,
             }}
           />
-          <div style={{ width: '100%' }}>
-            <Table
-              sx={{ minWidth: 650 }}
-              aria-label="simple table">
+          
+          {/* Desktop/Tablet View */}
+          <Box sx={{ display: { xs: 'none', sm: 'block' }, width: '100%' }}>
+            <Table sx={{ minWidth: { sm: 500, md: 650 } }}>
               <TableHead>
-
                 <TableRow>
                   <TableCell
                     colSpan={1}
@@ -198,10 +195,8 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                       key={column.id}
                       sx={{ width: 'auto ', overflowX: 'auto', position: 'relative', }}
                     >
-
                       <Box
                         sx={{
-
                           display: 'flex',
                           alignItems: 'center',
                           width: '100%',
@@ -227,9 +222,6 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                             '& .MuiInput-underline:before': {
                               borderBottom: 'none',
                             },
-                            // '& .MuiInput-underline:after': {
-                            //   borderBottom: 'none',
-                            // },
                             '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
                               borderBottom: 'none',
                             },
@@ -251,10 +243,8 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                               bottom: '0%',
                               visibility: 'hidden',
                               transition: 'visibility 0.1s ease-in-out',
-
                             }}
                             onClick={() => handleDeleteColumn(column.id)} />
-
                         )}
                       </Box>
                     </TableCell>
@@ -267,8 +257,6 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     key={row.id}
                   >
-
-
                     <TableCell component="th" scope="row" sx={{ width: '30%' }}>
                       <TextField
                         id="standard-basic"
@@ -287,9 +275,6 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                           '& .MuiInput-underline:before': {
                             borderBottom: 'none',
                           },
-                          // '& .MuiInput-underline:after': {
-                          //   borderBottom: 'none',
-                          // },
                           '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
                             borderBottom: 'none',
                           },
@@ -327,14 +312,65 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
               color="primary"
               size='small'
               onClick={handleAddRow}>Add Row</Button>)}
-          </div>
+          </Box>
 
-          <Stack direction="row" spacing={2} 
-           sx={{
-            marginTop: '1rem',
-        }}
+          {/* Mobile View */}
+          <Box sx={{ display: { xs: 'block', sm: 'none' }, width: '100%' }}>
+            {formData.options.map((row, rowIndex) => (
+              <Accordion 
+                key={row.id} 
+                sx={{
+                  mb: 1,
+                  '& .MuiAccordionSummary-content': {
+                    margin: '8px 0',
+                  }
+                }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                >
+                  <div className=" w-full">
+                    <h3>{row.rowQuestion}</h3>
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails sx={{ p: 1 }}>
+                  <Stack spacing={2}>
+                    {formData.columnTextField.map((column, columnIndex) => (
+                      <Box key={column.id} sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        p: 1,
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+                      }}>
+                        <Typography variant="body2" sx={{ flex: 1 }}>
+                          {column.value}
+                        </Typography>
+                        <Radio
+                          disabled={disableForm}
+                          checked={formData.selectedValue[rowIndex].value === columnIndex}
+                          onChange={() => handleRadioChange(rowIndex, columnIndex)}
+                          size="small"
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                </AccordionDetails>
+              </Accordion>
+            ))}
+          </Box>
+
+          <Stack 
+            direction={{ xs: 'column', sm: 'row' }} 
+            spacing={{ xs: 1, sm: 2 }}
+            sx={{
+              mt: 2,
+              width: '100%',
+              justifyContent: 'center'
+            }}
           >
-
             {!disableButtons && (<Button
               variant='outlined'
               color="primary"
@@ -348,159 +384,14 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
               Next Question
             </Button>}
 
-            {!disableButtons && <Button
+            {/* {!disableButtons && <Button
               variant='contained'
               color="primary"
               onClick={handleMandateForm}>
                Mandate This Form
-            </Button>}
-
+            </Button>} */}
           </Stack>
         </Box>
-      </Container>
-      <Container
-        sx={{ display: { xs: "block", md: "none" } }}
-      >
-     <Box sx={{
-        
-          bgcolor: 'white',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexGrow: 1,
-          height: "100%",
-          mt: { xs: 4, md: 0 },
-          width: '100%',
-          boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
-          borderRadius: 2, // Increased border radius for rounded corners
-          p: 2, // Increased padding for inner content
-          overflowX: 'auto',
-          border: '2px solid #f0fbf0', // Added border for more distinction
-          transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
-          position: 'relative', // Make sure the box is positioned relative for the pseudo-element
-          backgroundColor: '#F4F3F6',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: '0%', // Set initial left position for the line
-            transform: 'translateX(-50%)',
-            height: '100%',
-            width: '12px', // Adjust the width of the line
-            bgcolor: '#1976d2', // Change to your desired color
-            opacity: 0, // Initially hidden
-            transition: 'opacity 0.3s ease-in-out', // Smooth transition for the line
-          },
-
-          '&:hover::before': {
-            opacity: 1, // Make the lines visible on hover
-          },
-          '&:hover': {
-            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)', // Updated box shadow on hover
-            transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
-            backgroundColor: '#F4FFF8',
-          },
-        }}>
-          <TextField
-            fullWidth
-            id="standard-basic"
-            label={!disableText ? "Insert input" : ''}
-            variant="standard"
-            name='question'
-            multiline
-            value={formData.question}
-            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-            InputProps={{
-              readOnly: disableText,
-            }}
-          />
-          <div style={{ width: '100%' }}>
-            {formData.options.map((row, rowIndex) => (
-              <Accordion key={row.id} sx={{
-                overflowX: 'auto',
-              }}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1-content"
-                  id="panel1-header"
-                >
-                  <div className=" w-full">
-                    <h3>{row.rowQuestion}</h3>
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div className="">
-                    <Table
-                      sx={{ minWidth: 650 }}
-                      aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          {formData.columnTextField.map((column) => (
-                            <TableCell
-                              key={column.id}
-                              sx={{ width: 'auto ', overflowX: 'auto', }}>
-                              <Stack direction="column" spacing={2} >
-                                <TextField
-                                  key={column.id}
-                                  id="standard-basic"
-                                  label={!disableText ? "Type Your Response Here" : ''} variant="standard"
-                                  name='columnTextField'
-                                  value={column.value}
-                                  onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
-                                  InputProps={{
-                                    readOnly: disableText,
-                                  }}
-                                  fullWidth
-                                  multiline
-                                />
-                              </Stack>
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          {row.columns.map((column, columnIndex) =>
-                            <TableCell key={column.id} align='center' >
-                              <Radio
-                                disabled={disableForm}
-                                key={column.id}
-                                checked={formData.selectedValue[rowIndex].value === columnIndex}
-                                onChange={() => handleRadioChange(rowIndex, columnIndex)}
-                              />
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
-                </AccordionDetails>
-              </Accordion>
-            ))}
-          </div>
-          <Stack direction="row" spacing={2}>
-            {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddColumn}>Add Column</Button>)}
-            <Button
-              variant='contained'
-              color="success"
-              onClick={handleSaveForm}>
-              {!disableButtons ? 'Save This Form' : 'Next Question'}
-            </Button>
-            {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddRow}>Add Row</Button>)}
-          </Stack>
-        </Box>
-
       </Container>
     </React.Fragment>
   )

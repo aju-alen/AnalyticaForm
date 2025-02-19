@@ -119,7 +119,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
   width: '100%',
   boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
   borderRadius: 2, // Increased border radius for rounded corners
-  p: 2, // Increased padding for inner content
+  p: { xs: 1, sm: 2 },
   overflowX: 'auto',
   border: '2px solid #f0fbf0', // Added border for more distinction
   transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
@@ -146,6 +146,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
     backgroundColor:'#F4FFF8',
   },
+  mx: 'auto',
 }}>
           <Box sx={{
             position: 'relative',
@@ -207,8 +208,9 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
           </Button> */}
 
           <Stack spacing={1} sx={{
-            width: { xs: '100%', md: '20%' },
+            width: { xs: '100%', sm: '80%', md: '60%' },
             marginRight: 'auto',
+            mt: { xs: 2, sm: 3 },
           }} >
             {formData.options.map((option) => (
              <Stack direction="row" spacing={2} key={option.id}>
@@ -314,7 +316,8 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
             {!disableButtons && (
               <Button
                 sx={{
-                  width: '70%',
+                  width: { xs: '100%', sm: '30%' },
+                  mt: { xs: 1, sm: 2 }
                 }}
                 onClick={handleAddOptions}
                 variant='outlined'
@@ -323,31 +326,28 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
               >Add new row</Button>
             )}
           </Stack>
-          <Stack spacing={2} direction='row' sx={{
-                            marginTop: '1rem',
-                        }}
-                        >
-            {/* {!disableButtons && (
-              <Button
-                onClick={handleAddOptions}
-                variant='outlined'
-                color="primary"
-                size="small"
-              >Add new row</Button>
-            )} */}
-
+          <Stack 
+            spacing={{ xs: 1, sm: 2 }}
+            direction={{ xs: 'column', sm: 'row' }}
+            sx={{
+              marginTop: { xs: '0.5rem', sm: '1rem' },
+              width: '100%',
+              justifyContent: { xs: 'center', sm: 'flex-start' },
+              alignItems: 'center',
+            }}
+          >
             {disableButtons &&<Button
               variant='contained'
               color="success"
               onClick={handleSaveForm}>
                Next Question
             </Button>}
-            {!disableButtons && <Button
+            {/* {!disableButtons && <Button
               variant='contained'
               color="primary"
               onClick={handleMandateForm}>
                Mandate This Form
-            </Button>}
+            </Button>} */}
           </Stack>
         </Box>
       </Container>

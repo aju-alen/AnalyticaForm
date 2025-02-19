@@ -102,7 +102,7 @@ const ResponsiveAppBar = () => {
               <img
                 src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png"
                 alt="Dubai Analytica"
-                style={{ height: '40px', width: 'auto' }}
+                style={{ height: '70px', width: 'auto' }}
               />
             </Box>
 

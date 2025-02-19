@@ -10,8 +10,6 @@ import TagManager from "react-gtm-module";
 import { useEffect } from 'react';
 
 
-
-
 export default function Home() {
   const location = useLocation();
 
