@@ -24,6 +24,8 @@ import IconButton from '@mui/material/IconButton';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import Grid from '@mui/material/Grid';
 import featuresData from '../utils/featuresData';
+import ReactWhatsapp from 'react-whatsapp';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 const buttonPulse = keyframes`
   0% { transform: scale(1); }
@@ -1088,8 +1090,32 @@ const Hero = () => {
                             </CardContent>
                             
                         </Card>
-
                     </Stack>
+                        <ReactWhatsapp 
+                          number="+971582652808" 
+                          message="Hello! I'm interested in Dubai Analytica's survey solutions." 
+                          element="button"
+                          style={{
+                            position: 'fixed',
+                            bottom: '20px',
+                            right: '20px',
+                            backgroundColor: '#25D366',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '60px',
+                            height: '60px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            transition: 'all 0.3s ease',
+                            zIndex: 1000,
+                          }}
+                        >
+                          <WhatsAppIcon sx={{ fontSize: 32 }} />
+                        </ReactWhatsapp>
                 </Container>
             </Container>
         </Box>
