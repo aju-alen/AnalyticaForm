@@ -4,7 +4,7 @@ export default function SEO({title, description, name, type,schema,surveyImage,s
 return (
 <Helmet>
 { /* Standard metadata tags */ }
-<title>{`Dubai Analytica - ${title}`}</title>
+<title>{`Dubai Analytica: ${title}`}</title>
 <meta name='robots' content={robotText || 'index, follow'} />
 <meta name='description' content={description} />
 { /* End standard metadata tags */ }

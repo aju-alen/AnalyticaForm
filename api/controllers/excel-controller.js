@@ -32,12 +32,14 @@ const createHeadersAndSubHeaders = (formQuestions) => {
 
 // Function to add headers to a worksheet with custom styles
 const addHeadersToWorksheet = (worksheet, headers) => {
-    const headerRow = worksheet.addRow(headers);
-    headerRow.height = 70;
+    const headerRow = worksheet.addRow(headers.map(header => 
+        header
+    ));
+    headerRow.height = 35;
     headerRow.eachCell((cell, colNumber) => {
-        worksheet.getColumn(colNumber).width = headers[colNumber - 1].length + 5;
-        cell.font = { bold: true, size: 12, name: 'Arial', color: { argb: 'FFFFFFFF' } };
-        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        worksheet.getColumn(colNumber).width = 15; // Fixed width for all columns
+        cell.font = { bold: true, size: 11, name: 'Arial', color: { argb: 'FFFFFFFF' } };
+        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: false }; // Disabled text wrapping
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF008080' } };
         cell.border = {
             top: { style: 'thin' },
@@ -50,10 +52,14 @@ const addHeadersToWorksheet = (worksheet, headers) => {
 
 // Function to add sub-headers to a worksheet with custom styles
 const addSubHeadersToWorksheet = (worksheet, subHeaders) => {
-    const subHeaderRow = worksheet.addRow(subHeaders);
-    subHeaderRow.eachCell((cell) => {
+    const subHeaderRow = worksheet.addRow(subHeaders.map(header => 
+        header.length > 20 ? header.substring(0, 17) + '...' : header
+    ));
+    subHeaderRow.height = 25;
+    subHeaderRow.eachCell((cell, colNumber) => {
+        worksheet.getColumn(colNumber).width = 15; // Fixed width for all columns
         cell.font = { size: 9, name: 'Arial' };
-        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: false }; // Disabled text wrapping
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0FFFF' } };
         cell.border = {
             top: { style: 'thin' },
@@ -79,6 +85,107 @@ const styleUserRow = (userRow) => {
     });
 };
 
+// Helper function to find header index and update responses
+const processResponse = (headers, subHeaders, response, selected, userResponses) => {
+
+    const headerIndex = headers.indexOf(response.question);
+    const subHeaderIndex = subHeaders.findIndex((header, index) => 
+        header.includes(selected.question) && index >= headerIndex
+    );
+    if (subHeaderIndex !== -1) {
+        userResponses[subHeaderIndex - 4] = selected.answer;
+    }
+};
+
+// Process different form types
+const formTypeHandlers = {
+    MultiScalePoint: (headers, subHeaders, response, selected, userResponses) => {
+        processResponse(headers, subHeaders, response, selected, userResponses);
+    },
+
+    SingleCheckForm: (headers, subHeaders, response, selected, userResponses) => {
+        const matchingHeaderIndices = headers.reduce((indices, header, index) => {
+            if (header === response.question) indices.push(index);
+            return indices;
+        }, []);
+
+        for (const headerIndex of matchingHeaderIndices) {
+            if (subHeaders[headerIndex].includes(selected.rowQuestion)) {
+                userResponses[headerIndex - 4] = selected.answer;
+                break;
+            }
+        }
+    },
+
+    SinglePointForm: (headers, subHeaders, response, selected, userResponses) => {
+        const headerIndex = headers.indexOf(response.question);
+        if (headerIndex !== -1) {
+            userResponses[headerIndex - 4] = selected.answer;
+        }
+    },
+
+    CommentBoxForm: (headers, subHeaders, response, selected, userResponses) => {
+        console.log('insidedede');
+        
+        const matchingHeaderIndices = subHeaders.reduce((indices, subHeader, index) => {            
+
+            if (subHeader === response.selectedValue[0].question && headers[index] === 'Comment Box') indices.push(index);
+            return indices;
+        }, []);
+        
+        console.log(matchingHeaderIndices,'matchingHeaderIndices in CommentBoxForm');
+        
+
+        // Find the correct header-subheader pair
+        for (const headerIndex of matchingHeaderIndices) { 
+            if (subHeaders[headerIndex].includes(selected.question)) {
+                userResponses[headerIndex - 4] = selected.answer;
+                break;
+            }
+        }
+    },
+    SingleRowTextForm: (headers, subHeaders, response, selected, userResponses) => {
+        
+        const matchingHeaderIndices = subHeaders.reduce((indices, subHeader, index) => {            
+
+            if (subHeader === response.selectedValue[0].question && headers[index] === 'Single Row Text') indices.push(index);
+            return indices;
+        }, []);
+        
+        console.log(matchingHeaderIndices,'matchingHeaderIndices in rowText');
+        
+
+        // Find the correct header-subheader pair
+        for (const headerIndex of matchingHeaderIndices) { 
+            if (subHeaders[headerIndex].includes(selected.question)) {
+                userResponses[headerIndex - 4] = selected.answer;
+                break;
+            }
+        }
+    },
+
+    MultiScaleCheckBox: (headers, subHeaders, response, selected, userResponses) => {
+        const headerRowIdx = headers.indexOf(`${response.question} ${selected.question}`);
+        const subHeaderIdx = subHeaders.indexOf(selected.answer, headerRowIdx);
+        
+        if (subHeaderIdx !== -1) {
+            userResponses[subHeaderIdx - 4] = selected.answer;
+        }
+    },
+
+    SelectDropDownForm: (headers, subHeaders, response, selected, userResponses) => {
+        const headerIndex = headers.findIndex(header => header.includes(response.question));
+        if (headerIndex !== -1) {
+            userResponses[headerIndex - 4] = selected.answer;
+        }
+    },
+
+    // Default handler for other form types (ContactInformationForm, PresentationTextForm, etc.)
+    default: (headers, subHeaders, response, selected, userResponses) => {
+        processResponse(headers, subHeaders, response, selected, userResponses);
+    }
+};
+
 // Function to create a single row of user data
 const createUserRow = (user, subHeaders, headers, questionMap) => {
     const userInfo = [user.userName, user.userEmail, user.id, user.ipAddress];
@@ -86,34 +193,22 @@ const createUserRow = (user, subHeaders, headers, questionMap) => {
 
     user.userResponse.forEach(response => {
         response.selectedValue.forEach(selected => {
-            if (selected.question && selected.question !== response.question && response.formType !== "MultiScaleCheckBox") {
-                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.question));
-                if (subHeaderIndex !== -1) {
-                    userResponses[subHeaderIndex - 4] = selected.answer;
+            // Special case for non-MultiScaleCheckBox forms with different questions
+            // if (selected.question && 
+            //     selected.question !== response.question && 
+            //     response.formType !== "MultiScaleCheckBox") {
+            //         console.log('--------------------------------');
+            //         console.log('inside not !MultiScaleCheckBox');
+            //         console.log('--------------------------------');
+                    
+                    
+            //     processResponse(headers, subHeaders, response, selected, userResponses);
+            //     return;
+            // }
 
-                }
-            } else if (response.formType === "ContactInformationForm") {
-                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.question));
-                if (subHeaderIndex !== -1) {
-                    userResponses[subHeaderIndex - 4] = selected.answer;
-                }
-            } else if (response.formType === "SingleCheckForm") {
-                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.rowQuestion));
-                if (subHeaderIndex !== -1) {
-                    userResponses[subHeaderIndex - 4] = selected.answer;
-                }
-            } else if (response.formType === "MultiScaleCheckBox") {
-                const headerRowIdx = headers.indexOf(response.question + ' ' + selected.question);
-                const subHeaderIdx = subHeaders.indexOf(selected.answer, headerRowIdx);
-                if (subHeaderIdx !== -1) {
-                    userResponses[subHeaderIdx - 4] = selected.answer;
-                }
-            } else {
-                const headerIndex = headers.findIndex(header => header.includes(response.question));
-                if (headerIndex !== -1) {
-                    userResponses[headerIndex - 4] = selected.answer;
-                }
-            }
+            // Get the appropriate handler for the form type or use default
+            const handler = formTypeHandlers[response.formType] || formTypeHandlers.default;
+            handler(headers, subHeaders, response, selected, userResponses);
         });
     });
 
@@ -277,34 +372,81 @@ const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
     const userResponses = new Array(questionMap.length).fill('');
 
     user.userResponse.forEach(response => {
-        
-        
         response.selectedValue.forEach(selected => {
-           
-            if (selected.question && selected.question !== response.question && response.formType !== "MultiScaleCheckBox") {
-                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.question));
-        
+            
+            if(response.formType === "MultiScalePoint"){
+                const headerIndex = headers.indexOf(response.question);
+                const subHeaderIndex = subHeaders.findIndex((header, index) => {
+                    return header.includes(selected.question) && index >= headerIndex;
+                });
+
                 if (subHeaderIndex !== -1) {
                     userResponses[subHeaderIndex - 4] = selected.index;
                 }
-            } 
+            }
+            else if (response.formType === "SingleCheckForm") {
+                
+                const matchingHeaderIndices = headers.reduce((indices, header, index) => {
+                    if (header === response.question) {
+                        indices.push(index);
+                    }
+                    return indices;
+                }, []);
+                
+                for (const headerIndex of matchingHeaderIndices) {
+                    
+                    if (subHeaders[headerIndex].includes(selected.rowQuestion)) {
+                        userResponses[headerIndex - 4] = selected.index;
+                        break;
+                    }
+                }
+            }
+            else if (selected.question && selected.question !== response.question && response.formType !== "MultiScaleCheckBox") {
+                const headerIndex = headers.indexOf(response.question);
+                const subHeaderIndex = subHeaders.findIndex((header, index) => {
+                    return header.includes(selected.question) && index >= headerIndex;
+                });
+                
+                if (subHeaderIndex !== -1) {
+                    userResponses[subHeaderIndex - 4] = selected.index;
+                }
+            }
             else if (response.formType === "ContactInformationForm") {
-                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.question));
+                const headerIndex = headers.indexOf(response.question);
+                const subHeaderIndex = subHeaders.findIndex((header, index) => {
+                    return header.includes(selected.question) && index >= headerIndex;
+                });
                 if (subHeaderIndex !== -1) {
                     userResponses[subHeaderIndex - 4] = selected.index;
                 }
-            } else if (response.formType === "SingleCheckForm") {
-                const subHeaderIndex = subHeaders.findIndex(header => header.includes(selected.rowQuestion));
-                if (subHeaderIndex !== -1) {
-                    userResponses[subHeaderIndex - 4] = selected.index;
-                }
-            } else if (response.formType === "MultiScaleCheckBox") {
+                console.log(userResponses,'userResponses in contact information');
+                
+            }
+            else if (response.formType === "MultiScaleCheckBox") {
+                console.log('-------------------------------- inside multi scale check box');
                 const headerRowIdx = headers.indexOf(response.question + ' ' + selected.question);
                 const subHeaderIdx = subHeaders.indexOf(selected.answer, headerRowIdx);
                 if (subHeaderIdx !== -1) {
                     userResponses[subHeaderIdx - 4] = selected.index;
                 }
-            } else {
+            }
+            else if(response.formType === "SelectDropDownForm"){
+                const headerIndex = headers.findIndex(header => header.includes(response.question));    
+                if (headerIndex !== -1) {
+                    userResponses[headerIndex - 4] = selected.index;
+                }
+            }
+            else if (response.formType === "PresentationTextForm"){
+                const headerIndex = headers.indexOf(response.question);
+                const subHeaderIndex = subHeaders.findIndex((header, index) => {
+                    return header.includes(selected.question) && index >= headerIndex;
+                });
+                if (subHeaderIndex !== -1) {
+                    userResponses[subHeaderIndex - 4] = selected.index;
+                }
+                
+            }
+            else {
                 const headerIndex = headers.findIndex(header => header.includes(response.question));    
                 if (headerIndex !== -1) {
                     userResponses[headerIndex - 4] = selected.index;

@@ -214,7 +214,7 @@ const ContactInformation = ({ onSaveForm, data, id, options, disableForm, disabl
                                             const newSelectedValue = formData.selectedValue.map((opt) => {
                                                 if (opt.id === option.id) {
                                                     console.log('12313123');
-                                                    return { ...opt, answer: e.target.value }
+                                                    return { ...opt, answer: e.target.value, index: e.target.value }
                                                 }
                                                 return opt
                                             }

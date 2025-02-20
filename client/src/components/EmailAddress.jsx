@@ -204,7 +204,7 @@ const EmailAddress = ({ onSaveForm, data, id, options, disableForm, disableText,
                                                     console.log(item, 'item in inner map');
                                                     if (option.id === item.id) {
                                                         console.log('when ID is same in inner map');
-                                                        return { ...item, answer: e.target.value }
+                                                        return { ...item, answer: e.target.value, index: e.target.value }
                                                     }
                                                     return item
                                                 })

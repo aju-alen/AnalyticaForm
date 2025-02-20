@@ -369,13 +369,13 @@ const Hero = () => {
         }}
       >
         <SEO
-          title="Online Survey Data Collection Software"
+          title="Online Survey Software for Researchers"
           description="Easy to distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions."
           name="Dubai Analytica"
           type="Homepage"
         />
         <Stack
-          spacing={4}
+          spacing={1}
           borderwidth="10px"
           alignItems="center"
           useFlexGap
@@ -384,17 +384,17 @@ const Hero = () => {
           }}
         >
           <Typography
-            variant="h2"
+            variant="h1"
             sx={{
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'center',
-              fontSize: 'clamp(2rem, 10vw, 3.9rem)',
+              fontSize: {xs: '1.5rem',  md: '4rem'},
               textAlign: 'center',
               mt: 0,
             }}
           >
-            Ask the right questions to find the answers you need with
+           All-in-One Survey Platform for Market and Academic Research
           </Typography>
           <Stack
             spacing={3}
@@ -408,11 +408,11 @@ const Hero = () => {
               color="text.secondary"
               sx={{
                  width: { sm: '100%', md: '100%' },
-                 paddingX:5,
+                 paddingX:{xs:1,md:5},
              }}
-              fontSize="clamp(1.15rem, 3vw, 1rem)"
+             fontSize = {{xs: '1.1rem', md: '1.5rem'}}
             >
-              <b>Dubai Analytica</b>, the best survey software that helps UAE based companies, individuals, and teams with audience surveys. Create employee engagement surveys, customer surveys, market research surveys and more.
+             Create, distribute, and analyse surveys—-all in one place. Make smarter decisions with data and insights gathered from surveys.
             </Typography>
             
 

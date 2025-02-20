@@ -54,7 +54,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { dropDownTemplate } from '../utils/templateData';
 import { checkBoxTemplate } from '../utils/templateData';
-import InfiniteScroll from 'react-infinite-scroll-component';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
@@ -69,9 +68,6 @@ const CreateNewSurvey = () => {
   const [isSaved, setIsSaved] = useState('Saved'); // saved or not
   const [subscriptionEndDate, setSubscriptionEndDate] = useState('');
   const [loading, setLoading] = useState(false);
-  const [displayedForms, setDisplayedForms] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const ITEMS_PER_PAGE = 5;
   
 
   const [surveyData, setSurveyData] = useState({
@@ -149,62 +145,9 @@ const CreateNewSurvey = () => {
     });
   }, []);
 
-  // Modify the data fetching effect
-  React.useEffect(() => {
-    let mounted = true;
-
-    const getSurveyData = async () => {
-      try {
-        await refreshToken();
-        const getUserSurveyData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`);
-        
-        if (mounted) {
-          setSurveyData({
-            surveyTitle: getUserSurveyData.data.surveyTitle,
-            surveyForms: getUserSurveyData.data.surveyForms,
-            selectedItems: getUserSurveyData.data.selectedItems,
-            surveyIntroduction: getUserSurveyData.data.surveyIntroduction
-          });
-          
-          // Initialize displayed forms with first batch
-          setDisplayedForms(getUserSurveyData.data.surveyForms.slice(0, ITEMS_PER_PAGE));
-          setCurrentPage(1);
-          
-          setSelectedItems(getUserSurveyData.data.selectedItems);
-          setIsLoading(false);
-        }
-      } catch (err) {
-        if (err.response?.status === 401) {
-          localStorage.removeItem('userAccessToken');
-          navigate('/login');
-        }
-        console.error(err);
-      }
-    };
-
-    getSurveyData();
-
-    return () => {
-      mounted = false;
-    };
-  }, [surveyId, navigate]);
-
-  // Add fetch more data function
-  const fetchMoreData = () => {
-    const nextPage = currentPage + 1;
-    const start = currentPage * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    const newForms = surveyData.surveyForms.slice(start, end);
-    
-    if (newForms.length > 0) {
-      setDisplayedForms(prev => [...prev, ...newForms]);
-      setCurrentPage(nextPage);
-    }
-  };
-
-  // Modify the form items rendering
+  // Memoize the form items rendering to prevent unnecessary re-renders
   const selectItem = React.useMemo(() => {
-    return displayedForms.map((item, index) => {
+    return surveyData.surveyForms.map((item, index) => {
       const FormComponent = formComponents[item.formType];
     
       if (!FormComponent) {
@@ -213,7 +156,7 @@ const CreateNewSurvey = () => {
       }
     
       return (
-        <Stack spacing={2} key={item.id} direction="row" position="relative" sx={{ mt: 3 }}>
+        <Stack spacing={2} key={item.id} direction="row" position="relative">
           <FormComponent
             onSaveForm={handleSaveSinglePointForm}
             data={item}
@@ -236,7 +179,42 @@ const CreateNewSurvey = () => {
         </Stack>
       );
     });
-  }, [displayedForms, formComponents, handleSaveSinglePointForm, handleDeleteSelectOneForm, setLoading]);
+  }, [surveyData.surveyForms, formComponents, handleSaveSinglePointForm, handleDeleteSelectOneForm, setLoading]);
+
+  // Split the data fetching into a separate effect
+  React.useEffect(() => {
+    let mounted = true;
+
+    const getSurveyData = async () => {
+      try {
+        await refreshToken();
+        const getUserSurveyData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`);
+        
+        if (mounted) {
+          setSurveyData({
+            surveyTitle: getUserSurveyData.data.surveyTitle,
+            surveyForms: getUserSurveyData.data.surveyForms,
+            selectedItems: getUserSurveyData.data.selectedItems,
+            surveyIntroduction: getUserSurveyData.data.surveyIntroduction
+          });
+          setSelectedItems(getUserSurveyData.data.selectedItems);
+          setIsLoading(false);
+        }
+      } catch (err) {
+        if (err.response?.status === 401) {
+          localStorage.removeItem('userAccessToken');
+          navigate('/login');
+        }
+        console.error(err);
+      }
+    };
+
+    getSurveyData();
+
+    return () => {
+      mounted = false;
+    };
+  }, [surveyId, navigate]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -468,19 +446,7 @@ const CreateNewSurvey = () => {
               </Button>
             </Stack>}
 
-            <InfiniteScroll
-              dataLength={displayedForms.length}
-              next={fetchMoreData}
-              hasMore={displayedForms.length < surveyData.surveyForms.length}
-              loader={
-                <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                  <CircularProgress />
-                </Box>
-              }
-              scrollThreshold={0.8}
-            >
-              {selectItem}
-            </InfiniteScroll>
+            {selectItem}
             
             <div className="flex justify-center">
               <Stack spacing={1} direction='row'>
