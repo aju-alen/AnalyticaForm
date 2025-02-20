@@ -53,7 +53,7 @@ const addHeadersToWorksheet = (worksheet, headers) => {
 // Function to add sub-headers to a worksheet with custom styles
 const addSubHeadersToWorksheet = (worksheet, subHeaders) => {
     const subHeaderRow = worksheet.addRow(subHeaders.map(header => 
-        header.length > 20 ? header.substring(0, 17) + '...' : header
+        header
     ));
     subHeaderRow.height = 25;
     subHeaderRow.eachCell((cell, colNumber) => {
