@@ -230,7 +230,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
         
                 <h3>Payment Details</h3>
                 <table>
-                  <tr><td><strong>Amount Paid:</strong></td><td>${chargeUpdated.currency} ${chargeUpdated.amount / 100}</td></tr>
+                  <tr><td><strong>Amount Paid:</strong></td><td>${chargeUpdated.currency.toUpperCase()} ${chargeUpdated.amount / 100}</td></tr>
                   <tr><td><strong>Payment Status:</strong></td><td>${chargeUpdated.paid ? 'Paid' : 'Pending'}</td></tr>
                   <tr><td><strong>Payment Method:</strong></td><td>${chargeUpdated.payment_method_details.card.brand} ending in ${chargeUpdated.payment_method_details.card.last4}</td></tr>
                   <tr><td><strong>Billing Address:</strong></td><td>${chargeUpdated.billing_details.address.line1}, ${chargeUpdated.billing_details.address.city}, ${chargeUpdated.billing_details.address.state}, ${chargeUpdated.billing_details.address.country}, ${chargeUpdated.billing_details.address.postal_code}</td></tr>
