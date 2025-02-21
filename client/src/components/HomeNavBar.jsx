@@ -123,6 +123,19 @@ function HomeNavBar() {
               Pricing
             </Button>
 
+             {/* Contact Button */}
+             <div className="flex items-center space-x-4 ml-8 pl-8 border-l border-gray-200">
+             <Button
+
+              color="inherit"
+              href="tel:0582652808"
+              startIcon={<span role="img" aria-label="phone">📞</span>}
+              sx={styles.button}
+            >
+              058 265 2808
+            </Button>
+            </div>
+
             {/* Auth Buttons */}
             {!userExists ? (
               <div className="flex items-center space-x-4 ml-8 pl-8 border-l border-gray-200">
@@ -150,16 +163,6 @@ function HomeNavBar() {
                 Dashboard
               </Button>
             )}
-
-            {/* Contact Button */}
-            <Button
-              color="inherit"
-              href="tel:0582652808"
-              startIcon={<span role="img" aria-label="phone">📞</span>}
-              sx={styles.button}
-            >
-              058 265 2808
-            </Button>
           </div>
         </nav>
       </div>
