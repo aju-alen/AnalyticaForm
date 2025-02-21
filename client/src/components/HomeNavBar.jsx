@@ -36,11 +36,11 @@ const styles = {
     }
   },
   actionButton: {
-    background: 'linear-gradient(45deg, #2196F3, #1976D2)',
-    color: 'white',
+    background: 'linear-gradient(135deg, #d9e3fc, #b0c4ff, #e0c3fc)',
+    color: 'black',
     fontWeight: 600,
     '&:hover': {
-      background: 'linear-gradient(45deg, #1976D2, #1565C0)',
+      background: 'linear-gradient(135deg, #d9e3fc, #b0c4ff, #e0c3fc)',
       boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
     }
   },
