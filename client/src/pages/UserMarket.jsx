@@ -456,7 +456,7 @@ const UserMarket = () => {
         </AnimatePresence>
 
         {/* Navigation Dots */}
-        <Box
+        {/* <Box
           sx={{
             position: 'absolute',
             bottom: { xs: 8, sm: 12, md: 16 },
@@ -486,7 +486,7 @@ const UserMarket = () => {
               onClick={() => setCurrentIndex(index)} // Add this if you want clickable dots
             />
           ))}
-        </Box>
+        </Box> */}
 
         {/* Optional: Touch swipe area for mobile */}
         <Box
