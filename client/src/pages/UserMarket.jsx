@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronRight, ChevronLeft, Check, X, AlertCircle, Users, BarChart } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Users, BarChart } from "lucide-react";
 import { Region, Industries, EducationLevels, Experience, Position } from "../utils/user-mock-count";
 import { axiosWithAuth } from "../utils/customAxios";
 import { backendUrl } from "../utils/backendUrl";
@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import { Box } from '@mui/material';
 import { Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import HomeNavBar from "../components/HomeNavBar";
 const images = [
   'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner1.jpg', // Replace with your image URLs
   'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner2.jpg',
@@ -338,7 +339,7 @@ const UserMarket = () => {
                     )}
                   </ul>
                 </div>
-                <form action="http://localhost:3001/api/stripe/market/create-checkout-session" method="POST">
+                <form action={`${import.meta.env.VITE_BACKEND_URL}/api/stripe/market/create-checkout-session`} method="POST">
                   <input type="hidden" name="userId" value={userData.id} />
                   <input type="hidden" name="emailId" value={userData.email} />
                   <input type="hidden" name="amount" value={price} />
@@ -407,6 +408,8 @@ const UserMarket = () => {
 
 
   return (
+    <div className="">
+      <HomeNavBar/>
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
       {/* Horizontal Slider Banner with improved shadows and rounded corners */}
       <Box
@@ -709,6 +712,7 @@ const UserMarket = () => {
           </Box>
         </Box>
       </div>
+    </div>
     </div>
   );
 };
