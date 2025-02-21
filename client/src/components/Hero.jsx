@@ -382,7 +382,7 @@ const Hero = () => {
           alignItems="center"
           useFlexGap
           sx={{
-            width: { xs: '100%', sm: '70%' },
+            width: { xs: '100%', sm: '110%' },
           }}
         >
           <Typography
@@ -396,13 +396,13 @@ const Hero = () => {
               mt: 0,
             }}
           >
-           All-in-One Survey Platform for Market and Academic Research
+           All-in-One Survey Software for Market and Academic Research
           </Typography>
           <Stack
             spacing={3}
             alignItems="center"
             useFlexGap
-            sx={{ width: { xs: '100%', sm: '100%' } }}
+            sx={{ width: { xs: '100%', sm: '50%' } }}
           >
             
             <Typography
@@ -414,7 +414,7 @@ const Hero = () => {
              }}
              fontSize = {{xs: '1.1rem', md: '1.5rem'}}
             >
-             Create, distribute, and analyse surveys—-all in one place. Make smarter decisions with data and insights gathered from surveys.
+             Create, distribute, and analyse surveys—all in one place. Gain deeper insights with data gathered from surveys.
             </Typography>
             
 
