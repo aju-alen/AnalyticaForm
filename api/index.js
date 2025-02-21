@@ -10,6 +10,7 @@ import excelRoute from './routes/excel-route.js';
 import stripeRoute from './routes/stripe-route.js';
 import superAdminData from './routes/superadmin-data-route.js';
 import awsS3Route from './routes/awsS3-route.js';
+// import openAIRoute from './routes/open-ai-route.js';
 import sendEmailRoute from './routes/sendEmail-route.js';
 import sendSurveyCountRoute from './routes/survey-count-route.js';
 import bodyParser from 'body-parser';
@@ -26,7 +27,7 @@ app.use(cors(corsOptions));
 
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (request, response) => {
   // const endpointSecret = "whsec_WwO4P8KQsXS1gzpfzMD8DKJUWxmder4H";
-  const endpointSecret = "whsec_85cb6e9c519f49df3be95a4f7f6ffa0558352b0e63e25b1da45b1535691f0947";
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SIGNING_SECRET;
   const sig = request.headers['stripe-signature'];
 
   let event;
@@ -204,6 +205,7 @@ app.use('/api/superadmin-data', superAdminData)
 app.use('/api/s3', awsS3Route)
 app.use('/api/send-email', sendEmailRoute)
 app.use('/api/survey-count', sendSurveyCountRoute)
+// app.use('/api/open-api', openAIRoute)
 
 
 
