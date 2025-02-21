@@ -366,7 +366,7 @@ const Hero = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          pt: { xs: 0, sm: 5 },
+          pt: { xs: 0, sm: 0 },
           pb: { xs: 8, sm: 12 },
         }}
       >
@@ -382,7 +382,7 @@ const Hero = () => {
           alignItems="center"
           useFlexGap
           sx={{
-            width: { xs: '100%', sm: '110%' },
+            width: { xs: '100%', sm: '85%' },
           }}
         >
           <Typography
@@ -391,7 +391,7 @@ const Hero = () => {
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'center',
-              fontSize: {xs: '1.5rem',  md: '4rem'},
+              fontSize: {xs: '1.7rem',  md: '3.0rem'},
               textAlign: 'center',
               mt: 0,
             }}
@@ -409,10 +409,10 @@ const Hero = () => {
               textAlign='center'
               color="text.secondary"
               sx={{
-                 width: { sm: '100%', md: '100%' },
+                 width: { sm: '100%', md: '120%' },
                  paddingX:{xs:1,md:5},
              }}
-             fontSize = {{xs: '1.1rem', md: '1.5rem'}}
+             fontSize = {{xs: '1.2rem', md: '1.1rem'}}
             >
              Create, distribute, and analyse surveys—all in one place. Gain deeper insights with data gathered from surveys.
             </Typography>
