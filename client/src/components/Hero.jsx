@@ -412,7 +412,7 @@ const Hero = () => {
                  width: { sm: '100%', md: '120%' },
                  paddingX:{xs:1,md:5},
              }}
-             fontSize = {{xs: '0.5rem', md: '1.1rem'}}
+             fontSize = {{xs: '0.9.5rem', md: '1.1rem'}}
             >
              Create, distribute, and analyse surveys—all in one place. Gain deeper insights with data gathered from surveys.
             </Typography>
