@@ -10,7 +10,7 @@ import excelRoute from './routes/excel-route.js';
 import stripeRoute from './routes/stripe-route.js';
 import superAdminData from './routes/superadmin-data-route.js';
 import awsS3Route from './routes/awsS3-route.js';
-// import openAIRoute from './routes/open-ai-route.js';
+import vertexGoogleApi from './routes/open-ai-route.js';
 import sendEmailRoute from './routes/sendEmail-route.js';
 import sendSurveyCountRoute from './routes/survey-count-route.js';
 import bodyParser from 'body-parser';
@@ -293,7 +293,7 @@ app.use('/api/superadmin-data', superAdminData)
 app.use('/api/s3', awsS3Route)
 app.use('/api/send-email', sendEmailRoute)
 app.use('/api/survey-count', sendSurveyCountRoute)
-// app.use('/api/open-api', openAIRoute)
+app.use('/api/google-vertex', vertexGoogleApi)
 
 
 
