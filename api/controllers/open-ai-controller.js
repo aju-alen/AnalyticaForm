@@ -16,25 +16,19 @@ const initVertexAI = async () => {
   try {
     // Decode the base64-encoded service account key
     const serviceAccountKeyBase64 = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
-    console.log(serviceAccountKeyBase64);
-    
     if (!serviceAccountKeyBase64) {
       throw new Error('GOOGLE_APPLICATION_CREDENTIALS_JSON is not set in environment variables.');
     }
 
-    // Write the decoded key to a temporary file
-    const serviceAccountKeyPath = path.join(__dirname, 'service-account-key.json');
-    await fs.writeFile(serviceAccountKeyPath, Buffer.from(serviceAccountKeyBase64, 'base64'));
+    // Decode and parse the credentials directly
+    const credentials = JSON.parse(Buffer.from(serviceAccountKeyBase64, 'base64').toString());
 
     // Initialize Vertex AI
     const vertex_ai = new VertexAI({
       project: process.env.VERTEX_AI_PROJECT_ID,
       location: process.env.VERTEX_AI_LOCATION,
-      credentials: JSON.parse(await fs.readFile(serviceAccountKeyPath, 'utf8')),
+      credentials: credentials,
     });
-
-    // Remove temporary key file after initialization
-    await fs.unlink(serviceAccountKeyPath);
 
     return vertex_ai;
   } catch (error) {
