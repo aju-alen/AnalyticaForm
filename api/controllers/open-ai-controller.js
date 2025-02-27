@@ -38,7 +38,12 @@ const initVertexAI = async () => {
       const vertex_ai = new VertexAI({
         project: process.env.VERTEX_AI_PROJECT_ID || credentials.project_id,
         location: process.env.VERTEX_AI_LOCATION || 'us-central1',
-        credentials: credentials,
+        googleAuthOptions: {
+          credentials: {
+            client_email: process.env.VERTEX_AI_CLIENT_EMAIL,
+            private_key: process.env.VERTEX_AI_PRIVATE_KEY,
+          },
+        },
       });
 
       return vertex_ai;
