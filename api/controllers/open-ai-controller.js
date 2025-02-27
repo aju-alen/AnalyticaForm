@@ -16,6 +16,8 @@ const initVertexAI = async () => {
   try {
     // Decode the base64-encoded service account key
     const serviceAccountKeyBase64 = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+    console.log(serviceAccountKeyBase64);
+    
     if (!serviceAccountKeyBase64) {
       throw new Error('GOOGLE_APPLICATION_CREDENTIALS_JSON is not set in environment variables.');
     }
