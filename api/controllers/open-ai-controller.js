@@ -14,23 +14,38 @@ console.log(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON,'base-envKey');
 // Function to initialize Vertex AI with credentials
 const initVertexAI = async () => {
   try {
-    // Decode the base64-encoded service account key
+    // Add more detailed logging
     const serviceAccountKeyBase64 = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
     if (!serviceAccountKeyBase64) {
+      console.error('Missing GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable');
       throw new Error('GOOGLE_APPLICATION_CREDENTIALS_JSON is not set in environment variables.');
     }
 
-    // Decode and parse the credentials directly
-    const credentials = JSON.parse(Buffer.from(serviceAccountKeyBase64, 'base64').toString());
+    // Log the first few characters of the credentials to verify it's present (don't log the full key!)
+    console.log('Credentials string length:', serviceAccountKeyBase64.length);
+    console.log('Credentials string starts with:', serviceAccountKeyBase64.substring(0, 20) + '...');
 
-    // Initialize Vertex AI
-    const vertex_ai = new VertexAI({
-      project: process.env.VERTEX_AI_PROJECT_ID,
-      location: process.env.VERTEX_AI_LOCATION,
-      credentials: credentials,
-    });
+    try {
+      const decodedCredentials = Buffer.from(serviceAccountKeyBase64, 'base64').toString();
+      const credentials = JSON.parse(decodedCredentials);
+      
+      // Verify required fields are present in credentials
+      if (!credentials.project_id || !credentials.private_key || !credentials.client_email) {
+        throw new Error('Decoded credentials missing required fields');
+      }
 
-    return vertex_ai;
+      // Initialize Vertex AI with explicit project ID and location
+      const vertex_ai = new VertexAI({
+        project: process.env.VERTEX_AI_PROJECT_ID || credentials.project_id,
+        location: process.env.VERTEX_AI_LOCATION || 'us-central1',
+        credentials: credentials,
+      });
+
+      return vertex_ai;
+    } catch (parseError) {
+      console.error('Error parsing credentials:', parseError);
+      throw new Error('Failed to parse service account credentials. Please verify the base64 encoding.');
+    }
   } catch (error) {
     console.error('Error initializing Vertex AI:', error);
     throw error;
