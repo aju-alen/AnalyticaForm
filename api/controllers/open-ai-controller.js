@@ -70,7 +70,7 @@ const getGenerativeModel = async () => {
     generativeModel = vertex_ai.preview.getGenerativeModel({
       model: process.env.VERTEX_AI_MODEL || 'gemini-pro',
       generationConfig: {
-        maxOutputTokens: 2048,  // Increased for more complete responses
+        maxOutputTokens: 260,  // Increased for more complete responses
         temperature: 0.7,       // Adjusted for balanced creativity/consistency
         topP: 0.95,
       },
