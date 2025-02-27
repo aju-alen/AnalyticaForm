@@ -12,13 +12,10 @@ dotenv.config();
 
 // Function to initialize Vertex AI with credentials
 const initVertexAI = async () => {
-  try {
-    // Option 1: Use credentials file path (recommended)
-    // Set GOOGLE_APPLICATION_CREDENTIALS in your .env file to the path of your JSON key file
-    // Example: GOOGLE_APPLICATION_CREDENTIALS=./path/to/your-key.json
-    
+  try { 
     // Option 2: If you must use the credentials as JSON in environment variables
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+      console.log('this is the if');
       try {
         const decodedCredentials = Buffer.from(
           process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON, 
@@ -41,6 +38,8 @@ const initVertexAI = async () => {
         throw new Error('Failed to parse service account credentials.');
       }
     } else {
+      console.log('this is the else');
+      
       // Default case: Let Google Auth library find credentials automatically
       // This works when GOOGLE_APPLICATION_CREDENTIALS environment variable points to your JSON key file
       const vertex_ai = new VertexAI({
