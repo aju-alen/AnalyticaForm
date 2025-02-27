@@ -559,6 +559,9 @@ const ContactUs = () => {
                       onChange={(e) => setInputMessage(e.target.value)}
                       placeholder="Type your message..."
                       variant="outlined"
+                      multiline
+                      rows={1}
+                      maxRows={2}
                       size="small"
                       InputProps={{
                         sx: {
