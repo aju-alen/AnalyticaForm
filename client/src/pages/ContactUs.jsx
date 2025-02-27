@@ -159,7 +159,7 @@ const ContactUs = () => {
     "What services does DA offer?",
     "How can I schedule a consultation?",
     "What are your business hours?",
-    "Where are you located?",
+    "Where is the DA office located?",
     "How can I get technical support?"
   ];
 
