@@ -1,7 +1,7 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState,useEffect, useRef } from 'react'
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
-import { Container, FormControl, InputLabel, MenuItem, Paper, Select, Stack } from '@mui/material'
+import { Container, FormControl, InputLabel, MenuItem, Paper, Select, Stack, IconButton } from '@mui/material'
 import axios from 'axios';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -28,7 +28,10 @@ const ContactUs = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
- 
+  const [inputMessage, setInputMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+  
   const handleFormChange = (event) => {
     const { name, value } = event.target
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -119,6 +122,29 @@ const ContactUs = () => {
     }
   };
 
+  useEffect(() => {
+    if (isChatOpen && chatMessages.length === 0) {
+      setChatMessages([
+        {
+          text: "👋 Hello! I'm DA Assistant, your AI helper. How can I assist you today? I can help you with:",
+          sender: 'bot'
+        },
+        {
+          text: "• Information about DA's services\n• General inquiries\n• Technical support\n• Scheduling meetings\n• Documentation help",
+          sender: 'bot'
+        }
+      ]);
+    }
+  }, [isChatOpen]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   console.log(formData);
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -127,6 +153,21 @@ const ContactUs = () => {
 
     setOpen(false);
   };
+
+  // Add this array of suggested questions
+  const suggestedQuestions = [
+    "What services does DA offer?",
+    "How can I schedule a consultation?",
+    "What are your business hours?",
+    "Where are you located?",
+    "How can I get technical support?"
+  ];
+
+  // Add this function to handle quick question selection
+  const handleQuickQuestion = (question) => {
+    handleChatSubmit(question);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ minWidth: 100, }} className='p-20'>
@@ -282,108 +323,279 @@ const ContactUs = () => {
                 position: 'absolute',
                 bottom: '70px',
                 right: 0,
-                width: '350px',
-                height: '500px',
-                borderRadius: '12px',
-                overflow: 'hidden'
+                width: '400px',
+                height: '650px',
+                borderRadius: '20px',
+                overflow: 'hidden',
+                bgcolor: '#f8f9fa',
+                animation: 'slideUp 0.3s ease-out',
+                '@keyframes slideUp': {
+                  from: { transform: 'translateY(100%)', opacity: 0 },
+                  to: { transform: 'translateY(0)', opacity: 1 }
+                },
+                boxShadow: '0 12px 28px rgba(0,0,0,0.12)'
               }}
             >
               <Box sx={{
                 backgroundColor: '#1976d2',
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
                 p: 2,
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                borderBottom: '1px solid rgba(255,255,255,0.1)'
               }}>
-                <Typography variant="h6" sx={{ color: 'white' }}>
-                  Chat with Us
-                </Typography>
-                <Button
-                  onClick={() => setIsChatOpen(false)}
-                  sx={{ color: 'white', minWidth: 'auto', p: 0.5 }}
-                >
-                  ✕
-                </Button>
-              </Box>
-              
-              <Stack spacing={2} sx={{ height: 'calc(100% - 64px)' }}>
-                <Box sx={{ 
-                  flex: 1,
-                  overflowY: 'auto',
-                  p: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2
-                }}>
-                  {chatMessages.map((msg, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        display: 'flex',
-                        justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                        mb: 1
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          maxWidth: '70%',
-                          p: 2,
-                          borderRadius: msg.sender === 'user' ? '20px 20px 5px 20px' : '20px 20px 20px 5px',
-                          backgroundColor: msg.sender === 'user' ? '#1976d2' : '#ffffff',
-                          color: msg.sender === 'user' ? '#ffffff' : '#000000',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                          wordBreak: 'break-word'
-                        }}
-                      >
-                        {msg.isLoading ? (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <div className="typing-indicator">
-                              <span></span>
-                              <span></span>
-                              <span></span>
-                            </div>
-                            <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                              Finding answer...
-                            </Typography>
-                          </Box>
-                        ) : (
-                          <div dangerouslySetInnerHTML={{ __html: formatResponseText(msg.text) }} />
-                        )}
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-                
-                <Box sx={{ 
-                  p: 2,
-                  backgroundColor: '#ffffff',
-                  borderTop: '1px solid rgba(0,0,0,0.1)'
-                }}>
-                  <TextField
-                    fullWidth
-                    placeholder="Type your message..."
-                    variant="outlined"
-                    size="medium"
-                    InputProps={{
-                      sx: {
-                        borderRadius: '25px',
-                        '& fieldset': {
-                          borderColor: 'rgba(0,0,0,0.1)',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#1976d2 !important',
-                        },
-                      }
-                    }}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && e.target.value.trim()) {
-                        handleChatSubmit(e.target.value);
-                        e.target.value = '';
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box
+                    component="img"
+                    src="https://api.dicebear.com/7.x/bottts/svg?seed=seiko"
+                    alt="AI Avatar"
+                    sx={{ 
+                      width: 45, 
+                      height: 45, 
+                      borderRadius: '50%', 
+                      backgroundColor: 'white', 
+                      p: 0.5,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      transition: 'transform 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)'
                       }
                     }}
                   />
+                  <Box>
+                    <Typography variant="h6" sx={{ 
+                      color: 'white', 
+                      fontSize: '1.1rem', 
+                      fontWeight: 600,
+                      textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                    }}>
+                      DA Assistant
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          backgroundColor: '#4caf50',
+                          borderRadius: '50%',
+                          boxShadow: '0 0 0 2px rgba(76, 175, 80, 0.3)',
+                          animation: 'pulse 2s infinite'
+                        }}
+                      />
+                      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+                        Online | Ready to help
+                      </Typography>
+                    </Box>
+                  </Box>
                 </Box>
-              </Stack>
+                <IconButton
+                  onClick={() => setIsChatOpen(false)}
+                  sx={{ 
+                    color: 'white',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255,255,255,0.1)'
+                    }
+                  }}
+                >
+                  <Typography sx={{ fontSize: '1.2rem' }}>✕</Typography>
+                </IconButton>
+              </Box>
+              
+              <Box sx={{ 
+                flex: 1,
+                height: 'calc(100% - 140px)',
+                overflowY: 'auto',
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                '&::-webkit-scrollbar': {
+                  width: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'transparent',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#bdbdbd',
+                  borderRadius: '4px',
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                  background: '#9e9e9e',
+                }
+              }}>
+                {chatMessages.map((msg, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                      mb: 1,
+                      gap: 1,
+                      animation: 'fadeIn 0.3s ease-out',
+                      '@keyframes fadeIn': {
+                        from: { opacity: 0, transform: 'translateY(10px)' },
+                        to: { opacity: 1, transform: 'translateY(0)' }
+                      }
+                    }}
+                  >
+                    {msg.sender === 'bot' && (
+                      <Box
+                        component="img"
+                        src="https://api.dicebear.com/7.x/bottts/svg?seed=seiko"
+                        alt="AI Avatar"
+                        sx={{ 
+                          width: 32, 
+                          height: 32, 
+                          alignSelf: 'flex-end',
+                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                        }}
+                      />
+                    )}
+                    <Box
+                      sx={{
+                        maxWidth: '75%',
+                        p: 2,
+                        borderRadius: msg.sender === 'user' 
+                          ? '20px 20px 5px 20px' 
+                          : '20px 20px 20px 5px',
+                        backgroundColor: msg.sender === 'user' 
+                          ? 'primary.main' 
+                          : 'white',
+                        color: msg.sender === 'user' ? 'white' : 'text.primary',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                        position: 'relative',
+                        '&::before': msg.sender === 'bot' ? {
+                          content: '""',
+                          position: 'absolute',
+                          left: -8,
+                          bottom: 8,
+                          borderStyle: 'solid',
+                          borderWidth: '8px 8px 0 0',
+                          borderColor: 'transparent white transparent transparent'
+                        } : {}
+                      }}
+                    >
+                      {msg.isLoading ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <div className="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                          </div>
+                        </Box>
+                      ) : (
+                        <div dangerouslySetInnerHTML={{ __html: formatResponseText(msg.text) }} />
+                      )}
+                    </Box>
+                  </Box>
+                ))}
+                {chatMessages.length <= 2 && (
+                  <Box sx={{ 
+                    mt: 2,
+                    animation: 'fadeIn 0.5s ease-out'
+                  }}>
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        color: 'text.secondary', 
+                        ml: 1, 
+                        mb: 1.5, 
+                        display: 'block',
+                        fontWeight: 500
+                      }}
+                    >
+                      Suggested Questions:
+                    </Typography>
+                    <Stack spacing={1}>
+                      {suggestedQuestions.map((question, index) => (
+                        <Button
+                          key={index}
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleQuickQuestion(question)}
+                          sx={{
+                            textTransform: 'none',
+                            justifyContent: 'flex-start',
+                            borderRadius: '12px',
+                            px: 2.5,
+                            py: 1,
+                            borderColor: 'rgba(25, 118, 210, 0.2)',
+                            backgroundColor: 'white',
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                              borderColor: 'primary.main',
+                              backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                              transform: 'translateY(-1px)',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+                            }
+                          }}
+                        >
+                          {question}
+                        </Button>
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
+                <div ref={messagesEndRef} />
+              </Box>
+              
+              <Box sx={{ 
+                p: 2,
+                backgroundColor: 'white',
+                borderTop: '1px solid rgba(0,0,0,0.08)'
+              }}>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if (inputMessage.trim()) {
+                    handleChatSubmit(inputMessage);
+                    setInputMessage('');
+                  }
+                }}>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <TextField
+                      fullWidth
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="Type your message..."
+                      variant="outlined"
+                      size="small"
+                      InputProps={{
+                        sx: {
+                          borderRadius: '25px',
+                          backgroundColor: '#f8f9fa',
+                          '& fieldset': {
+                            borderColor: 'rgba(0,0,0,0.1)',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: 'primary.main',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderWidth: '1px',
+                          },
+                          transition: 'all 0.2s ease'
+                        }
+                      }}
+                    />
+                    <Button 
+                      type="submit"
+                      variant="contained"
+                      disabled={!inputMessage.trim() || isLoading}
+                      sx={{
+                        minWidth: 'unset',
+                        px: 3,
+                        borderRadius: '20px',
+                        boxShadow: 'none',
+                        '&:hover': {
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                        }
+                      }}
+                    >
+                      Send
+                    </Button>
+                  </Box>
+                </form>
+              </Box>
             </Paper>
           ) : null}
           
@@ -415,6 +627,12 @@ const ContactUs = () => {
       
       </Box>
       <style jsx>{`
+        @keyframes pulse {
+          0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+          70% { box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+        
         .typing-indicator {
           display: flex;
           gap: 4px;
@@ -422,8 +640,8 @@ const ContactUs = () => {
         }
         
         .typing-indicator span {
-          width: 8px;
-          height: 8px;
+          width: 6px;
+          height: 6px;
           background-color: #90caf9;
           border-radius: 50%;
           animation: bounce 1.4s infinite ease-in-out;
