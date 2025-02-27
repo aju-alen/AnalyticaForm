@@ -35,6 +35,10 @@ const initVertexAI = async () => {
       }
 
       // Initialize Vertex AI with explicit project ID and location
+
+      console.log(process.env.VERTEX_AI_CLIENT_EMAIL,'client_email');
+      console.log(process.env.VERTEX_AI_PRIVATE_KEY,'private_key');
+      
       const vertex_ai = new VertexAI({
         project: process.env.VERTEX_AI_PROJECT_ID || credentials.project_id,
         location: process.env.VERTEX_AI_LOCATION || 'us-central1',
