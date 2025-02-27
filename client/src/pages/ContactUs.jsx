@@ -130,7 +130,7 @@ const ContactUs = () => {
           sender: 'bot'
         },
         {
-          text: "• Information about DA's services\n• General inquiries\n• Technical support\n• Scheduling meetings\n• Documentation help",
+          text: "• Information about DA's services\n• General inquiries\n• Technical support",
           sender: 'bot'
         }
       ]);
