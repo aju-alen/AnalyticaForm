@@ -148,7 +148,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
 
           const createPayment = await prisma.responsePurchase.create({
             data: {
-              userEmail: chargeUpdated.metadata.emailId,
+              userEmail: chargeUpdated.billing_details.email,
               responseQuantity: Number(chargeUpdated.metadata.unit),
               amountPaid: chargeUpdated.amount,
               amountCurrency: chargeUpdated.currency,
