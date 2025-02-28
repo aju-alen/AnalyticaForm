@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { VertexAI } from '@google-cloud/vertexai';
-import { vertexContextData } from '../utils/vertexContextData.js';
+import { vertexContextData } from '../utils/static/static-data.js';
 
 dotenv.config();
 
