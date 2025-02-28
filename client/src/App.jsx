@@ -13,7 +13,7 @@ TagManager.initialize(tagManagerArgs);
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const hideNavBarPages = ['/', '/register', '/login', '/forget-password','/about','/features','/pricing','/market'];
+  const hideNavBarPages = ['/', '/register', '/login', '/forget-password','/about','/features','/pricing','/market','/contact-us'];
   const hideFooterPages = ['/user-survey'];
   const isDynamicRoute = (path) => /^\/user-survey\/.+$/.test(path);
   const shouldHideNavBar = hideNavBarPages.includes(location.pathname) || isDynamicRoute(location.pathname);
