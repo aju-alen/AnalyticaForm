@@ -122,6 +122,13 @@ function HomeNavBar() {
             >
               Pricing
             </Button>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/contact-us')}
+              sx={styles.button}
+            >
+              Contact
+            </Button>
 
              {/* Contact Button */}
              <div className="flex items-center space-x-4 ml-8 pl-8 border-l border-gray-200">
@@ -195,7 +202,7 @@ function HomeNavBar() {
           sx={styles.mobileMenu}
         >
           <Box sx={{ width: '280px', p: 3 }}>
-            {['About', 'Features', 'Pricing'].map((text) => (
+            {['About', 'Features', 'Pricing', 'Contact-Us'].map((text) => (
               <MenuItem
                 key={text}
                 onClick={() => {
