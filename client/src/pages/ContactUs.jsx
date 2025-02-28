@@ -13,7 +13,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { backendUrl } from '../utils/backendUrl';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
-
+import {motion} from 'framer-motion';
+import HomeNavBar from '../components/HomeNavBar';
 
 const ContactUs = () => {
   const [open, setOpen] = useState(false);
@@ -122,7 +123,7 @@ const ContactUs = () => {
       setChatMessages((prev) => [...prev, { text: formatResponseText(response.data.message.parts[0].text), sender: 'bot' }]);
     } catch (error) {
       setChatMessages((prev) => prev.filter(msg => !msg.isLoading));
-      setChatMessages((prev) => [...prev, { text: 'Error: Unable to get response', sender: 'bot' }]);
+      setChatMessages((prev) => [...prev, { text: 'Error: Unable to get response. It may be due to the server being down or make sure you have logged in.', sender: 'bot' }]);
     } finally {
       setIsLoading(false);
     }
@@ -175,6 +176,13 @@ const ContactUs = () => {
   };
 
   return (
+    <motion.div
+    initial={{opacity:0}}
+    animate={{opacity:1}}
+    exit={{opacity:0}}
+    transition={{duration:1.5}}
+    >
+      <HomeNavBar />
     <ThemeProvider theme={theme}>
       <Box sx={{ 
         minWidth: 100,
@@ -662,6 +670,7 @@ const ContactUs = () => {
         }
       `}</style>
     </ThemeProvider>
+    </motion.div>
   )
 }
 
