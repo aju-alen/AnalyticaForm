@@ -195,7 +195,7 @@ const ContactUs = () => {
           </Stack>
         </Container>
         <Container maxWidth='md'  >
-          <Stack spacing={2} sx={{ mt: 12 }}>
+          <Stack spacing={2} sx={{ mt: 12, px: { xs: 1, sm: 2, md: 3 } }}>
            
                   {/* Blue background website help banner */}
 
@@ -296,7 +296,11 @@ const ContactUs = () => {
             <Button 
              variant="contained"
              onClick={handleSubmitContact}
-             sx={{ mt: 3, mb: 2, width: '30%' }}
+             sx={{ 
+               mt: 3, 
+               mb: 2, 
+               width: { xs: '100%', sm: '50%', md: '30%' }
+             }}
              >
               Send Message
             </Button>
@@ -312,7 +316,7 @@ const ContactUs = () => {
           sx={{
             position: 'fixed',
             bottom: 20,
-            right: 20,
+            right: { xs: 10, sm: 20 },
             zIndex: 1000
           }}
         >
@@ -323,8 +327,9 @@ const ContactUs = () => {
                 position: 'absolute',
                 bottom: '70px',
                 right: 0,
-                width: '400px',
-                height: '650px',
+                width: { xs: '95vw', sm: '400px' },
+                height: { xs: '80vh', sm: '650px' },
+                maxWidth: '400px',
                 borderRadius: '20px',
                 overflow: 'hidden',
                 bgcolor: '#f8f9fa',
@@ -454,8 +459,8 @@ const ContactUs = () => {
                     )}
                     <Box
                       sx={{
-                        maxWidth: '75%',
-                        p: 2,
+                        maxWidth: { xs: '85%', sm: '75%' },
+                        p: { xs: 1.5, sm: 2 },
                         borderRadius: msg.sender === 'user' 
                           ? '20px 20px 5px 20px' 
                           : '20px 20px 20px 5px',
@@ -606,8 +611,8 @@ const ContactUs = () => {
             variant="contained"
             onClick={() => setIsChatOpen(!isChatOpen)}
             sx={{
-              width: '60px',
-              height: '60px',
+              width: { xs: '50px', sm: '60px' },
+              height: { xs: '50px', sm: '60px' },
               borderRadius: '50%',
               minWidth: 'unset',
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
