@@ -1,22 +1,18 @@
 import dotenv from 'dotenv';
 import { VertexAI } from '@google-cloud/vertexai';
-import { fileURLToPath } from 'url';
-import path from 'path';
 import { vertexContextData } from '../utils/vertexContextData.js';
-// Get the current directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-// Load environment variables
 dotenv.config();
 
 // Function to initialize Vertex AI with credentials
 const initVertexAI = async () => {
   try { 
-    // Option 2: If you must use the credentials as JSON in environment variables
+
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
       console.log('this is the if');
       try {
+        
+        // Decode the base64 encoded credentials
         const decodedCredentials = Buffer.from(
           process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON, 
           'base64'
