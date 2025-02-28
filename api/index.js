@@ -224,6 +224,9 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+app.get('/', (req, res) => {
+  res.send(htmlMessage);
+});
 app.use('/api/auth', authRoute)
 app.use('/api/survey', surveyRoute)
 app.use('/api/user-response-survey', userResponseSurveyRoute)
@@ -234,6 +237,10 @@ app.use('/api/s3', awsS3Route)
 app.use('/api/send-email', sendEmailRoute)
 app.use('/api/survey-count', sendSurveyCountRoute)
 app.use('/api/google-vertex', vertexGoogleApi)
+app.get('/health', (req, res) => {
+  res.status(200).json(healthCheckMessage);
+  console.log('Health check passed');
+});
 
 
 
