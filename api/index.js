@@ -176,87 +176,26 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
             senderEmailId: process.env.GMAIL_AUTH_USER_SUPPORT,
             receiverEmailId: chargeUpdated.metadata.emailId,
             subject: 'Congratulations! Your payment has been successful',
-            htmlString: `
-            <html>
-              <head>
-                <style>
-                  body {
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                    max-width: 600px;
-                    margin: 0 auto;
-                    padding: 20px;
-                  }
-                  h2 {
-                    color: #2c5282;
-                    border-bottom: 2px solid #4299e1;
-                    padding-bottom: 10px;
-                  }
-                  h3 {
-                    color: #2d3748;
-                    margin-top: 24px;
-                  }
-                  table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 15px 0;
-                  }
-                  td {
-                    padding: 10px;
-                    border-bottom: 1px solid #e2e8f0;
-                  }
-                  strong {
-                    color: #2d3748;
-                  }
-                  a {
-                    color: #4299e1;
-                    text-decoration: none;
-                  }
-                  a:hover {
-                    text-decoration: underline;
-                  }
-                  .footer {
-                    margin-top: 30px;
-                    padding-top: 20px;
-                    border-top: 1px solid #e2e8f0;
-                    font-size: 0.9em;
-                    color: #718096;
-                  }
-                </style>
-              </head>
-              <body>
-                <h2>Thank you for your purchase, ${chargeUpdated.billing_details.name}!</h2>
-                <p>We're happy to inform you that your payment has been successfully processed.</p>
-        
-                <h3>Payment Details</h3>
-                <table>
-                  <tr><td><strong>Amount Paid:</strong></td><td>${chargeUpdated.currency.toUpperCase()} ${chargeUpdated.amount / 100}</td></tr>
-                  <tr><td><strong>Payment Status:</strong></td><td>${chargeUpdated.paid ? 'Paid' : 'Pending'}</td></tr>
-                  <tr><td><strong>Payment Method:</strong></td><td>${chargeUpdated.payment_method_details.card.brand} ending in ${chargeUpdated.payment_method_details.card.last4}</td></tr>
-                  <tr><td><strong>Billing Address:</strong></td><td>${chargeUpdated.billing_details.address.line1}, ${chargeUpdated.billing_details.address.city}, ${chargeUpdated.billing_details.address.state}, ${chargeUpdated.billing_details.address.country}, ${chargeUpdated.billing_details.address.postal_code}</td></tr>
-                </table>
-        
-                <h3>Your Selected Plan</h3>
-                <table>
-                  <tr><td><strong>Response Quantity:</strong></td><td>${chargeUpdated.metadata.unit}</td></tr>
-                  <tr><td><strong>Regions:</strong></td><td>${chargeUpdated.metadata.selectedRegions}</td></tr>
-                  <tr><td><strong>Industries:</strong></td><td>${chargeUpdated.metadata.selectedIndustries}</td></tr>
-                  <tr><td><strong>Education Levels:</strong></td><td>${chargeUpdated.metadata.selectedEducationLevels}</td></tr>
-                  <tr><td><strong>Positions:</strong></td><td>${chargeUpdated.metadata.selectedPositions}</td></tr>
-                  <tr><td><strong>Experience:</strong></td><td>${chargeUpdated.metadata.selectedExperience}</td></tr>
-                </table>
-        
-                <h3>Receipt</h3>
-                <p>You can view your receipt at the following link: <a href="${chargeUpdated.receipt_url}">View Receipt</a></p>
-        
-                <div class="footer">
-                  <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
-                  <p>Best regards,<br/>The Dubai Analytica Team</p>
-                </div>
-              </body>
-            </html>
-          `
+            htmlString: marketSuccessPaymentEmail(
+              chargeUpdated.billing_details.name,
+              chargeUpdated.amount / 100,
+              chargeUpdated.currency.toUpperCase(),
+              chargeUpdated.paid,
+              chargeUpdated.payment_method_details.card.brand,
+              chargeUpdated.payment_method_details.card.last4,
+              chargeUpdated.billing_details.address.line1,
+              chargeUpdated.billing_details.address.city,
+              chargeUpdated.billing_details.address.state,
+              chargeUpdated.billing_details.address.country,
+              chargeUpdated.billing_details.address.postal_code,
+              chargeUpdated.metadata.unit,
+              chargeUpdated.metadata.selectedRegions,
+              chargeUpdated.metadata.selectedIndustries,
+              chargeUpdated.metadata.selectedEducationLevels,
+              chargeUpdated.metadata.selectedPositions,
+              chargeUpdated.metadata.selectedExperience,
+              chargeUpdated.receipt_url
+            )
           })
           console.log(sendReceiptEmail, 'sendReceiptEmail');
           
