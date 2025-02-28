@@ -18,6 +18,7 @@ import stripe from 'stripe';
 import { PrismaClient } from '@prisma/client'
 import sendEmail from './utils/emailTemplateTransport.js';
 import dotenv from 'dotenv';
+import { htmlMessage, marketSuccessPaymentEmail,healthCheckMessage } from './utils/static/static-data.js';
 dotenv.config();
 const prisma = new PrismaClient();
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
