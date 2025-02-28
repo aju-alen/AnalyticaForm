@@ -167,7 +167,8 @@ const App = () => {
         },
         {
           path: "/market",
-          element:  <UserMarket /> // Wrap Dashboard inside non-protected Route
+          element:  <ProtectedRoute element={<UserMarket />} />,
+          // Wrap Dashboard inside non-protected Route
         },
         {
           path: "/about",
