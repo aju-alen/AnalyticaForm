@@ -3,11 +3,11 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Hero from '../components/Hero';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Switch from '@mui/material/Switch';
+import { createTheme } from '@mui/material/styles';
 import { useLocation } from "react-router-dom";
 import TagManager from "react-gtm-module";
 import { useEffect } from 'react';
+import {motion} from 'framer-motion';
 
 
 export default function Home() {
@@ -55,12 +55,17 @@ export default function Home() {
     [prefersDarkMode],
   );
   return (
-      //  <ThemeProvider theme={theme}>
+      <motion.div
+      initial={{opacity:0}}
+      animate={{opacity:1}}
+      exit={{opacity:0}}
+      transition={{duration:1.5}}
+      >
     <div className='w-screen'>
       <CssBaseline />
       <HomeNavBar />
       <Hero />
     </div>
-    // </ThemeProvider>
+    </motion.div>
   );
 }
