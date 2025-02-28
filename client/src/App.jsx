@@ -182,6 +182,10 @@ const App = () => {
           path: "/404",
           element: <Error404 /> // Wrap Dashboard inside ProtectedRoute
         },
+        {
+          path: "*",  // Catch-all route for any unmatched URLs
+          element: <Navigate to="/404" />
+        }
       ]
     }
   ]);
