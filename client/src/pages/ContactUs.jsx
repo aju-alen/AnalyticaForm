@@ -60,48 +60,54 @@ const ContactUs = () => {
     formattedText = formattedText.replace(/\n{2,}/g, '\n');
     
     // Convert markdown-style bold text (both ** and __ syntax)
-    formattedText = formattedText
-      .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
+    formattedText = formattedText.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
     
     // Convert markdown-style italic text (both * and _ syntax)
-    formattedText = formattedText
-      .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
+    formattedText = formattedText.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
+    
+    // Convert markdown-style headings (## Heading -> <h2>Heading</h2>)
+    formattedText = formattedText.replace(/^##\s*(.*)$/gm, '<h2>$1</h2>');
     
     // Convert markdown-style bullet points to proper bullet points
-    formattedText = formattedText.replace(/^\s*[-*+]\s/gm, '<ul><li>') + '</li></ul>';
+    formattedText = formattedText.replace(/^\s*[-*+]\s(.+)/gm, '<ul><li>$1</li></ul>');
+    formattedText = formattedText.replace(/(<\/ul>\n<ul>)/g, ''); // Merge adjacent lists
     
     // Convert markdown-style numbered lists (1. 2. etc)
-    formattedText = formattedText.replace(/^\s*\d+\.\s/gm, '<ol><li>') + '</li></ol>';
+    formattedText = formattedText.replace(/^\s*\d+\.\s(.+)/gm, '<ol><li>$1</li></ol>');
+    formattedText = formattedText.replace(/(<\/ol>\n<ol>)/g, ''); // Merge adjacent lists
     
     // Handle code blocks and inline code
-    formattedText = formattedText
-      .replace(/```[\s\S]*?```/g, (match) => `<pre>${match.replace(/```/g, '')}</pre>`)
-      .replace(/`([^`]+)`/g, '<code>$1</code>');
+    formattedText = formattedText.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
+    formattedText = formattedText.replace(/`([^`]+)`/g, '<code>$1</code>');
     
     // Handle URLs - make them more readable and clickable
     formattedText = formattedText.replace(/(https?:\/\/[^\s]+)/g, url => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url.replace(/^(https?:\/\/)?(www\.)?/, '')}</a>`;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
     
     // Handle common HTML entities
     formattedText = formattedText
-      .replace(/&quot;/g, '"')
-      .replace(/&apos;/g, "'")
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>');
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
     
     // Trim whitespace from each line while preserving newlines
     formattedText = formattedText.split('\n')
-      .map(line => line.trim())
-      .filter(line => line) // Remove empty lines
-      .join('\n');
+        .map(line => line.trim())
+        .filter(line => line) // Remove empty lines
+        .join('\n');
     
     // Prettify the text (adding space between paragraphs)
     formattedText = formattedText.replace(/\n/g, '<br>\n');
     
+    // Ensure links are correctly formatted without extra characters
+    formattedText = formattedText.replace(/">([^<]+)<\/a>([^\s])/g, '">$1</a> $2');
+    
     return formattedText;
-  };
+};
+
   
 
   const handleChatSubmit = async (message) => {
@@ -110,7 +116,7 @@ const ContactUs = () => {
     try {
       setChatMessages((prev) => [...prev, { text: '...', sender: 'bot', isLoading: true }]);
       
-      const response = await axios.post(`${backendUrl}/api/google-vertex/chat`, { message });
+      const response = await axiosWithAuth.post(`${backendUrl}/api/google-vertex/chat`, { message });
       
       setChatMessages((prev) => prev.filter(msg => !msg.isLoading));
       setChatMessages((prev) => [...prev, { text: formatResponseText(response.data.message.parts[0].text), sender: 'bot' }]);
@@ -170,147 +176,139 @@ const ContactUs = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ minWidth: 100, }} className='p-20'>
-        <Typography variant='h2' color='#1976d2' gutterBottom>
+      <Box sx={{ 
+        minWidth: 100,
+        p: { xs: 2, sm: 3, md: 4, lg: 5 }
+      }}>
+        <Typography variant='h2' color='#1976d2' gutterBottom sx={{
+          fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
+        }}>
           Contact Us
         </Typography>
         <Divider variant='middle' sx={{
-          // backgroundColor: '#1976d2',
           height: 1.5,
         }}  />
-        <Container maxWidth='lg'  >
-          <Stack spacing={2} sx={{ mt: 2 }}>
-          <Typography variant='h5' color='#1976d2' gutterBottom>
-          General Inquiries
-          </Typography>
-          <Typography variant='p'  gutterBottom>
-          United Arab Emirates: +971 (058) 265 2808
-          </Typography>
-          <Typography variant='p'  gutterBottom>
-          Location: Dubai International Financial Centre
-          </Typography>
-          <Typography variant='p'  gutterBottom>
-          Address: Gate Avenue, Zone D - Level 1, Al Mustaqbal St - Dubai - UAE
-          </Typography>
+        <Container maxWidth='lg'>
+          <Stack spacing={2} sx={{ 
+            mt: 2,
+            px: { xs: 1, sm: 2, md: 3 }
+          }}>
+            <Typography variant='h5' color='#1976d2' gutterBottom sx={{
+              fontSize: { xs: '1.2rem', sm: '1.5rem' }
+            }}>
+              General Inquiries
+            </Typography>
+            <Typography variant='body1' gutterBottom sx={{
+              fontSize: { xs: '0.9rem', sm: '1rem' }
+            }}>
+              United Arab Emirates: +971 (058) 265 2808
+            </Typography>
+            <Typography variant='body1' gutterBottom sx={{
+              fontSize: { xs: '0.9rem', sm: '1rem' }
+            }}>
+              Location: Dubai International Financial Centre
+            </Typography>
+            <Typography variant='body1' gutterBottom sx={{
+              fontSize: { xs: '0.9rem', sm: '1rem' }
+            }}>
+              Address: Gate Avenue, Zone D - Level 1, Al Mustaqbal St - Dubai - UAE
+            </Typography>
           </Stack>
         </Container>
-        <Container maxWidth='md'  >
-          <Stack spacing={2} sx={{ mt: 12, px: { xs: 1, sm: 2, md: 3 } }}>
-           
-                  {/* Blue background website help banner */}
-
-                  {/* <Stack spacing={2} direction='row' sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  
-                  <Button variant='contained' color='primary'   sx={{
-                    fontWeight:'bold',
-                  }}>Website Help </Button>
-                  <Typography variant='p'  gutterBottom sx={{
-                    fontWeight:'300',
-                    fontSize: '0.9rem',
-                    textDecoration:'line-through',
-                    
-                  }}>
-                  Get in touch with our assistant for immediate help 
-                  </Typography>
-                  <Typography variant='p'  gutterBottom sx={{
-                    fontWeight:'300',
-                    fontSize: '0.9rem',
-                    
-                  }}>
-                  (Coming Soon)
-                  </Typography>
-                  </Stack> */}
-            
-              <Typography variant='p' gutterBottom>
+        <Container maxWidth='md'>
+          <Stack spacing={2} sx={{ 
+            mt: { xs: 4, sm: 8, md: 12 },
+            px: { xs: 1, sm: 2, md: 3 }
+          }}>
+            <Typography variant='body1' gutterBottom sx={{
+              fontSize: { xs: '0.9rem', sm: '1rem' }
+            }}>
               To have a DA account manager contact you about any queries that you may have, please fill out the following information. We respect your privacy and will only use this information to contact you regarding your specific request and will not share this with any third party.
-              </Typography>
-              <Paper elevation={3} sx={{ p: 2,
-                width: '100%',
-               
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover' }}>
-                  <Stack spacing={2}  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                     <Typography variant='h5' gutterBottom sx={{
-                      fontWeight:'300',
-                      fontSize: '1.3rem',
-                     }}>
-                    Get in Touch with a DA Representative
-                    </Typography>
-                    <Typography variant='p'  gutterBottom sx={{
-                      fontWeight:'300',
-                      fontSize: '0.8rem',
-                     }}> 
-                    Please fill this form, we'll contact you shortly.
-                    </Typography>
-                    
-                 <Container maxWidth='md'>
-          <FormControl fullWidth>
-            <div className="mt-5">
-              <TextField fullWidth
-                id="outlined-basic"
-                label="Given Name"
-                variant="standard"
-                name='username'
-                value={formData.username}
-                onChange={handleFormChange} />
-            </div>
-            <div className="mt-5">
-              <TextField fullWidth
-                id="outlined-basic"
-                label="Email Address"
-                variant="standard"
-                name='email'
-                value={formData.email}
-                onChange={handleFormChange} />
-            </div>
-            <div className="mt-5">
-              <TextField fullWidth
-                id="outlined-basic"
-                label="Your Message"
-                variant='filled'
-                name='message'
-                value={formData.message}
-                multiline
-                rows={4}
-                onChange={handleFormChange} />
-            </div>
-            <div className="mt-5">
-              <TextField fullWidth
-                id="outlined-basic"
-                label="Contact Number"
-                variant="standard"
-                name='contact'
-                value={formData.contact}
-                onChange={handleFormChange} />
-            </div>
+            </Typography>
+            <Paper elevation={3} sx={{ 
+              p: { xs: 2, sm: 3 },
+              width: '100%',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'cover' 
+            }}>
+              <Stack spacing={2} sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Typography variant='h5' gutterBottom sx={{
+                  fontWeight: '300',
+                  fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                  textAlign: 'center'
+                }}>
+                  Get in Touch with a DA Representative
+                </Typography>
+                <Typography variant='body2' gutterBottom sx={{
+                  fontWeight: '300',
+                  fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                  textAlign: 'center'
+                }}> 
+                  Please fill this form, we'll contact you shortly.
+                </Typography>
 
-            <Button 
-             variant="contained"
-             onClick={handleSubmitContact}
-             sx={{ 
-               mt: 3, 
-               mb: 2, 
-               width: { xs: '100%', sm: '50%', md: '30%' }
-             }}
-             >
-              Send Message
-            </Button>
-          </FormControl>
+                <Container maxWidth='md' sx={{ 
+                  px: { xs: 1, sm: 2, md: 3 }
+                }}>
+                  <FormControl fullWidth>
+                    <Stack spacing={3} sx={{ width: '100%' }}>
+                      <TextField
+                        fullWidth
+                        label="Given Name"
+                        variant="standard"
+                        name='username'
+                        value={formData.username}
+                        onChange={handleFormChange}
+                      />
+                      <TextField
+                        fullWidth
+                        label="Email Address"
+                        variant="standard"
+                        name='email'
+                        value={formData.email}
+                        onChange={handleFormChange}
+                      />
+                      <TextField
+                        fullWidth
+                        label="Your Message"
+                        variant='filled'
+                        name='message'
+                        value={formData.message}
+                        multiline
+                        rows={4}
+                        onChange={handleFormChange}
+                      />
+                      <TextField
+                        fullWidth
+                        label="Contact Number"
+                        variant="standard"
+                        name='contact'
+                        value={formData.contact}
+                        onChange={handleFormChange}
+                      />
+                      <Button 
+                        variant="contained"
+                        onClick={handleSubmitContact}
+                        sx={{ 
+                          mt: 3, 
+                          mb: 2,
+                          width: { xs: '100%', sm: '50%', md: '30%' },
+                          alignSelf: 'center'
+                        }}
+                      >
+                        Send Message
+                      </Button>
+                    </Stack>
+                  </FormControl>
+                </Container>
+              </Stack>
+            </Paper>
+          </Stack>
         </Container>
-                 
-                  </Stack>
-              </Paper>
-            </Stack>
-            </Container>
        
         <Box
           sx={{
