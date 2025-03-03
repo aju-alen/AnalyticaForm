@@ -349,7 +349,14 @@ const CreateNewSurvey = () => {
 
     switch (platform) {
       case 'whatsapp':
-        window.open(`https://wa.me/?text=${title}%0A${encodedUrl}`);
+        // Check if it's a mobile device
+        if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+          // Use the WhatsApp mobile API that shows contact selector
+          window.open(`whatsapp://send?text=${title}%0A${encodedUrl}`);
+        } else {
+          // Use web version for desktop
+          window.open(`https://wa.me/?text=${title}%0A${encodedUrl}`);
+        }
         break;
       case 'email':
         window.open(`mailto:?subject=${title}&body=${encodedUrl}`);
