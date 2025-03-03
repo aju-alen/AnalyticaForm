@@ -9,6 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
 import { Box, Grid, TextField, CircularProgress, Snackbar, Alert, Typography, Card, CardContent, Button } from '@mui/material';
+import Joyride, { STATUS } from 'react-joyride';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -22,6 +23,7 @@ const Dashboard = () => {
     const [alertColor, setAlertColor] = useState('');
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [dataChanged, setDataChanged] = useState(false);
+    const [runTour, setRunTour] = useState(false);
 
     useEffect(() => {
         const getUserIsProMember = async () => {
@@ -105,6 +107,44 @@ const Dashboard = () => {
         setUserSurveyData(userSurveyData.filter((survey) => survey.id !== surveyId));
       };
     
+    // Add tour steps
+    const steps = [
+        {
+            target: '.survey-dashboard-title',
+            content: 'Welcome to your Survey Dashboard! This is where you can manage all your surveys.',
+            disableBeacon: true,
+        },
+        {
+            target: '.subscription-card',
+            content: 'Check your current subscription plan and upgrade for more features!',
+        },
+        {
+            target: '.create-survey-button',
+            content: 'Click here to create a new survey. Free users can create up to 5 surveys.',
+        },
+        {
+            target: '.survey-list',
+            content: 'All your created surveys will appear here. You can view responses, share, or delete them.',
+        },
+    ];
+
+    // Add tour callback
+    const handleJoyrideCallback = (data) => {
+        const { status } = data;
+        if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+            setRunTour(false);
+            // Optionally save to localStorage that user has seen the tour
+            localStorage.setItem('dashboardTourComplete', 'true');
+        }
+    };
+
+    // Check if user should see tour
+    useEffect(() => {
+        const tourComplete = localStorage.getItem('dashboardTourComplete');
+        if (!tourComplete) {
+            setRunTour(true);
+        }
+    }, []);
 
     return isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
@@ -112,6 +152,20 @@ const Dashboard = () => {
         </Box>
     ) : (
         <ThemeProvider theme={theme}>
+            <Joyride
+                steps={steps}
+                run={runTour}
+                continuous={true}
+                showProgress={true}
+                showSkipButton={true}
+                callback={handleJoyrideCallback}
+                styles={{
+                    options: {
+                        primaryColor: theme.palette.primary.main,
+                        zIndex: 10000,
+                    },
+                }}
+            />
             <Box component="section" sx={{ p: { md: 1 }, pt: { xs: 1 }, backgroundColor: '#f1f1f1', minHeight: '100vh' }}>
                 <Box sx={{ 
                     display: 'flex', 
@@ -120,15 +174,22 @@ const Dashboard = () => {
                     mb: 3, 
                     px: 3 
                 }}>
-                    <Typography variant="h4" sx={{ color: '#333' }}>
+                    <Typography 
+                        className="survey-dashboard-title"
+                        variant="h4" 
+                        sx={{ color: '#333' }}
+                    >
                         Survey Dashboard
                     </Typography>
-                    <Card sx={{ 
-                        maxWidth: 200,
-                        backgroundColor: isSubscribed ? '#4caf50' : '#2196f3',
-                        color: 'white',
-                        transform: 'rotate(3deg)'
-                    }}>
+                    <Card 
+                        className="subscription-card"
+                        sx={{ 
+                            maxWidth: 200,
+                            backgroundColor: isSubscribed ? '#4caf50' : '#2196f3',
+                            color: 'white',
+                            transform: 'rotate(3deg)'
+                        }}
+                    >
                         <CardContent>
                         <Button onClick={() => navigate('/pricing')
                         } sx={{ textTransform: 'none', textDecoration: 'none', color:'#fff' }
@@ -169,6 +230,7 @@ const Dashboard = () => {
                 }}>
                     <Grid item>
                         <Fab
+                            className="create-survey-button"
                             onClick={handleSubmit}
                             variant="extended"
                             size="large"
@@ -218,7 +280,7 @@ const Dashboard = () => {
                     )}
                 </Grid>
 
-                <Box sx={{ px: 3, mt: 3 }}>
+                <Box sx={{ px: 3, mt: 3 }} className="survey-list">
                     <MySurvery 
                         userSurveyData={userSurveyData} 
                         isSubscribed={isSubscribed}  
