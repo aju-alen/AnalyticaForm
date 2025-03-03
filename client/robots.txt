@@ -1,3 +1,15 @@
 User-agent: *
-Allow: /
+# Explicitly allow specific pages
+Allow: /$
+Allow: /about$
+Allow: /features$
+Allow: /pricing$
+Allow: /contact$
+Allow: /dapp/privacy-policy$
+Allow: /terms-of-use$
+
+# Disallow everything else
+Disallow: /
+
+# Sitemaps
 Sitemap: https://www.dubaianalytica.com/sitemap.xml
