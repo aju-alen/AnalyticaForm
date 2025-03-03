@@ -402,7 +402,7 @@ const CreateNewSurvey = () => {
       sx={{
         width: { xs: '100%', md: '50%' },
       }}
-      value={`${frontendUrl}user-survey/${surveyId}`}
+      value={`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`}
       InputProps={{
         readOnly: true,
       }}
