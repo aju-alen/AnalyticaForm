@@ -184,6 +184,7 @@ const Dashboard = () => {
                     <Card 
                         className="subscription-card"
                         sx={{ 
+                            display: { xs: 'none', md: 'block' },
                             maxWidth: 200,
                             backgroundColor: isSubscribed ? '#4caf50' : '#2196f3',
                             color: 'white',
@@ -222,10 +223,8 @@ const Dashboard = () => {
 
                 <Grid container spacing={3} alignItems="center" justifyContent="center" sx={{ 
                     py: 2,
-                    px: 3,
                     backgroundColor: 'rgba(255, 255, 255, 0.7)',
                     borderRadius: 2,
-                    mx: 2,
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}>
                     <Grid item>
