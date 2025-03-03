@@ -95,6 +95,12 @@ export default function UserAnalytics() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [customerData, setCustomerData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [analyticsSummary, setAnalyticsSummary] = useState({
+    totalResponses: 0,
+    totalViews: 0,
+    completionRate: 0,
+    averageResponseTime: 0
+  });
 
 
   useEffect(() => {
@@ -105,6 +111,15 @@ export default function UserAnalytics() {
         console.log(userId, 'userId');
         const getAllUserData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-sruvey-from-oneuser/${userId}`);
         setCustomerData(getAllUserData.data);
+        
+        // Calculate summary statistics
+        const summary = {
+          totalResponses: getAllUserData.data.reduce((sum, survey) => sum + survey.surveyResponses, 0),
+          totalViews: getAllUserData.data.reduce((sum, survey) => sum + survey.surveyViews, 0),
+          completionRate: getAllUserData.data.reduce((sum, survey) => sum + (survey.surveyCompleted / survey.surveyViews * 100 || 0), 0) / getAllUserData.data.length,
+          averageResponseTime: 0 // Add this from your backend if available
+        };
+        setAnalyticsSummary(summary);
         setIsLoading(false);
       }
       catch (err) {
@@ -140,134 +155,318 @@ export default function UserAnalytics() {
   console.log(customerData, 'customerData');
   return (
     <ThemeProvider theme={theme}>
-       {isLoading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
-                <CircularProgress />
-            </Box>
-        ) : (
-      <Box sx={{ mt: 3 }}>
-        <Container maxWidth="lg">
-          <Typography variant="h4" align="center" color="primary" gutterBottom>
-            User Analytics
-          </Typography>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Survey Name</TableCell>
-                  <TableCell align="right">Created Date</TableCell>
-                  <TableCell align="right">Survey Responses</TableCell>
-                  <TableCell align="right">Survey Introduction</TableCell>
-                  <TableCell align="right">Last Updated</TableCell>
-                  <TableCell align="right">Users Viewed</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(rowsPerPage > 0
-                  ? customerData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  : customerData
-                ).map((row) => (
-                  <TableRow key={row.id}>
-                    <Button onClick={() => navigate(`/user-survey-analytics/${row.id}`)} >
-                      <TableCell component="th" scope="row">
-                        {row.surveyTitle}
-                      </TableCell>
-                    </Button>
-                    <TableCell style={{ width: 160 }} align="right">
-                      {row.createdAt}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="right">
-                      {row.surveyResponses}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="right">
-                      {row.surveyIntroduction?.length > 0 ? 'Yes' : 'No'}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="right">
-                      {row.updatedAt}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="right">
-                      {row.surveyViews}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                    colSpan={3}
-                    count={customerData.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    slotProps={{
-                      select: {
-                        inputProps: {
-                          'aria-label': 'rows per page',
-                        },
-                        native: true,
-                      },
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Box sx={{ 
+          mt: 3, 
+          mb: 6, 
+          backgroundColor: '#f5f5f5', 
+          minHeight: '100vh', 
+          pt: 3 
+        }}>
+          <Container maxWidth="lg">
+            <Typography 
+              variant="h3" 
+              align="center" 
+              color="primary" 
+              gutterBottom
+              sx={{ 
+                fontWeight: 'bold',
+                mb: 4,
+                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+              }}
+            >
+              Analytics Dashboard
+            </Typography>
+
+            {/* Summary Cards */}
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+                gap: 3, 
+                mt: 3 
+              }}>
+                {[
+                  { 
+                    title: 'Total Responses', 
+                    value: analyticsSummary.totalResponses,
+                    icon: '📊'
+                  },
+                  { 
+                    title: 'Total Views', 
+                    value: analyticsSummary.totalViews,
+                    icon: '👁️'
+                  },
+                  // { 
+                  //   title: 'Average Completion Rate', 
+                  //   value: `${analyticsSummary.completionRate.toFixed(1)}%`,
+                  //   icon: '✅'
+                  // },
+                  { 
+                    title: 'Total Surveys', 
+                    value: customerData.length,
+                    icon: '📝'
+                  }
+                ].map((item) => (
+                  <Paper
+                    key={item.title}
+                    elevation={3}
+                    sx={{
+                      p: 3,
+                      textAlign: 'center',
+                      background: 'linear-gradient(135deg, #fff 0%, #f7f7f7 100%)',
+                      borderRadius: 2,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: theme.shadows[8]
+                      }
                     }}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </TableContainer>
-        <Container>
-          <Typography variant="h4" align="center" color="primary" gutterBottom sx={{
-            mt: 3
-          }}>
-            Chart Analytics
-          </Typography>
+                  >
+                    <Typography 
+                      sx={{ 
+                        fontSize: '2rem', 
+                        mb: 1,
+                        opacity: 0.8 
+                      }}
+                    >
+                      {item.icon}
+                    </Typography>
+                    <Typography 
+                      variant="h6" 
+                      color="primary" 
+                      gutterBottom
+                      sx={{ fontWeight: 'medium' }}
+                    >
+                      {item.title}
+                    </Typography>
+                    <Typography 
+                      variant="h4" 
+                      color="text.primary"
+                      sx={{ fontWeight: 'bold' }}
+                    >
+                      {item.value}
+                    </Typography>
+                  </Paper>
+                ))}
+              </Box>
+            </Box>
 
-          <Container component={Paper} >
-            <Stack direction='row'>
-              <Stack>
-                <Typography variant="h6" align="center" color="primary" gutterBottom>
-                  Survey Responses
+            {/* Survey Details Table */}
+            <Paper 
+              elevation={3} 
+              sx={{ 
+                mb: 4, 
+                overflow: 'hidden',
+                borderRadius: 2
+              }}
+            >
+              <Box sx={{ 
+                p: 2, 
+                background: 'linear-gradient(135deg, primary.main 0%, primary.dark 100%)',
+                color: 'white' 
+              }}>
+                <Typography variant="h5" align="center" sx={{ fontWeight: 'bold' }}>
+                  Survey Details
                 </Typography>
-                <BarChart
-                  xAxis={[{ scaleType: 'band', data: customerData.map((data) => data.surveyTitle) }]}
-                  series={[{ data: customerData.map((data) => data.surveyResponses) }]}
-                  width={300}
-                  height={200}
-                />
-              </Stack>
-              <Stack>
-                <Typography variant="h6" align="center" color="primary" gutterBottom>
-                  Survey Viewed
-                </Typography>
-                <BarChart
-                  xAxis={[{ scaleType: 'band', data: customerData.map((data) => data.surveyTitle) }]}
-                  series={[{ data: customerData.map((data) => data.surveyViews) }]}
-                  width={300}
-                  height={200}
-                />
-              </Stack>
-              <Stack>
-                <Typography variant="h6" align="center" color="primary" gutterBottom>
-                  Survey Completed
-                </Typography>
-                <BarChart
-                  xAxis={[{ scaleType: 'band', data: customerData.map((data) => data.surveyTitle) }]}
-                  series={[{ data: customerData.map((data) => data.surveyCompleted) }]}
-                  width={300}
-                  height={200}
-                />
-              </Stack>
-            </Stack>
+              </Box>
+              <TableContainer>
+                <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: 'primary.main' }}>
+                      <TableCell sx={{ 
+                        color: 'white', 
+                        fontWeight: 'bold',
+                        fontSize: '1rem'
+                      }}>Survey Name</TableCell>
+                      {['Created Date', 'Survey Responses', 'Survey Introduction', 'Last Updated', 'Users Viewed'].map((header) => (
+                        <TableCell 
+                          key={header}
+                          align="right" 
+                          sx={{ 
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '1rem'
+                          }}
+                        >
+                          {header}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(rowsPerPage > 0
+                      ? customerData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      : customerData
+                    ).map((row, index) => (
+                      <TableRow 
+                        key={row.id}
+                        sx={{ 
+                          '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.02)' },
+                          '&:hover': { 
+                            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                            transition: 'background-color 0.2s ease'
+                          },
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <TableCell 
+                          component="th" 
+                          scope="row"
+                          sx={{
+                            color: 'primary.main',
+                            fontWeight: 'medium',
+                            fontSize: '0.95rem'
+                          }}
+                        >
+                          <Button 
+                            onClick={() => navigate(`/user-survey-analytics/${row.id}`)}
+                            sx={{
+                              textTransform: 'none',
+                              '&:hover': {
+                                backgroundColor: 'transparent',
+                                textDecoration: 'underline'
+                              }
+                            }}
+                          >
+                            {row.surveyTitle}
+                          </Button>
+                        </TableCell>
+                        {[
+                          row.createdAt,
+                          row.surveyResponses,
+                          row.surveyIntroduction?.length > 0 ? 'Yes' : 'No',
+                          row.updatedAt,
+                          row.surveyViews
+                        ].map((cell, cellIndex) => (
+                          <TableCell 
+                            key={cellIndex}
+                            align="right"
+                            sx={{ 
+                              fontSize: '0.95rem',
+                              color: 'text.secondary'
+                            }}
+                          >
+                            {cell}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                        colSpan={6}
+                        count={customerData.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        sx={{
+                          '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+                            color: 'text.secondary',
+                            fontSize: '0.875rem'
+                          }
+                        }}
+                        slotProps={{
+                          select: {
+                            inputProps: {
+                              'aria-label': 'rows per page',
+                            },
+                            native: true,
+                          },
+                        }}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        ActionsComponent={TablePaginationActions}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
+            </Paper>
 
+            {/* Analytics Charts */}
+            <Paper 
+              elevation={3} 
+              sx={{ 
+                p: 4,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #fff 0%, #f7f7f7 100%)'
+              }}
+            >
+              <Typography 
+                variant="h4" 
+                align="center" 
+                color="primary" 
+                gutterBottom
+                sx={{ fontWeight: 'bold', mb: 4 }}
+              >
+                Analytics Overview
+              </Typography>
+              <Box sx={{ 
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gap: 4,
+                mt: 3
+              }}>
+                {['Survey Responses', 'Survey Viewed', 'Survey Completed'].map((title, index) => (
+                  <Paper 
+                    key={title}
+                    elevation={2}
+                    sx={{ 
+                      p: 3, 
+                      borderRadius: 2,
+                      '&:hover': {
+                        boxShadow: theme.shadows[8]
+                      }
+                    }}
+                  >
+                    <Typography 
+                      variant="h6" 
+                      align="center" 
+                      color="primary" 
+                      gutterBottom
+                      sx={{ fontWeight: 'medium' }}
+                    >
+                      {title}
+                    </Typography>
+                    <BarChart
+                      xAxis={[{ 
+                        scaleType: 'band', 
+                        data: customerData.map((data) => data.surveyTitle),
+                        tickLabelStyle: { 
+                          angle: 45, 
+                          textAnchor: 'start',
+                          fontSize: 12
+                        }
+                      }]}
+                      series={[{ 
+                        data: customerData.map((data) => 
+                          index === 0 ? data.surveyResponses :
+                          index === 1 ? data.surveyViews :
+                          data.surveyCompleted
+                        ),
+                        color: theme.palette.primary.main
+                      }]}
+                      height={300}
+                      margin={{ left: 40, right: 40, top: 20, bottom: 60 }}
+                    />
+                  </Paper>
+                ))}
+              </Box>
+            </Paper>
           </Container>
-          </Container>
-        </Container>
-      </Box>)}
+        </Box>
+      )}
     </ThemeProvider>
   );
 }
