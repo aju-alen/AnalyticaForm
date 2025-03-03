@@ -22,30 +22,47 @@ export const dynamicMetaHtml = async (req, res) => {
             <!DOCTYPE html>
             <html lang="en">
             <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Dubai Analytica: ${survey.surveyTitle}</title>
                 <meta name="robots" content="index, follow" />
-                <meta name="description" content="All-in-One Survey Software for Market and Academic Research
-                Create, distribute, and analyse surveys—all in one place. Gain deeper insights with data gathered from surveys." />
+                <meta name="description" content="${survey.description || 'Take part in this survey by Dubai Analytica - Your trusted platform for Market and Academic Research'}" />
                 
                 <!-- Facebook Open Graph Tags -->
                 <meta property="og:site_name" content="Dubai Analytica" />
                 <meta property="og:type" content="website" />
-                <meta property="og:title" content="${survey.surveyTitle}" />
-                <meta property="og:description" content="All-in-One Survey Software for Market and Academic Research
-                Create, distribute, and analyse surveys—all in one place. Gain deeper insights with data gathered from surveys." />
-                <meta property="og:image" content="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" />
+                <meta property="og:title" content="${survey.surveyTitle} | Dubai Analytica" />
+                <meta property="og:description" content="${survey.description || 'Take part in this survey by Dubai Analytica - Your trusted platform for Market and Academic Research'}" />
+                <meta property="og:image" content="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/DA-whatsapp-preview.png" />
                 <meta property="og:url" content="https://dubaianalytica.com/user-survey/${surveyId}" />
                 
                 <!-- Twitter Tags -->
                 <meta name="twitter:creator" content="Dubai Analytica" />
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content="Survey Title" />
-                <meta name="twitter:description" content="All-in-One Survey Software for Market and Academic Research
-                Create, distribute, and analyse surveys—all in one place. Gain deeper insights with data gathered from surveys." />
-                <meta name="twitter:image" content="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" />
+                <meta name="twitter:title" content="${survey.surveyTitle} | Dubai Analytica" />
+                <meta name="twitter:description" content="${survey.description || 'Take part in this survey by Dubai Analytica - Your trusted platform for Market and Academic Research'}" />
+                <meta name="twitter:image" content="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/DA-whatsapp-preview.png" />
                 <meta http-equiv="refresh" content="0;url=https://dubaianalytica.com/user-survey/${surveyId}" />
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 20px;
+                        font-family: Arial, sans-serif;
+                        background: #f5f5f5;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        text-align: center;
+                    }
+                </style>
             </head>
-            <body></body>
+            <body>
+                <div>
+                    <h1>${survey.surveyTitle}</h1>
+                    <p>Redirecting to survey...</p>
+                </div>
+            </body>
             </html>
         `);
 
