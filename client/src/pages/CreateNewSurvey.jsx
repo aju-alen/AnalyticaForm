@@ -54,6 +54,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { dropDownTemplate } from '../utils/templateData';
 import { checkBoxTemplate } from '../utils/templateData';
+import EmailIcon from '@mui/icons-material/Email';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
@@ -68,6 +75,8 @@ const CreateNewSurvey = () => {
   const [isSaved, setIsSaved] = useState('Saved'); // saved or not
   const [subscriptionEndDate, setSubscriptionEndDate] = useState('');
   const [loading, setLoading] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
   
 
   const [surveyData, setSurveyData] = useState({
@@ -332,6 +341,32 @@ const CreateNewSurvey = () => {
 
   console.log(surveyData, 'surveyData in the parent');
   // console.log(surveyData.surveyForms, 'surveyFormsssss in surveyData in the parent');
+
+  const handleShare = React.useCallback((platform) => {
+    const surveyUrl = `${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`;
+    const encodedUrl = encodeURIComponent(surveyUrl);
+    const title = encodeURIComponent(surveyData.surveyTitle || 'Survey');
+
+    switch (platform) {
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${title}%0A${encodedUrl}`);
+        break;
+      case 'email':
+        window.open(`mailto:?subject=${title}&body=${encodedUrl}`);
+        break;
+      default:
+        break;
+    }
+  }, [surveyId, surveyData.surveyTitle]);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     isLoading ? (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
@@ -388,7 +423,7 @@ const CreateNewSurvey = () => {
   <Box
     sx={{
       display: 'flex',
-      flexDirection: 'row',
+      flexDirection: { xs: 'column', md: 'row' },
       justifyContent: 'center',
       alignItems: 'center',
       gap: 2,
@@ -408,27 +443,48 @@ const CreateNewSurvey = () => {
       }}
     />
     
-    <Tooltip title="Copy URL">
-      <Button
-        variant='contained'
-        onClick={handleCopy}
-        startIcon={<ContentCopy />}
-        sx={{ 
-          minWidth: 'auto',
-          px: 2, 
-          py: 1, 
-          bgcolor: 'primary.main',
-          '&:hover': {
-            bgcolor: 'primary.dark',
-          },
-        }}
+    <Box>
+      <Tooltip title="Share options">
+        <IconButton
+          onClick={handleClick}
+          size="small"
+          aria-controls={open ? 'share-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+        >
+          <MoreVertIcon />
+        </IconButton>
+      </Tooltip>
+      <Menu
+        id="share-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleMenuClose}
+        onClick={handleMenuClose}
       >
-        Copy
-      </Button>
-    </Tooltip>
+        <MenuItem onClick={handleCopy}>
+          <ListItemIcon>
+            <ContentCopy fontSize="small" />
+          </ListItemIcon>
+          Copy URL
+        </MenuItem>
+        <MenuItem onClick={() => handleShare('whatsapp')}>
+          <ListItemIcon>
+            <WhatsAppIcon fontSize="small" />
+          </ListItemIcon>
+          Share via WhatsApp
+        </MenuItem>
+        <MenuItem onClick={() => handleShare('email')}>
+          <ListItemIcon>
+            <EmailIcon fontSize="small" />
+          </ListItemIcon>
+          Share via Email
+        </MenuItem>
+      </Menu>
+    </Box>
     
     {isSaved && (
-      <Typography variant="body2" color="success.main" sx={{ ml: 2 }}>
+      <Typography variant="body2" color="success.main">
         {isSaved}
       </Typography>
     )}
