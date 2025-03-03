@@ -574,6 +574,15 @@ const ContactUs = () => {
                       rows={1}
                       maxRows={2}
                       size="small"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          if (inputMessage.trim() && !isLoading) {
+                            handleChatSubmit(inputMessage);
+                            setInputMessage('');
+                          }
+                        }
+                      }}
                       InputProps={{
                         sx: {
                           borderRadius: '25px',
