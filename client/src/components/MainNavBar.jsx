@@ -82,7 +82,7 @@ const ResponsiveAppBar = () => {
           <Toolbar 
             disableGutters 
             sx={{ 
-              minHeight: '70px',
+              minHeight: { xs: '56px', md: '70px' },
               justifyContent: 'space-between'
             }}
           >
@@ -106,13 +106,34 @@ const ResponsiveAppBar = () => {
               />
             </Box>
 
+            {/* Mobile Logo */}
+            <Box 
+              sx={{ 
+                display: { xs: 'flex', md: 'none' },
+                flexGrow: 1,
+                cursor: 'pointer'
+              }}
+              onClick={() => navigate('/')}
+            >
+              <img
+                src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png"
+                alt="Dubai Analytica"
+                style={{ height: '75px', width: 'auto' }}
+              />
+            </Box>
+
             {/* Mobile Navigation */}
-            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <Box sx={{ 
+              display: { xs: 'flex', md: 'none' },
+              position: 'absolute',
+              right: '16px'
+            }}>
               <IconButton
                 size="large"
                 onClick={handleOpenNavMenu}
                 sx={{
                   color: 'black',
+                  padding: '8px',
                   '&:hover': {
                     backgroundColor: 'rgba(74, 188, 227, 0.1)'
                   }
@@ -129,16 +150,21 @@ const ResponsiveAppBar = () => {
                   '& .MuiPaper-root': {
                     borderRadius: '8px',
                     marginTop: '8px',
-                    minWidth: '200px',
+                    width: '200px',
+                    maxHeight: '80vh',
+                    overflowY: 'auto',
                     boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)'
                   }
                 }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 {navigationItems.map((item) => (
                   <MenuItem 
                     key={item.path}
                     onClick={() => handleNavigation(item.path)}
                     sx={{
+                      py: 1.5,
                       backgroundColor: location.pathname === item.path ? 'rgba(74, 188, 227, 0.1)' : 'transparent',
                       '&:hover': {
                         backgroundColor: 'rgba(74, 188, 227, 0.1)'
@@ -148,23 +174,11 @@ const ResponsiveAppBar = () => {
                     <Typography textAlign="center">{item.label}</Typography>
                   </MenuItem>
                 ))}
+                <MenuItem onClick={() => {
+                  handleLogout();
+                  handleCloseNavMenu();
+                }}>Logout</MenuItem>
               </Menu>
-            </Box>
-
-            {/* Mobile Logo */}
-            <Box 
-              sx={{ 
-                display: { xs: 'flex', md: 'none' },
-                flexGrow: 1,
-                justifyContent: 'center'
-              }}
-            >
-              <img
-                src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png"
-                alt="Dubai Analytica"
-                style={{ height: '35px', width: 'auto' }}
-                onClick={() => navigate('/')}
-              />
             </Box>
 
             {/* Desktop Navigation */}
@@ -189,10 +203,26 @@ const ResponsiveAppBar = () => {
                   {item.label}
                 </Button>
               ))}
+              <Button
+                onClick={handleLogout}
+                sx={{
+                  color: 'error.main',
+                  fontWeight: '500',
+                  px: 2,
+                  py: 1,
+                  borderRadius: '8px',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 0, 0, 0.1)'
+                  },
+                  transition: 'all 0.2s'
+                }}
+              >
+                Logout
+              </Button>
             </Box>
 
             {/* User Menu */}
-            <Box sx={{ flexGrow: 0 }}>
+            {/* <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Settings">
                 <IconButton 
                   onClick={handleOpenUserMenu}
@@ -243,7 +273,7 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
               </Menu>
-            </Box>
+            </Box> */}
           </Toolbar>
         </Container>
       </AppBar>
