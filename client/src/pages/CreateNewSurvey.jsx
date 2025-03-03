@@ -111,7 +111,7 @@ const CreateNewSurvey = () => {
 
   // Memoize handlers that don't need to change between renders
   const handleCopy = React.useCallback(() => {
-    navigator.clipboard.writeText(`${frontendUrl}user-survey/${surveyId}`).then(() => {
+    navigator.clipboard.writeText(`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`).then(() => {
       console.log('Text copied to clipboard');
     }).catch(err => {
       console.error('Could not copy text: ', err);
