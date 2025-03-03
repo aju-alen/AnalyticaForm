@@ -20,6 +20,7 @@ import sendEmail from './utils/emailTemplateTransport.js';
 import dotenv from 'dotenv';
 import { htmlMessage, marketSuccessPaymentEmail,healthCheckMessage } from './utils/static/static-data.js';
 import { dynamicMetaHtml } from './controllers/dynamic-html-preview-controller.js';
+import sitemapRoute from './routes/sitemap.js'
 dotenv.config();
 const prisma = new PrismaClient();
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
@@ -239,6 +240,7 @@ app.use('/api/send-email', sendEmailRoute)
 app.use('/api/survey-count', sendSurveyCountRoute)
 app.use('/api/google-vertex', vertexGoogleApi)
 app.get('/survey-meta/:surveyId', dynamicMetaHtml)
+app.use('/api/sitemap', sitemapRoute);
 app.get('/health', (req, res) => {
   res.status(200).json(healthCheckMessage);
   console.log('Health check passed');
