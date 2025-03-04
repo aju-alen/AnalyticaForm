@@ -390,19 +390,25 @@ const CreateNewSurvey = () => {
         <Container maxWidth="lg" sx={{
           marginTop:2
         }}>
-              <AppBar position='sticky' >
+              <AppBar position='sticky'>
                 <Toolbar 
-                  sx={
-                    {
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                    }
-                  }
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: { xs: 2, sm: 0 },
+                    py: { xs: 2, sm: 1 }
+                  }}
                 >
                   <Button
                     variant='contained'
                     color='warning'
-                    onClick={toggleDrawer}>
+                    onClick={toggleDrawer}
+                    fullWidth={false}
+                    sx={{
+                      width: { xs: '100%', sm: 'auto' }
+                    }}
+                  >
                     Add Question
                   </Button>
                   
@@ -411,6 +417,10 @@ const CreateNewSurvey = () => {
                     color="success"
                     onClick={handleSubmitForm}
                     disabled={loading}
+                    fullWidth={false}
+                    sx={{
+                      width: { xs: '100%', sm: 'auto' }
+                    }}
                   >
                     Submit Your Survey
                   </Button>
@@ -430,11 +440,12 @@ const CreateNewSurvey = () => {
   <Box
     sx={{
       display: 'flex',
-      flexDirection: { xs: 'column', md: 'row' },
+      flexDirection: { xs: 'row', sm: 'row' },
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: { xs: '', sm: 'center' },
       gap: 2,
       mt: 2,
+      width: '100%'
     }}
   >
     <TextField
@@ -442,7 +453,8 @@ const CreateNewSurvey = () => {
       label="Survey URL"
       variant='outlined'
       sx={{
-        width: { xs: '100%', md: '50%' },
+        flexGrow: 1,
+        minWidth: { xs: '90%', sm: '50%' },
       }}
       value={`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`}
       InputProps={{
@@ -450,7 +462,11 @@ const CreateNewSurvey = () => {
       }}
     />
     
-    <Box>
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: { xs: 'center', sm: 'flex-start' },
+      alignItems: 'center'
+    }}>
       <Tooltip title="Share options">
         <IconButton
           onClick={handleClick}
@@ -490,85 +506,90 @@ const CreateNewSurvey = () => {
       </Menu>
     </Box>
     
-    {isSaved && (
+    {/* {isSaved && (
       <Typography variant="body2" color="success.main">
         {isSaved}
       </Typography>
-    )}
+    )} */}
   </Box>
 )}
 
-          <Stack spacing={4}>
-            {addIntro && <Stack spacing={2} direction='row'>
-              <SurveyIntro onSaveForm={handleSaveIntro} data={surveyData.surveyIntroduction} disableText={false} disableButtons={false} />
-              <Button
-                color="secondary"
-                size='large'
-                onClick={handleDeleteIntro}>
-                <CancelIcon />
-              </Button>
-            </Stack>}
-
-            {selectItem}
-            
-            <div className="flex justify-center">
-              <Stack spacing={1} direction='row'>
-                {/* <Button
-                  sx={{
-                    width: { xs: '100%', md: '100%' },
-                    height: { xs: '100%', md: '70%' },
-                  }}
-                  variant="contained"
-                  color="primary"
-                  onClick={toggleDrawer}>
-                  Add Question
-                </Button> */}
-
-
-
-                {/* <Button
-                  sx={{
-                    width: { xs: '100%', md: '100%' },
-                    height: { xs: '100%', md: '50%' },
-                    fontSize: { xs: 12, md: 10 },
-                  }}
-                  variant="contained"
-                  color="primary"
-                  onClick={
-                    handleAddIntro
-                  }>
-                  Show Form Intro
-                </Button> */}
-              </Stack>
-            </div>
-          </Stack>
-          {/* <Box sx={{
-            bgcolor: 'brown',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexGrow: 1,
-            height: '100%',
-            mt: { xs: 4, md: 8 },
+          <Stack spacing={4} sx={{ 
             width: '100%',
-            boxShadow: 3,
-            borderRadius: 1,
-            p: 2,
-          }} >
-          </Box> */}
+            px: { xs: 1, sm: 2, md: 3 }
+          }}>
+            {addIntro && (
+              <Stack 
+                spacing={2} 
+                direction={{ xs: 'column', sm: 'row' }}
+                alignItems={{ xs: 'stretch', sm: 'flex-start' }}
+              >
+                <SurveyIntro 
+                  onSaveForm={handleSaveIntro} 
+                  data={surveyData.surveyIntroduction} 
+                  disableText={false} 
+                  disableButtons={false}
+                  sx={{ flexGrow: 1 }}
+                />
+                <Button
+                  color="secondary"
+                  size='large'
+                  onClick={handleDeleteIntro}
+                  sx={{ alignSelf: { xs: 'center', sm: 'flex-start' } }}
+                >
+                  <CancelIcon />
+                </Button>
+              </Stack>
+            )}
+
+            {surveyData.surveyForms.map((item, index) => {
+              const FormComponent = formComponents[item.formType];
+              
+              if (!FormComponent) return null;
+              
+              return (
+                <Stack 
+                  spacing={2} 
+                  key={item.id} 
+                  direction={{ xs: 'column', sm: 'row' }}
+                  position="relative"
+                  sx={{
+                    width: '100%',
+                    '& > *': { width: '100%' }
+                  }}
+                >
+                  <FormComponent
+                    onSaveForm={handleSaveSinglePointForm}
+                    data={item}
+                    id={item.id}
+                    options={item.options}
+                    disableForm={true}
+                    disableText={false}
+                    disableButtons={false}
+                    onHandleNext={() => 1}
+                    onSetLoading={setLoading}
+                  />
+                  <Button
+                    color="secondary"
+                    size="large"
+                    sx={{ 
+                      position: { xs: 'static', sm: 'absolute' },
+                      alignSelf: { xs: 'center', sm: 'flex-start' },
+                      right: { sm: 2, md: 3 },
+                      top: { sm: 0 },
+                      width: { xs: '100%', sm: 'auto' }
+                    }}
+                    onClick={() => handleDeleteSelectOneForm(item.id)}
+                  >
+                    <CancelIcon />
+                  </Button>
+                </Stack>
+              );
+            })}
+          </Stack>
 
             <div className="flex justify-center">
-          {/* <Button
-            fullWidth
-            sx={{ 
-              width: { xs: '100%', md: '50%' },
-             }}
-            variant="contained" color="success" onClick={handleSubmitForm}>
-            Submit Your Survey
-          </Button> */}
           </div>
-          {/* <Button variant="contained" color="secondary" onClick={() => navigate(`/user-survey/${surveyId}`)}>Survey Link </Button> */}
         </Container>
         {showInfo && (
         <div style={{ position: 'fixed', top: '0', left: '0', width: '100%', background: '#fff' }}>
