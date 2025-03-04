@@ -398,6 +398,54 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           </MenuItem>
         </Menu>
       </Container>
+      <Dialog open={deleteOpen} onClose={handleClose}>
+                        <DialogTitle>{"Are you sure you want to delete this survey?"}</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            If you delete this survey, all data including participant responses will be lost.
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                        <Button
+  onClick={() => {
+    const confirmed = window.confirm("Are you sure you want to delete this survey?");
+    if (confirmed) {
+      handleDeleteSurvey(surveyId);
+    }
+  }}
+  color="error"
+>
+  {isloading? <CircularProgress color='error' /> :"Delete"}
+
+</Button>
+                          <Button onClick={handleClose} variant="contained">
+                            Cancel
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+
+                      <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>{"Export User Responses"}</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            Display as Answers - This will show user responses as answers in the Excel sheet.
+                          </DialogContentText>
+                          <DialogContentText>
+                            Display as Index - This will show user responses as index in the Excel sheet.
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={() => handleConvertToExcelAnswer(surveyId)} color="primary">
+                           { isloading? <CircularProgress /> :"Display as Answers"}
+                          </Button>
+                          <Button onClick={() => handleConvertToExcelIndex(surveyId)} color="primary">
+                            {isloading?"" :"Display as Index"}
+                          </Button>
+                          <Button onClick={handleClose} color="secondary">
+                            Cancel
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
     </Box>
   );
 }
