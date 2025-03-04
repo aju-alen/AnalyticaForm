@@ -49,7 +49,7 @@ export default function Login() {
       setAlertMessage(resp.data.message);
       setAlertColor('success');
       handleClick();
-      localStorage.setItem('userAccessToken', JSON.stringify(resp.data));
+      localStorage.setItem('dubaiAnalytica-userAccess', JSON.stringify(resp.data));
       setLoading(false);
       navigate('/dashboard');
     } catch (error) {
@@ -65,7 +65,7 @@ export default function Login() {
       setAlertMessage(resp.data.message);
       setAlertColor('success');
       handleClick();
-      localStorage.setItem('userAccessToken', JSON.stringify(resp.data));
+      localStorage.setItem('dubaiAnalytica-userAccess', JSON.stringify(resp.data));
       navigate('/dashboard');
     } catch (error) {
       errorHandler(error, setAlertMessage, setAlertColor, handleClick);

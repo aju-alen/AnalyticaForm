@@ -105,7 +105,7 @@ export default function Analytics() {
     catch(err){
         if (err.response.status === 401) {
             console.log('unauthorized');
-            localStorage.removeItem('userAccessToken');
+            localStorage.removeItem('dubaiAnalytica-userAccess');
             navigate('/login');
         }
         else {

@@ -27,7 +27,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         const getUserIsProMember = async () => {
-            const userId = JSON.parse(localStorage.getItem('userAccessToken')).id;
+            const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
             const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
             const date = new Date();
             const unixTimestamp = Math.floor(date.getTime() / 1000);
@@ -60,7 +60,7 @@ const Dashboard = () => {
             }
         } catch (err) {
             if (err.response.status === 401) {
-                localStorage.removeItem('userAccessToken');
+                localStorage.removeItem('dubaiAnalytica-userAccess');
                 navigate('/login');
             } else {
                 console.log(err);
@@ -82,7 +82,7 @@ const Dashboard = () => {
                 setIsLoading(false);
             } catch (err) {
                 if (err.response.status === 401) {
-                    localStorage.removeItem('userAccessToken');
+                    localStorage.removeItem('dubaiAnalytica-userAccess');
                     navigate('/login');
                 } else {
                     console.log(err);

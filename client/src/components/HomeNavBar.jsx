@@ -76,8 +76,8 @@ function HomeNavBar() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('userAccessToken')) {
-      setUserExists(JSON.parse(localStorage.getItem('userAccessToken')));
+    if (localStorage.getItem('dubaiAnalytica-userAccess')) {
+      setUserExists(JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')));
     }
   }, []);
   console.log(userExists);

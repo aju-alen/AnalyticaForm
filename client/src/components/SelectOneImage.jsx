@@ -52,7 +52,7 @@ const SelectOneImage = ({ onSaveForm, data, id, options, disableForm, disableTex
   }, [formData]);
 
   useEffect(() => {
-      const local = JSON.parse(localStorage.getItem('userAccessToken'));
+      const local = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess'));
       console.log(userId, 'userId in CreateNewSurvey');
       setUserId(local);
       

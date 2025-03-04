@@ -56,12 +56,12 @@ const App = () => {
 
   // Function to check if the user is authenticated
   const isAuthenticated = () => {
-    return !!localStorage.getItem('userAccessToken'); // Change this according to your authentication mechanism
+    return !!localStorage.getItem('dubaiAnalytica-userAccess'); // Change this according to your authentication mechanism
   };
 
   const isSuperAdmin = () => {
-    console.log(JSON.parse(localStorage.getItem('userAccessToken')).isSuperAdmin, 'isSuperAdmin in protected routes');
-    return JSON.parse(localStorage.getItem('userAccessToken')).isSuperAdmin; // Change this according to your authentication mechanism
+    console.log(JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).isSuperAdmin, 'isSuperAdmin in protected routes');
+    return JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).isSuperAdmin; // Change this according to your authentication mechanism
   };
 
   const SuperAdminProtectedRoute = ({ element, ...rest }) => {
@@ -167,7 +167,7 @@ const App = () => {
         },
         {
           path: "/market",
-          element:  <ProtectedRoute element={<UserMarket />} />,
+          element:  <UserMarket />
           // Wrap Dashboard inside non-protected Route
         },
         {

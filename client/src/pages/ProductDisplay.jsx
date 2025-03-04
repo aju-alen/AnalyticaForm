@@ -82,7 +82,7 @@ const ProductDisplayy = () => {
     const [userId, setUserId] = useState('');
 
     useEffect(() => {
-        const userDetails = JSON.parse(localStorage.getItem('userAccessToken'));
+        const userDetails = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess'));
 
         setEmailId(userDetails?.email);
         setUserId(userDetails?.id);

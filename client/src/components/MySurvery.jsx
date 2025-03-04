@@ -101,7 +101,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
       setIsLoading(false);
       if (err.response.status === 401) {
         console.log('unauthorized');
-        localStorage.removeItem('userAccessToken');
+        localStorage.removeItem('dubaiAnalytica-userAccess');
         navigate('/login');
       } else {
         console.log(err);
@@ -142,7 +142,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
       handleClose();
       if (err.response.status === 401) {
         console.log('unauthorized');
-        localStorage.removeItem('userAccessToken');
+        localStorage.removeItem('dubaiAnalytica-userAccess');
         navigate('/login');
       } else {
         console.log(err);
@@ -180,7 +180,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
       handleClose();
       if (err.response.status === 401) {
         console.log('unauthorized');
-        localStorage.removeItem('userAccessToken');
+        localStorage.removeItem('dubaiAnalytica-userAccess');
         navigate('/login');
       } else {
         console.log(err);

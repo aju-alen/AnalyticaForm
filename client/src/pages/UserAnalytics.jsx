@@ -107,7 +107,7 @@ export default function UserAnalytics() {
     const getAnalyticsData = async () => {
       try {
         await refreshToken();
-        const userId = JSON.parse(localStorage.getItem('userAccessToken')).id;
+        const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
         console.log(userId, 'userId');
         const getAllUserData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-sruvey-from-oneuser/${userId}`);
         setCustomerData(getAllUserData.data);
@@ -125,7 +125,7 @@ export default function UserAnalytics() {
       catch (err) {
         if (err.response.status === 401) {
           console.log('unauthorized');
-          localStorage.removeItem('userAccessToken');
+          localStorage.removeItem('dubaiAnalytica-userAccess');
           navigate('/login');
         }
         else {

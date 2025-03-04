@@ -211,7 +211,7 @@ const CreateNewSurvey = () => {
         }
       } catch (err) {
         if (err.response?.status === 401) {
-          localStorage.removeItem('userAccessToken');
+          localStorage.removeItem('dubaiAnalytica-userAccess');
           navigate('/login');
         }
         console.error(err);
@@ -240,7 +240,7 @@ const CreateNewSurvey = () => {
 
   useEffect(() => {
     const getUserIsProMember = async () => {
-      const userId = JSON.parse(localStorage.getItem('userAccessToken')).id;
+      const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
       console.log(userId, 'userId in CreateNewSurvey');
       
 
@@ -328,7 +328,7 @@ const CreateNewSurvey = () => {
     catch (err) {
       if (err.response.status === 401) {
         console.log('unauthorized');
-        localStorage.removeItem('userAccessToken');
+        localStorage.removeItem('dubaiAnalytica-userAccess');
         navigate('/login');
       }
       else {

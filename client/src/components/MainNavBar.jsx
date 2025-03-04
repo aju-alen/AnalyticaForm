@@ -45,7 +45,7 @@ const ResponsiveAppBar = () => {
   const handleLogout = async () => {
     try {
       await axiosWithCredentials.post(`${backendUrl}/api/auth/logout`);
-      localStorage.removeItem('userAccessToken');
+      localStorage.removeItem('dubaiAnalytica-userAccess');
       navigate('/');
     } catch (error) {
       console.log(error);
@@ -60,7 +60,7 @@ const ResponsiveAppBar = () => {
         setIsSuperAdmin(data.isSuperAdmin);
       } catch (err) {
         if (err.response?.status === 401) {
-          localStorage.removeItem('userAccessToken');
+          localStorage.removeItem('dubaiAnalytica-userAccess');
           navigate('/login');
         }
       }
