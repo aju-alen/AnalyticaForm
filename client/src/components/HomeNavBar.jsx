@@ -155,7 +155,7 @@ function HomeNavBar() {
                 </Button>
                 <Button
                   variant="contained"
-                  onClick={() => navigate('/register')}
+                  onClick={() => navigate('/signup')}
                   sx={{ ...styles.button, ...styles.actionButton }}
                 >
                   Sign up
@@ -241,7 +241,7 @@ function HomeNavBar() {
                   fullWidth
                   variant="contained"
                   onClick={() => {
-                    navigate('/register');
+                    navigate('/signup');
                     setOpen(false);
                   }}
                   sx={{ ...styles.button, ...styles.actionButton }}
