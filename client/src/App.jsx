@@ -143,7 +143,7 @@ const App = () => {
         },
         {
           path: "/payment-success",
-          element: <ProtectedRoute element={<SuccessPaymentPage />} />, // Wrap Dashboard inside ProtectedRoute
+          element: <SuccessPaymentPage /> // Wrap Dashboard inside ProtectedRoute
         },
         {
           path: "/admin-analytics",
