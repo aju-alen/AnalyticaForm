@@ -91,9 +91,90 @@ const App = () => {
       element: (
         <Layout> {/* Render Layout component here */}
         <GoogleAnalytics />
-          <Suspense fallback={<div>Loading...</div>}>
-            <Outlet /> {/* Render Outlet inside Layout */}
-          </Suspense>
+        <Suspense fallback={
+          <div style={{
+            padding: '20px',
+            maxWidth: '1400px',
+            margin: '0 auto',
+            width: '100%'
+          }}>
+            {/* Header skeleton */}
+            <div style={{
+              height: '50px',
+              background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+              backgroundSize: '200% 100%',
+              animation: 'loading 1.5s infinite',
+              borderRadius: '8px',
+              marginBottom: '30px'
+            }} />
+
+            {/* Kanban board layout */}
+            <div style={{ display: 'flex', gap: '24px', overflowX: 'auto', padding: '12px 0' }}>
+              {/* Multiple Kanban columns */}
+              {[...Array(4)].map((_, columnIndex) => (
+                <div key={columnIndex} style={{
+                  minWidth: '300px',
+                  background: '#f8f9fa',
+                  borderRadius: '12px',
+                  padding: '16px',
+                }}>
+                  {/* Column header */}
+                  <div style={{
+                    height: '24px',
+                    width: '60%',
+                    background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                    backgroundSize: '200% 100%',
+                    animation: 'loading 1.5s infinite',
+                    borderRadius: '4px',
+                    marginBottom: '16px'
+                  }} />
+                  
+                  {/* Kanban cards */}
+                  {[...Array(3)].map((_, cardIndex) => (
+                    <div key={cardIndex} style={{
+                      height: '100px',
+                      background: '#ffffff',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      marginBottom: '12px',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                    }}>
+                      {/* Card content skeleton */}
+                      <div style={{
+                        height: '16px',
+                        width: '80%',
+                        background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                        backgroundSize: '200% 100%',
+                        animation: 'loading 1.5s infinite',
+                        borderRadius: '4px',
+                        marginBottom: '12px'
+                      }} />
+                      <div style={{
+                        height: '12px',
+                        width: '60%',
+                        background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                        backgroundSize: '200% 100%',
+                        animation: 'loading 1.5s infinite',
+                        borderRadius: '4px'
+                      }} />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            <style>
+              {`
+                @keyframes loading {
+                  0% { background-position: 200% 0; }
+                  100% { background-position: -200% 0; }
+                }
+              `}
+            </style>
+          </div>
+        }>
+          <Outlet />
+        </Suspense>
         </Layout>
       ),
       children: [
