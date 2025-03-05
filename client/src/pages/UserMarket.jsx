@@ -39,10 +39,9 @@ const UserMarket = () => {
   const [finalUsersCount, setFinalUsersCount] = useState(0);
   const [isCalculating, setIsCalculating] = useState(false);
   const [userData, setUserData] = useState([]);
-  console.log(userData, 'userData');
-
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [verticalIndex, setVerticalIndex] = React.useState(0);
+  const [loading, setLoading] = useState(false);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -236,6 +235,72 @@ const UserMarket = () => {
     const [userInput, setUserInput] = useState("");
     const [error, setError] = useState("");
     const [price, setPrice] = useState(0);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [showGuestEmailModal, setShowGuestEmailModal] = useState(false);
+    const [guestEmail, setGuestEmail] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+
+    const validateEmail = (email) => {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    };
+
+    const handleGuestCheckout = async (e) => {
+      e.preventDefault();
+      setEmailError("");
+      if (!validateEmail(guestEmail)) {
+        setEmailError("Please enter a valid email address");
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        const createRegisterInDb = await axiosWithAuth.post(`${backendUrl}/api/auth/create-register-guest`, {
+          email: guestEmail,
+          firstName: firstName,
+          lastName: lastName,
+        });
+        console.log(createRegisterInDb.data.user, 'createRegisterInDb');
+        
+        // After successful registration, submit the checkout form
+        const checkoutForm = document.createElement('form');
+        checkoutForm.method = 'POST';
+        checkoutForm.action = `${import.meta.env.VITE_BACKEND_URL}/api/stripe/market/create-checkout-session`;
+
+        // Create and append hidden inputs
+        const formInputs = {
+          userId: createRegisterInDb.data.user.id,
+          emailId: guestEmail,
+          amount: price,
+          unit: userInput,
+          selectedRegions: selectedRegions,
+          selectedIndustries: selectedIndustries,
+          selectedEducationLevels: selectedEducationLevels,
+          selectedPositions: selectedPositions,
+          selectedExperience: selectedExperience,
+          currency: 'aed'
+        };
+
+        Object.entries(formInputs).forEach(([name, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          checkoutForm.appendChild(input);
+        });
+
+        document.body.appendChild(checkoutForm);
+        checkoutForm.submit();
+        document.body.removeChild(checkoutForm);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error handling guest checkout:', error);
+        setEmailError(error.response.data.message);
+        setLoading(false);
+      }
+    };
 
     const handleInputChange = (e) => {
       const value = e.target.value;
@@ -261,6 +326,18 @@ const UserMarket = () => {
         setError("");
         setPrice(calculatePrice(numValue));
       }
+    };
+
+    const handleCheckoutClick = (e) => {
+      e.preventDefault();
+      const userAccess = localStorage.getItem('dubaiAnalytica-userAccess');
+      
+      if (userAccess === null) {
+        setShowAuthModal(true);
+        return;
+      }
+      
+      e.target.closest('form').submit();
     };
 
     return (
@@ -352,7 +429,7 @@ const UserMarket = () => {
                   <input type="hidden" name="currency" value='aed' />
                   <button 
                     id="checkout-and-portal-button" 
-                    type="submit"
+                    onClick={handleCheckoutClick}
                     className="w-full mt-4 px-6 py-3 bg-blue-500 text-white rounded-lg
                       font-medium transition-all duration-200 hover:bg-blue-600
                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
@@ -401,6 +478,137 @@ const UserMarket = () => {
         >
           Start New Calculation
         </button>
+
+        {showAuthModal && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+            <div 
+              className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl transform transition-all animate-modalSlideIn"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-semibold text-gray-800">Continue as</h3>
+                <p className="text-gray-600 mt-2 text-sm">Choose how you'd like to proceed</p>
+              </div>
+
+              {/* Buttons Container */}
+              <div className="space-y-4">
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 
+                    transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]
+                    font-medium flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
+                >
+                  <span>Sign In</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                
+                <div className="relative flex items-center gap-4 my-4">
+                  <div className="flex-1 border-t border-gray-200"></div>
+                  <span className="text-sm text-gray-500">or</span>
+                  <div className="flex-1 border-t border-gray-200"></div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setShowAuthModal(false);
+                    setShowGuestEmailModal(true);
+                  }}
+                  className="w-full py-3 px-4 border-2 border-gray-200 rounded-lg 
+                    hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 
+                    transform hover:scale-[1.02] active:scale-[0.98]
+                    text-gray-700 font-medium flex items-center justify-center space-x-2"
+                >
+                  <span>Continue as Guest</span>
+                  <Users className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Close button */}
+              <button
+                onClick={() => setShowAuthModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 
+                  transition-colors duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {showGuestEmailModal && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+            <div 
+              className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl transform transition-all animate-modalSlideIn"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-semibold text-gray-800">Enter Your Details</h3>
+                <p className="text-gray-600 mt-2 text-sm">We'll use this to send your order details</p>
+              </div>
+
+              <form onSubmit={handleGuestCheckout} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none border-gray-300 focus:ring-blue-200"
+                    placeholder="First Name"
+                    required
+                  />
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none border-gray-300 focus:ring-blue-200"
+                    placeholder="Last Name"
+                    required
+                  />
+                </div>
+                
+                <input
+                  type="email"
+                  value={guestEmail}
+                  onChange={(e) => {
+                    setGuestEmail(e.target.value);
+                    setEmailError("");
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none
+                    ${emailError ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'}`}
+                  placeholder="your@email.com"
+                  required
+                />
+                {emailError && (
+                  <p className="mt-2 text-sm text-red-600">{emailError}</p>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full mt-4 py-3 px-4 bg-blue-500 text-white rounded-lg
+                    hover:bg-blue-600 transition-all duration-200 
+                    transform hover:scale-[1.02] active:scale-[0.98]
+                    font-medium flex items-center justify-center space-x-2"
+                >
+                  <span>Continue to Checkout</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </form>
+
+              <button
+                onClick={() => setShowGuestEmailModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 
+                  transition-colors duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
