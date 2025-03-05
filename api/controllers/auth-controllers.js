@@ -141,6 +141,43 @@ export const userRegister = async (req, res, next) => {
         }
     };
 
+    export const createRegisterGuest = async (req, res) => {
+        try{
+            const {email,firstName,lastName} = req.body;
+            const userExists = await prisma.user.findUnique({
+                where: {
+                    email
+                }
+            })
+            if(userExists){
+                return res.status(400).json({ message: "User already exists. You can login" });
+            }
+            const newUser = await prisma.user.create({
+                data: {
+                    email,
+                    firstName,
+                    lastName,
+                    receiveMarketingEmails: true,
+                    emailVerificationToken: crypto.randomBytes(64).toString('hex'),
+                    isGuest: true,
+                }
+            })
+            await prisma.$disconnect();
+            if(!newUser){
+                return res.status(400).json({ message: "User registration failed. please try again" });
+            }
+            sendVerificationEmail(req.body.email, newUser.emailVerificationToken, 'Guest');
+            res.status(201).json({ message: "User registered successfully. Please verify your details by email.",user: newUser });
+            
+            
+        }
+        catch(err){
+            console.log(err);
+
+            res.status(500).json({ message: "An error has occoured, please contact support" });
+        }
+    }
+
     const createTransport = nodemailer.createTransport({
         host: 'mail.privateemail.com',
         port: 587,
