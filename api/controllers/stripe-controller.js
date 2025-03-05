@@ -1,10 +1,19 @@
-import stripe from 'stripe';
 import {  stripeFrontendURL } from '../utils/corsFe.js';
+import sendEmail from '../utils/emailTemplateTransport.js';
+import { marketSuccessPaymentEmail } from '../utils/static/static-data.js';
+
 import dotenv from 'dotenv';
 dotenv.config();
+
+import stripe from 'stripe';
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
+
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient();
+
+
 const YOUR_DOMAIN = stripeFrontendURL;
-console.log(YOUR_DOMAIN,'YOUR_DOMAIN')
+
 
 export const createCheckoutSessionForSubscription = async (req, res) => {
     try {
@@ -41,18 +50,14 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
     }
 }
 
-const endpointSecret = "whsec_WwO4P8KQsXS1gzpfzMD8DKJUWxmder4H";
-
 export const stripeWebhook = async (request, response) => {
+  // const endpointSecret = "whsec_WwO4P8KQsXS1gzpfzMD8DKJUWxmder4H";
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SIGNING_SECRET;
   const sig = request.headers['stripe-signature'];
 
   let event;
-  console.log(endpointSecret,'endpointSecret');
-  console.log(sig,'sig');
-  console.log(request.body,'sig');
   try {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-    console.log(event,'event');
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
     return;
@@ -62,29 +67,170 @@ export const stripeWebhook = async (request, response) => {
   switch (event.type) {
     case 'checkout.session.async_payment_failed':
       const checkoutSessionAsyncPaymentFailed = event.data.object;
-      console.log(checkoutSessionAsyncPaymentFailed,'checkoutSessionAsyncPaymentFailed');
-      // Then define and call a function to handle the event checkout.session.async_payment_failed
       break;
+
+
     case 'checkout.session.async_payment_succeeded':
       const checkoutSessionAsyncPaymentSucceeded = event.data.object;
-      console.log(checkoutSessionAsyncPaymentSucceeded,'checkoutSessionAsyncPaymentSucceeded');
-      // Then define and call a function to handle the event checkout.session.async_payment_succeeded
       break;
+
+
     case 'checkout.session.completed':
       const checkoutSessionCompleted = event.data.object;
-      console.log(checkoutSessionCompleted,'checkoutSessionCompleted');
-      // Then define and call a function to handle the event checkout.session.completed
       break;
+
+    case 'customer.subscription.deleted':
+      const customerSubscriptionDeleted = event.data.object;
+      break;
+
+    case 'customer.subscription.updated':
+      const customerSubscriptionUpdated = event.data.object;
+      break;
+
     case 'invoice.created':
       const invoiceCreated = event.data.object;
-      console.log(invoiceCreated,'invoiceCreated');
-      // Then define and call a function to handle the event invoice.created
       break;
-    case 'invoice.payment_succeeded':
+
+
+    case 'invoice.payment_succeeded': //--This is run when the payment is successful
       const invoicePaymentSucceeded = event.data.object;
-      console.log(invoicePaymentSucceeded,'invoicePaymentSucceeded');
-      // Then define and call a function to handle the event invoice.payment_succeeded
+      const findCustomer = await prisma.proMember.findUnique({
+        where: { subscriptionEmail: invoicePaymentSucceeded.customer_email }
+      });
+
+      if (findCustomer) {
+
+        const updateSubscription = await prisma.proMember.update({
+          where: { subscriptionEmail: invoicePaymentSucceeded.customer_email },
+          data: {
+            isSubscribed: true,
+            subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
+            subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
+            subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
+            hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
+            hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
+            invoiceId: invoicePaymentSucceeded.id,
+            customerId: invoicePaymentSucceeded.subscription
+          }
+        });
+      }
+      else {
+
+        const findUserId = await prisma.user.findFirst({
+          where: {
+            email: invoicePaymentSucceeded.customer_email
+          },
+          select: {
+            id: true,
+          }
+        });
+
+        const subscription = await prisma.proMember.create({
+          data: {
+            isSubscribed: true,
+            subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
+            subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
+            subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
+            subscriptionEmail: invoicePaymentSucceeded.customer_email,
+            hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
+            hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
+            invoiceId: invoicePaymentSucceeded.id,
+            customerId: invoicePaymentSucceeded.subscription,
+            userId: findUserId.id
+
+          }
+        });
+        const updateUserData = await prisma.user.update({
+          where: { email: invoicePaymentSucceeded.customer_email },
+          data: {
+            isAProMember: true
+          }
+        });
+      }
+      await prisma.$disconnect();
       break;
+
+    case 'charge.updated':
+      const chargeUpdated = event.data.object;
+      console.log(chargeUpdated, 'charge');
+      if (chargeUpdated.paid) {
+
+        // const paymentIntentId = chargeUpdated.payment_intent;
+
+        try {
+          // const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+          const paymentIntent = await Stripe.paymentIntents.retrieve(chargeUpdated.payment_intent);
+
+          // Get sessions associated with this payment intent
+          const sessions = await Stripe.checkout.sessions.list({
+            payment_intent: paymentIntent.id,
+            limit: 1
+          });
+
+          const sessionId = sessions.data[0].id;
+
+          const createPayment = await prisma.responsePurchase.create({
+            data: {
+              userEmail: chargeUpdated.billing_details.email,
+              responseQuantity: Number(chargeUpdated.metadata.unit),
+              amountPaid: chargeUpdated.amount,
+              amountCurrency: chargeUpdated.currency,
+              paidStatus: chargeUpdated.paid,
+              stripePaymentIntentId: chargeUpdated.payment_intent,
+              stripeRecieptUrl: chargeUpdated.receipt_url,
+              selectedRegions: chargeUpdated.metadata.selectedRegions,
+              selectedIndustries: chargeUpdated.metadata.selectedIndustries,
+              selectedEducationLevels: chargeUpdated.metadata.selectedEducationLevels,
+              selectedPositions: chargeUpdated.metadata.selectedPositions,
+              selectedExperience: chargeUpdated.metadata.selectedExperience,
+              sessionIdUrl: sessionId,
+              stripeName: chargeUpdated.billing_details.name,
+              stripeCountry: chargeUpdated.billing_details.address.country,
+              stripeAddressLineOne: chargeUpdated.billing_details.address.line1,
+              stripeAddressLineTwo: chargeUpdated.billing_details.address.line2,
+              stripePostalCode: chargeUpdated.billing_details.address.postal_code,
+              stripeState: chargeUpdated.billing_details.address.state,
+              stripeCardBrand: chargeUpdated.payment_method_details.card.brand,
+              stripeCardLastFourDigit: chargeUpdated.payment_method_details.card.last4,
+              userId: chargeUpdated.metadata.userId,  
+            }
+          });
+          const sendReceiptEmail = await sendEmail({
+            senderEmailId: process.env.GMAIL_AUTH_USER_SUPPORT,
+            receiverEmailId: chargeUpdated.metadata.emailId,
+            subject: 'Congratulations! Your payment has been successful',
+            htmlString: marketSuccessPaymentEmail(
+              chargeUpdated.billing_details.name,
+              chargeUpdated.amount / 100,
+              chargeUpdated.currency.toUpperCase(),
+              chargeUpdated.paid,
+              chargeUpdated.payment_method_details.card.brand,
+              chargeUpdated.payment_method_details.card.last4,
+              chargeUpdated.billing_details.address.line1,
+              chargeUpdated.billing_details.address.city,
+              chargeUpdated.billing_details.address.state,
+              chargeUpdated.billing_details.address.country,
+              chargeUpdated.billing_details.address.postal_code,
+              chargeUpdated.metadata.unit,
+              chargeUpdated.metadata.selectedRegions,
+              chargeUpdated.metadata.selectedIndustries,
+              chargeUpdated.metadata.selectedEducationLevels,
+              chargeUpdated.metadata.selectedPositions,
+              chargeUpdated.metadata.selectedExperience,
+              chargeUpdated.receipt_url
+            )
+          })
+          console.log(sendReceiptEmail, 'sendReceiptEmail');
+          
+        }
+        catch (err) {
+          console.log(err);
+        }
+
+      }
+      // Then define and call a function to handle the event charge.updated
+      break;
+
     // ... handle other event types
     default:
       console.log(`Unhandled event type ${event.type}`);
@@ -92,7 +238,7 @@ export const stripeWebhook = async (request, response) => {
 
   // Return a 200 response to acknowledge receipt of the event
   response.send();
-  
+
 };
 
 const calculatePrice = (users) => {
