@@ -1,37 +1,32 @@
-import React, { useEffect } from 'react';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Container from '@mui/material/Container';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import CssBaseline from '@mui/material/CssBaseline';
-import excelIcon from '../assets/icons/excel.svg';
-import Box from '@mui/material/Box';
-import { Link } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { backendUrl } from '../utils/backendUrl';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
-import { useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CircularProgress from '@mui/material/CircularProgress';
 
 export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDataChanged }) {
   console.log(userSurveyData,'--userSurveyData--');
@@ -343,7 +338,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                         }}
                         onClick={(event) => handleClickMenu(event, survey.id)}
                       >
-                        <MoreVertIcon color='action' />
+                        <MenuOpenIcon color='action' />
                       </Button>
                     </TableCell>
                   </TableRow>
