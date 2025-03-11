@@ -307,26 +307,6 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
                {!disableButtons && (
                  <>
                    <Button
-                     className="format-button"
-                     color="primary"
-                     variant="text"
-                     sx={{
-                       position: 'absolute',
-                       right: '40px',
-                       visibility: 'hidden',
-                       transition: 'visibility 0.1s ease-in-out',
-                       minWidth: '40px'
-                     }}
-                     onClick={() => handleBoldToggle(option.id)}
-                   >
-                     <FormatBoldIcon 
-                       fontSize="small"
-                       sx={{ 
-                         color: boldFields.has(option.id) ? 'primary.main' : 'text.secondary'
-                       }}
-                     />
-                   </Button>
-                   <Button
                      className="delete-button"
                      color="error"
                      variant="text"

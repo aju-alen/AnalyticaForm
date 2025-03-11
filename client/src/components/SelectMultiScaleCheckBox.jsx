@@ -363,28 +363,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                                         }}
                                                         onClick={() => handleDeleteColumn(column.id)} />
                                                 )}
-                                                {!disableButtons && (
-                                                    <Button
-                                                        className="format-button"
-                                                        color="primary"
-                                                        variant="text"
-                                                        sx={{
-                                                            position: 'absolute',
-                                                            right: 0,
-                                                            visibility: 'hidden',
-                                                            transition: 'visibility 0.1s ease-in-out',
-                                                            minWidth: '40px'
-                                                        }}
-                                                        onClick={() => handleBoldToggle(column.id)}
-                                                    >
-                                                        <FormatBoldIcon 
-                                                            fontSize="small"
-                                                            sx={{ 
-                                                                color: boldFields.has(column.id) ? 'primary.main' : 'text.secondary'
-                                                            }}
-                                                        />
-                                                    </Button>
-                                                )}
+                                               
                                             </Box>
                                         </TableCell>
                                     ))}
@@ -432,28 +411,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                                         minWidth: { xs: 100, md: 200 },
                                                     }}
                                                 />
-                                                {!disableButtons && (
-                                                    <Button
-                                                        className="format-button"
-                                                        color="primary"
-                                                        variant="text"
-                                                        sx={{
-                                                            position: 'absolute',
-                                                            right: 0,
-                                                            visibility: 'hidden',
-                                                            transition: 'visibility 0.1s ease-in-out',
-                                                            minWidth: '40px'
-                                                        }}
-                                                        onClick={() => handleBoldToggle(row.id)}
-                                                    >
-                                                        <FormatBoldIcon 
-                                                            fontSize="small"
-                                                            sx={{ 
-                                                                color: boldFields.has(row.id) ? 'primary.main' : 'text.secondary'
-                                                            }}
-                                                        />
-                                                    </Button>
-                                                )}
+                                               
                                             </Box>
                                         </TableCell>
                                         {row.columns.map((column, idx) => (
@@ -555,28 +513,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                 mx: { xs: 1, md: 2 }
                             }}
                         />
-                        {!disableButtons && (
-                            <Button
-                                className="format-button"
-                                color="primary"
-                                variant="text"
-                                sx={{
-                                    position: 'absolute',
-                                    right: 0,
-                                    visibility: 'hidden',
-                                    transition: 'visibility 0.1s ease-in-out',
-                                    minWidth: '40px'
-                                }}
-                                onClick={() => handleBoldToggle('question')}
-                            >
-                                <FormatBoldIcon 
-                                    fontSize="small"
-                                    sx={{ 
-                                        color: boldFields.has('question') ? 'primary.main' : 'text.secondary'
-                                    }}
-                                />
-                            </Button>
-                        )}
+                        
                     </Box>
                          {formData.options.map((row, rowIndex) => (
               <Accordion sx={{
@@ -643,28 +580,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                                   fullWidth
                                   multiline
                                 />
-                                {!disableButtons && (
-                                    <Button
-                                        className="format-button"
-                                        color="primary"
-                                        variant="text"
-                                        sx={{
-                                            position: 'absolute',
-                                            right: 0,
-                                            visibility: 'hidden',
-                                            transition: 'visibility 0.1s ease-in-out',
-                                            minWidth: '40px'
-                                        }}
-                                        onClick={() => handleBoldToggle(column.id)}
-                                    >
-                                        <FormatBoldIcon 
-                                            fontSize="small"
-                                            sx={{ 
-                                                color: boldFields.has(column.id) ? 'primary.main' : 'text.secondary'
-                                            }}
-                                        />
-                                    </Button>
-                                )}
+                               
                               </Box>
                             </TableCell>
                           ))}
