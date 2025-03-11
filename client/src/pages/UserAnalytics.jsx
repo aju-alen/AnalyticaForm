@@ -327,6 +327,7 @@ export default function UserAnalytics() {
                             onClick={() => navigate(`/user-survey-analytics/${row.id}`)}
                             sx={{
                               textTransform: 'none',
+                              textAlign: 'left',
                               '&:hover': {
                                 backgroundColor: 'transparent',
                                 textDecoration: 'underline'
