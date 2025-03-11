@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, CssBaseline, Container, Box, Stack, Radio, Button, Typography } from '@mui/material';
+import { TextField, CssBaseline, Container, Box, Stack, Radio, Button, Typography,useTheme, useMediaQuery } from '@mui/material';
 import { uid } from 'uid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,10 +11,14 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 
 const initialFormData = {
   id: uid(5),
   question: '',
+  quilText: '',
   formMandate: false,
   options: [
     {
@@ -37,6 +41,57 @@ const initialFormData = {
 const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [debouncedValue, setDebouncedValue] = useState('');
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Customize toolbar options based on screen size
+  const modules = {
+    toolbar: {
+      container: isMobile ? [
+        // Mobile toolbar configuration
+        ['bold', 'italic', 'underline'],
+        ['clean']
+      ] : [
+        // Desktop toolbar configuration
+        ['bold', 'italic', 'underline', 'strike'],
+        ['clean']
+      ],
+    },
+    clipboard: {
+      matchVisual: false
+    }
+  };
+
+  // Allowed formats
+  const formats = [
+    'bold', 'italic', 'underline', 'strike',
+  ];
+
+  // Helper function to clean HTML content
+  const cleanHTMLContent = (htmlString) => {
+    if (!htmlString) return '';
+    
+    // Create a temporary div
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+    
+    // Get text content and clean up whitespace
+    let cleanText = tempDiv.textContent || tempDiv.innerText || '';
+    cleanText = cleanText.replace(/\s+/g, ' ').trim();
+    
+    return cleanText;
+  };
+
+  // Update the ReactQuill onChange handler
+  const handleQuillChange = (content) => {
+    setFormData({
+      ...formData,
+      quilText: content, // Store the HTML formatted text
+      question: cleanHTMLContent(content) // Store the clean text
+    });
+  };
+  
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(formData);
@@ -51,13 +106,20 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
     };
   }, [formData]);
 
-  useEffect(() => {
+   // Update the useEffect for data initialization
+   useEffect(() => {
     if (options) {
       setFormData(data);
     } else {
-      setFormData({ ...formData, id });
+      setFormData({ 
+        ...formData, 
+        id,
+        quilText: data?.quilText || '',
+        question: data?.question || ''
+      });
     }
   }, [data]);
+
 
   const handleAddColumn = () => {
     const genNewUid = uid(5);
@@ -162,25 +224,31 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
             backgroundColor: '#F4FFF8',
           },
         }}>
-          <TextField
-            fullWidth
-            multiline
-            id="standard-basic"
-            label={!disableText ? "Insert input" : ''}
-            variant="standard"
-            sx={{
-              '& .MuiInputBase-root': {
-                fontSize: { xs: '1rem', sm: '1.1rem', md: '1.3rem' },
-              },
-              mb: { xs: 2, sm: 3 }
-            }}
-            name='question'
-            value={formData.question}
-            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-            InputProps={{
-              readOnly: disableText,
-            }}
-          />
+               <div style={{ marginBottom: '20px', width: '100%' }}>
+              {!disableText && (
+                <label style={{ 
+                  fontSize: '0.75rem', 
+                  color: 'rgba(0, 0, 0, 0.6)', 
+                  marginBottom: '8px',
+                  display: 'block' 
+                }}>
+                  Insert input *
+                </label>
+              )}
+              <ReactQuill
+                theme="snow"
+                value={formData.quilText}
+                onChange={handleQuillChange}
+                readOnly={disableText}
+                modules={modules}
+                formats={formats}
+                style={{
+                  width: '100%',
+                  border: '1px solid rgba(0, 0, 0, 0.23)',
+                  borderRadius: '4px',
+                }}
+              />
+            </div>
           
           {/* Desktop/Tablet View */}
           <Box sx={{ display: { xs: 'none', sm: 'block' }, width: '100%' }}>

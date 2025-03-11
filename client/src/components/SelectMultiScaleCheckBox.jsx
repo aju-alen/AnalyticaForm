@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { TextField, CssBaseline, Container, Box, Stack, Button, Checkbox } from '@mui/material';
+import { TextField, CssBaseline, Container, Box, Stack, Button, Checkbox,useTheme, useMediaQuery } from '@mui/material';
 import { uid } from 'uid';
 import ClearIcon from '@mui/icons-material/Clear';
 import Table from '@mui/material/Table';
@@ -12,13 +12,15 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 
 
 const initialFormData = {
     id: uid(5),
     question: '',
+    quilText: '',
     formMandate: false,
     options: [
         {
@@ -44,6 +46,57 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
     const [formData, setFormData] = useState(initialFormData);
     const [debouncedValue, setDebouncedValue] = useState('');
     const [boldFields, setBoldFields] = useState(new Set());
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
+    // Customize toolbar options based on screen size
+    const modules = {
+      toolbar: {
+        container: isMobile ? [
+          // Mobile toolbar configuration
+          ['bold', 'italic', 'underline'],
+          ['clean']
+        ] : [
+          // Desktop toolbar configuration
+          ['bold', 'italic', 'underline', 'strike'],
+          ['clean']
+        ],
+      },
+      clipboard: {
+        matchVisual: false
+      }
+    };
+  
+    // Allowed formats
+    const formats = [
+      'bold', 'italic', 'underline', 'strike',
+    ];
+  
+    // Helper function to clean HTML content
+    const cleanHTMLContent = (htmlString) => {
+      if (!htmlString) return '';
+      
+      // Create a temporary div
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlString;
+      
+      // Get text content and clean up whitespace
+      let cleanText = tempDiv.textContent || tempDiv.innerText || '';
+      cleanText = cleanText.replace(/\s+/g, ' ').trim();
+      
+      return cleanText;
+    };
+  
+    // Update the ReactQuill onChange handler
+    const handleQuillChange = (content) => {
+      setFormData({
+        ...formData,
+        quilText: content, // Store the HTML formatted text
+        question: cleanHTMLContent(content) // Store the clean text
+      });
+    };
+    
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -136,13 +189,20 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
         setBoldFields(newBoldFields);
     };
 
-    useEffect(() => {
-        if (options) {
-            setFormData(data);
-        } else {
-            setFormData({ ...formData, id });
-        }
-    }, [data]);
+     // Update the useEffect for data initialization
+  useEffect(() => {
+    if (options) {
+      setFormData(data);
+    } else {
+      setFormData({ 
+        ...formData, 
+        id,
+        quilText: data?.quilText || '',
+        question: data?.question || ''
+      });
+    }
+  }, [data]);
+
 
     console.log(formData, 'formData in multi scale point');
 
@@ -158,7 +218,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                     justifyContent: 'space-between',
                     flexGrow: 1,
                     height: "100%",
-                    mt: { xs: 2, md: 4 },
+                    mt: { xs: 4, md: 0 },
                     width: '100%',
                     boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)',
                     borderRadius: { xs: 1, md: 2 },
@@ -200,48 +260,32 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
                             visibility: 'visible',
                         },
                     }}>
-                        <TextField
-                            fullWidth
-                            multiline
-                            id="standard-basic"
-                            label={!disableText ? "Insert input" : ''} variant="standard"
-                            name='question'
-                            value={formData.question}
-                            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                            InputProps={{
-                                readOnly: disableText,
-                            }}
-                            sx={{
-                                '& .MuiInputBase-root': {
-                                    fontSize: { xs: '1rem', md: '1.3rem' },
-                                    fontWeight: boldFields.has('question') ? 'bold' : 'normal',
-                                },
-                                width: '100%',
-                                mx: { xs: 1, md: 2 }
-                            }}
-                        />
-                        {!disableButtons && (
-                            <Button
-                                className="format-button"
-                                color="primary"
-                                variant="text"
-                                sx={{
-                                    position: 'absolute',
-                                    right: 0,
-                                    visibility: 'hidden',
-                                    transition: 'visibility 0.1s ease-in-out',
-                                    minWidth: '40px'
-                                }}
-                                onClick={() => handleBoldToggle('question')}
-                            >
-                                <FormatBoldIcon 
-                                    fontSize="small"
-                                    sx={{ 
-                                        color: boldFields.has('question') ? 'primary.main' : 'text.secondary'
-                                    }}
-                                />
-                            </Button>
-                        )}
+                          <div style={{ marginBottom: '20px', width: '100%' }}>
+              {!disableText && (
+                <label style={{ 
+                  fontSize: '0.75rem', 
+                  color: 'rgba(0, 0, 0, 0.6)', 
+                  marginBottom: '8px',
+                  display: 'block' 
+                }}>
+                  Insert input *
+                </label>
+              )}
+              <ReactQuill
+                theme="snow"
+                value={formData.quilText}
+                onChange={handleQuillChange}
+                readOnly={disableText}
+                modules={modules}
+                formats={formats}
+                style={{
+                  width: '100%',
+                  border: '1px solid rgba(0, 0, 0, 0.23)',
+                  borderRadius: '4px',
+                }}
+              />
+            </div>
+                        
                     </Box>
 
                     <div style={{ width: '100%' }}>

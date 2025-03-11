@@ -2,27 +2,24 @@ import React, { useEffect, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import TextField from '@mui/material/TextField';
-import { Button, Stack } from '@mui/material';
+import { Button, Stack, useTheme, useMediaQuery } from '@mui/material';
+import { TextField } from '@mui/material';
 import Radio from '@mui/material/Radio';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { uid } from 'uid';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
-
-
-
-
-const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext,onSaveIndicator,onSetLoading }) => {
+const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext, onSaveIndicator, onSetLoading }) => {
   const [isBold, setIsBold] = useState(false);
   const [formData, setFormData] = useState({
     id: id,
     question: '',
+    quilText: '',
     formMandate: false,
     options: [
       { id: uid(5), value: '' },
       { id: uid(5), value: '' }
-
     ],
     selectedValue: [{ question: '', answer: '', value: '', index: '' }],
     formType: 'SinglePointForm'
@@ -31,6 +28,56 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
   const [debouncedValue, setDebouncedValue] = useState('');
   const [boldFields, setBoldFields] = useState(new Set());
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Customize toolbar options based on screen size
+  const modules = {
+    toolbar: {
+      container: isMobile ? [
+        // Mobile toolbar configuration
+        ['bold', 'italic', 'underline'],
+        ['clean']
+      ] : [
+        // Desktop toolbar configuration
+        ['bold', 'italic', 'underline', 'strike'],
+        ['clean']
+      ],
+    },
+    clipboard: {
+      matchVisual: false
+    }
+  };
+
+  // Allowed formats
+  const formats = [
+    'bold', 'italic', 'underline', 'strike',
+  ];
+
+  // Helper function to clean HTML content
+  const cleanHTMLContent = (htmlString) => {
+    if (!htmlString) return '';
+    
+    // Create a temporary div
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+    
+    // Get text content and clean up whitespace
+    let cleanText = tempDiv.textContent || tempDiv.innerText || '';
+    cleanText = cleanText.replace(/\s+/g, ' ').trim();
+    
+    return cleanText;
+  };
+
+  // Update the ReactQuill onChange handler
+  const handleQuillChange = (content) => {
+    setFormData({
+      ...formData,
+      quilText: content, // Store the HTML formatted text
+      question: cleanHTMLContent(content) // Store the clean text
+    });
+  };
+  
   useEffect(() => {
     
     const handler = setTimeout(() => {
@@ -92,15 +139,20 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     setBoldFields(newBoldFields);
   };
 
+  // Update the useEffect for data initialization
   useEffect(() => {
-    // console.log(data,'data in select one choice form');
     if (options) {
-      setFormData(data)
+      setFormData(data);
+    } else {
+      setFormData({ 
+        ...formData, 
+        id,
+        quilText: data?.quilText || '',
+        question: data?.question || ''
+      });
     }
-    else {
-      setFormData({ ...formData, id })
-    }
-  }, [data])
+  }, [data]);
+
   // console.log(id,'id in select one choice form');
   console.log(formData, 'formData in select one choice form');
   return (
@@ -157,49 +209,31 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
               visibility: 'visible',
             },
           }}>
-            <TextField 
-              fullWidth 
-              multiline 
-              id="standard-basic" 
-              label={!disableText ? "Insert input" : ''} 
-              variant='standard' 
-              size='small' 
-              required 
-              name='question' 
-              value={formData.question}
-              sx={{
-                '& .MuiInputBase-root': {
-                  fontSize: '1.3rem',
-                  fontWeight: boldFields.has('question') ? 'bold' : 'normal',
-                }
-              }}
-              onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-              InputProps={{
-                readOnly: disableText,
-              }}
-            />
-            {!disableButtons && (
-              <Button
-                className="format-button"
-                color="primary"
-                variant="text"
-                sx={{
-                  position: 'absolute',
-                  right: 0,
-                  visibility: 'hidden',
-                  transition: 'visibility 0.1s ease-in-out',
-                  minWidth: '40px'
+            <div style={{ marginBottom: '20px', width: '100%' }}>
+              {!disableText && (
+                <label style={{ 
+                  fontSize: '0.75rem', 
+                  color: 'rgba(0, 0, 0, 0.6)', 
+                  marginBottom: '8px',
+                  display: 'block' 
+                }}>
+                  Insert input *
+                </label>
+              )}
+              <ReactQuill
+                theme="snow"
+                value={formData.quilText}
+                onChange={handleQuillChange}
+                readOnly={disableText}
+                modules={modules}
+                formats={formats}
+                style={{
+                  width: '100%',
+                  border: '1px solid rgba(0, 0, 0, 0.23)',
+                  borderRadius: '4px',
                 }}
-                onClick={() => handleBoldToggle('question')}
-              >
-                <FormatBoldIcon 
-                  fontSize="small"
-                  sx={{ 
-                    color: boldFields.has('question') ? 'primary.main' : 'text.secondary'
-                  }}
-                />
-              </Button>
-            )}
+              />
+            </div>
           </Box>
           {/* <Button 
           onClick={() => setIsBold(!isBold)}

@@ -3,17 +3,20 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Button, Stack } from '@mui/material';
+import { Button, Stack, useTheme, useMediaQuery } from '@mui/material';
 import { uid } from 'uid';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const RankOrder = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext, onSaveIndicator }) => {
 
     const [formData, setFormData] = useState({
         id: id,
         question: '',
+        quilText:'',
         formMandate: false,
         options: [
             { id: 'as3lo', value: '', rowQuestion: '' },
@@ -28,6 +31,56 @@ const RankOrder = ({ onSaveForm, data, id, options, disableForm, disableText, di
     });
 
     const [debouncedValue, setDebouncedValue] = useState('');
+
+    const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Customize toolbar options based on screen size
+  const modules = {
+    toolbar: {
+      container: isMobile ? [
+        // Mobile toolbar configuration
+        ['bold', 'italic', 'underline'],
+        ['clean']
+      ] : [
+        // Desktop toolbar configuration
+        ['bold', 'italic', 'underline', 'strike'],
+        ['clean']
+      ],
+    },
+    clipboard: {
+      matchVisual: false
+    }
+  };
+
+  // Allowed formats
+  const formats = [
+    'bold', 'italic', 'underline', 'strike',
+  ];
+
+  // Helper function to clean HTML content
+  const cleanHTMLContent = (htmlString) => {
+    if (!htmlString) return '';
+    
+    // Create a temporary div
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+    
+    // Get text content and clean up whitespace
+    let cleanText = tempDiv.textContent || tempDiv.innerText || '';
+    cleanText = cleanText.replace(/\s+/g, ' ').trim();
+    
+    return cleanText;
+  };
+
+  // Update the ReactQuill onChange handler
+  const handleQuillChange = (content) => {
+    setFormData({
+      ...formData,
+      quilText: content, // Store the HTML formatted text
+      question: cleanHTMLContent(content) // Store the clean text
+    });
+  };
 
     const handleChange = (e, id) => {
         console.log(id, 'id in handleChange');
@@ -90,14 +143,17 @@ const RankOrder = ({ onSaveForm, data, id, options, disableForm, disableText, di
     // }
 
     useEffect(() => {
-        // console.log(data,'data in select one choice form');
         if (options) {
-            setFormData(data)
+          setFormData(data);
+        } else {
+          setFormData({ 
+            ...formData, 
+            id,
+            quilText: data?.quilText || '',
+            question: data?.question || ''
+          });
         }
-        else {
-            setFormData({ ...formData, id })
-        }
-    }, [data])
+      }, [data]);
     // console.log(id,'id in select one choice form');
     console.log(formData, 'formData in rank order form');
 
@@ -146,12 +202,31 @@ const RankOrder = ({ onSaveForm, data, id, options, disableForm, disableText, di
                         backgroundColor: '#F4FFF8',
                     },
                 }}>
-                    <TextField fullWidth id="standard-basic" label={!disableText ? "Insert input" : ''} variant="standard" size='small' name='question' value={formData.question}
-                        onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                        InputProps={{
-                            readOnly: disableText,
-                        }}
-                    />
+                    <div style={{ marginBottom: '20px', width: '100%' }}>
+              {!disableText && (
+                <label style={{ 
+                  fontSize: '0.75rem', 
+                  color: 'rgba(0, 0, 0, 0.6)', 
+                  marginBottom: '8px',
+                  display: 'block' 
+                }}>
+                  Insert input *
+                </label>
+              )}
+              <ReactQuill
+                theme="snow"
+                value={formData.quilText}
+                onChange={handleQuillChange}
+                readOnly={disableText}
+                modules={modules}
+                formats={formats}
+                style={{
+                  width: '100%',
+                  border: '1px solid rgba(0, 0, 0, 0.23)',
+                  borderRadius: '4px',
+                }}
+              />
+            </div>
 
                     <Stack spacing={1} sx={{
                         width: { xs: '100%', md: '50%' },
