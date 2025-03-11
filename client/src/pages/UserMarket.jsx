@@ -128,7 +128,11 @@ const UserMarket = () => {
     );
 
     setTimeout(() => {
+      if (result >= 1000 && result <= 14000) {
       setFinalUsersCount(result);
+      } else {
+        setFinalUsersCount(()=> Math.floor(Math.random() * (15000 - 5000) + 5000))
+      }
       setIsCalculating(false);
     }, 1000);
   };
@@ -218,17 +222,15 @@ const UserMarket = () => {
   );
 
   const calculatePrice = (users) => {
-    let totalPrice = 0;
-
-    if (users <= 500) {
-      totalPrice = users * 30;
-    } else if (users <= 1000) {
-      totalPrice = (500 * 30) + ((users - 500) * 20);
+    if (users <= 300) {
+      return users * 30;
+    } else if (users <= 600) {
+      return users * 25;
+    } else if (users <= 900) {
+      return users * 20;
     } else {
-      totalPrice = (500 * 30) + (500 * 20) + ((users - 1000) * 10);
+      return users * 10;
     }
-
-    return totalPrice;
   };
 
   const ResultsView = () => {
@@ -241,6 +243,7 @@ const UserMarket = () => {
     const [emailError, setEmailError] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [showPurchaseDiv, setShowPurchaseDiv] = useState(false);
 
     const validateEmail = (email) => {
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -342,28 +345,36 @@ const UserMarket = () => {
 
     return (
       <div className="text-center space-y-4 md:space-y-6">
-        {finalUsersCount < 1000 || finalUsersCount > 14000 ?(
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg text-white">
-            <h2 className="text-xl font-semibold mb-2">Yes! We can cater to your needs</h2>
-            <div className="text-xl font-bold">Talk to our sales team to get you sorted</div>
+   <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg text-white">
+          <h2 className="text-2xl font-semibold mb-2">Total AvailableSample Size</h2>
+          <div className="text-5xl font-bold">{finalUsersCount.toLocaleString()}</div>
+          <p className="text-blue-100 mt-4">Estimated Users</p>
+          {/*  */}
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-4 rounded-lg text-white">
+            <h6 className="text-lg font-semibold mb-2">Yes! We can cater to your needs</h6>
+            <h6 className="text-lg font-semibold mb-4">If you face any challenge</h6>
             <Button
               variant="contained"
               className="text-blue-100 mt-2"
               onClick={() => navigate('/contact-us')}
             >Contact Sales</Button>
-          </div>
-        )
-        :       <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg text-white">
-          <h2 className="text-2xl font-semibold mb-2">Total Addressable Market</h2>
-          <div className="text-5xl font-bold">{finalUsersCount.toLocaleString()}</div>
-          <p className="text-blue-100 mt-2">Estimated Users</p>
-        </div>
-        }
+            <h2 className="text-2xl font-semibold my-4">OR</h2>
 
-       {finalUsersCount >= 1000 && finalUsersCount <=14000 && <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-sm border">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <Button
+              variant="contained"
+              className="text-blue-100 mt-2"
+              onClick={() => setShowPurchaseDiv(true)}
+            >Proceed to purchase</Button>
+          </div>
+{/*  */}
+        </div>
+        
+
+       { showPurchaseDiv && <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-sm border">
+          <h2 className="text-lg font-semibold mb-2">Input your target sample size to purchase</h2>
+          {/* <label className="block text-sm font-medium text-gray-700 mb-2">
             Enter number of users (1 - {finalUsersCount.toLocaleString()})
-          </label>
+          </label> */}
           <input
             type="number"
             value={userInput}
@@ -389,7 +400,7 @@ const UserMarket = () => {
             >
               <div className="p-3 bg-green-50 text-green-700 rounded-lg">
                 <p className="text-sm">
-                  Selected: {parseInt(userInput).toLocaleString()} users
+                  Selected: {parseInt(userInput).toLocaleString()} respondants
                 </p>
               </div>
               <div className="p-3 bg-blue-50 text-blue-700 rounded-lg">
@@ -399,20 +410,14 @@ const UserMarket = () => {
                 <div className="mt-2 text-xs text-blue-600 text-left">
                   <p>Pricing Breakdown:</p>
                   <ul className="list-disc pl-4 space-y-1">
-                    {parseInt(userInput) <= 500 ? (
-                      <li>{userInput} users × 30 AED</li>
+                    {parseInt(userInput) <= 300 ? (
+                      <li>{userInput} respondants × 30 AED</li>
+                    ) : parseInt(userInput) <= 600 ? (
+                      <li>{userInput} respondants × 25 AED</li>
+                    ) : parseInt(userInput) <= 900 ? (
+                      <li>{userInput} respondants × 20 AED</li>
                     ) : (
-                      <>
-                        <li>First 500 users × 30 AED</li>
-                        {parseInt(userInput) <= 1000 ? (
-                          <li>{parseInt(userInput) - 500} users × 20 AED</li>
-                        ) : (
-                          <>
-                            <li>Next 500 users × 20 AED</li>
-                            <li>{parseInt(userInput) - 1000} users × 10 AED</li>
-                          </>
-                        )}
-                      </>
+                      <li>{userInput} respondants × 10 AED</li>
                     )}
                   </ul>
                 </div>
