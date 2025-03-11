@@ -242,15 +242,15 @@ export const stripeWebhook = async (request, response) => {
 };
 
 const calculatePrice = (users) => {
-  let totalPrice = 0;
-  if (users <= 500) {
-    totalPrice = users * 30;
-  } else if (users <= 1000) {
-    totalPrice = (500 * 30) + ((users - 500) * 20);
+  if (users <= 300) {
+    return users * 30;
+  } else if (users <= 600) {
+    return users * 25;
+  } else if (users <= 900) {
+    return users * 20;
   } else {
-    totalPrice = (500 * 30) + (500 * 20) + ((users - 1000) * 10);
+    return users * 10;
   }
-  return totalPrice;
 };
 
 export const createCheckoutSessionForMarketUser = async (req, res) => {
