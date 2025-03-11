@@ -23,7 +23,7 @@ const Dashboard = () => {
     const [alertColor, setAlertColor] = useState('');
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [dataChanged, setDataChanged] = useState(false);
-    const [runTour, setRunTour] = useState(false);
+    const [runTour, setRunTour] = useState(false); // make it dynamic 
 
     useEffect(() => {
         const getUserIsProMember = async () => {
