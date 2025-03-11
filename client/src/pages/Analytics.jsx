@@ -136,88 +136,166 @@ getAnalyticsData();
   return (
     <Box sx={{ mt: 3 }}>
     <Container maxWidth="lg">
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-      <TableHead>
-          <TableRow>
-            <TableCell>User Name</TableCell>
-            <TableCell align="right">User Email</TableCell>
-            <TableCell align="right">Survey Title</TableCell>
-            <TableCell align="right">Is Premium Member</TableCell>
-            <TableCell align="right">Receive email marketting</TableCell>
-            <TableCell align="right">Total Surveys Created</TableCell>
-            <TableCell align="right">Total Surveys Responses</TableCell>
-            <TableCell align="right">Total Surveys Viewed</TableCell>
-
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(rowsPerPage > 0
-            ? customerData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : customerData
-          ).map((row) => (
-            <TableRow key={row.id}>
-              <TableCell component="th" scope="row">
-                {row.firstName}
+      <TableContainer 
+        component={Paper} 
+        sx={{
+          boxShadow: 3,
+          borderRadius: 2,
+          overflow: 'hidden'
+        }}
+      >
+        <Table 
+          sx={{ 
+            minWidth: { xs: 300, sm: 500 },
+          }} 
+          aria-label="custom pagination table"
+        >
+          <TableHead>
+            <TableRow sx={{ backgroundColor: 'primary.main' }}>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>User Name</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">User Email</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="right">Survey Title</TableCell>
+              <TableCell 
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  display: { xs: 'none', md: 'table-cell' } 
+                }} 
+                align="right"
+              >
+                Is Premium Member
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.email}
+              <TableCell 
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  display: { xs: 'none', md: 'table-cell' } 
+                }} 
+                align="right"
+              >
+                Receive Marketing
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.surveys.map((survey) => (
-                  <Button key={survey.id} onClick={() => navigate(`/admin-analytics/${survey.id}`)}>
-                    {survey.surveyTitle}
-                  </Button>
-                ))}
+              <TableCell 
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  display: { xs: 'none', sm: 'table-cell' } 
+                }} 
+                align="right"
+              >
+                Surveys Created
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.isAProMember ? 'Yes' : 'No'}
+              <TableCell 
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  display: { xs: 'none', sm: 'table-cell' } 
+                }} 
+                align="right"
+              >
+                Total Responses
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.receiveMarketingEmails ? 'Yes' : 'No'}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.surveys.length}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.surveys.reduce((acc, survey) => acc + survey.surveyResponses, 0)} 
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.surveys.reduce((acc, survey) => acc + survey.surveyViews, 0)} 
+              <TableCell 
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  display: { xs: 'none', sm: 'table-cell' } 
+                }} 
+                align="right"
+              >
+                Total Views
               </TableCell>
             </TableRow>
-          ))}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={3}
-              count={customerData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              slotProps={{
-                select: {
-                  inputProps: {
-                    'aria-label': 'rows per page',
+          </TableHead>
+          <TableBody>
+            {(rowsPerPage > 0
+              ? customerData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              : customerData
+            ).map((row) => (
+              <TableRow 
+                key={row.id}
+                sx={{ '&:hover': { backgroundColor: 'action.hover' } }}
+              >
+                <TableCell component="th" scope="row">
+                  {row.firstName}
+                </TableCell>
+                <TableCell align="right">{row.email}</TableCell>
+                <TableCell align="right">
+                  {row.surveys.map((survey) => (
+                    <Button 
+                      key={survey.id} 
+                      onClick={() => navigate(`/admin-analytics/${survey.id}`)}
+                      variant="contained"
+                      size="small"
+                      sx={{ m: 0.5 }}
+                    >
+                      {survey.surveyTitle}
+                    </Button>
+                  ))}
+                </TableCell>
+                <TableCell 
+                  align="right"
+                  sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                >
+                  {row.isAProMember ? 'Yes' : 'No'}
+                </TableCell>
+                <TableCell 
+                  align="right"
+                  sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                >
+                  {row.receiveMarketingEmails ? 'Yes' : 'No'}
+                </TableCell>
+                <TableCell 
+                  align="right"
+                  sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                >
+                  {row.surveys.length}
+                </TableCell>
+                <TableCell 
+                  align="right"
+                  sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                >
+                  {row.surveys.reduce((acc, survey) => acc + survey.surveyResponses, 0)}
+                </TableCell>
+                <TableCell 
+                  align="right"
+                  sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                >
+                  {row.surveys.reduce((acc, survey) => acc + survey.surveyViews, 0)}
+                </TableCell>
+              </TableRow>
+            ))}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 53 * emptyRows }}>
+                <TableCell colSpan={8} />
+              </TableRow>
+            )}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                colSpan={8}
+                count={customerData.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                slotProps={{
+                  select: {
+                    inputProps: {
+                      'aria-label': 'rows per page',
+                    },
+                    native: true,
                   },
-                  native: true,
-                },
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+                }}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </TableContainer>
     </Container>
-    </Box>
+  </Box>
   );
 }
