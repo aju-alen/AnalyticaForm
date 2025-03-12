@@ -9,6 +9,9 @@ import { Box } from '@mui/material';
 import { Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import HomeNavBar from "../components/HomeNavBar";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 const images = [
   'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner1.jpg', // Replace with your image URLs
   'https://dubai-analytica.s3.ap-south-1.amazonaws.com/da-market/analytica-banner2.jpg',
@@ -779,6 +782,37 @@ const UserMarket = () => {
           ))}
         </Box>
       </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',position: 'relative' }}>
+      <Card 
+                        className="subscription-card"
+                        sx={{ 
+                          display: { xs: 'none', md: 'block' },
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                            display: 'flex',
+                            maxWidth: 300,
+                            maxHeight: 200,
+                            backgroundColor:  '#2196f3',
+                            color: 'white',
+                            transform: 'rotate(-6deg)',
+                        }}
+                    >
+                        <CardContent>
+                        <Button sx={{ textTransform: 'none', textDecoration: 'none', color:'#fff' }
+                        }>
+                            <div className=" flex flex-col">
+                            <Typography variant="h6" component="div">
+                                 Did you know?
+                            </Typography>
+                            <Typography variant="body2">
+                               You can purchase a sample size of 1000 which is the same as 400 respondants. More the quantity, the cheaper the price😉.
+                            </Typography>
+                                   
+                            </div>
+                        </Button>
+                        </CardContent>
+                    </Card>
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-8">
         {/* Main Content Card */}
         <div className="bg-white rounded-xl shadow-xl p-4 md:p-8 flex-1 transition-all duration-300 hover:shadow-2xl">
@@ -925,6 +959,7 @@ const UserMarket = () => {
           </Box>
         </Box>
       </div>
+      </Box>
     </div>
     </div>
   );
