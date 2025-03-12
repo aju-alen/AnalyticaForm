@@ -61,6 +61,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
 
 const CreateNewSurvey = () => {
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL
@@ -76,15 +79,22 @@ const CreateNewSurvey = () => {
   const [subscriptionEndDate, setSubscriptionEndDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const open = Boolean(anchorEl);
+  const [country, setCountry] = useState('NIL');
+  console.log(country, 'country in CreateNewSurvey-------------------');
   
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
     surveyForms: [],
     selectedItems: [],
-    surveyIntroduction: ''
+    surveyIntroduction: '',
+    targetCountry: 'NIL'
   });
+
+  console.log(surveyData, 'surveyData in CreateNewSurvey-------------------');
+  
 
   // Memoize form components object to prevent recreation on each render
   const formComponents = React.useMemo(() => ({
@@ -204,10 +214,12 @@ const CreateNewSurvey = () => {
             surveyTitle: getUserSurveyData.data.surveyTitle,
             surveyForms: getUserSurveyData.data.surveyForms,
             selectedItems: getUserSurveyData.data.selectedItems,
-            surveyIntroduction: getUserSurveyData.data.surveyIntroduction
+            surveyIntroduction: getUserSurveyData.data.surveyIntroduction,
+            targetCountry: getUserSurveyData.data.targetCountry
           });
           setSelectedItems(getUserSurveyData.data.selectedItems);
           setIsLoading(false);
+          setCountry(getUserSurveyData.data.targetCountry);
         }
       } catch (err) {
         if (err.response?.status === 401) {
@@ -245,7 +257,8 @@ const CreateNewSurvey = () => {
       
 
       const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
-      console.log(userProMember.data, 'userProMember in CreateNewSurvey');
+      const userIsSuperAdmin = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user`);
+      setIsSuperAdmin(userIsSuperAdmin.data.isSuperAdmin);
       if(userProMember.data === null) {
         setSubscriptionEndDate(0);
       }
@@ -333,7 +346,6 @@ const CreateNewSurvey = () => {
       }
       else {
         console.log(err);
-
       }
     }
 
@@ -372,6 +384,11 @@ const CreateNewSurvey = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleCountryChange = (event) => {
+    setCountry(event.target.value);
+    setSurveyData(prevState => ({...prevState, targetCountry: event.target.value}))
   };
 
   return (
@@ -512,7 +529,26 @@ const CreateNewSurvey = () => {
       </Typography>
     )} */}
   </Box>
+  
 )}
+ {isSuperAdmin &&  <FormControl fullWidth sx={{ mt: 2 }}>
+              <InputLabel id="country-select-label">Select Target Country</InputLabel>
+              <Select
+                labelId="country-select-label"
+                id="country-select"
+                value={country}
+                label="Country"
+                onChange={handleCountryChange}
+              >
+                <MenuItem value="NIL">--- None ---</MenuItem>
+                <MenuItem value="AE">United Arab Emirates</MenuItem>
+                <MenuItem value="SA">Saudi Arabia</MenuItem>
+                <MenuItem value="CN">China</MenuItem>
+                <MenuItem value="UK">United Kingdom</MenuItem>
+                <MenuItem value="US">United States Of America</MenuItem>
+                <MenuItem value="QA">Qatar</MenuItem>
+              </Select>
+            </FormControl>}
 
           <Stack spacing={4} sx={{ 
             width: '100%',

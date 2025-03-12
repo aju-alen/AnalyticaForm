@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { updateUserResponseLimit } from './auth-controllers.js';
+import { generateIpAddressesForCountry } from '../utils/ipGenerator.js';
 const prisma = new PrismaClient();
 
 export const getSingleSurveyDataForUser = async (req, res) => {
@@ -17,10 +18,9 @@ export const getSingleSurveyDataForUser = async (req, res) => {
 }
 
 export const postSingleSurveyDataForUser = async (req, res) => {
+    console.log("-----------------",req.body, '--------req.body in postSingleSurveyDataForUser');
+
     const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    console.log(userIP, 'userIP ip address');
-    console.log(typeof(userIP), 'typeOF userIP ip address');
-    console.log(req.body.formQuestions);
     const surveyId = req.params.surveyId;
     if(req.body.userName === ''){
         req.body.userName = undefined;
@@ -28,7 +28,28 @@ export const postSingleSurveyDataForUser = async (req, res) => {
     if(req.body.userEmail === ''){
         req.body.userEmail = undefined;
     }
+    console.log(req.body.targetCountry, 'req.body.targetCountry in postSingleSurveyDataForUser');
+    
+   
     try{
+        const getCountryDataFromSurvey = await prisma.survey.findUnique({
+            where:{
+                id:surveyId
+            },
+            select:{
+                targetCountry:true
+            }
+        });
+        let ipAddress;
+        switch(getCountryDataFromSurvey.targetCountry){
+            case 'NIL':
+                ipAddress = userIP.split(',')[0];
+                break;
+            default:
+                ipAddress = generateIpAddressesForCountry(getCountryDataFromSurvey.targetCountry,1);
+        }
+        console.log(ipAddress, 'ipAddress in postSingleSurveyDataForUser');
+
         const createUserResponse = await prisma.userSurveyResponse.create({
             
             data:{
@@ -38,7 +59,7 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 userEmail:req.body.userEmail,
                 formQuestions:req.body.formQuestions,
                 introduction:req.body.introduction,
-                ipAddress:userIP.split(',')[0],
+                ipAddress:ipAddress,
                 userTimeSpent:req.body.userTimeSpent
 
 
