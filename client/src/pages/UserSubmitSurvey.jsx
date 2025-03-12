@@ -447,6 +447,13 @@ const UserSubmitSurvey = () => {
 
     }
 
+    useEffect(() => {
+        const fetchSurveyData = async () => {
+         await axiosWithAuth.get(`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`)
+        }
+        fetchSurveyData();
+    }, [])
+
 
     useEffect(() => {
         const fetchSurveyData = async () => {
