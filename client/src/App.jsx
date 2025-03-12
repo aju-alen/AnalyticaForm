@@ -220,7 +220,7 @@ const App = () => {
         },
         {
           path: "/pricing",
-          element: <ProtectedRoute element={<ProductDisplay />} />, // Wrap Dashboard inside ProtectedRoute
+          element: <ProductDisplay />, // Wrap Dashboard inside ProtectedRoute
         },
         {
           path: "/payment-success",
