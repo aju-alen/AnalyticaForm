@@ -130,7 +130,7 @@ const CreateNewSurvey = () => {
 
   // Memoize handlers that don't need to change between renders
   const handleCopy = React.useCallback(() => {
-    navigator.clipboard.writeText(`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`).then(() => {
+    navigator.clipboard.writeText(`${import.meta.env.VITE_FRONTEND_URL}/survey-meta/${surveyId}`).then(() => {
       console.log('Text copied to clipboard');
     }).catch(err => {
       console.error('Could not copy text: ', err);
@@ -473,7 +473,7 @@ const CreateNewSurvey = () => {
         flexGrow: 1,
         minWidth: { xs: '90%', sm: '50%' },
       }}
-      value={`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`}
+      value={`${import.meta.env.VITE_FRONTEND_URL}/survey-meta/${surveyId}`}
       InputProps={{
         readOnly: true,
       }}
