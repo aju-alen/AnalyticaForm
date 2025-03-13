@@ -263,14 +263,14 @@ const App = () => {
           path: "/testpage",
           element:  <TestPage /> // Wrap Dashboard inside non-protected Route
         },
-        {
-          path: "/404",
-          element: <Error404 /> // Wrap Dashboard inside ProtectedRoute
-        },
-        {
-          path: "*",  // Catch-all route for any unmatched URLs
-          element: <Navigate to="/404" />
-        }
+        // {
+        //   path: "/404",
+        //   element: <Error404 /> // Wrap Dashboard inside ProtectedRoute
+        // },
+        // {
+        //   path: "*",  // Catch-all route for any unmatched URLs
+        //   element: <Navigate to="/404" />
+        // }
       ]
     }
   ]);
