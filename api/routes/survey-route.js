@@ -13,7 +13,7 @@ router.get('/get-ip-single-survey/:surveyId',apiCallLimiter,verifyJwt, getIpOfSi
 router.put('/get-one-survey/:surveyId',apiCallLimiter,verifyJwt, updateSurveyById); // update one survey data of the user
 router.get('/get-all-user-response/:surveyId/:isSubscribed',apiCallLimiter,verifyJwt, getAllSurveyResponse); // Get all the user response of a particular survey
 router.get('/get-all-sruvey-from-oneuser/:userId',apiCallLimiter,verifyJwt, getAllSurveyOfOneUser); // Get all the survey of a particular user
-router.put('/update-user-view/:surveyId',apiCallLimiter,verifyJwt, updateUserView); // Get all the survey of a particular user
+router.put('/update-user-view/:surveyId',apiCallLimiter, updateUserView); // Get all the survey of a particular user
 
 router.delete('/delete-survey/:surveyId',apiCallLimiter,verifyJwt, deleteUserSurvey); // Get all the survey of a particular user
 router.put('/update-survey-status/:surveyId',apiCallLimiter,verifyJwt, updateUserStatus)
