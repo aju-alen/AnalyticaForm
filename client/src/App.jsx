@@ -51,7 +51,7 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const UserMarket = lazy(() => import('./pages/UserMarket'));
 const About = lazy(() => import('./pages/About'));
 const FeaturesHome = lazy(() => import('./pages/FeaturesHome'));
-const TestPage = lazy(() => import('./pages/TestPage'));
+
 const App = () => {
 
   // Function to check if the user is authenticated
@@ -260,17 +260,13 @@ const App = () => {
           element:  <FeaturesHome /> // Wrap Dashboard inside non-protected Route
         },
         {
-          path: "/testpage",
-          element:  <TestPage /> // Wrap Dashboard inside non-protected Route
+          path: "/404",
+          element: <Error404 /> // Wrap Dashboard inside ProtectedRoute
         },
-        // {
-        //   path: "/404",
-        //   element: <Error404 /> // Wrap Dashboard inside ProtectedRoute
-        // },
-        // {
-        //   path: "*",  // Catch-all route for any unmatched URLs
-        //   element: <Navigate to="/404" />
-        // }
+        {
+          path: "*",  // Catch-all route for any unmatched URLs
+          element: <Navigate to="/404" />
+        }
       ]
     }
   ]);
