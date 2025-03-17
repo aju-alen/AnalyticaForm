@@ -24,7 +24,7 @@ const app = express();
 // app.set('trust proxy', true);
 app.use(cors(corsOptions));
 
-app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeRoute);
+app.post('/api/stripe', express.raw({type: 'application/json'}), stripeRoute);
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
