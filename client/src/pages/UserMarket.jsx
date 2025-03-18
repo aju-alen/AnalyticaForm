@@ -495,8 +495,8 @@ const UserMarket = () => {
             >
               {/* Header */}
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-semibold text-gray-800">Continue as</h3>
-                <p className="text-gray-600 mt-2 text-sm">Choose how you'd like to proceed</p>
+                {/* <h3 className="text-2xl font-semibold text-gray-800">Continue as</h3> */}
+                <p className="text-xl font-bold text-gray-600 mt-2">Choose how you'd like to proceed</p>
               </div>
 
               {/* Buttons Container */}
