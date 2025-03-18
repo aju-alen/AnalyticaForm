@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { uid } from 'uid'
 import { TextField, CssBaseline, Container, Box, Stack, Button, useTheme, useMediaQuery } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import Divider from '@mui/material/Divider';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -24,21 +25,21 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
     const [selection, setSelection] = useState({ start: 0, end: 0, fieldId: null });
 
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
-    // Customize toolbar options based on screen size
-    const modules = {
-      toolbar: {
-        container: isMobile ? [
-          // Mobile toolbar configuration
-          ['bold', 'italic', 'underline'],
-          ['clean']
-        ] : [
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
+    const toolbarSetting = disableText ? false : {
+      container: isMobile && !disableText ? [
+        // Mobile toolbar configuration
+        ['bold', 'italic', 'underline'],
+        ['clean']
+        ] :  [
           // Desktop toolbar configuration
           ['bold', 'italic', 'underline', 'strike'],
           ['clean']
-        ],
-      },
+        ]
+    }
+    // Customize toolbar options based on screen size
+    const modules = {
+      toolbar: toolbarSetting,
       clipboard: {
         matchVisual: false
       }
@@ -246,18 +247,20 @@ const CommentBox = ({ onSaveForm, data, id, options, disableForm, disableText, d
                 </label>
               )}
               <ReactQuill
-                theme="snow"
+                theme="bubble"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}
                 modules={modules}
                 formats={formats}
+                className={`ql-container ql-snow`}
                 style={{
                   width: '100%',
-                  border: '1px solid rgba(0, 0, 0, 0.23)',
+                  border: '0px solid rgba(0, 0, 0, 0.23)',
                   borderRadius: '4px',
                 }}
               />
+              <Divider />
             </div>
 
 {!disableButtons && (

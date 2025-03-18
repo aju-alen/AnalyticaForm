@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import { Button, Stack, useTheme, useMediaQuery } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { uid } from 'uid';
+import Divider from '@mui/material/Divider';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -34,25 +35,25 @@ const ContactInformation = ({ onSaveForm, data, id, options, disableForm, disabl
     const [debouncedValue, setDebouncedValue] = useState('');
 
     const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  // Customize toolbar options based on screen size
-  const modules = {
-    toolbar: {
-      container: isMobile ? [
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
+    const toolbarSetting = disableText ? false : {
+      container: isMobile && !disableText ? [
         // Mobile toolbar configuration
         ['bold', 'italic', 'underline'],
         ['clean']
-      ] : [
-        // Desktop toolbar configuration
-        ['bold', 'italic', 'underline', 'strike'],
-        ['clean']
-      ],
-    },
-    clipboard: {
-      matchVisual: false
+        ] :  [
+          // Desktop toolbar configuration
+          ['bold', 'italic', 'underline', 'strike'],
+          ['clean']
+        ]
     }
-  };
+    // Customize toolbar options based on screen size
+    const modules = {
+      toolbar: toolbarSetting,
+      clipboard: {
+        matchVisual: false
+      }
+    };
 
   // Allowed formats
   const formats = [
@@ -195,19 +196,21 @@ const ContactInformation = ({ onSaveForm, data, id, options, disableForm, disabl
                   Insert input *
                 </label>
               )}
-              <ReactQuill
-                theme="snow"
+             <ReactQuill
+                theme="bubble"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}
                 modules={modules}
                 formats={formats}
+                className={`ql-container ql-snow`}
                 style={{
                   width: '100%',
-                  border: '1px solid rgba(0, 0, 0, 0.23)',
+                  border: '0px solid rgba(0, 0, 0, 0.23)',
                   borderRadius: '4px',
                 }}
               />
+              <Divider />
             </div>
 
 <Stack spacing={1} sx={{
