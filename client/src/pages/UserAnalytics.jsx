@@ -283,7 +283,7 @@ export default function UserAnalytics() {
                         fontWeight: 'bold',
                         fontSize: '1rem'
                       }}>Survey Name</TableCell>
-                      {['Created Date', 'Survey Responses', 'Survey Introduction', 'Last Updated', 'Users Viewed'].map((header) => (
+                      {['Created Date', 'Survey Responses', 'Survey Introduction', 'Last Updated', 'Users Viewed', "Completion Rate"].map((header) => (
                         <TableCell 
                           key={header}
                           align="right" 
@@ -342,7 +342,8 @@ export default function UserAnalytics() {
                           row.surveyResponses,
                           row.surveyIntroduction?.length > 0 ? 'Yes' : 'No',
                           row.updatedAt,
-                          row.surveyViews
+                          row.surveyViews,
+                          `${Math.floor((row.surveyResponses / row.surveyViews) * 100)}%` || 0
                         ].map((cell, cellIndex) => (
                           <TableCell 
                             key={cellIndex}
