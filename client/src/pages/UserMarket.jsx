@@ -782,183 +782,234 @@ const UserMarket = () => {
           ))}
         </Box>
       </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',position: 'relative' }}>
-      <Card 
-                        className="subscription-card"
-                        sx={{ 
-                          display: { xs: 'none', md: 'block' },
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                            display: 'flex',
-                            maxWidth: 300,
-                            maxHeight: 200,
-                            backgroundColor:  '#2196f3',
-                            color: 'white',
-                            transform: 'rotate(-6deg)',
-                        }}
-                    >
-                        <CardContent>
-                        <Button sx={{ textTransform: 'none', textDecoration: 'none', color:'#fff' }
-                        }>
-                            <div className=" flex flex-col">
-                            <Typography variant="h6" component="div">
-                                 Did you know?
-                            </Typography>
-                            <Typography variant="body2">
-                               You can purchase a sample size of 1000 which is the same as 400 respondants. More the quantity, the cheaper the price😉.
-                            </Typography>
-                                   
-                            </div>
-                        </Button>
-                        </CardContent>
-                    </Card>
-      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-8">
-        {/* Main Content Card */}
-        <div className="bg-white rounded-xl shadow-xl p-4 md:p-8 flex-1 transition-all duration-300 hover:shadow-2xl">
-          <h1 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
-            Sample Size Calculator
-          </h1>
-
-          {activeStep < steps.length && (
-            <div className="mb-12">
-              <ProgressIndicator />
-            </div>
-          )}
-
-          <motion.div
-            key={activeStep}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            className="min-h-[300px] md:min-h-[400px]"
-          >
-            {activeStep === steps.length ? (
-              <ResultsView />
-            ) : (
-              <>
-                <SelectionStep step={activeStep} />
-
-                <div className="flex justify-between mt-8">
-                  <button
-                    onClick={() => setActiveStep(prev => prev - 1)}
-                    disabled={activeStep === 0}
-                    className={`
-                      flex items-center px-4 py-2 rounded-lg transition-colors
-                      ${activeStep === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                        'bg-gray-100 text-gray-600 hover:bg-gray-200'}
-                    `}
-                  >
-                    <ChevronLeft className="w-5 h-5 mr-2" />
-                    Back
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      if (activeStep === steps.length - 1) {
-                        calculateUsersCount();
-                      }
-                      setActiveStep(prev => prev + 1);
-                    }}
-                    disabled={getSelectionState(activeStep)[0].length === 0}
-                    className={`
-                      flex items-center px-4 py-2 rounded-lg transition-colors
-                      ${getSelectionState(activeStep)[0].length === 0 ?
-                        'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                        'bg-blue-500 text-white hover:bg-blue-600'}
-                    `}
-                  >
-                    {activeStep === steps.length - 1 ? 'Calculate' : 'Next'}
-                    <ChevronRight className="w-5 h-5 ml-2" />
-                  </button>
-                </div>
-              </>
-            )}
-          </motion.div>
-        </div>
-
-        {/* Vertical Slider - Hide on mobile, show on md and up */}
-        <Box
-          sx={{
-            display: { xs: 'none', md: 'block' },
-            position: 'relative',
-            width: '159px',
-            height: '1015px',
-            overflow: 'hidden',
-            borderRadius: '16px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-            '&:hover': {
-              transform: 'translateY(-4px)',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        position: 'relative',
+        width: '100%',
+        px: { xs: 2, sm: 3, md: 4 }
+      }}>
+        {/* Info Card - Show on all devices */}
+        <Card 
+          className="subscription-card"
+          sx={{ 
+            display: 'flex',
+            position: { xs: 'relative', md: 'absolute' },
+            width: { xs: '100%', sm: '300px', md: '300px' },
+            maxHeight: { xs: 'auto', sm: '200px', md: '200px' },
+            backgroundColor: '#2196f3',
+            color: 'white',
+            transform: { 
+              xs: 'rotate(0deg)',
+              sm: 'rotate(-6deg)',
+              md: 'rotate(-6deg)'
             },
+            mb: { xs: 3, md: 0 },
+            zIndex: 1,
+            top: { md: '20px' },  // Add positioning for desktop
+            left: { md: '20px' }, // Add positioning for desktop
+            transition: 'all 0.3s ease', // Smooth transition for transform
+            '&:hover': {
+              transform: {
+                xs: 'rotate(0deg)',
+                sm: 'rotate(-8deg)',
+                md: 'rotate(-8deg)'
+              },
+              boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+            }
           }}
         >
-          <AnimatePresence initial={false}>
-            <motion.img
-              key={verticalIndex}
-              src={verticalImages[verticalIndex]}
-              initial={{ opacity: 0, y: '100%' }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: '-100%' }}
-              transition={{
-                duration: 0.7,
-                ease: 'easeInOut'
-              }}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                position: 'absolute',
-              }}
-              alt={`Vertical Slide ${verticalIndex + 1}`}
-            />
-          </AnimatePresence>
+          <CardContent sx={{ 
+            width: '100%',
+            p: { xs: 2, sm: 3, md: 3 } // Adjust padding for different screens
+          }}>
+            <Button sx={{ 
+              textTransform: 'none', 
+              textDecoration: 'none', 
+              color: '#fff',
+              width: '100%',
+              p: { xs: 1, sm: 2, md: 2 },
+              '&:hover': {
+                backgroundColor: 'transparent' // Prevent button hover effect
+              }
+            }}>
+              <div className="flex flex-col w-full">
+                <Typography 
+                  variant="h6" 
+                  component="div" 
+                  sx={{ 
+                    fontSize: { xs: '1rem', sm: '1.25rem', md: '1.25rem' },
+                    fontWeight: 600,
+                    mb: 1
+                  }}
+                >
+                  Did you know?
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    fontSize: { xs: '0.875rem', sm: '1rem', md: '1rem' },
+                    lineHeight: 1.5
+                  }}
+                >
+                  You can purchase a sample size of 1000 which is the same as 400 respondants. More the quantity, the cheaper the price😉.
+                </Typography>
+              </div>
+            </Button>
+          </CardContent>
+        </Card>
 
-          {/* Improved Navigation Dots */}
-          <Box
+        <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-4 lg:gap-8">
+          {/* Main Content Card */}
+          <div className="bg-white rounded-xl shadow-xl p-3 sm:p-4 md:p-8 flex-1">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-6 md:mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+              Sample Size Calculator
+            </h1>
+
+            {activeStep < steps.length && (
+              <div className="mb-6 sm:mb-8 md:mb-12 overflow-x-auto">
+                <ProgressIndicator />
+              </div>
+            )}
+
+            <motion.div
+              key={activeStep}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="min-h-[250px] sm:min-h-[300px] md:min-h-[400px]"
+            >
+              {activeStep === steps.length ? (
+                <ResultsView />
+              ) : (
+                <>
+                  <SelectionStep step={activeStep} />
+                  <div className="flex justify-between mt-4 sm:mt-6 md:mt-8">
+                    <button
+                      onClick={() => setActiveStep(prev => prev - 1)}
+                      disabled={activeStep === 0}
+                      className={`
+                        flex items-center px-2 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base
+                        ${activeStep === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
+                          'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+                      `}
+                    >
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      Back
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (activeStep === steps.length - 1) {
+                          calculateUsersCount();
+                        }
+                        setActiveStep(prev => prev + 1);
+                      }}
+                      disabled={getSelectionState(activeStep)[0].length === 0}
+                      className={`
+                        flex items-center px-2 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base
+                        ${getSelectionState(activeStep)[0].length === 0 ?
+                          'bg-gray-100 text-gray-400 cursor-not-allowed' :
+                          'bg-blue-500 text-white hover:bg-blue-600'}
+                      `}
+                    >
+                      {activeStep === steps.length - 1 ? 'Calculate' : 'Next'}
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2" />
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </div>
+
+          {/* Vertical/Horizontal Slider - Show on all devices */}
+        {window.innerWidth > 768 && <Box
             sx={{
-              position: 'absolute',
-              right: 12,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1.5,
-              zIndex: 1,
-              padding: '8px',
-              borderRadius: '20px',
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              backdropFilter: 'blur(4px)',
+              display: 'block',
+              position: 'relative',
+              width: { xs: '100%', lg: '159px' },
+              height: { xs: '200px', sm: '300px', lg: '1015px' },
+              overflow: 'hidden',
+              borderRadius: { xs: '12px', md: '16px' },
+              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+              },
             }}
           >
-            {verticalImages.map((_, index) => (
-              <Box
-                key={index}
-                sx={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  backgroundColor: index === verticalIndex 
-                    ? 'primary.main' 
-                    : 'rgba(255, 255, 255, 0.7)',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    transform: 'scale(1.3)',
+            <AnimatePresence initial={false}>
+              <motion.img
+                key={verticalIndex}
+                src={verticalImages[verticalIndex]}
+                initial={{ opacity: 0, y: '100%' }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: '-100%' }}
+                transition={{
+                  duration: 0.7,
+                  ease: 'easeInOut'
+                }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  position: 'absolute',
+                }}
+                alt={`Slide ${verticalIndex + 1}`}
+              />
+            </AnimatePresence>
+
+            {/* Navigation Dots - Horizontal on mobile, Vertical on desktop */}
+            <Box
+              sx={{
+                position: 'absolute',
+                right: { xs: '50%', lg: '12px' },
+                bottom: { xs: '12px', lg: 'auto' },
+                top: { xs: 'auto', lg: '50%' },
+                transform: { 
+                  xs: 'translateX(50%)',
+                  lg: 'translateY(-50%)'
+                },
+                display: 'flex',
+                flexDirection: { xs: 'row', lg: 'column' },
+                gap: 1.5,
+                zIndex: 1,
+                padding: '8px',
+                borderRadius: '20px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(4px)',
+              }}
+            >
+              {verticalImages.map((_, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    width: { xs: 8, sm: 10 },
+                    height: { xs: 8, sm: 10 },
+                    borderRadius: '50%',
                     backgroundColor: index === verticalIndex 
                       ? 'primary.main' 
-                      : 'rgba(255, 255, 255, 0.9)',
-                  },
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                }}
-                onClick={() => setVerticalIndex(index)}
-              />
-            ))}
-          </Box>
-        </Box>
-      </div>
+                      : 'rgba(255, 255, 255, 0.7)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'scale(1.3)',
+                      backgroundColor: index === verticalIndex 
+                        ? 'primary.main' 
+                        : 'rgba(255, 255, 255, 0.9)',
+                    },
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  }}
+                  onClick={() => setVerticalIndex(index)}
+                />
+              ))}
+            </Box>
+          </Box>}
+        </div>
       </Box>
     </div>
     </div>
