@@ -34,7 +34,7 @@ export const dynamicMetaHtml = async (req, res) => {
                 <meta property="og:title" content="${survey.surveyTitle} | Dubai Analytica" />
                 <meta property="og:description" content="${survey.description || 'Take part in this survey by Dubai Analytica - Your trusted platform for Market and Academic Research'}" />
                 <meta property="og:image" content="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/DA-whatsapp-preview.png" />
-                <meta property="og:url" content="https://dubaianalytica.com/user-survey/${surveyId}" />
+                <meta property="og:url" content="https://app.dubaianalytica.com/user-survey/${surveyId}" />
                 
                 <!-- Twitter Tags -->
                 <meta name="twitter:creator" content="Dubai Analytica" />
@@ -42,7 +42,7 @@ export const dynamicMetaHtml = async (req, res) => {
                 <meta name="twitter:title" content="${survey.surveyTitle} | Dubai Analytica" />
                 <meta name="twitter:description" content="${survey.description || 'Take part in this survey by Dubai Analytica - Your trusted platform for Market and Academic Research'}" />
                 <meta name="twitter:image" content="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/DA-whatsapp-preview.png" />
-                <meta http-equiv="refresh" content="0;url=https://dubaianalytica.com/user-survey/${surveyId}" />
+                <meta http-equiv="refresh" content="0;url=https://app.dubaianalytica.com/user-survey/${surveyId}" />
                 <style>
                     body {
                         margin: 0;
