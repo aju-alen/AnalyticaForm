@@ -98,16 +98,17 @@ export const userRegister = async (req, res, next) => {
         const { firstName, lastName, email, password, receiveMarketingEmails } = req.body;
 
         try {
-
             // Check if all fields are filled
             if (!firstName || !lastName || !email || !password) {
                 return res.status(400).json({ message: "Please fill all the fields" });
             }
+
             const userExists = await prisma.user.findUnique({
                 where: {
                     email
                 }
             });
+
             if (userExists) {
                 return res.status(400).json({ message: "User already exists. You can login" });
             }
@@ -126,18 +127,31 @@ export const userRegister = async (req, res, next) => {
                     emailVerificationToken
                 }
             });
-            await prisma.$disconnect();
+
             if (!user) {
-                return res.status(400).json({ message: "User registration failed. please try again" });
+                return res.status(400).json({ message: "User registration failed. Please try again" });
             }
-            sendVerificationEmail(req.body.email, emailVerificationToken, firstName);
 
-            res.status(201).json({ message: "User registered successfully. Please verify your details by email." });
-
+            try {
+                await sendVerificationEmail(req.body.email, emailVerificationToken, firstName);
+                res.status(201).json({ message: "User registered successfully. Please verify your details by email." });
+            } catch (emailError) {
+                // If email sending fails, we should still keep the user record but inform them
+                console.error("Failed to send verification email:", emailError);
+                res.status(201).json({ 
+                    message: "User registered successfully, but we couldn't send the verification email. Please contact support.",
+                    error: "EMAIL_SEND_FAILED"
+                });
+            }
 
         } catch (err) {
-            console.log(err);
-            res.status(500).json({ message: "An error has occoured, please contact support" });
+            console.error("Registration error:", err);
+            res.status(500).json({ 
+                message: "An error occurred during registration. Please try again or contact support.",
+                error: "REGISTRATION_FAILED"
+            });
+        } finally {
+            await prisma.$disconnect();
         }
     };
 
@@ -178,33 +192,31 @@ export const userRegister = async (req, res, next) => {
         }
     }
 
-    const createTransport = nodemailer.createTransport({
-        host: 'mail.privateemail.com',
-        port: 587,
-        secure: false,
+    const emailConfig = {
+        host: 'mail.dubaianalytica.com',
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.GMAIL_AUTH_USER_SUPPORT,
             pass: process.env.GMAIL_AUTH_PASS
         }
-    })
+    };
 
     // not a route controller, function to send verification email
     const sendVerificationEmail = async (email, verificationToken, name) => {
-
-        const transporter = createTransport;
-        console.log(transporter, 'transporter');
-        const mailOptions = {
-            from: process.env.GMAIL_AUTH_USER_SUPPORT,
-            to: email,
-            subject: 'Verify Your Email Address',
-            html: `
+        try {
+            const transporter = nodemailer.createTransport(emailConfig);
+            
+            const mailOptions = {
+                from: process.env.GMAIL_AUTH_USER_SUPPORT,
+                to: email,
+                subject: 'Verify Your Email Address',
+                html: `
     <html>
     <body>
         <div>
-
             <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Dubai Analytica</p>
-
         </div>
         <div>
             <p>Hi ${name},</p>
@@ -220,15 +232,14 @@ export const userRegister = async (req, res, next) => {
         </div>
     </body>
     </html>`
-        }
+            };
 
-        //send the mail
-        try {
             const response = await transporter.sendMail(mailOptions);
-            console.log("Verification email sent", response);
-        }
-        catch (err) {
-            console.log("Err sending verification email", err);
+            console.log("Verification email sent successfully", response);
+            return true;
+        } catch (err) {
+            console.error("Error sending verification email:", err);
+            throw new Error(`Failed to send verification email: ${err.message}`);
         }
     }
 
@@ -269,7 +280,7 @@ export const userRegister = async (req, res, next) => {
 
     const sendWelcomeEmail = async (email, name) => {
 
-        const transporter = createTransport;
+        const transporter = nodemailer.createTransport(emailConfig);
         const mailOptions = {
             from: process.env.GMAIL_AUTH_USER_SUPPORT,
             to: email,
@@ -459,7 +470,7 @@ export const userRegister = async (req, res, next) => {
 
     const sendResetPassword = async (email, resetToken, name) => {
 
-        const transporter = createTransport;
+        const transporter = nodemailer.createTransport(emailConfig);
         const mailOptions = {
             from: process.env.GMAIL_AUTH_USER_SUPPORT,
             to: email,
@@ -568,7 +579,7 @@ export const userRegister = async (req, res, next) => {
     }
 
     export const updateUserResponseLimit = async (name, email, title, response) => {
-        const transporter = createTransport;
+        const transporter = nodemailer.createTransport(emailConfig);
         const mailOptions = {
             from: process.env.GMAIL_AUTH_USER_SUPPORT,
             to: email,
@@ -584,7 +595,7 @@ export const userRegister = async (req, res, next) => {
         </div>
         <div>
             <p>Dear ${name},</p>
-            <p>We hope you're finding our survey tool valuable for your research! We wanted to inform you that your survey, “${title},” is approaching the response limit of ${response}.</p>
+            <p>We hope you're finding our survey tool valuable for your research! We wanted to inform you that your survey, " ${title}," is approaching the response limit of ${response}.</p>
             <br>
             <p>Current Response Count: ${response}</p>
             <br>
