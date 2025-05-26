@@ -320,7 +320,6 @@ export const userRegister = async (req, res, next) => {
 
     export const verifyEmail = async (req, res) => {
         try {
-
             const emailVerificationToken = req.params.token;
             console.log(emailVerificationToken, 'emailVerificationToken');
             const userToken = await prisma.user.findFirst({
@@ -330,7 +329,7 @@ export const userRegister = async (req, res, next) => {
             })
             console.log(userToken, 'userToken');
             if (!userToken) {
-                return res.status(400).json({ message: 'Invalid token or verification has been complete. Please login' })
+                return res.redirect(`${frontendURL}/verification-status?status=invalid`);
             }
 
             const updatedUser = await prisma.user.update({
@@ -349,7 +348,7 @@ export const userRegister = async (req, res, next) => {
         }
         catch (err) {
             console.log(err);
-            res.status(400).send('An error occoured')
+            res.json({message: "An error has occoured"});
         }
     }
 
