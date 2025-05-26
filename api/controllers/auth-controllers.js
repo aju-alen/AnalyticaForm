@@ -470,7 +470,7 @@ export const userRegister = async (req, res, next) => {
                 </div>
 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="${process.env.FRONTEND_URL}" class="button">ACCESS YOUR ACCOUNT</a>
+                    <a href="https://app.dubaianalytica.com/login" class="button">ACCESS YOUR ACCOUNT</a>
                 </div>
 
                 <div class="team-signature">
