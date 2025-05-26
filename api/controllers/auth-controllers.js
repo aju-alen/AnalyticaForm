@@ -212,23 +212,98 @@ export const userRegister = async (req, res, next) => {
                 to: email,
                 subject: 'Verify Your Email Address',
                 html: `
+    <!DOCTYPE html>
     <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333333;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #ffffff;
+            }
+            .header {
+                text-align: center;
+                padding: 20px 0;
+                background-color: #ffffff;
+            }
+            .logo {
+                max-width: 200px;
+                height: auto;
+            }
+            .content {
+                padding: 30px 20px;
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .button {
+                display: inline-block;
+                padding: 12px 24px;
+                background-color: #007bff;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 4px;
+                margin: 20px 0;
+                font-weight: bold;
+            }
+            .button:hover {
+                background-color: #0056b3;
+            }
+            .footer {
+                text-align: center;
+                padding: 20px;
+                font-size: 12px;
+                color: #666666;
+            }
+            .verification-link {
+                word-break: break-all;
+                color: #007bff;
+                text-decoration: none;
+            }
+            .divider {
+                border-top: 1px solid #eeeeee;
+                margin: 20px 0;
+            }
+        </style>
+    </head>
     <body>
-        <div>
-            <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
-            <p>Dubai Analytica</p>
-        </div>
-        <div>
-            <p>Hi ${name},</p>
-            <p>You're almost there.</p>
-            <br>
-            <p>We just need to verify your email address before you can access your Dubai Analytica account. Verifying your email address helps secure your account.</p>
-            <br>
-            <p><a href="${backendUrl}/api/auth/verify/${verificationToken}">VERIFY YOUR EMAIL</a></p>
-            <br>
-            <p>Cannot verify your email by clicking the button? Copy and paste the URL into your browser to verify your email.</p>
-            <br>
-            <p>${backendUrl}/api/auth/verify/${verificationToken}</p>
+        <div class="container">
+            <div class="header">
+                <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="Dubai Analytica Logo" class="logo">
+            </div>
+            <div class="content">
+                <h2 style="color: #333333; margin-bottom: 20px;">Welcome to Dubai Analytica!</h2>
+                <p>Hi ${name},</p>
+                <p>You're just one step away from accessing your Dubai Analytica account. We need to verify your email address to ensure the security of your account.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${backendUrl}/api/auth/verify/${verificationToken}" class="button">VERIFY YOUR EMAIL</a>
+                </div>
+
+                <div class="divider"></div>
+
+                <p style="font-size: 14px; color: #666666;">If the button above doesn't work, copy and paste this link into your browser:</p>
+                <p style="font-size: 14px; background-color: #f8f9fa; padding: 10px; border-radius: 4px;">
+                    <a href="${backendUrl}/api/auth/verify/${verificationToken}" class="verification-link">
+                        ${backendUrl}/api/auth/verify/${verificationToken}
+                    </a>
+                </p>
+            </div>
+            <div class="footer">
+                <p>This is an automated message, please do not reply to this email.</p>
+                <p>© ${new Date().getFullYear()} Dubai Analytica. All rights reserved.</p>
+            </div>
         </div>
     </body>
     </html>`
