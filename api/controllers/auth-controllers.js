@@ -329,7 +329,7 @@ export const userRegister = async (req, res, next) => {
             })
             console.log(userToken, 'userToken');
             if (!userToken) {
-                return res.redirect(`${frontendURL}/verification-status?status=invalid`);
+                return res.redirect(`https://app.dubaianalytica.com/login`);
             }
 
             const updatedUser = await prisma.user.update({
@@ -344,7 +344,7 @@ export const userRegister = async (req, res, next) => {
             await prisma.$disconnect()
             sendWelcomeEmail(updatedUser.email, updatedUser.firstName);
             console.log(updatedUser, 'updatedUser');
-            res.redirect(`${frontendURL}/login`);
+            res.redirect(`https://app.dubaianalytica.com/login`);
         }
         catch (err) {
             console.log(err);
