@@ -360,27 +360,134 @@ export const userRegister = async (req, res, next) => {
             to: email,
             subject: 'Welcome to Dubai Analytica',
             html: `
+    <!DOCTYPE html>
     <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333333;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #ffffff;
+            }
+            .header {
+                text-align: center;
+                padding: 20px 0;
+                background-color: #ffffff;
+            }
+            .logo {
+                max-width: 200px;
+                height: auto;
+            }
+            .content {
+                padding: 30px 20px;
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .welcome-message {
+                font-size: 24px;
+                color: #2c3e50;
+                margin-bottom: 20px;
+                font-weight: bold;
+            }
+            .features {
+                margin: 30px 0;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+            }
+            .feature-item {
+                margin: 15px 0;
+                padding-left: 25px;
+                position: relative;
+            }
+            .feature-item:before {
+                content: "✓";
+                color: #28a745;
+                position: absolute;
+                left: 0;
+                font-weight: bold;
+            }
+            .button {
+                display: inline-block;
+                padding: 12px 24px;
+                background-color: #007bff;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 4px;
+                margin: 20px 0;
+                font-weight: bold;
+            }
+            .button:hover {
+                background-color: #0056b3;
+            }
+            .footer {
+                text-align: center;
+                padding: 20px;
+                font-size: 12px;
+                color: #666666;
+                border-top: 1px solid #eeeeee;
+                margin-top: 30px;
+            }
+            .divider {
+                border-top: 1px solid #eeeeee;
+                margin: 20px 0;
+            }
+            .team-signature {
+                font-style: italic;
+                color: #666666;
+                margin: 20px 0;
+            }
+        </style>
+    </head>
     <body>
-        <div>
+        <div class="container">
+            <div class="header">
+                <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="Dubai Analytica Logo" class="logo">
+            </div>
+            <div class="content">
+                <div class="welcome-message">Welcome to Dubai Analytica!</div>
+                
+                <p>Hi ${name},</p>
+                <p>We're thrilled to have you join our community! Your Dubai Analytica account is now ready to use.</p>
 
-            <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="Welcome Email" style="display:block;margin:auto;width:50%;" />
-            <p>Dubai Analytica</p>
+                <div class="features">
+                    <div class="feature-item">Create and customize forms with ease</div>
+                    <div class="feature-item">Share forms with anyone, no sign-up required</div>
+                    <div class="feature-item">Collect and analyze responses efficiently</div>
+                    <div class="feature-item">Access powerful analytics tools</div>
+                </div>
 
-        </div>
-        <div>
-            <p>Welcome ${name},</p>
-            <p>With your Dubai Analytica account you can sign in, create forms and send it to anyone you like without them having to sign up. It is that simple!.</p>
-            <br>
-            <p>The Dubai Analytica Team</p>
-            <br>
-            <p><a href="${process.env.FRONTEND_URL}">View Your Dubai Analytica Account</a></p>
-            <br>
-            <p>--------------------</p>
-            <p>Copyright © 2024, Dubai Analytica, its licensors and distributors. All rights are reserved, including those for text and data mining.</p>
-            <br>
-            
-            <p>We use cookies to help provide and enhance our service. By continuing you agree to the use of cookies.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${process.env.FRONTEND_URL}" class="button">ACCESS YOUR ACCOUNT</a>
+                </div>
+
+                <div class="team-signature">
+                    <p>Best regards,<br>The Dubai Analytica Team</p>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="footer">
+                    <p>Copyright © ${new Date().getFullYear()} Dubai Analytica. All rights reserved.</p>
+                    <p>This email was sent to ${email}. If you have any questions, please contact our support team.</p>
+                    <p style="font-size: 11px; color: #999999; margin-top: 15px;">
+                        By using Dubai Analytica, you agree to our Terms of Service and Privacy Policy. 
+                        We use cookies to enhance your experience and improve our services.
+                    </p>
+                </div>
+            </div>
         </div>
     </body>
     </html>`
