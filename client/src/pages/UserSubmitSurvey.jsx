@@ -482,7 +482,7 @@ const UserSubmitSurvey = () => {
 
         if (!currentItem) {
             return (
-                <div className="relative min-h-screen flex items-center justify-center pb-40 bg-gray-50">
+                <div className="relative min-h-screen flex items-center justify-center pb-80 bg-gray-50">
                 <div className="w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
                   {/* Top decorative bar */}
                   <div className="h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
@@ -504,7 +504,7 @@ const UserSubmitSurvey = () => {
                           <div className="transform transition-all duration-200 hover:scale-102">
                             <TextField
                               fullWidth
-                              label="Please Enter your name"
+                              label="Please Enter your name (Optional)"
                               value={formData.userName}
                               onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
                               variant="outlined"
@@ -514,7 +514,7 @@ const UserSubmitSurvey = () => {
                             <TextField
                               fullWidth
                               type="email"
-                              label="Please Enter your Email Id"
+                              label="Please Enter your Email Id (Optional)"
                               value={formData.userEmail}
                               onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
                               variant="outlined"
@@ -548,7 +548,7 @@ const UserSubmitSurvey = () => {
                 </div>
           
                 {/* Enhanced Advertisement Banner */}
-                <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-2xl">
+    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-2xl">
       <div className="absolute inset-0 bg-[url('/api/placeholder/200/200')] opacity-10 bg-repeat mix-blend-overlay" />
       <div className="relative max-w-6xl mx-auto px-6 py-8">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
@@ -557,7 +557,7 @@ const UserSubmitSurvey = () => {
             {/* Header */}
             <div className="flex items-center gap-4">
               <div className="space-y-2">
-                <h3 className="font-bold text-4xl bg-gradient-to-r from-white to-gray-100 bg-clip-text text-transparent">
+                <h3 className="font-bold text-2xl bg-gradient-to-r from-white to-gray-100 bg-clip-text text-transparent">
                   Create Your Perfect Survey
                 </h3>
                 <p className="text-xl text-gray-100 font-light">
@@ -567,7 +567,7 @@ const UserSubmitSurvey = () => {
             </div>
             
             {/* Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-base">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-6 text-base">
               {[
                 'Unlimited Responses',
                 'Real-time Analytics',
@@ -613,7 +613,7 @@ const UserSubmitSurvey = () => {
                 </svg>
               </span>
             </motion.button>
-            <div className="flex flex-col items-center lg:items-end gap-2">
+            {/* <div className="flex flex-col items-center lg:items-end gap-2">
               <p className="text-sm text-gray-200 font-medium">
                 Join 100+ happy customers
               </p>
@@ -631,7 +631,7 @@ const UserSubmitSurvey = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -1477,9 +1477,7 @@ const UserSubmitSurvey = () => {
                          />
                        </svg>
                      </button>
-                     <p className="mt-4 text-sm text-gray-500">
-                       Your responses will help us improve our services
-                     </p>
+
                    </motion.div>
                  </div>
                </motion.div>
