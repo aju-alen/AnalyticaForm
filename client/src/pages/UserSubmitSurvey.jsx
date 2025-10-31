@@ -482,7 +482,7 @@ const UserSubmitSurvey = () => {
 
         if (!currentItem) {
             return (
-                <div className="relative min-h-screen flex items-center justify-center pb-80 bg-gray-50">
+                <div className="relative min-h-screen flex items-center justify-center pb-20 bg-gray-50">
                 <div className="w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
                   {/* Top decorative bar */}
                   <div className="h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
@@ -548,7 +548,7 @@ const UserSubmitSurvey = () => {
                 </div>
           
                 {/* Enhanced Advertisement Banner */}
-    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-2xl">
+    <div className="hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-2xl">
       <div className="absolute inset-0 bg-[url('/api/placeholder/200/200')] opacity-10 bg-repeat mix-blend-overlay" />
       <div className="relative max-w-6xl mx-auto px-6 py-8">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
