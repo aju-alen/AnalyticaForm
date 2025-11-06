@@ -6,7 +6,8 @@ import crypto from "crypto";
 import { backendUrl } from '../utils/backendUrl.js';
 import { frontendURL } from '../utils/corsFe.js';
 import dotenv from 'dotenv';
-
+import { registerEmailTemplate } from '../utils/emailMailType.js';
+import { resendEmailBoiler } from '../utils/resendEmailTemplate.js';
 // Load environment variables from the .env file
 dotenv.config();
 
@@ -133,7 +134,12 @@ export const userRegister = async (req, res, next) => {
             }
 
             try {
-                await sendVerificationEmail(req.body.email, emailVerificationToken, firstName);
+                const registerHTMLTemplate = registerEmailTemplate(firstName, emailVerificationToken,  backendUrl);
+
+                const emailResponse = await resendEmailBoiler(process.env.GMAIL_AUTH_USER_SUPPORT, user.email, 'Verify Your Email Address', registerHTMLTemplate);
+
+                console.log(emailResponse, 'emailResponse');
+
                 res.status(201).json({ message: "User registered successfully. Please verify your details by email." });
             } catch (emailError) {
                 // If email sending fails, we should still keep the user record but inform them
@@ -193,9 +199,9 @@ export const userRegister = async (req, res, next) => {
     }
 
     const emailConfig = {
-        host: 'mail.dubaianalytica.com',
-        port: 465,
-        secure: true,
+        host: 'mail.privateemail.com',
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.GMAIL_AUTH_USER_SUPPORT,
             pass: process.env.GMAIL_AUTH_PASS
