@@ -6,7 +6,7 @@ import crypto from "crypto";
 import { backendUrl } from '../utils/backendUrl.js';
 import { frontendURL } from '../utils/corsFe.js';
 import dotenv from 'dotenv';
-import { registerEmailTemplate } from '../utils/emailMailType.js';
+import { registerEmailTemplate, welcomeEmailTemplate } from '../utils/emailMailType.js';
 import { resendEmailBoiler } from '../utils/resendEmailTemplate.js';
 // Load environment variables from the .env file
 dotenv.config();
@@ -198,131 +198,6 @@ export const userRegister = async (req, res, next) => {
         }
     }
 
-    const emailConfig = {
-        host: 'mail.privateemail.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: process.env.GMAIL_AUTH_USER_SUPPORT,
-            pass: process.env.GMAIL_AUTH_PASS
-        }
-    };
-
-    // not a route controller, function to send verification email
-    const sendVerificationEmail = async (email, verificationToken, name) => {
-        try {
-            const transporter = nodemailer.createTransport(emailConfig);
-            
-            const mailOptions = {
-                from: process.env.GMAIL_AUTH_USER_SUPPORT,
-                to: email,
-                subject: 'Verify Your Email Address',
-                html: `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                line-height: 1.6;
-                color: #333333;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4;
-            }
-            .container {
-                max-width: 600px;
-                margin: 0 auto;
-                padding: 20px;
-                background-color: #ffffff;
-            }
-            .header {
-                text-align: center;
-                padding: 20px 0;
-                background-color: #ffffff;
-            }
-            .logo {
-                max-width: 200px;
-                height: auto;
-            }
-            .content {
-                padding: 30px 20px;
-                background-color: #ffffff;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            .button {
-                display: inline-block;
-                padding: 12px 24px;
-                background-color: #007bff;
-                color: #ffffff;
-                text-decoration: none;
-                border-radius: 4px;
-                margin: 20px 0;
-                font-weight: bold;
-            }
-            .button:hover {
-                background-color: #0056b3;
-            }
-            .footer {
-                text-align: center;
-                padding: 20px;
-                font-size: 12px;
-                color: #666666;
-            }
-            .verification-link {
-                word-break: break-all;
-                color: #007bff;
-                text-decoration: none;
-            }
-            .divider {
-                border-top: 1px solid #eeeeee;
-                margin: 20px 0;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="Dubai Analytica Logo" class="logo">
-            </div>
-            <div class="content">
-                <h2 style="color: #333333; margin-bottom: 20px;">Welcome to Dubai Analytica!</h2>
-                <p>Hi ${name},</p>
-                <p>You're just one step away from accessing your Dubai Analytica account. We need to verify your email address to ensure the security of your account.</p>
-                
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${backendUrl}/api/auth/verify/${verificationToken}" class="button">VERIFY YOUR EMAIL</a>
-                </div>
-
-                <div class="divider"></div>
-
-                <p style="font-size: 14px; color: #666666;">If the button above doesn't work, copy and paste this link into your browser:</p>
-                <p style="font-size: 14px; background-color: #f8f9fa; padding: 10px; border-radius: 4px;">
-                    <a href="${backendUrl}/api/auth/verify/${verificationToken}" class="verification-link">
-                        ${backendUrl}/api/auth/verify/${verificationToken}
-                    </a>
-                </p>
-            </div>
-            <div class="footer">
-                <p>This is an automated message, please do not reply to this email.</p>
-                <p>© ${new Date().getFullYear()} Dubai Analytica. All rights reserved.</p>
-            </div>
-        </div>
-    </body>
-    </html>`
-            };
-
-            const response = await transporter.sendMail(mailOptions);
-            console.log("Verification email sent successfully", response);
-            return true;
-        } catch (err) {
-            console.error("Error sending verification email:", err);
-            throw new Error(`Failed to send verification email: ${err.message}`);
-        }
-    }
 
     export const verifyEmail = async (req, res) => {
         try {
@@ -348,164 +223,15 @@ export const userRegister = async (req, res, next) => {
                 }
             })
             await prisma.$disconnect()
-            sendWelcomeEmail(updatedUser.email, updatedUser.firstName);
+            const welcomeHTMLTemplate = welcomeEmailTemplate(updatedUser.firstName, updatedUser.email, frontendURL);
+            const emailResponse = await resendEmailBoiler(process.env.GMAIL_AUTH_USER_SUPPORT, updatedUser.email, 'Welcome to Dubai Analytica', welcomeHTMLTemplate);
+            console.log(emailResponse, 'emailResponse');
             console.log(updatedUser, 'updatedUser');
             res.redirect(`https://app.dubaianalytica.com/login`);
         }
         catch (err) {
             console.log(err);
             res.json({message: "An error has occoured"});
-        }
-    }
-
-    const sendWelcomeEmail = async (email, name) => {
-
-        const transporter = nodemailer.createTransport(emailConfig);
-        const mailOptions = {
-            from: process.env.GMAIL_AUTH_USER_SUPPORT,
-            to: email,
-            subject: 'Welcome to Dubai Analytica',
-            html: `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                line-height: 1.6;
-                color: #333333;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4;
-            }
-            .container {
-                max-width: 600px;
-                margin: 0 auto;
-                padding: 20px;
-                background-color: #ffffff;
-            }
-            .header {
-                text-align: center;
-                padding: 20px 0;
-                background-color: #ffffff;
-            }
-            .logo {
-                max-width: 200px;
-                height: auto;
-            }
-            .content {
-                padding: 30px 20px;
-                background-color: #ffffff;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            .welcome-message {
-                font-size: 24px;
-                color: #2c3e50;
-                margin-bottom: 20px;
-                font-weight: bold;
-            }
-            .features {
-                margin: 30px 0;
-                padding: 20px;
-                background-color: #f8f9fa;
-                border-radius: 8px;
-            }
-            .feature-item {
-                margin: 15px 0;
-                padding-left: 25px;
-                position: relative;
-            }
-            .feature-item:before {
-                content: "✓";
-                color: #28a745;
-                position: absolute;
-                left: 0;
-                font-weight: bold;
-            }
-            .button {
-                display: inline-block;
-                padding: 12px 24px;
-                background-color: #007bff;
-                color: #ffffff;
-                text-decoration: none;
-                border-radius: 4px;
-                margin: 20px 0;
-                font-weight: bold;
-            }
-            .button:hover {
-                background-color: #0056b3;
-            }
-            .footer {
-                text-align: center;
-                padding: 20px;
-                font-size: 12px;
-                color: #666666;
-                border-top: 1px solid #eeeeee;
-                margin-top: 30px;
-            }
-            .divider {
-                border-top: 1px solid #eeeeee;
-                margin: 20px 0;
-            }
-            .team-signature {
-                font-style: italic;
-                color: #666666;
-                margin: 20px 0;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="Dubai Analytica Logo" class="logo">
-            </div>
-            <div class="content">
-                <div class="welcome-message">Welcome to Dubai Analytica!</div>
-                
-                <p>Hi ${name},</p>
-                <p>We're thrilled to have you join our community! Your Dubai Analytica account is now ready to use.</p>
-
-                <div class="features">
-                    <div class="feature-item">Create and customize forms with ease</div>
-                    <div class="feature-item">Share forms with anyone, no sign-up required</div>
-                    <div class="feature-item">Collect and analyze responses efficiently</div>
-                    <div class="feature-item">Access powerful analytics tools</div>
-                </div>
-
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://app.dubaianalytica.com/login" class="button">ACCESS YOUR ACCOUNT</a>
-                </div>
-
-                <div class="team-signature">
-                    <p>Best regards,<br>The Dubai Analytica Team</p>
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="footer">
-                    <p>Copyright © ${new Date().getFullYear()} Dubai Analytica. All rights reserved.</p>
-                    <p>This email was sent to ${email}. If you have any questions, please contact our support team.</p>
-                    <p style="font-size: 11px; color: #999999; margin-top: 15px;">
-                        By using Dubai Analytica, you agree to our Terms of Service and Privacy Policy. 
-                        We use cookies to enhance your experience and improve our services.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>`
-        }
-
-        //send the mail
-        try {
-            const response = await transporter.sendMail(mailOptions);
-            console.log("Verification email sent", response);
-        }
-        catch (err) {
-            console.log("Err sending verification email", err);
         }
     }
 
