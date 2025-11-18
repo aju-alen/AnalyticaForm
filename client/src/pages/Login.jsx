@@ -118,7 +118,7 @@ export default function Login() {
                 wrapperClass=""
                 />: 'Login'}
             </Button>
-            <Grid container>
+            <Grid container gap={2}>
               <Grid item xs>
                 <Link href="/forget-password" variant="body2">Forgot password?</Link>
               </Grid>
