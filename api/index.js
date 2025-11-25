@@ -8,6 +8,7 @@ import surveyRoute from './routes/survey-route.js';
 import userResponseSurveyRoute from './routes/user-response-survey.route.js';
 import excelRoute from './routes/excel-route.js';
 import stripeRoute from './routes/stripe-route.js';
+import { stripeWebhook } from './controllers/stripe-controller.js';
 import superAdminData from './routes/superadmin-data-route.js';
 import awsS3Route from './routes/awsS3-route.js';
 import vertexGoogleApi from './routes/open-ai-route.js';
@@ -24,11 +25,11 @@ const app = express();
 // app.set('trust proxy', true);
 app.use(cors(corsOptions));
 
-app.post('/api/stripe', express.raw({type: 'application/json'}), stripeRoute);
+// Register webhook route BEFORE body parsers to preserve raw body for signature verification
+app.post('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }), stripeWebhook);
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {

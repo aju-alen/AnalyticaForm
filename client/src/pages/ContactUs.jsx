@@ -11,8 +11,6 @@ import Divider from '@mui/material/Divider';
 import theme from '../utils/theme';
 import { ThemeProvider } from '@mui/material/styles';
 import { backendUrl } from '../utils/backendUrl';
-import { axiosWithAuth } from '../utils/customAxios';
-import { refreshToken } from '../utils/refreshToken';
 import {motion} from 'framer-motion';
 import HomeNavBar from '../components/HomeNavBar';
 
@@ -32,6 +30,9 @@ const ContactUs = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+
+  console.log(chatMessages, 'chatMessages');
+  
   
   const handleFormChange = (event) => {
     const { name, value } = event.target
@@ -39,8 +40,12 @@ const ContactUs = () => {
   }
   const handleSubmitContact = async () => {
     try {
-      await refreshToken();
-      const surveyResp = await axiosWithAuth.post(`${backendUrl}/api/send-email/contact-us`, formData);
+
+      const surveyResp = await axios.post(`${backendUrl}/api/send-email/contact-us`, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       setOpen(true);
       setAlertStatus('success');
       setAlertText('Message Sent Successfully');
@@ -53,59 +58,81 @@ const ContactUs = () => {
   }
 
   const formatResponseText = (text) => {
+    
     if (!text) return '';
-    
+
     let formattedText = text;
-    
-    // Replace multiple newlines with a single newline
-    formattedText = formattedText.replace(/\n{2,}/g, '\n');
-    
-    // Convert markdown-style bold text (both ** and __ syntax)
-    formattedText = formattedText.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
-    
-    // Convert markdown-style italic text (both * and _ syntax)
-    formattedText = formattedText.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
-    
-    // Convert markdown-style headings (## Heading -> <h2>Heading</h2>)
-    formattedText = formattedText.replace(/^##\s*(.*)$/gm, '<h2>$1</h2>');
-    
-    // Convert markdown-style bullet points to proper bullet points
-    formattedText = formattedText.replace(/^\s*[-*+]\s(.+)/gm, '<ul><li>$1</li></ul>');
-    formattedText = formattedText.replace(/(<\/ul>\n<ul>)/g, ''); // Merge adjacent lists
-    
-    // Convert markdown-style numbered lists (1. 2. etc)
-    formattedText = formattedText.replace(/^\s*\d+\.\s(.+)/gm, '<ol><li>$1</li></ol>');
-    formattedText = formattedText.replace(/(<\/ol>\n<ol>)/g, ''); // Merge adjacent lists
-    
-    // Handle code blocks and inline code
-    formattedText = formattedText.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
-    formattedText = formattedText.replace(/`([^`]+)`/g, '<code>$1</code>');
-    
-    // Handle URLs - make them more readable and clickable
-    formattedText = formattedText.replace(/(https?:\/\/[^\s]+)/g, url => {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-    });
-    
-    // Handle common HTML entities
+
+    // Convert URLs to buttons, but not if they're in a list
+    formattedText = formattedText.replace(
+        /(?<![\d\s]\.[\s]*|[-*+][\s]*)((?:https?:\/\/[^\s\]\)]+)(?:\]|\)|')?)/g,
+        (match) => {
+            // Clean up the URL by removing any trailing brackets or quotes
+            const url = match.replace(/[\]\)']+$/, '');
+            console.log('Cleaned URL:', url);
+            
+            return `<button onclick="window.open('${url}', '_blank')" style="background-color: #1976d2; color: white; border: none; padding: 8px 16px; margin: 4px 0; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; display: inline-block;" onmouseover="this.style.backgroundColor='#1565c0'" onmouseout="this.style.backgroundColor='#1976d2'">Visit ${url.replace(/^https?:\/\//, '').split('/')[0]}</button>`;
+        }
+    );
+
+    // Handle markdown formatting
     formattedText = formattedText
-        .replace(/&quot;/g, '"')
-        .replace(/&apos;/g, "'")
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>');
-    
-    // Trim whitespace from each line while preserving newlines
-    formattedText = formattedText.split('\n')
-        .map(line => line.trim())
-        .filter(line => line) // Remove empty lines
+        .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>')
+        .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
+        .replace(/^##\s*(.*)$/gm, '<h2>$1</h2>')
+        .replace(/^#\s*(.*)$/gm, '<h1>$1</h1>');
+
+    // Handle lists - numbered and bullet points
+    formattedText = formattedText
+        .split('\n')
+        .map(line => {
+            // Handle numbered lists
+            if (/^\d+\.\s/.test(line)) {
+                return line.replace(/^\d+\.\s+(.*)$/, '<li>$1</li>');
+            }
+            // Handle bullet points
+            if (/^[-*+]\s/.test(line)) {
+                return line.replace(/^[-*+]\s+(.*)$/, '<li>$1</li>');
+            }
+            return line;
+        })
         .join('\n');
-    
-    // Prettify the text (adding space between paragraphs)
-    formattedText = formattedText.replace(/\n/g, '<br>\n');
-    
-    // Ensure links are correctly formatted without extra characters
-    formattedText = formattedText.replace(/">([^<]+)<\/a>([^\s])/g, '">$1</a> $2');
-    
+
+    // Wrap consecutive list items in appropriate list tags
+    formattedText = formattedText
+        .replace(/(<li>.*?<\/li>(\s*<li>.*?<\/li>)*)/gs, (match) => {
+            if (match.startsWith('<li>1.')) {
+                return `<ol>${match}</ol>`;
+            }
+            return `<ul>${match}</ul>`;
+        });
+
+    // Handle code blocks
+    formattedText = formattedText
+        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Wrap remaining text in paragraphs, but avoid wrapping existing HTML
+    formattedText = formattedText
+        .split('\n\n')
+        .map(block => {
+            if (
+                !block.trim() ||
+                block.trim().startsWith('<') ||
+                block.trim().endsWith('>')
+            ) {
+                return block;
+            }
+            return `<p>${block.trim()}</p>`;
+        })
+        .join('\n');
+
+    // Clean up
+    formattedText = formattedText
+        .replace(/<p>\s*<\/p>/g, '')
+        .replace(/\n+/g, '\n')
+        .trim();
+
     return formattedText;
 };
 
@@ -571,7 +598,6 @@ const ContactUs = () => {
                       placeholder="Type your message..."
                       variant="outlined"
                       multiline
-                      rows={1}
                       maxRows={2}
                       size="small"
                       onKeyDown={(e) => {

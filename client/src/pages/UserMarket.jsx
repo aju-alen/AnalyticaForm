@@ -425,6 +425,7 @@ const UserMarket = () => {
                   </ul>
                 </div>
                 <form action={`${import.meta.env.VITE_BACKEND_URL}/api/stripe/market/create-checkout-session`} method="POST">
+                  <input type="hidden" name="purchaseType" value="user-market" />
                   <input type="hidden" name="userId" value={userData.id} />
                   <input type="hidden" name="emailId" value={userData.email} />
                   <input type="hidden" name="amount" value={price} />

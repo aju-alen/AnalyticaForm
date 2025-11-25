@@ -252,34 +252,40 @@ const addAnalyticsDataToWorksheet = (worksheet, analytics) => {
     });
 };
 
+// Helper function to generate Excel buffer (can be used by both export and email)
+export const generateExcelBuffer = async (data) => {
+    const workbook = new ExcelJS.Workbook();
+
+    // User Data Sheet
+    const userDataSheet = workbook.addWorksheet('User Data');
+    const formQuestions = extractFormQuestions(data);
+    const { headers, subHeaders, questionMap } = createHeadersAndSubHeaders(formQuestions);
+
+    addHeadersToWorksheet(userDataSheet, headers);
+    addSubHeadersToWorksheet(userDataSheet, subHeaders);
+    userDataSheet.addRow([]);
+
+    data.forEach(user => {
+        const row = createUserRow(user, subHeaders, headers, questionMap);
+        const userRow = userDataSheet.addRow(row);
+        styleUserRow(userRow);
+    });
+
+    // Analytics Sheet
+    const analyticsSheet = workbook.addWorksheet('Analytics');
+    const analyticsData = createAnalyticsData(data);
+    addAnalyticsDataToWorksheet(analyticsSheet, analyticsData);
+
+    // Write to buffer and return
+    return await workbook.xlsx.writeBuffer();
+};
+
 // Main function for exporting data to Excel
 export const exportToExcel = async (req, res) => {
     try {
         const data = req.body;
-        const workbook = new ExcelJS.Workbook();
-
-        // User Data Sheet
-        const userDataSheet = workbook.addWorksheet('User Data');
-        const formQuestions = extractFormQuestions(data);
-        const { headers, subHeaders, questionMap } = createHeadersAndSubHeaders(formQuestions);
-
-        addHeadersToWorksheet(userDataSheet, headers);
-        addSubHeadersToWorksheet(userDataSheet, subHeaders);
-        userDataSheet.addRow([]);
-
-        data.forEach(user => {
-            const row = createUserRow(user, subHeaders, headers, questionMap);
-            const userRow = userDataSheet.addRow(row);
-            styleUserRow(userRow);
-        });
-
-        // Analytics Sheet
-        const analyticsSheet = workbook.addWorksheet('Analytics');
-        const analyticsData = createAnalyticsData(data);
-        addAnalyticsDataToWorksheet(analyticsSheet, analyticsData);
-
-        // Write to buffer and send as response
-        const buffer = await workbook.xlsx.writeBuffer();
+        const buffer = await generateExcelBuffer(data);
+        
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename=data_with_analytics.xlsx');
         res.send(buffer);

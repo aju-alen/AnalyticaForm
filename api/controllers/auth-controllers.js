@@ -371,8 +371,81 @@ export const userRegister = async (req, res, next) => {
             })
             console.log("reached");
             await prisma.$disconnect()
-            console.log(req.body.email, resetToken, user.surname, 'user in forget password');
-            sendResetPassword(req.body.email, resetToken, user.firstName);
+            console.log(req.body.email, resetToken, user.firstName, 'user in forget password');
+            
+            // Send reset password email using Resend
+            const resetPasswordHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                </head>
+                <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f7fa; padding: 40px 20px;">
+                        <tr>
+                            <td align="center">
+                                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px;">
+                                    <tr>
+                                        <td align="center" style="padding: 40px 30px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0;">
+                                            <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="Dubai Analytica" style="display:block;margin:0 auto;width:180px;height:auto;" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 30px;">
+                                            <h1 style="margin: 0 0 20px 0; color: #1a202c; font-size: 28px; font-weight: 700;">
+                                                Reset Your Password
+                                            </h1>
+                                            <p style="margin: 0 0 20px 0; color: #4a5568; font-size: 16px; line-height: 1.6;">
+                                                Hi ${String(user.firstName || 'User')},
+                                            </p>
+                                            <p style="margin: 0 0 25px 0; color: #4a5568; font-size: 16px; line-height: 1.6;">
+                                                We received a request to reset your password. Click the button below to create a new password:
+                                            </p>
+                                            <div style="text-align: center; margin: 30px 0;">
+                                                <a href="${frontendURL}/reset-password/${resetToken}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);">
+                                                    Reset Password
+                                                </a>
+                                            </div>
+                                            <p style="margin: 25px 0 0 0; color: #718096; font-size: 14px; line-height: 1.6;">
+                                                If the button doesn't work, copy and paste this link into your browser:
+                                            </p>
+                                            <p style="margin: 10px 0 0 0; color: #667eea; font-size: 13px; word-break: break-all;">
+                                                ${frontendURL}/reset-password/${resetToken}
+                                            </p>
+                                            <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 25px 0; border-radius: 4px;">
+                                                <p style="margin: 0; color: #92400e; font-size: 13px; line-height: 1.6;">
+                                                    <strong>⚠️ Security Notice:</strong> This link will expire after use. If you didn't request a password reset, please ignore this email.
+                                                </p>
+                                            </div>
+                                            <p style="margin: 30px 0 0 0; color: #4a5568; font-size: 16px; line-height: 1.6;">
+                                                Best regards,<br>
+                                                <strong style="color: #2d3748;">Dubai Analytica Team</strong>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background-color: #edf2f7; padding: 20px 30px; text-align: center; border-radius: 0 0 8px 8px;">
+                                            <p style="margin: 0; color: #718096; font-size: 12px;">
+                                                This is an automated email from Dubai Analytica. Please do not reply to this email.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            await resendEmailBoiler(
+                process.env.GMAIL_AUTH_USER_SUPPORT,
+                req.body.email,
+                'Reset Password - Dubai Analytica',
+                resetPasswordHtml
+            );
+            
             res.status(200).json({ message: 'Password reset link sent to your email' })
         }
         catch (err) {
@@ -381,37 +454,6 @@ export const userRegister = async (req, res, next) => {
         }
     }
 
-    const sendResetPassword = async (email, resetToken, name) => {
-
-        const transporter = nodemailer.createTransport(emailConfig);
-        const mailOptions = {
-            from: process.env.GMAIL_AUTH_USER_SUPPORT,
-            to: email,
-            subject: 'Reset Password',
-            html: `
-    <html>
-    <body>
-        <div>
-            <img src="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/NavbarLogo.png" alt="Reset Password" style="display:block;margin:auto;width:50%;" />
-        </div>
-        <div>
-            <p>Hi ${name},</p>
-            <p>Click to reset your password:</p>
-            <p><a href="https://dubaianalytica.com/reset-password/${resetToken}">Reset Password</a></p>
-        </div>
-    </body>
-    </html>`
-        }
-
-        //send the mail
-        try {
-            const response = await transporter.sendMail(mailOptions);
-            console.log("Reset Password email sent", response);
-        }
-        catch (err) {
-            console.log("Err sending Reset Password email", err);
-        }
-    }
 
     export const resetPassword = async (req, res) => {
         const resetToken = req.params.resetToken;
@@ -428,14 +470,18 @@ export const userRegister = async (req, res, next) => {
                 return res.status(400).json({ message: 'Invalid token' })
             }
             const hash = await bcrypt.hash(req.body.password, 10);
-            await prisma.user.update({
+            const updatedUser = await prisma.user.update({
                 where: {
                     resetToken: resetToken,
                 },
                 data: {
                     password: hash,
+                    resetToken: ''
                 }
             })
+            if(!updatedUser){
+                return res.status(400).json({ message: 'Failed to update password' })
+            }
             await prisma.$disconnect()
             res.status(200).json({ message: 'Password reset successful' })
 

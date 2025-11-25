@@ -56,6 +56,22 @@ export const getSurveyById = async (req, res) => {
     }
 }
 
+const parseTimeStringToSeconds = (value = '') => {
+    if (!value) return 0;
+    const minuteMatch = value.match(/(\d+)\s*m/);
+    const secondMatch = value.match(/(\d+)\s*s/);
+    const minutes = minuteMatch ? Number(minuteMatch[1]) : 0;
+    const seconds = secondMatch ? Number(secondMatch[1]) : 0;
+    return minutes * 60 + seconds;
+};
+
+const formatSecondsToLabel = (seconds) => {
+    if (!seconds || Number.isNaN(seconds)) return '0m 0s';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.round(seconds % 60);
+    return `${mins}m ${secs}s`;
+};
+
 export const updateSurveyById = async (req, res) => {
     const surveyId = req.params.surveyId;
     console.log(req.body, 'req.body in update');
@@ -105,6 +121,85 @@ export const getAllSurveyResponse = async (req, res) => {
         
         await prisma.$disconnect();
         res.status(200).send(getAllResponse);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+}
+
+export const getSurveyResponsesPaginated = async (req, res) => {
+    const { surveyId } = req.params;
+    const page = Math.max(parseInt(req.query.page ?? '1', 10) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit ?? '10', 10) || 10, 1);
+    const skip = (page - 1) * limit;
+
+    try {
+        const surveyDetails = await prisma.survey.findUnique({
+            where: { id: surveyId },
+            select: { surveyTitle: true, surveyStatus: true }
+        });
+
+        if (!surveyDetails) {
+            await prisma.$disconnect();
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+
+        const [responses, totalResponses, metaData] = await Promise.all([
+            prisma.userSurveyResponse.findMany({
+                where: { surveyId },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit
+            }),
+            prisma.userSurveyResponse.count({
+                where: { surveyId }
+            }),
+            prisma.userSurveyResponse.findMany({
+                where: { surveyId },
+                orderBy: { createdAt: 'desc' },
+                select: {
+                    userEmail: true,
+                    userName: true,
+                    userTimeSpent: true,
+                    createdAt: true
+                }
+            })
+        ]);
+
+        const totalPages = Math.max(1, Math.ceil(totalResponses / limit));
+        const totalSeconds = metaData.reduce((sum, item) => sum + parseTimeStringToSeconds(item.userTimeSpent), 0);
+        const uniqueParticipants = new Set(
+            metaData.map(
+                (item) => `${item.userEmail || 'Anonymous'}-${item.userName || 'Anonymous'}`
+            )
+        ).size;
+        const recentSubmissions = metaData.filter(
+            (item) => item.createdAt >= new Date(Date.now() - 24 * 60 * 60 * 1000)
+        ).length;
+
+        await prisma.$disconnect();
+
+        return res.status(200).json({
+            surveyTitle: surveyDetails.surveyTitle,
+            surveyStatus: surveyDetails.surveyStatus,
+            responses,
+            pagination: {
+                page,
+                limit,
+                totalPages,
+                totalResponses,
+                hasNext: page < totalPages,
+                hasPrev: page > 1
+            },
+            stats: {
+                totalResponses,
+                avgTimeSpent: metaData.length ? formatSecondsToLabel(totalSeconds / metaData.length) : '0m 0s',
+                uniqueParticipants,
+                recentSubmissions,
+                lastResponseAt: metaData.length ? metaData[0].createdAt : null
+            }
+        });
     }
     catch (err) {
         console.log(err);

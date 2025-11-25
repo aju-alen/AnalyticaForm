@@ -9,9 +9,12 @@ import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import HomeNavBar from '../components/HomeNavBar';
+import { axiosWithAuth } from '../utils/customAxios';
+import { backendUrl } from '../utils/backendUrl';
 
 
 const tiers = [
@@ -38,15 +41,11 @@ const tiers = [
     title: 'Monthly Subscription',
     price: '200.00',
     description: [
-      'Surveys: Unlimited',
-      'Users: 5',
-      'Responses: Unlimited',
-      'Questions: Unlimited',
-      'Logic: Advanced',
-      'Integrations: Custom',
-      'Analysis: Comprehensive tools',
-      'Data Center: Global',
-      'Support: 24/7 chat & email',
+     "All features of the Free Tier",
+     "Email Automation",
+     "Data Center: Global",
+     "Response Dashboard",
+     "Premium Questions Logic"
     ],
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
@@ -58,15 +57,10 @@ const tiers = [
     originalPrice: '2400.00',
     discountedPrice: (2400 * 0.83).toFixed(2), // Apply 17% discount
     description: [
-      'Surveys: Unlimited',
-      'Users: 5',
-      'Responses: Unlimited',
-      'Questions: Unlimited',
-      'Logic: Advanced',
-      'Integrations: Custom',
-      'Analysis: Comprehensive tools',
-      'Data Center: Global',
-      'Support: 24/7 chat & email',
+      "All features of the Monthly Subscription",
+      "17% OFF",
+      "Save around 500 AED",
+      "Cancel anytime"
     ],
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
@@ -80,6 +74,8 @@ const ProductDisplayy = () => {
 
     const [emailId, setEmailId] = useState('');
     const [userId, setUserId] = useState('');
+    const [isProMember, setIsProMember] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const userDetails = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess'));
@@ -87,10 +83,29 @@ const ProductDisplayy = () => {
         setEmailId(userDetails?.email);
         setUserId(userDetails?.id);
 
-    }, []);
+        // Check if user is pro member
+        const checkProMemberStatus = async () => {
+            if (userDetails?.id) {
+                try {
+                    const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userDetails.id}`);
+                    const date = new Date();
+                    const unixTimestamp = Math.floor(date.getTime() / 1000);
 
-    console.log(emailId, 'emailId');
-    console.log(userId, 'userId');
+                    if (userProMember?.data?.subscriptionPeriodEnd && userProMember.data.subscriptionPeriodEnd > unixTimestamp) {
+                        setIsProMember(true);
+                    }
+                } catch (err) {
+                    console.log('Error checking pro member status:', err);
+                } finally {
+                    setIsLoading(false);
+                }
+            } else {
+                setIsLoading(false);
+            }
+        };
+
+        checkProMemberStatus();
+    }, []);
  
   return (
     <Box>
@@ -241,17 +256,38 @@ const ProductDisplayy = () => {
                 </Box>
               ))}
             </CardContent>
-               {tier.price!=='FREE' && <CardActions>
-                  <form action="https://survey.dubaianalytica.com/api/stripe/create-checkout-session" method="POST">
-                  {/* <form action="http://localhost:3001/api/stripe/create-checkout-session" method="POST"> */}
-                    {/* Add a hidden field with the lookup_key of your Price */}
-                    <input type="hidden" name="lookup_key" value={tier.lookup_key} />
-                    <input type="hidden" name="userId" value={userId} />
-                    <input type="hidden" name="emailId" value={emailId} />
-                    <Button id="checkout-and-portal-button" type="submit" variant='contained'>
-                      Proceed to checkout
-                    </Button>
-                  </form>
+               {tier.price!=='FREE' && <CardActions sx={{ flexDirection: 'column', gap: 2, alignItems: 'stretch' }}>
+                  {isProMember ? (
+                    <>
+                      <Alert severity="info" sx={{ width: '100%' }}>
+                        You already have an active subscription plan
+                      </Alert>
+                      <Button 
+                        id="checkout-and-portal-button" 
+                        variant='contained' 
+                        disabled
+                        sx={{ width: '100%' }}
+                      >
+                        Proceed to checkout
+                      </Button>
+                    </>
+                  ) : (
+                    <form action={`${import.meta.env.VITE_BACKEND_URL}/api/stripe/create-checkout-session`} method="POST" style={{ width: '100%' }}>
+                      {/* Add a hidden field with the lookup_key of your Price */}
+                      <input type="hidden" name="lookup_key" value={tier.dev_lookup_key} />
+                      <input type="hidden" name="userId" value={userId} />
+                      <input type="hidden" name="emailId" value={emailId} />
+                      <Button 
+                        id="checkout-and-portal-button" 
+                        type="submit" 
+                        variant='contained'
+                        sx={{ width: '100%' }}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Loading...' : 'Proceed to checkout'}
+                      </Button>
+                    </form>
+                  )}
                 </CardActions>}
               </Card>
             </Grid>

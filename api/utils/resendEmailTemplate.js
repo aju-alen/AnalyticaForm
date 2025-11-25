@@ -5,15 +5,20 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 
 
-export const resendEmailBoiler = async (senderEmail, recipientEmail, subject, html) => {
+export const resendEmailBoiler = async (senderEmail, recipientEmail, subject, html, attachments = []) => {
     try {
-        console.log(senderEmail, recipientEmail, subject, html, 'resendEmailBoiler');
-        const response = await resend.emails.send({
+        const emailData = {
             from: senderEmail,
             to: recipientEmail,
             subject: subject,
             html: html,
-        });
+        };
+        
+        if (attachments && attachments.length > 0) {
+            emailData.attachments = attachments;
+        }
+        
+        const response = await resend.emails.send(emailData);
         return response;
     }
     catch (error) {

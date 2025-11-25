@@ -12,6 +12,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate, useParams } from 'react-router-dom';
 import { backendUrl } from '../utils/backendUrl';
+import { errorHandler } from '../utils/errorHandler';
+import Alert from '@mui/material/Alert';
 
 import axios from 'axios';
 import { Oval } from 'react-loader-spinner';
@@ -45,7 +47,7 @@ export default function ResetPassword() {
     try{
       event.preventDefault();
       setLoading(true);
-      const resp = await axios.post(`${backendUrl}/api/auth//reset/${resetToken}`, formData);
+      const resp = await axios.post(`${backendUrl}/api/auth/reset/${resetToken}`, formData);
       setLoading(false);
       setAlertMessage(resp.data.message);
       setAlertColor('success');
@@ -55,6 +57,9 @@ export default function ResetPassword() {
     catch(err){
       console.log(err);
       setLoading(false);
+      setAlertMessage(err.response.data.message);
+      setAlertColor('error');
+      handleClick();
     }
     
   };

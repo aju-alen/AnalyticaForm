@@ -1,6 +1,6 @@
 import {  stripeFrontendURL } from '../utils/corsFe.js';
-import sendEmail from '../utils/emailTemplateTransport.js';
-import { marketSuccessPaymentEmail } from '../utils/static/static-data.js';
+import { marketSuccessPaymentEmail, subscriptionPaymentSuccessfulEmailTemplate, marketPurchaseAdminNotificationEmail } from '../utils/static/static-data.js';
+import { resendEmailBoiler } from '../utils/resendEmailTemplate.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -16,6 +16,7 @@ const YOUR_DOMAIN = stripeFrontendURL;
 
 
 export const createCheckoutSessionForSubscription = async (req, res) => {
+  console.log(req.body, 'req.body');
     try {
         const prices = await Stripe.prices.list({
             lookup_keys: [req.body.lookup_key],
@@ -51,103 +52,195 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
 }
 
 export const stripeWebhook = async (request, response) => {
-  // const endpointSecret = "whsec_WwO4P8KQsXS1gzpfzMD8DKJUWxmder4H";
   const endpointSecret = process.env.STRIPE_WEBHOOK_SIGNING_SECRET;
   const sig = request.headers['stripe-signature'];
 
+  // Verify signature header exists
+  if (!sig) {
+    console.error('Webhook Error: Missing stripe-signature header');
+    return response.status(400).send('Missing stripe-signature header');
+  }
+
+  // Verify endpoint secret is configured
+  if (!endpointSecret) {
+    console.error('Webhook Error: Webhook signing secret is not configured');
+    return response.status(500).send('Webhook configuration error');
+  }
+
+  // Verify request body is a Buffer (required for signature verification)
+  if (!request.body || !Buffer.isBuffer(request.body)) {
+    console.error('Webhook Error: Request body is not a Buffer. Body type:', typeof request.body);
+    console.error('Body is parsed:', typeof request.body === 'object' && !Buffer.isBuffer(request.body));
+    return response.status(400).send('Invalid request body format - body must be raw Buffer');
+  }
+
+  // Debug logging (first 10 chars of secret to verify it's loaded, without exposing full secret)
+  console.log('Webhook Debug Info:');
   let event;
   try {
-    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+    // request.body must be a Buffer for signature verification
+    event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+    console.log('Webhook signature verified successfully. Event type:', event.type);
   } catch (err) {
+    console.error('Webhook Error:', err.message);
+    
+    // Additional check: Try to parse signature to see if it's valid format
+    if (sig) {
+      const sigParts = sig.split(',');
+      console.error('- Signature parts count:', sigParts.length);
+      sigParts.forEach((part, idx) => {
+        const [key, value] = part.split('=');
+        console.error(`  Part ${idx}: ${key} = ${value ? value.substring(0, 20) + '...' : 'empty'}`);
+      });
+    }
+    
     response.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
 
   // Handle the event
   switch (event.type) {
-    case 'checkout.session.async_payment_failed':
-      const checkoutSessionAsyncPaymentFailed = event.data.object;
-      break;
-
-
-    case 'checkout.session.async_payment_succeeded':
-      const checkoutSessionAsyncPaymentSucceeded = event.data.object;
-      break;
-
-
+    
     case 'checkout.session.completed':
-      const checkoutSessionCompleted = event.data.object;
-      break;
-
-    case 'customer.subscription.deleted':
-      const customerSubscriptionDeleted = event.data.object;
-      break;
-
-    case 'customer.subscription.updated':
-      const customerSubscriptionUpdated = event.data.object;
-      break;
-
-    case 'invoice.created':
-      const invoiceCreated = event.data.object;
-      break;
-
-
-    case 'invoice.payment_succeeded': //--This is run when the payment is successful
-      const invoicePaymentSucceeded = event.data.object;
-      const findCustomer = await prisma.proMember.findUnique({
-        where: { subscriptionEmail: invoicePaymentSucceeded.customer_email }
-      });
-
-      if (findCustomer) {
-
-        const updateSubscription = await prisma.proMember.update({
-          where: { subscriptionEmail: invoicePaymentSucceeded.customer_email },
-          data: {
-            isSubscribed: true,
-            subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
-            subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
-            subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
-            hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
-            hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
-            invoiceId: invoicePaymentSucceeded.id,
-            customerId: invoicePaymentSucceeded.subscription
-          }
-        });
+      const checkoutSession = event.data.object;
+      try {
+        const { userId, articleId } = checkoutSession.metadata;
+        if (checkoutSession.status === 'complete') {
+          // const invoice = await Stripe.invoices.retrieve(checkoutSession.invoice);
+         
+        } else {
+          console.log('checkout session is not complete');
+        }
+      } catch (err) {
+        console.log(err, 'error in webhook checkout.session.completed');
       }
-      else {
+      break;
 
-        const findUserId = await prisma.user.findFirst({
-          where: {
-            email: invoicePaymentSucceeded.customer_email
-          },
-          select: {
-            id: true,
-          }
-        });
+    case 'invoice.payment_succeeded':
+      const invoice = event.data.object;
+      const externalInvoiceData = invoice.lines.data[0];
+      
+      if (externalInvoiceData.type === 'subscription') {
+        console.log(externalInvoiceData, 'insiddededeed');
+        try {
+          if (invoice.status === 'paid') {
+            try {
+              await prisma.$transaction(async (tx) => {
+                const checkUserExist = await tx.proMember.findUnique({
+                  where: {
+                    subscriptionEmail: invoice.customer_email
+                  }
+                });
 
-        const subscription = await prisma.proMember.create({
-          data: {
-            isSubscribed: true,
-            subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
-            subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
-            subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
-            subscriptionEmail: invoicePaymentSucceeded.customer_email,
-            hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
-            hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
-            invoiceId: invoicePaymentSucceeded.id,
-            customerId: invoicePaymentSucceeded.subscription,
-            userId: findUserId.id
+                if (checkUserExist) {
+                  await tx.proMember.update({
+                    where: {
+                      subscriptionEmail: invoice.customer_email
+                    },
+                    data: {
+                      isSubscribed: true,
+                      subscriptionPeriodStart: externalInvoiceData.period.start,
+                      subscriptionPeriodEnd: externalInvoiceData.period.end,
+                      invoiceId: invoice.id,
+                      customerId: invoice.customer,
+                      hosted_invoice_url: invoice.hosted_invoice_url,
+                      subscriptionAmmount: externalInvoiceData.amount,
+                      hosted_invoice_pdf: invoice.invoice_pdf,
+                    }
+                  });
+                } else {
+                  const user = await tx.user.findUnique({
+                    where: {
+                      email: invoice.customer_email
+                    }
+                  });
 
+                  if (!user) {
+                    throw new Error(`User not found with email: ${invoice.customer_email}`);
+                  }
+
+                  await tx.proMember.create({
+                    data: {
+                      isSubscribed: true,
+                      subscriptionEmail: invoice.customer_email,
+                      subscriptionPeriodStart: externalInvoiceData.period.start,
+                      subscriptionPeriodEnd: externalInvoiceData.period.end,
+                      invoiceId: invoice.id,
+                      customerId: invoice.customer,
+                      hosted_invoice_url: invoice.hosted_invoice_url,
+                      subscriptionAmmount: externalInvoiceData.amount,
+                      hosted_invoice_pdf: invoice.invoice_pdf,
+                      userId: user.id
+                    }
+                  });
+
+                  await tx.user.update({
+                    where: { email: invoice.customer_email },
+                    data: {
+                      isAProMember: true
+                    }
+                  });
+                }
+              });
+
+              // Send email to user
+              const user = await prisma.user.findUnique({
+                where: {
+                  email: invoice.customer_email
+                }
+              });
+
+              if (user) {
+                // Format dates from Unix timestamps to readable format
+                const formatDate = (timestamp) => {
+                  const date = new Date(timestamp * 1000);
+                  return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  });
+                };
+
+                // Format amount from cents to currency
+                const formatAmount = (amount, currency = 'aed') => {
+                  const amountInDollars = (amount / 100).toFixed(2);
+                  const currencySymbol = currency.toUpperCase() === 'AED' ? 'AED' : currency.toUpperCase();
+                  return `${currencySymbol}${amountInDollars}`;
+                };
+
+                const subscriptionPeriodStart = formatDate(externalInvoiceData.period.start);
+                const subscriptionPeriodEnd = formatDate(externalInvoiceData.period.end);
+                const subscriptionAmount = formatAmount(externalInvoiceData.amount, invoice.currency);
+                const userName = user.lastName || user.firstName || 'Valued Customer';
+
+                const emailHtml = subscriptionPaymentSuccessfulEmailTemplate(
+                  userName,
+                  subscriptionPeriodStart,
+                  subscriptionPeriodEnd,
+                  invoice.hosted_invoice_url,
+                  invoice.invoice_pdf,
+                  subscriptionAmount
+                );
+
+                await resendEmailBoiler(
+                  process.env.GMAIL_AUTH_USER,
+                  user.email,
+                  'Subscription Payment Successful',
+                  emailHtml
+                );
+              }
+
+              console.log('Transaction completed successfully');
+            } catch (error) {
+              console.error('Transaction failed:', error);
+              throw error; // Re-throw to handle it in the webhook handler
+            }
           }
-        });
-        const updateUserData = await prisma.user.update({
-          where: { email: invoicePaymentSucceeded.customer_email },
-          data: {
-            isAProMember: true
-          }
-        });
+        } catch (err) {
+          console.log(err, 'This is the error in invoice payment succeeded');
+        }
       }
-      await prisma.$disconnect();
+      // Handle successful payment
       break;
 
     case 'charge.updated':
@@ -159,7 +252,8 @@ export const stripeWebhook = async (request, response) => {
 
         try {
           // const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-          const paymentIntent = await Stripe.paymentIntents.retrieve(chargeUpdated.payment_intent);
+          if(chargeUpdated.metadata.purchaseType === 'user-market'){
+            const paymentIntent = await Stripe.paymentIntents.retrieve(chargeUpdated.payment_intent);
 
           // Get sessions associated with this payment intent
           const sessions = await Stripe.checkout.sessions.list({
@@ -195,33 +289,77 @@ export const stripeWebhook = async (request, response) => {
               userId: chargeUpdated.metadata.userId,  
             }
           });
-          const sendReceiptEmail = await sendEmail({
-            senderEmailId: process.env.GMAIL_AUTH_USER_SUPPORT,
-            receiverEmailId: chargeUpdated.metadata.emailId,
-            subject: 'Congratulations! Your payment has been successful',
-            htmlString: marketSuccessPaymentEmail(
-              chargeUpdated.billing_details.name,
-              chargeUpdated.amount / 100,
-              chargeUpdated.currency.toUpperCase(),
-              chargeUpdated.paid,
-              chargeUpdated.payment_method_details.card.brand,
-              chargeUpdated.payment_method_details.card.last4,
-              chargeUpdated.billing_details.address.line1,
-              chargeUpdated.billing_details.address.city,
-              chargeUpdated.billing_details.address.state,
-              chargeUpdated.billing_details.address.country,
-              chargeUpdated.billing_details.address.postal_code,
-              chargeUpdated.metadata.unit,
-              chargeUpdated.metadata.selectedRegions,
-              chargeUpdated.metadata.selectedIndustries,
-              chargeUpdated.metadata.selectedEducationLevels,
-              chargeUpdated.metadata.selectedPositions,
-              chargeUpdated.metadata.selectedExperience,
-              chargeUpdated.receipt_url
-            )
-          })
+          const emailHtml = marketSuccessPaymentEmail(
+            chargeUpdated.billing_details.name,
+            chargeUpdated.amount / 100,
+            chargeUpdated.currency.toUpperCase(),
+            chargeUpdated.paid,
+            chargeUpdated.payment_method_details.card.brand,
+            chargeUpdated.payment_method_details.card.last4,
+            chargeUpdated.billing_details.address.line1,
+            chargeUpdated.billing_details.address.city,
+            chargeUpdated.billing_details.address.state,
+            chargeUpdated.billing_details.address.country,
+            chargeUpdated.billing_details.address.postal_code,
+            chargeUpdated.metadata.unit,
+            chargeUpdated.metadata.selectedRegions,
+            chargeUpdated.metadata.selectedIndustries,
+            chargeUpdated.metadata.selectedEducationLevels,
+            chargeUpdated.metadata.selectedPositions,
+            chargeUpdated.metadata.selectedExperience,
+            chargeUpdated.receipt_url
+          );
+
+          // Send receipt email to customer
+          const sendReceiptEmail = await resendEmailBoiler(
+            process.env.GMAIL_AUTH_USER_SUPPORT,
+            chargeUpdated.metadata.emailId,
+            'Congratulations! Your payment has been successful',
+            emailHtml
+          );
           console.log(sendReceiptEmail, 'sendReceiptEmail');
+
+          // Send admin notification email
+          const purchaseDate = new Date(chargeUpdated.created * 1000).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZoneName: 'short'
+          });
+
+          const adminEmailHtml = marketPurchaseAdminNotificationEmail(
+            chargeUpdated.billing_details.name,
+            chargeUpdated.billing_details.email || chargeUpdated.metadata.emailId,
+            chargeUpdated.amount / 100,
+            chargeUpdated.currency.toUpperCase(),
+            chargeUpdated.payment_method_details.card.brand,
+            chargeUpdated.payment_method_details.card.last4,
+            chargeUpdated.billing_details.address.line1,
+            chargeUpdated.billing_details.address.city,
+            chargeUpdated.billing_details.address.state,
+            chargeUpdated.billing_details.address.country,
+            chargeUpdated.billing_details.address.postal_code,
+            chargeUpdated.metadata.unit,
+            chargeUpdated.metadata.selectedRegions,
+            chargeUpdated.metadata.selectedIndustries,
+            chargeUpdated.metadata.selectedEducationLevels,
+            chargeUpdated.metadata.selectedPositions,
+            chargeUpdated.metadata.selectedExperience,
+            chargeUpdated.receipt_url,
+            chargeUpdated.payment_intent,
+            purchaseDate
+          );
+
+          resendEmailBoiler(
+            process.env.GMAIL_AUTH_USER_SUPPORT,
+            'mickeygenerale@gmail.com',
+            `New Market Purchase: ${chargeUpdated.billing_details.name} - ${chargeUpdated.currency.toUpperCase()} ${chargeUpdated.amount / 100}`,
+            adminEmailHtml
+          )
           
+          }
         }
         catch (err) {
           console.log(err);
@@ -231,6 +369,25 @@ export const stripeWebhook = async (request, response) => {
       // Then define and call a function to handle the event charge.updated
       break;
 
+      case 'charge.refunded':
+        const chargeRefunded = event.data.object;
+        try {
+        console.log(chargeRefunded, 'chargeRefunded object');
+
+        const removePurchase = await prisma.proMember.updateMany({
+          where: {
+            customerId: chargeRefunded.customer
+          },
+          data: {
+            isSubscribed: false,
+            subscriptionPeriodEnd: 0,
+            subscriptionPeriodStart: 0,
+          }
+        });
+        } catch (err) {
+          console.log(err);
+        }
+        break;
     // ... handle other event types
     default:
       console.log(`Unhandled event type ${event.type}`);
@@ -316,6 +473,7 @@ export const createCheckoutSessionForMarketUser = async (req, res) => {
           selectedPositions,
           selectedExperience,
           unit,
+          purchaseType: 'user-market',
         },
       },
       customer_update: {

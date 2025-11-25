@@ -6,7 +6,7 @@ import SelectSingleCheckBox from '../components/SelectSingleCheckBox'
 import SelectSingleRadio from '../components/SelectSingleRadio'
 import IntroductionForm from '../components/IntroductionForm'
 import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
-import { Button, TextField,Box,Typography, Stack, AppBar,Toolbar} from '@mui/material'
+import { Button, TextField,Box,Typography, Stack, AppBar,Toolbar, Snackbar, Alert} from '@mui/material'
 import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
 import GoogleRecaptcha from '../components/GoogleRecaptcha'
 import SelectDropdownMenu from '../components/SelectDropdownMenu'
@@ -74,6 +74,7 @@ const UserSubmitSurvey = () => {
     const [startDate, setStartDate] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = React.useState(false);
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -219,7 +220,7 @@ const UserSubmitSurvey = () => {
             
 
             if (skippedMandatoryFields.length > 0  ) {
-                alert('Please fill the mandatory fields');
+                setSnackbar({ open: true, message: 'Please fill the mandatory fields', severity: 'warning' });
                 // Optionally, you can set the currentIndex to the first skipped mandatory field index
                 setCurrentIndex(surveyData.surveyForms.findIndex(form => form === skippedMandatoryFields[0]));
                 return;
@@ -651,7 +652,7 @@ const UserSubmitSurvey = () => {
 
         if (hasMandatoryFields && skippedFields.includes(currentItem.id)) {
             // Show alert if mandatory fields are not filled and not skipped
-            alert('Please fill the mandatory fields');
+            setSnackbar({ open: true, message: 'Please fill the mandatory fields', severity: 'warning' });
             return null; // Do not render the form until mandatory fields are filled
         }
 
@@ -1629,6 +1630,22 @@ const UserSubmitSurvey = () => {
           <Button type="submit">Send Report</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar for alerts */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
         </ThemeProvider >
     )
 }

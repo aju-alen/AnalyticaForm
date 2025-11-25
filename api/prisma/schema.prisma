@@ -47,7 +47,7 @@ model ProMember {
   hosted_invoice_pdf String
   subscriptionPeriodEnd   Int 
   invoiceId String @unique
-  customerId String
+  customerId String 
   isSubscribed Boolean
 
 

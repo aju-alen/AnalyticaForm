@@ -13,6 +13,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -38,6 +40,8 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
   const [open, setOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [surveyId, setSurveyId] = React.useState('');
+  const [pricingDialogOpen, setPricingDialogOpen] = React.useState(false);
+  const [snackbar, setSnackbar] = React.useState({ open: false, message: '', severity: 'info' });
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [loadingSurveyId, setLoadingSurveyId] = React.useState(null);
@@ -70,6 +74,21 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
     setSurveyId(surveyId);
     setOpen(true);
     handleCloseMenu();
+  };
+
+  const handleResponseDashboard = (surveyId) => {
+    if (!isSubscribed) {
+      setPricingDialogOpen(true);
+      return;
+    }
+    navigate(`/dashboard/response-dashboard/${surveyId}`);
+  };
+
+  const handlePricingDialogClose = (proceed) => {
+    setPricingDialogOpen(false);
+    if (proceed) {
+      navigate('/pricing');
+    }
   };
 
   const handleDeleteOpen = (surveyId) => {
@@ -112,7 +131,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
       const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
       console.log(getAllUserResponse.data,'--getAllUserResponse--asjhdajhsbd');
       if (getAllUserResponse.data.length === 0) {
-        alert('No response available for this survey');
+        setSnackbar({ open: true, message: 'No response available for this survey', severity: 'warning' });
         setIsLoading(false);
         handleClose();
         return;
@@ -152,7 +171,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
       const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
       console.log(getAllUserResponse.data,'--getAllUserResponse--');
       if (getAllUserResponse.data.length === 0) {
-        alert('No response available for this survey');
+        setSnackbar({ open: true, message: 'No response available for this survey', severity: 'warning' });
         setIsLoading(false);
         handleClose();
         return;
@@ -391,6 +410,19 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           >
             Export to Excel
           </MenuItem>
+          <MenuItem 
+            onClick={() => handleResponseDashboard(surveyId)}
+            sx={{ 
+              py: 1.5,
+              px: 2.5,
+              '&:hover': {
+                bgcolor: 'primary.50',
+                color: 'primary.main'
+              }
+            }}
+          >
+            Response Dasboard
+          </MenuItem>
         </Menu>
       </Container>
       <Dialog open={deleteOpen} onClose={handleClose}>
@@ -403,10 +435,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                         <DialogActions>
                         <Button
   onClick={() => {
-    const confirmed = window.confirm("Are you sure you want to delete this survey?");
-    if (confirmed) {
-      handleDeleteSurvey(surveyId);
-    }
+    handleDeleteSurvey(surveyId);
   }}
   color="error"
 >
@@ -441,6 +470,40 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                           </Button>
                         </DialogActions>
                       </Dialog>
+
+      {/* Pricing Dialog */}
+      <Dialog open={pricingDialogOpen} onClose={() => handlePricingDialogClose(false)}>
+        <DialogTitle>Upgrade Required</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Response analytics are available for Pro members only. Would you like to view our pricing plans?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handlePricingDialogClose(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={() => handlePricingDialogClose(true)} variant="contained" color="primary">
+            View Pricing
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar for alerts */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

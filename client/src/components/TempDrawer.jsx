@@ -9,7 +9,6 @@ import Badge from '@mui/material/Badge';
 import { Typography, Grid } from '@mui/material';
 
 const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEndDate }) => {
-  console.log(subscriptionEndDate, 'suuuuuuuuubbbbbbbbbbb');
   
   const [isProMember, setIsProMember] = useState(false);
   const handleItemClick = (text) => {
@@ -175,7 +174,7 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
             </Grid>
 
 
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
               <Typography variant="h6" gutterBottom sx={{
                 fontWeight: '500',
                 fontSize: '1.2rem',
@@ -209,7 +208,7 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                 </Grid>
 
               </Grid>
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={6}>
               <Typography variant="h6" gutterBottom sx={{

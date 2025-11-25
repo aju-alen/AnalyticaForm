@@ -50,11 +50,27 @@ const Dashboard = () => {
         try {
             setInputFeildVisible(true);
             if (input && inputFeildVisible && inputText.length > 0) {
-                if (userSurveyData.length > 4) {
-                    alert('You can only create 5 surveys with a free account. Please upgrade to premium.');
-                    return;
-                }
                 await refreshToken();
+                
+                if (userSurveyData.length > 4) {
+                    // Check if user is a pro member before showing warning
+                    const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
+                    const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
+                    const date = new Date();
+                    const unixTimestamp = Math.floor(date.getTime() / 1000);
+                    
+                    const isProMember = userProMember?.data?.subscriptionPeriodEnd && userProMember.data.subscriptionPeriodEnd > unixTimestamp;
+                    
+                    if (!isProMember) {
+                        // Not a pro member, show warning
+                        setAlertMessage('You can only create 5 surveys with a free account. Please upgrade to premium.');
+                        setAlertColor('warning');
+                        setOpen(true);
+                        return;
+                    }
+                    // Pro member, proceed with creating survey
+                }
+                
                 const surveyResp = await axiosWithAuth.post(`${backendUrl}/api/survey/create`, { surveyTitle: inputText });
                 navigate(`/dashboard/create-survey/${surveyResp.data.newSurvey.id}`, { state: { surveyName: inputText } });
             }

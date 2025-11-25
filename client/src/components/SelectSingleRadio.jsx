@@ -26,6 +26,8 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     formType: 'SinglePointForm'
   });
 
+  console.log(formData, 'formData in select single radio form');
+
   const [debouncedValue, setDebouncedValue] = useState('');
   const [boldFields, setBoldFields] = useState(new Set());
 
