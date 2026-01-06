@@ -8,7 +8,6 @@ import { frontendURL } from '../utils/corsFe.js';
 import dotenv from 'dotenv';
 import { registerEmailTemplate, welcomeEmailTemplate } from '../utils/emailMailType.js';
 import { resendEmailBoiler } from '../utils/resendEmailTemplate.js';
-// Load environment variables from the .env file
 dotenv.config();
 
 const prisma = new PrismaClient();
@@ -538,12 +537,7 @@ export const userRegister = async (req, res, next) => {
     }
 
     export const updateUserResponseLimit = async (name, email, title, response) => {
-        const transporter = nodemailer.createTransport(emailConfig);
-        const mailOptions = {
-            from: process.env.GMAIL_AUTH_USER_SUPPORT,
-            to: email,
-            subject: 'Your Survey is Almost at Capacity - Keep Track of Responses!',
-            html: `
+        const htmlTemplate = `
     <html>
     <body>
         <div>
@@ -572,12 +566,11 @@ export const userRegister = async (req, res, next) => {
             <p>Innovation Hub, Level 1, South Zone - Gate Avenue, DIFC, PO Box 00000, Dubai, UAE</p>
         </div>
     </body>
-    </html>`
-        }
+    </html>`;
 
         try {
-            const response = await transporter.sendMail(mailOptions);
-            console.log("Response limit email sent", response);
+            const emailResponse = await resendEmailBoiler(process.env.GMAIL_AUTH_USER_SUPPORT, email, 'Your Survey is Almost at Capacity - Keep Track of Responses!', htmlTemplate);
+            console.log("Response limit email sent", emailResponse);
 
         }
         catch (err) {
