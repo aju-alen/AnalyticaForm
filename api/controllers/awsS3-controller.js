@@ -12,7 +12,6 @@ const REGION = process.env.REGION;
 const ACCESS_KEY = process.env.ACCESS_KEY;
 const SECRET_KEY = process.env.SECRET_KEY;
 
-    console.log(BUCKET_NAME, 'BUCKET_NAME', REGION, 'REGION', ACCESS_KEY, 'ACCESS_KEY', SECRET_KEY, 'SECRET_KEY');
 
 const s3 = new S3({
     credentials: {
@@ -29,7 +28,6 @@ const uploadWithMulterImage = (awsId) => multer({
         bucket: BUCKET_NAME,
         metadata: function (req, file, cb) {
             cb(null, { fieldName: file.fieldname });
-            console.log(file, 'file');
         },
         key: function (req, file, cb) {
             const fileName = `imageForm/${awsId}/${file.originalname}`;
@@ -42,13 +40,9 @@ export const uploadToAWSImage = async (req, res) => {
     const awsId = req.params.awsId;
     const ids = req.body; // Accessing the non-file fields sent with the request
 
-    console.log(awsId, 'AWS ID');
-    console.log(ids, 'IDs');
-
     try {
         // Upload new files
         const upload = uploadWithMulterImage(awsId);
-        console.log(upload, 'upload');
         upload(req, res, (err) => {
             if (err) {
                 res.status(500).json({ message: 'An error occurred', error: err });
