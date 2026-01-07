@@ -237,7 +237,7 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                 </label>
               )}
                <ReactQuill
-                theme="bubble"
+                theme="snow"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}

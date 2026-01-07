@@ -224,7 +224,7 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
                 </label>
               )}
               <ReactQuill
-                theme="bubble"
+                theme="snow"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}

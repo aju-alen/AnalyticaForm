@@ -272,7 +272,7 @@ const SliderText = ({ onSaveForm, data, id, options, disableForm, disableText, d
                 </label>
               )}
                <ReactQuill
-                theme="bubble"
+                theme="snow"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}

@@ -295,7 +295,7 @@ const SmileyRating = ({ onSaveForm, data, id, options, disableForm, disableText,
                 </label>
               )}
              <ReactQuill
-                theme="bubble"
+                theme="snow"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}

@@ -224,7 +224,7 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                 </label>
               )}
                <ReactQuill
-                theme="bubble"
+                theme="snow"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}

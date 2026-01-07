@@ -471,7 +471,7 @@ export const userRegister = async (req, res, next) => {
             const hash = await bcrypt.hash(req.body.password, 10);
             const updatedUser = await prisma.user.update({
                 where: {
-                    resetToken: resetToken,
+                    id: user.id,
                 },
                 data: {
                     password: hash,

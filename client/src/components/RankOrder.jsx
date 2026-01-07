@@ -215,7 +215,7 @@ const RankOrder = ({ onSaveForm, data, id, options, disableForm, disableText, di
                 </label>
               )}
               <ReactQuill
-                theme="bubble"
+                theme="snow"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}

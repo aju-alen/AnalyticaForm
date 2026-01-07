@@ -21,7 +21,7 @@ model User {
   lastName  String
   password  String?
   receiveMarketingEmails Boolean 
-  resetToken String @unique @db.VarChar(255) @default(cuid())  
+  resetToken String  @db.VarChar(255) @default(cuid())  
   emailVerificationToken String
   isGoogleUser Boolean @default(false) 
   emailVerified Boolean @default(false)

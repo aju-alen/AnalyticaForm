@@ -216,7 +216,7 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
                 </label>
               )}
               <ReactQuill
-                theme="bubble"
+                theme="snow"
                 value={formData.quilText}
                 onChange={handleQuillChange}
                 readOnly={disableText}
