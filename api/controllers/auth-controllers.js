@@ -523,7 +523,14 @@ export const userRegister = async (req, res, next) => {
                     userId: userId
                 },
                 select: {
-                    subscriptionPeriodEnd: true
+                    subscriptionPeriodEnd: true,
+                    subscriptionPeriodStart: true,
+                    subscriptionAmmount: true,
+                    subscriptionEmail: true,
+                    invoiceId: true,
+                    customerId: true,
+                    isSubscribed: true,
+                    createdAt: true
                 }
             })
             await prisma.$disconnect()
@@ -533,6 +540,59 @@ export const userRegister = async (req, res, next) => {
         catch (err) {
             console.log(err);
             res.status(400).send('An error occoured')
+        }
+    }
+
+    export const getUserSubscriptionDetails = async (req, res) => {
+        const { userId } = req.params;
+        try {
+            const proMember = await prisma.proMember.findFirst({
+                where: {
+                    userId: userId
+                },
+                select: {
+                    id: true,
+                    subscriptionPeriodStart: true,
+                    subscriptionPeriodEnd: true,
+                    subscriptionAmmount: true,
+                    subscriptionEmail: true,
+                    invoiceId: true,
+                    customerId: true,
+                    isSubscribed: true,
+                    createdAt: true
+                }
+            });
+
+            if (!proMember) {
+                await prisma.$disconnect();
+                return res.status(200).json({
+                    subscription: null,
+                    isEligibleForRefund: false,
+                    daysSinceStart: null
+                });
+            }
+
+            const currentTime = Math.floor(Date.now() / 1000);
+            const daysSinceStart = proMember.subscriptionPeriodStart 
+                ? Math.floor((currentTime - proMember.subscriptionPeriodStart) / 86400)
+                : null;
+            
+            const sevenDaysInSeconds = 7 * 24 * 60 * 60; // 604800 seconds
+            const isEligibleForRefund = proMember.isSubscribed && 
+                proMember.subscriptionPeriodStart && 
+                (currentTime - proMember.subscriptionPeriodStart) <= sevenDaysInSeconds;
+
+            await prisma.$disconnect();
+            res.status(200).json({
+                subscription: proMember,
+                isEligibleForRefund,
+                daysSinceStart
+            });
+
+        } catch (err) {
+            console.log(err);
+            await prisma.$disconnect();
+            res.status(400).send('An error occurred');
         }
     }
 

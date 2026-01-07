@@ -36,6 +36,7 @@ model User {
    responsePurchases ResponsePurchase[]
 
    proMember ProMember?
+   refundRequests RefundRequest[]
 }
 
 model ProMember {
@@ -53,6 +54,8 @@ model ProMember {
 
  userId String     @unique
   user   User    @relation(fields: [userId], references: [id])
+
+  refundRequests RefundRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -129,4 +132,27 @@ model ResponsePurchase {
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model RefundRequest {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  proMemberId           String
+  proMember             ProMember @relation(fields: [proMemberId], references: [id])
+  invoiceId              String
+  customerId             String
+  subscriptionPeriodStart Int
+  refundAmount           Int
+  refundCurrency         String
+  refundStatus           String   // "pending", "processing", "completed", "failed"
+  stripeRefundId         String?
+  refundReason           String?
+  requestedAt            DateTime @default(now())
+  processedAt            DateTime?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([userId])
+  @@index([proMemberId])
 }

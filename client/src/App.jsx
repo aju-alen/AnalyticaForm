@@ -45,6 +45,7 @@ const Error404 = lazy(() => import('./pages/404Error'));
 const UserAnalytics = lazy(() => import('./pages/UserAnalytics'));
 const Usersurveyanalytics = lazy(() => import('./pages/User-survey-analytics'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
+const Subscription = lazy(() => import('./pages/Subscription'));
 const AdminSurveyData = lazy(() => import('./pages/AdminSurveyData'));
 const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
@@ -221,6 +222,10 @@ const App = () => {
         {
           path: "/dashboard/create-survey/:surveyId",
           element: <ProtectedRoute element={<CreateNewSurvey />} />, // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/dashboard/subscription",
+          element: <ProtectedRoute element={<Subscription />} />,
         },
         {
           path: "/pricing",

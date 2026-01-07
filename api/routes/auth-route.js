@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { userRegister,login,refresh,logout,test,verifyEmail,forgetPassword,resetPassword,getUserData,getUserIsProMember,googleLogin,createRegisterGuest} from '../controllers/auth-controllers.js';
+import { userRegister,login,refresh,logout,test,verifyEmail,forgetPassword,resetPassword,getUserData,getUserIsProMember,getUserSubscriptionDetails,googleLogin,createRegisterGuest} from '../controllers/auth-controllers.js';
 import { apiCallLimiter } from '../middleware/rateLimiter.js'
 import { verifyJwt } from '../middleware/verifyJwt.js';
 
@@ -19,6 +19,7 @@ router.post('/reset/:resetToken',resetPassword)
 
 router.get('/get-user',apiCallLimiter,verifyJwt,getUserData);
 router.get('/get-user-promember/:userId',apiCallLimiter,verifyJwt,getUserIsProMember);
+router.get('/get-user-subscription-details/:userId',apiCallLimiter,verifyJwt,getUserSubscriptionDetails);
 
 router.post('/google-login',googleLogin);
 

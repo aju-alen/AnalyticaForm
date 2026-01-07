@@ -1,5 +1,5 @@
 import {  stripeFrontendURL } from '../utils/corsFe.js';
-import { marketSuccessPaymentEmail, subscriptionPaymentSuccessfulEmailTemplate, marketPurchaseAdminNotificationEmail } from '../utils/static/static-data.js';
+import { marketSuccessPaymentEmail, subscriptionPaymentSuccessfulEmailTemplate, marketPurchaseAdminNotificationEmail, refundRequestAdminNotificationEmail } from '../utils/static/static-data.js';
 import { resendEmailBoiler } from '../utils/resendEmailTemplate.js';
 
 import dotenv from 'dotenv';
@@ -372,18 +372,56 @@ export const stripeWebhook = async (request, response) => {
       case 'charge.refunded':
         const chargeRefunded = event.data.object;
         try {
-        console.log(chargeRefunded, 'chargeRefunded object');
+          console.log(chargeRefunded, 'chargeRefunded object');
 
-        const removePurchase = await prisma.proMember.updateMany({
-          where: {
-            customerId: chargeRefunded.customer
-          },
-          data: {
-            isSubscribed: false,
-            subscriptionPeriodEnd: 0,
-            subscriptionPeriodStart: 0,
+          // Find ProMember by customerId
+          const proMember = await prisma.proMember.findFirst({
+            where: {
+              customerId: chargeRefunded.customer
+            },
+            include: {
+              user: true
+            }
+          });
+
+          if (proMember) {
+            await prisma.$transaction(async (tx) => {
+              // Update ProMember
+              await tx.proMember.updateMany({
+                where: {
+                  customerId: chargeRefunded.customer
+                },
+                data: {
+                  isSubscribed: false,
+                  subscriptionPeriodEnd: 0,
+                  subscriptionPeriodStart: 0,
+                }
+              });
+
+              // Revoke user membership
+              await tx.user.update({
+                where: {
+                  id: proMember.userId
+                },
+                data: {
+                  isAProMember: false
+                }
+              });
+
+              // Update RefundRequest if exists
+              await tx.refundRequest.updateMany({
+                where: {
+                  proMemberId: proMember.id,
+                  refundStatus: { in: ['pending', 'processing'] }
+                },
+                data: {
+                  refundStatus: 'completed',
+                  processedAt: new Date(),
+                  stripeRefundId: chargeRefunded.id
+                }
+              });
+            });
           }
-        });
         } catch (err) {
           console.log(err);
         }
@@ -485,5 +523,192 @@ export const createCheckoutSessionForMarketUser = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
+  }
+};
+
+export const requestSubscriptionRefund = async (req, res) => {
+  try {
+    // Get userId from request (should be from JWT token)
+    const userId = req.tokenId || req.body?.userId;
+    
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    // Get ProMember record for userId
+    const proMember = await prisma.proMember.findFirst({
+      where: {
+        userId: userId
+      },
+      include: {
+        user: true
+      }
+    });
+
+    if (!proMember) {
+      return res.status(404).json({ message: 'No active subscription found' });
+    }
+
+    // Validate subscription is active
+    if (!proMember.isSubscribed) {
+      return res.status(400).json({ message: 'Subscription is not active' });
+    }
+
+    // Calculate days since subscription start
+    const currentTime = Math.floor(Date.now() / 1000);
+    const sevenDaysInSeconds = 7 * 24 * 60 * 60; // 604800 seconds
+    const daysSinceStart = Math.floor((currentTime - proMember.subscriptionPeriodStart) / 86400);
+
+    // Check if within 7 days
+    if (!proMember.subscriptionPeriodStart || (currentTime - proMember.subscriptionPeriodStart) > sevenDaysInSeconds) {
+      return res.status(400).json({ 
+        message: `Refund request is only available within 7 days of subscription. Your subscription started ${daysSinceStart} days ago.` 
+      });
+    }
+
+    // Check if refund already requested
+    const existingRefund = await prisma.refundRequest.findFirst({
+      where: {
+        proMemberId: proMember.id,
+        refundStatus: { in: ['pending', 'processing', 'completed'] }
+      }
+    });
+
+    if (existingRefund) {
+      return res.status(400).json({ 
+        message: 'A refund request has already been processed for this subscription' 
+      });
+    }
+
+    // Get Stripe invoice
+    let invoice;
+    try {
+      invoice = await Stripe.invoices.retrieve(proMember.invoiceId);
+    } catch (err) {
+      console.error('Error retrieving invoice:', err);
+      return res.status(500).json({ message: 'Failed to retrieve invoice from Stripe' });
+    }
+
+    // Get the latest charge from invoice
+    let chargeId;
+    if (invoice.charge) {
+      chargeId = typeof invoice.charge === 'string' ? invoice.charge : invoice.charge.id;
+    } else {
+      // If no charge on invoice, get the latest charge for the customer
+      const charges = await Stripe.charges.list({
+        customer: proMember.customerId,
+        limit: 1
+      });
+      if (charges.data.length === 0) {
+        return res.status(500).json({ message: 'No charge found for this subscription' });
+      }
+      chargeId = charges.data[0].id;
+    }
+
+    // Create Stripe refund
+    let refund;
+    try {
+      refund = await Stripe.refunds.create({
+        charge: chargeId,
+        amount: proMember.subscriptionAmmount,
+        reason: 'requested_by_customer'
+      });
+    } catch (err) {
+      console.error('Error creating refund:', err);
+      return res.status(500).json({ message: 'Failed to process refund: ' + err.message });
+    }
+
+    // Create RefundRequest record and update membership in transaction
+    await prisma.$transaction(async (tx) => {
+      // Create refund request record
+      await tx.refundRequest.create({
+        data: {
+          userId: userId,
+          proMemberId: proMember.id,
+          invoiceId: proMember.invoiceId,
+          customerId: proMember.customerId,
+          subscriptionPeriodStart: proMember.subscriptionPeriodStart,
+          refundAmount: proMember.subscriptionAmmount,
+          refundCurrency: 'aed',
+          refundStatus: 'completed',
+          stripeRefundId: refund.id,
+          processedAt: new Date()
+        }
+      });
+
+      // Update ProMember
+      await tx.proMember.update({
+        where: {
+          id: proMember.id
+        },
+        data: {
+          isSubscribed: false,
+          subscriptionPeriodEnd: 0,
+          subscriptionPeriodStart: 0
+        }
+      });
+
+      // Revoke user membership
+      await tx.user.update({
+        where: {
+          id: userId
+        },
+        data: {
+          isAProMember: false
+        }
+      });
+    });
+
+    // Send email notification to admin
+    try {
+      const formatDate = (timestamp) => {
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      };
+
+      const userName = proMember.user.firstName + ' ' + proMember.user.lastName;
+      const requestedAtTimestamp = Math.floor(Date.now() / 1000);
+      const emailHtml = refundRequestAdminNotificationEmail(
+        userName,
+        proMember.user.email,
+        proMember.subscriptionAmmount,
+        'aed',
+        proMember.subscriptionPeriodStart,
+        proMember.subscriptionPeriodEnd,
+        proMember.invoiceId,
+        proMember.subscriptionAmmount,
+        refund.id,
+        requestedAtTimestamp
+      );
+
+      await resendEmailBoiler(
+        process.env.GMAIL_AUTH_USER_SUPPORT,
+        'admin@dubaianalytica.com',
+        `Subscription Refund Request - ${userName}`,
+        emailHtml
+      );
+    } catch (emailErr) {
+      console.error('Error sending admin notification email:', emailErr);
+      // Don't fail the request if email fails
+    }
+
+    res.status(200).json({
+      message: 'Refund processed successfully',
+      refund: {
+        id: refund.id,
+        amount: refund.amount,
+        status: refund.status
+      }
+    });
+
+  } catch (err) {
+    console.error('Error processing refund request:', err);
+    res.status(500).json({ message: 'An error occurred while processing the refund request' });
   }
 };
