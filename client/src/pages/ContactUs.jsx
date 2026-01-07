@@ -13,6 +13,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { backendUrl } from '../utils/backendUrl';
 import {motion} from 'framer-motion';
 import HomeNavBar from '../components/HomeNavBar';
+import {axiosWithAuth} from '../utils/customAxios';
 
 const ContactUs = () => {
   const [open, setOpen] = useState(false);
@@ -58,83 +59,283 @@ const ContactUs = () => {
   }
 
   const formatResponseText = (text) => {
-    
     if (!text) return '';
 
     let formattedText = text;
+    const protectedBlocks = [];
+    let blockIndex = 0;
 
-    // Convert URLs to buttons, but not if they're in a list
-    formattedText = formattedText.replace(
-        /(?<![\d\s]\.[\s]*|[-*+][\s]*)((?:https?:\/\/[^\s\]\)]+)(?:\]|\)|')?)/g,
-        (match) => {
-            // Clean up the URL by removing any trailing brackets or quotes
-            const url = match.replace(/[\]\)']+$/, '');
-            console.log('Cleaned URL:', url);
-            
-            return `<button onclick="window.open('${url}', '_blank')" style="background-color: #1976d2; color: white; border: none; padding: 8px 16px; margin: 4px 0; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; display: inline-block;" onmouseover="this.style.backgroundColor='#1565c0'" onmouseout="this.style.backgroundColor='#1976d2'">Visit ${url.replace(/^https?:\/\//, '').split('/')[0]}</button>`;
-        }
-    );
+    // Helper to escape HTML entities in text content (but preserve HTML tags)
+    const escapeHtmlEntities = (str) => {
+      const htmlTagPlaceholders = [];
+      let placeholderIndex = 0;
+      const protectedText = str.replace(/<[^>]+>/g, (match) => {
+        const placeholder = `{{HTML_TAG_${placeholderIndex}}}`;
+        htmlTagPlaceholders[placeholderIndex] = match;
+        placeholderIndex++;
+        return placeholder;
+      });
 
-    // Handle markdown formatting
-    formattedText = formattedText
-        .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>')
-        .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
-        .replace(/^##\s*(.*)$/gm, '<h2>$1</h2>')
-        .replace(/^#\s*(.*)$/gm, '<h1>$1</h1>');
+      let escaped = protectedText
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 
-    // Handle lists - numbered and bullet points
-    formattedText = formattedText
-        .split('\n')
-        .map(line => {
-            // Handle numbered lists
-            if (/^\d+\.\s/.test(line)) {
-                return line.replace(/^\d+\.\s+(.*)$/, '<li>$1</li>');
-            }
-            // Handle bullet points
-            if (/^[-*+]\s/.test(line)) {
-                return line.replace(/^[-*+]\s+(.*)$/, '<li>$1</li>');
-            }
-            return line;
-        })
-        .join('\n');
+      htmlTagPlaceholders.forEach((tag, idx) => {
+        escaped = escaped.replace(`{{HTML_TAG_${idx}}}`, tag);
+      });
 
-    // Wrap consecutive list items in appropriate list tags
-    formattedText = formattedText
-        .replace(/(<li>.*?<\/li>(\s*<li>.*?<\/li>)*)/gs, (match) => {
-            if (match.startsWith('<li>1.')) {
-                return `<ol>${match}</ol>`;
-            }
-            return `<ul>${match}</ul>`;
+      return escaped;
+    };
+
+    // Step 1: Protect code blocks first
+    formattedText = formattedText.replace(/```([\s\S]*?)```/g, (match, code) => {
+      const placeholder = `{{CODE_BLOCK_${blockIndex}}}`;
+      protectedBlocks.push({
+        type: 'CODE_BLOCK',
+        placeholder: placeholder,
+        content: `<pre><code>${escapeHtmlEntities(code.trim())}</code></pre>`
+      });
+      blockIndex++;
+      return placeholder;
+    });
+
+    formattedText = formattedText.replace(/`([^`\n]+)`/g, (match, code) => {
+      const placeholder = `{{INLINE_CODE_${blockIndex}}}`;
+      protectedBlocks.push({
+        type: 'INLINE_CODE',
+        placeholder: placeholder,
+        content: `<code>${escapeHtmlEntities(code)}</code>`
+      });
+      blockIndex++;
+      return placeholder;
+    });
+
+    // Step 2: Protect existing HTML links
+    formattedText = formattedText.replace(/<a\s*[^>]*>[\s\S]*?<\/a>/gi, (match) => {
+      const placeholder = `{{HTML_LINK_${blockIndex}}}`;
+      
+      // Ensure target="_blank" and rel="noopener noreferrer" are present
+      let finalLink = match;
+      
+      // Add or update target="_blank"
+      if (!/target\s*=/i.test(finalLink)) {
+        finalLink = finalLink.replace(/<a\s*([^>]*)>/i, '<a $1 target="_blank">');
+      } else {
+        finalLink = finalLink.replace(/target\s*=\s*["'][^"']*["']/gi, 'target="_blank"');
+      }
+      
+      // Add or update rel="noopener noreferrer"
+      if (!/rel\s*=/i.test(finalLink)) {
+        finalLink = finalLink.replace(/<a\s*([^>]*)>/i, '<a $1 rel="noopener noreferrer">');
+      } else {
+        finalLink = finalLink.replace(/rel\s*=\s*["'][^"']*["']/gi, 'rel="noopener noreferrer"');
+      }
+      
+      // Add or update style for blue color and underline
+      if (!/style\s*=/i.test(finalLink)) {
+        finalLink = finalLink.replace(/<a\s*([^>]*)>/i, '<a $1 style="color: #1976d2; text-decoration: underline;">');
+      } else {
+        // Update existing style to ensure blue and underline
+        finalLink = finalLink.replace(/style\s*=\s*["']([^"']*)["']/gi, (match, existingStyle) => {
+          // Remove existing color and text-decoration if present, then add our styles
+          let newStyle = existingStyle
+            .replace(/color\s*:\s*[^;]+;?/gi, '')
+            .replace(/text-decoration\s*:\s*[^;]+;?/gi, '')
+            .trim();
+          if (newStyle && !newStyle.endsWith(';')) {
+            newStyle += '; ';
+          }
+          return `style="${newStyle}color: #1976d2; text-decoration: underline;"`;
         });
+      }
+      
+      protectedBlocks.push({
+        type: 'HTML_LINK',
+        placeholder: placeholder,
+        content: finalLink
+      });
+      blockIndex++;
+      return placeholder;
+    });
 
-    // Handle code blocks
+    // Step 3: Process markdown headers
     formattedText = formattedText
-        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-        .replace(/`([^`]+)`/g, '<code>$1</code>');
+      .replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
+      .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
+      .replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
 
-    // Wrap remaining text in paragraphs, but avoid wrapping existing HTML
-    formattedText = formattedText
-        .split('\n\n')
-        .map(block => {
-            if (
-                !block.trim() ||
-                block.trim().startsWith('<') ||
-                block.trim().endsWith('>')
-            ) {
-                return block;
-            }
-            return `<p>${block.trim()}</p>`;
-        })
-        .join('\n');
+    // Step 4: Process blockquotes
+    formattedText = formattedText.replace(/^>\s+(.+)$/gm, '<blockquote>$1</blockquote>');
 
-    // Clean up
+    // Step 5: Process markdown formatting
+    formattedText = formattedText.replace(/(\*\*|__)(.+?)\1/g, '<strong>$2</strong>');
+    formattedText = formattedText.replace(/~~(.+?)~~/g, '<del>$1</del>');
+    formattedText = formattedText.replace(/\b\*([^*\n]+?)\*\b/g, '<em>$1</em>');
+    formattedText = formattedText.replace(/\b_([^_\n]+?)_\b/g, '<em>$1</em>');
+
+    // Step 6: Convert plain URLs to clickable links (skip if in protected placeholders or HTML)
+    formattedText = formattedText.replace(/(https?:\/\/[^\s<>"']+)/g, (match, offset, string) => {
+      // Skip if inside protected placeholder
+      const context = string.substring(Math.max(0, offset - 20), offset + match.length + 20);
+      if (context.includes('{{') && context.includes('}}')) {
+        return match;
+      }
+
+      // Skip if inside HTML tag
+      const before = string.substring(0, offset);
+      const lastOpenTag = before.lastIndexOf('<');
+      const lastCloseTag = before.lastIndexOf('>');
+      if (lastOpenTag > lastCloseTag) {
+        return match;
+      }
+
+      // Skip if already in href attribute
+      if (/href\s*=\s*["']/.test(context) || /=\s*["']?\s*https?:\/\//.test(context)) {
+        return match;
+      }
+
+      const displayUrl = match.replace(/^https?:\/\//, '').split('/')[0];
+      return `<a href="${match}" target="_blank" rel="noopener noreferrer" style="color: #1976d2; text-decoration: underline;">${displayUrl}</a>`;
+    });
+
+    // Step 7: Handle lists
+    const lines = formattedText.split('\n');
+    const processedLines = [];
+    let inList = false;
+    let listType = null;
+    let listItems = [];
+
+    const flushList = () => {
+      if (listItems.length > 0) {
+        const listTag = listType === 'ol' ? '<ol>' : '<ul>';
+        processedLines.push(listTag + listItems.join('') + (listType === 'ol' ? '</ol>' : '</ul>'));
+        listItems = [];
+      }
+      inList = false;
+      listType = null;
+    };
+
+    lines.forEach((line) => {
+      const trimmedLine = line.trim();
+      const numberedMatch = trimmedLine.match(/^(\d+)\.\s+(.+)$/);
+      const bulletMatch = trimmedLine.match(/^[-*+]\s+(.+)$/);
+
+      if (numberedMatch) {
+        if (!inList || listType !== 'ol') {
+          flushList();
+          inList = true;
+          listType = 'ol';
+        }
+        listItems.push(`<li>${numberedMatch[2]}</li>`);
+        return;
+      }
+
+      if (bulletMatch) {
+        if (!inList || listType !== 'ul') {
+          flushList();
+          inList = true;
+          listType = 'ul';
+        }
+        listItems.push(`<li>${bulletMatch[1]}</li>`);
+        return;
+      }
+
+      flushList();
+      if (trimmedLine) {
+        processedLines.push(line);
+      } else {
+        processedLines.push('');
+      }
+    });
+
+    flushList();
+    formattedText = processedLines.join('\n');
+
+    // Step 8: Handle tables
+    formattedText = formattedText.replace(/\|(.+)\|\n\|[-\s|]+\|\n((?:\|.+\|\n?)+)/g, (match, header, rows) => {
+      const headerCells = header.split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
+      const rowLines = rows.trim().split('\n');
+      const tableRows = rowLines.map(row => {
+        const cells = row.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
+        return `<tr>${cells}</tr>`;
+      }).join('');
+      return `<table style="border-collapse: collapse; width: 100%; margin: 1em 0;"><thead><tr>${headerCells}</tr></thead><tbody>${tableRows}</tbody></table>`;
+    });
+
+    // Step 9: Restore protected blocks BEFORE paragraph wrapping
+    for (let i = protectedBlocks.length - 1; i >= 0; i--) {
+      const block = protectedBlocks[i];
+      const escapedPlaceholder = block.placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      formattedText = formattedText.replace(new RegExp(escapedPlaceholder, 'g'), block.content);
+    }
+
+    // Step 10: Convert line breaks and wrap in paragraphs
+    const blocks = formattedText.split(/\n\n+/);
+    const processedBlocks = blocks.map((block) => {
+      const trimmed = block.trim();
+      if (!trimmed) return '';
+
+      if (trimmed.match(/^<(h[1-6]|p|div|ul|ol|blockquote|pre|table|a)/i)) {
+        return trimmed.replace(/\n/g, '<br>');
+      }
+
+      const withBreaks = trimmed.replace(/\n/g, '<br>');
+      return `<p>${withBreaks}</p>`;
+    });
+
+    formattedText = processedBlocks.filter(b => b).join('\n');
+
+    // Step 11: Clean up and ensure all links have target="_blank", rel, and styling
+    // Final pass to ensure any remaining links have target="_blank", rel="noopener noreferrer", and blue underlined style
+    formattedText = formattedText.replace(/<a\s+([^>]*?)>/gi, (match, attributes) => {
+      let newAttributes = attributes;
+      
+      // Add or update target="_blank"
+      if (!/target\s*=/i.test(newAttributes)) {
+        newAttributes += ' target="_blank"';
+      } else {
+        newAttributes = newAttributes.replace(/target\s*=\s*["'][^"']*["']/gi, 'target="_blank"');
+      }
+      
+      // Add or update rel="noopener noreferrer"
+      if (!/rel\s*=/i.test(newAttributes)) {
+        newAttributes += ' rel="noopener noreferrer"';
+      } else {
+        newAttributes = newAttributes.replace(/rel\s*=\s*["'][^"']*["']/gi, 'rel="noopener noreferrer"');
+      }
+      
+      // Add or update style for blue color and underline
+      if (!/style\s*=/i.test(newAttributes)) {
+        newAttributes += ' style="color: #1976d2; text-decoration: underline;"';
+      } else {
+        // Update existing style to ensure blue and underline
+        newAttributes = newAttributes.replace(/style\s*=\s*["']([^"']*)["']/gi, (styleMatch, existingStyle) => {
+          // Remove existing color and text-decoration if present, then add our styles
+          let newStyle = existingStyle
+            .replace(/color\s*:\s*[^;]+;?/gi, '')
+            .replace(/text-decoration\s*:\s*[^;]+;?/gi, '')
+            .trim();
+          if (newStyle && !newStyle.endsWith(';')) {
+            newStyle += '; ';
+          }
+          return `style="${newStyle}color: #1976d2; text-decoration: underline;"`;
+        });
+      }
+      
+      return `<a ${newAttributes.trim()}>`;
+    });
+
     formattedText = formattedText
-        .replace(/<p>\s*<\/p>/g, '')
-        .replace(/\n+/g, '\n')
-        .trim();
+      .replace(/<p>\s*<\/p>/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/(<\/[^>]+>)\s*(<[^/])/g, '$1\n$2')
+      .trim();
 
     return formattedText;
-};
+  };
 
   
 
@@ -143,11 +344,13 @@ const ContactUs = () => {
     setIsLoading(true);
     try {
       setChatMessages((prev) => [...prev, { text: '...', sender: 'bot', isLoading: true }]);
+      console.log(message, 'tododod111111');
       
       const response = await axiosWithAuth.post(`${backendUrl}/api/google-vertex/chat`, { message });
       
       setChatMessages((prev) => prev.filter(msg => !msg.isLoading));
-      setChatMessages((prev) => [...prev, { text: formatResponseText(response.data.message.parts[0].text), sender: 'bot' }]);
+      // Store raw text, format only when displaying
+      setChatMessages((prev) => [...prev, { text: response.data.message.parts[0].text, sender: 'bot' }]);
     } catch (error) {
       setChatMessages((prev) => prev.filter(msg => !msg.isLoading));
       setChatMessages((prev) => [...prev, { text: 'Error: Unable to get response. It may be due to the server being down or make sure you have logged in.', sender: 'bot' }]);
@@ -523,7 +726,7 @@ const ContactUs = () => {
                           </div>
                         </Box>
                       ) : (
-                        <div dangerouslySetInnerHTML={{ __html: formatResponseText(msg.text) }} />
+                        <div dangerouslySetInnerHTML={{ __html: msg.sender === 'bot' ? formatResponseText(msg.text) : msg.text }} />
                       )}
                     </Box>
                   </Box>
