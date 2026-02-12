@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
-import { Stack } from '@mui/material';
+import { Stack, FormControlLabel } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
@@ -13,8 +13,7 @@ import Divider from '@mui/material/Divider';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-
-
+const OTHER_OPTION_ID = 'other';
 
 const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext, onSetLoading }) => {
   const [formData, setFormData] = React.useState({
@@ -27,7 +26,8 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
 
     ],
     selectedValue: [],
-    formType: 'SingleCheckForm'
+    formType: 'SingleCheckForm',
+    hasOtherOption: false
   });
 
   const [debouncedValue, setDebouncedValue] = React.useState('');
@@ -111,18 +111,45 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
   }
 
   const handleCheckboxChange = (id) => {
-    const newOptions = formData.options.map((option, idx) => {
+    formData.options.forEach((option, idx) => {
       if (option.id === id) {
         if (formData.selectedValue.map((item) => item.id).includes(option.id)) {
           const newSelectedValue = formData.selectedValue.filter((item) => item.id !== option.id);
-          console.log(newSelectedValue, 'newSelectedValue in checkbox');
-          setFormData({ ...formData, selectedValue: newSelectedValue })
+          setFormData({ ...formData, selectedValue: newSelectedValue });
         } else {
-          setFormData({ ...formData, selectedValue: [...formData.selectedValue, { ...option, question: formData.question, answer: option.value, index: idx + 1 }] })
-
+          setFormData({ ...formData, selectedValue: [...formData.selectedValue, { ...option, question: formData.question, answer: option.value, index: idx + 1 }] });
         }
       }
-    })
+    });
+  };
+
+  const isOtherSelected = formData.selectedValue.some((item) => item.id === OTHER_OPTION_ID || item.value === '__OTHER__');
+  const otherSelectedEntry = formData.selectedValue.find((item) => item.id === OTHER_OPTION_ID || item.value === '__OTHER__');
+
+  const handleOtherCheckboxChange = () => {
+    if (isOtherSelected) {
+      setFormData((prev) => ({
+        ...prev,
+        selectedValue: prev.selectedValue.filter((item) => item.id !== OTHER_OPTION_ID && item.value !== '__OTHER__')
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        selectedValue: [...prev.selectedValue, { id: OTHER_OPTION_ID, question: prev.question, answer: '', value: '__OTHER__', index: 'other' }]
+      }));
+    }
+  };
+
+  const handleOtherInputChange = (e) => {
+    const newAnswer = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      selectedValue: prev.selectedValue.map((item) =>
+        item.id === OTHER_OPTION_ID || item.value === '__OTHER__'
+          ? { ...item, answer: newAnswer, value: '__OTHER__' }
+          : item
+      )
+    }));
   };
 
   const handleMandateForm = () => {
@@ -150,12 +177,13 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
     if (options) {
       setFormData(data);
     } else {
-      setFormData({ 
-        ...formData, 
+      setFormData((prev) => ({
+        ...prev,
         id,
-        quilText: data?.quilText || '',
-        question: data?.question || ''
-      });
+        quilText: data?.quilText ?? prev.quilText,
+        question: data?.question ?? prev.question,
+        hasOtherOption: data?.hasOtherOption ?? prev.hasOtherOption
+      }));
     }
   }, [data]);
 
@@ -326,16 +354,64 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
                 </Stack>
               )
             })}
+            {formData.hasOtherOption && (
+              <Stack direction="row" spacing={2}>
+                <Checkbox
+                  disabled={disableForm}
+                  checked={isOtherSelected}
+                  onChange={handleOtherCheckboxChange}
+                />
+                <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                  <span style={{ fontSize: '0.9rem', marginBottom: '4px' }}>Other</span>
+                  {isOtherSelected && (
+                    <TextField
+                      fullWidth
+                      multiline
+                      id="standard-other"
+                      placeholder="Please specify"
+                      variant="standard"
+                      value={otherSelectedEntry?.answer || ''}
+                      onChange={handleOtherInputChange}
+                      disabled={disableForm}
+                    />
+                  )}
+                </Box>
+              </Stack>
+            )}
              {!disableButtons && (
-              <Button
-                sx={{
-                  width: '70%',
-                }}
-                onClick={handleAddOptions}
-                variant='outlined'
-                color="primary"
-                size="small"
-              >Add new row</Button>
+              <>
+                <Button
+                  sx={{
+                    width: '70%',
+                  }}
+                  onClick={handleAddOptions}
+                  variant='outlined'
+                  color="primary"
+                  size="small"
+                >Add new row</Button>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.hasOtherOption}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setFormData((prev) => {
+                          const hadOther = prev.selectedValue.some((item) => item.id === OTHER_OPTION_ID || item.value === '__OTHER__');
+                          return {
+                            ...prev,
+                            hasOtherOption: checked,
+                            selectedValue: !checked && hadOther
+                              ? prev.selectedValue.filter((item) => item.id !== OTHER_OPTION_ID && item.value !== '__OTHER__')
+                              : prev.selectedValue
+                          };
+                        });
+                      }}
+                    />
+                  }
+                  label="Include 'Other' option"
+                  sx={{ mt: 1 }}
+                />
+              </>
             )}
 
           </Stack>

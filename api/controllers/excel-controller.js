@@ -104,13 +104,15 @@ const formTypeHandlers = {
     },
 
     SingleCheckForm: (headers, subHeaders, response, selected, userResponses) => {
+        const isOther = selected.value === '__OTHER__' || selected.id === 'other';
+        const subLabel = isOther ? 'Other' : (selected.rowQuestion ?? selected.answer ?? '');
         const matchingHeaderIndices = headers.reduce((indices, header, index) => {
             if (header === response.question) indices.push(index);
             return indices;
         }, []);
 
         for (const headerIndex of matchingHeaderIndices) {
-            if (subHeaders[headerIndex].includes(selected.rowQuestion)) {
+            if (subHeaders[headerIndex] === subLabel || (!isOther && subHeaders[headerIndex].includes(subLabel))) {
                 userResponses[headerIndex - 4] = selected.answer;
                 break;
             }
@@ -118,9 +120,17 @@ const formTypeHandlers = {
     },
 
     SinglePointForm: (headers, subHeaders, response, selected, userResponses) => {
-        const headerIndex = headers.indexOf(response.question);
-        if (headerIndex !== -1) {
-            userResponses[headerIndex - 4] = selected.answer;
+        const isOther = selected.value === '__OTHER__';
+        const subLabel = isOther ? 'Other' : (selected.answer || '');
+        const matchingHeaderIndices = headers.reduce((indices, header, index) => {
+            if (header === response.question) indices.push(index);
+            return indices;
+        }, []);
+        for (const headerIndex of matchingHeaderIndices) {
+            if (subHeaders[headerIndex] === subLabel) {
+                userResponses[headerIndex - 4] = selected.answer;
+                break;
+            }
         }
     },
 

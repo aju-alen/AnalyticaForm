@@ -2,7 +2,7 @@ import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'rea
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import { Button, Stack, useTheme, useMediaQuery } from '@mui/material';
+import { Button, Stack, useTheme, useMediaQuery, Checkbox, FormControlLabel } from '@mui/material';
 import { TextField } from '@mui/material';
 import Radio from '@mui/material/Radio';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -10,6 +10,8 @@ import { uid } from 'uid';
 import Divider from '@mui/material/Divider';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+const OTHER_OPTION_ID = 'other';
 
 const SelectSingleRadio = forwardRef(({ onSaveForm, registerFormData, data, id, options, disableForm, disableText, disableButtons, onHandleNext, onSaveIndicator, onSetLoading }, ref) => {
   const [isBold, setIsBold] = useState(false);
@@ -23,7 +25,8 @@ const SelectSingleRadio = forwardRef(({ onSaveForm, registerFormData, data, id, 
       { id: uid(5), value: '' }
     ],
     selectedValue: [{ question: '', answer: '', value: '', index: '' }],
-    formType: 'SinglePointForm'
+    formType: 'SinglePointForm',
+    hasOtherOption: false
   });
 
   console.log(formData, 'formData in select single radio form');
@@ -135,12 +138,44 @@ const SelectSingleRadio = forwardRef(({ onSaveForm, registerFormData, data, id, 
   const handleRadioChange = (id) => {
     const newOptions = formData.options.map((option, idx) => {
       if (option.id === id) {
-
-        setFormData({ ...formData, selectedValue: [{ answer: option.value, question: formData.question, index: idx + 1 }] })
-
+        setFormData({ 
+          ...formData, 
+          selectedValue: [{ answer: option.value, question: formData.question, value: option.value, index: idx + 1 }] 
+        });
       }
-    })
-  }
+      return option;
+    });
+  };
+
+  const handleOtherRadioChange = () => {
+    setFormData((prev) => {
+      const isPreviouslyOther = prev.selectedValue && prev.selectedValue[0] && prev.selectedValue[0].value === '__OTHER__';
+      const previousAnswer = isPreviouslyOther ? prev.selectedValue[0].answer : '';
+
+      return {
+        ...prev,
+        selectedValue: [{
+          question: prev.question,
+          answer: previousAnswer,
+          value: '__OTHER__',
+          index: OTHER_OPTION_ID
+        }]
+      };
+    });
+  };
+
+  const handleOtherInputChange = (e) => {
+    const newAnswer = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      selectedValue: [{
+        question: prev.question,
+        answer: newAnswer,
+        value: '__OTHER__',
+        index: OTHER_OPTION_ID
+      }]
+    }));
+  };
 
   const handleBoldToggle = (id) => {
     const newBoldFields = new Set(boldFields);
@@ -161,7 +196,8 @@ const SelectSingleRadio = forwardRef(({ onSaveForm, registerFormData, data, id, 
         ...prev,
         id,
         quilText: data?.quilText ?? prev.quilText,
-        question: data?.question ?? prev.question
+        question: data?.question ?? prev.question,
+        hasOtherOption: data?.hasOtherOption ?? prev.hasOtherOption
       }));
     }
   }, [data]);
@@ -267,7 +303,7 @@ const SelectSingleRadio = forwardRef(({ onSaveForm, registerFormData, data, id, 
              <Radio
                disabled={disableForm}
                onChange={() => handleRadioChange(option.id)}
-               checked={formData.selectedValue[0].answer === option.value} 
+               checked={formData.selectedValue[0].value === option.value} 
                />
                <Box
                sx={{
@@ -342,17 +378,65 @@ const SelectSingleRadio = forwardRef(({ onSaveForm, registerFormData, data, id, 
            </Stack>
             ))
             }
+            {formData.hasOtherOption && (
+              <Stack direction="row" spacing={2}>
+                <Radio
+                  disabled={disableForm}
+                  onChange={handleOtherRadioChange}
+                  checked={formData.selectedValue[0].value === '__OTHER__'}
+                />
+                <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                  <span style={{ fontSize: '0.9rem', marginBottom: '4px' }}>Other</span>
+                  {formData.selectedValue[0].value === '__OTHER__' && (
+                    <TextField
+                      fullWidth
+                      multiline
+                      id="standard-other"
+                      placeholder="Please specify"
+                      variant="standard"
+                      value={formData.selectedValue[0].answer || ''}
+                      onChange={handleOtherInputChange}
+                      disabled={disableForm}
+                    />
+                  )}
+                </Box>
+              </Stack>
+            )}
             {!disableButtons && (
-              <Button
-                sx={{
-                  width: { xs: '100%', sm: '30%' },
-                  mt: { xs: 1, sm: 2 }
-                }}
-                onClick={handleAddOptions}
-                variant='outlined'
-                color="primary"
-                size="small"
-              >Add new row</Button>
+              <>
+                <Button
+                  sx={{
+                    width: { xs: '100%', sm: '30%' },
+                    mt: { xs: 1, sm: 2 }
+                  }}
+                  onClick={handleAddOptions}
+                  variant='outlined'
+                  color="primary"
+                  size="small"
+                >Add new row</Button>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.hasOtherOption}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setFormData((prev) => {
+                          const isOtherSelected = prev.selectedValue && prev.selectedValue[0] && prev.selectedValue[0].value === '__OTHER__';
+                          return {
+                            ...prev,
+                            hasOtherOption: checked,
+                            selectedValue: !checked && isOtherSelected
+                              ? [{ question: prev.question, answer: '', value: '', index: '' }]
+                              : prev.selectedValue
+                          };
+                        });
+                      }}
+                    />
+                  }
+                  label="Include 'Other' option"
+                  sx={{ mt: 1 }}
+                />
+              </>
             )}
           </Stack>
           <Stack 

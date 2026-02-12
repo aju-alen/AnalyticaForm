@@ -402,6 +402,22 @@ const UserSubmitSurvey = () => {
                     return null;
                 }
 
+                else if (form.formType === "SinglePointForm") {
+                    const optionValues = (form.options || []).map(opt => opt.value);
+                    const withOther = form.hasOtherOption ? [...optionValues, 'Other'] : optionValues;
+                    return {
+                        [form.subheading ? form.subheading : form.question]: withOther.length ? withOther : ['']
+                    };
+                }
+
+                else if (form.formType === "SingleCheckForm") {
+                    const optionLabels = (form.options || []).map(opt => opt.rowQuestion ?? opt.value);
+                    const withOther = form.hasOtherOption ? [...optionLabels, 'Other'] : optionLabels;
+                    return {
+                        [form.subheading ? form.subheading : form.question]: withOther.length ? withOther : ['']
+                    };
+                }
+
                 else if (form.formType !== "MultiScaleCheckBox") {
 
                     return {
