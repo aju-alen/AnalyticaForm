@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -11,7 +11,7 @@ import Divider from '@mui/material/Divider';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext, onSaveIndicator, onSetLoading }) => {
+const SelectSingleRadio = forwardRef(({ onSaveForm, registerFormData, data, id, options, disableForm, disableText, disableButtons, onHandleNext, onSaveIndicator, onSetLoading }, ref) => {
   const [isBold, setIsBold] = useState(false);
   const [formData, setFormData] = useState({
     id: id,
@@ -97,6 +97,16 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     };
   }, [formData]);
 
+  // Keep parent ref updated with latest formData so submit has current data even before debounce fires.
+  useEffect(() => {
+    registerFormData?.(id, formData);
+  }, [id, formData, registerFormData]);
+
+  // Expose current formData for synchronous read at submit time (fixes first form losing options when multiple forms).
+  useImperativeHandle(ref, () => ({
+    getFormData: () => formData
+  }), [formData]);
+
   const handleAddOptions = () => {
     setFormData({
       ...formData,
@@ -142,17 +152,17 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
     setBoldFields(newBoldFields);
   };
 
-  // Update the useEffect for data initialization
+  // Update the useEffect for data initialization. Use functional updates when merging so we never overwrite options with stale state.
   useEffect(() => {
-    if (options) {
+    if (options && Array.isArray(options) && options.length > 0) {
       setFormData(data);
     } else {
-      setFormData({ 
-        ...formData, 
+      setFormData((prev) => ({
+        ...prev,
         id,
-        quilText: data?.quilText || '',
-        question: data?.question || ''
-      });
+        quilText: data?.quilText ?? prev.quilText,
+        question: data?.question ?? prev.question
+      }));
     }
   }, [data]);
 
@@ -373,7 +383,9 @@ const SelectSingleRadio = ({ onSaveForm, data, id, options, disableForm, disable
       </React.Fragment>
 
   )
-}
+});
+
+SelectSingleRadio.displayName = 'SelectSingleRadio';
 
 export default SelectSingleRadio
 

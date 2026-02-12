@@ -93,6 +93,11 @@ const CreateNewSurvey = () => {
     targetCountry: 'NIL'
   });
 
+  // Ref holding the latest form data from each form component (by form id).
+  const formDataRefs = useRef({});
+  // Refs to form component instances that expose getFormData() for synchronous read at submit (fixes first form losing options).
+  const formInstanceRefs = useRef({});
+
   console.log(surveyData, 'surveyData in CreateNewSurvey-------------------');
   
 
@@ -138,6 +143,8 @@ const CreateNewSurvey = () => {
   }, [frontendUrl, surveyId]);
 
   const handleDeleteSelectOneForm = React.useCallback((id) => {
+    delete formDataRefs.current[id];
+    delete formInstanceRefs.current[id];
     setSurveyData(prevData => ({
       ...prevData,
       surveyForms: prevData.surveyForms.filter(form => form.id !== id)
@@ -162,6 +169,11 @@ const CreateNewSurvey = () => {
         surveyForms: [...prevSurveyData.surveyForms, formData]
       };
     });
+  }, []);
+
+  // Form components call this whenever their formData changes so we always have the latest for submit.
+  const registerFormData = React.useCallback((formId, formData) => {
+    formDataRefs.current[formId] = formData;
   }, []);
 
   // Memoize the form items rendering to prevent unnecessary re-renders
@@ -332,10 +344,15 @@ const CreateNewSurvey = () => {
 
   const handleSubmitForm = async () => {
     try {
-      // handleSaveSinglePointForm();
       await refreshToken();
-      console.log(surveyData, 'surveyData in Create Survey Form');
-      const updateSurveyData = await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, surveyData);
+      // Prefer synchronous getFormData() from form ref so first form (and others) never lose options; fallback to ref then state.
+      const surveyFormsToSubmit = surveyData.surveyForms.map((form) => {
+        const fromInstance = formInstanceRefs.current[form.id]?.getFormData?.();
+        return fromInstance ?? formDataRefs.current[form.id] ?? form;
+      });
+      const payload = { ...surveyData, surveyForms: surveyFormsToSubmit };
+      console.log(payload, 'surveyData in Create Survey Form');
+      const updateSurveyData = await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
       navigate('/dashboard');
     }
     catch (err) {
@@ -595,7 +612,9 @@ const CreateNewSurvey = () => {
                   }}
                 >
                   <FormComponent
+                    ref={item.formType === 'SinglePointForm' ? (el) => { if (el) formInstanceRefs.current[item.id] = el; else delete formInstanceRefs.current[item.id]; } : undefined}
                     onSaveForm={handleSaveSinglePointForm}
+                    registerFormData={registerFormData}
                     data={item}
                     id={item.id}
                     options={item.options}
