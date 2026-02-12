@@ -161,26 +161,28 @@ const IntroductionForm = ({ onSaveForm, data, id, options, disableForm, disableT
                 <label style={{
                   fontSize: '0.75rem',
                   color: 'rgba(0, 0, 0, 0.6)',
-                  marginBottom: '8px',
-                  display: 'block'
+                  marginBottom: '16px',
+                  display: 'block',
                 }}>
                   Insert Survey Introduction *
                 </label>
               )}
-              <ReactQuill
-                theme="snow"
-                value={formData.quilText}
-                onChange={handleQuillChange}
-                readOnly={disableText}
-                modules={modules}
-                formats={formats}
-                className="ql-container ql-snow"
-                style={{
-                  width: '100%',
-                  border: '0px solid rgba(0, 0, 0, 0.23)',
-                  borderRadius: '4px',
-                }}
-              />
+              <div style={{ marginTop: '20px' }}>
+                <ReactQuill
+                  theme="snow"
+                  value={formData.quilText}
+                  onChange={handleQuillChange}
+                  readOnly={disableText}
+                  modules={modules}
+                  formats={formats}
+                  className="ql-container ql-snow"
+                  style={{
+                    width: '100%',
+                    border: '0px solid rgba(0, 0, 0, 0.23)',
+                    borderRadius: '4px',
+                  }}
+                />
+              </div>
               <Divider />
             </div>
           </Box>

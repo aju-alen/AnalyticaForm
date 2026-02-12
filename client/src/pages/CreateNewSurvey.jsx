@@ -548,14 +548,15 @@ const CreateNewSurvey = () => {
   </Box>
   
 )}
- {isSuperAdmin &&  <FormControl fullWidth sx={{ mt: 2 }}>
-              <InputLabel id="country-select-label">Select Target Country</InputLabel>
+ {isSuperAdmin &&  <FormControl fullWidth sx={{ mt: 3, mb: 3 }}>
+ <InputLabel id="country-select-label" sx={{ mb: 2 }}>Select Target Country</InputLabel>
               <Select
                 labelId="country-select-label"
                 id="country-select"
                 value={country}
                 label="Country"
                 onChange={handleCountryChange}
+                sx={{ mt: 1.5, mb: 0 }}
               >
                 <MenuItem value="NIL">--- None ---</MenuItem>
                 <MenuItem value="AE">United Arab Emirates</MenuItem>
