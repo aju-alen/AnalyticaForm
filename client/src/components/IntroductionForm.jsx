@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import TextField from '@mui/material/TextField';
-import { Button, Stack } from '@mui/material';
-import Radio from '@mui/material/Radio';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { Button, Stack, useTheme, useMediaQuery } from '@mui/material';
+import Divider from '@mui/material/Divider';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { uid } from 'uid';
 
 
@@ -17,16 +17,50 @@ const IntroductionForm = ({ onSaveForm, data, id, options, disableForm, disableT
   const [formData, setFormData] = useState({
     id: id,
     question: '',
+    quilText: '',
     options: [
       { id: uid(5), value: '' },
       { id: uid(5), value: '' }
-
     ],
     selectedValue: [{ question: '', answer: '', value: '', index: '' }],
     formType: 'IntroductionForm'
   });
 
   const [debouncedValue, setDebouncedValue] = useState('');
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const toolbarSetting = disableText ? false : {
+    container: isMobile && !disableText ? [
+      ['bold', 'italic', 'underline'],
+      ['clean']
+    ] : [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['clean']
+    ]
+  };
+  const modules = {
+    toolbar: toolbarSetting,
+    clipboard: { matchVisual: false }
+  };
+  const formats = ['bold', 'italic', 'underline', 'strike'];
+
+  const cleanHTMLContent = (htmlString) => {
+    if (!htmlString) return '';
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+    let cleanText = tempDiv.textContent || tempDiv.innerText || '';
+    cleanText = cleanText.replace(/\s+/g, ' ').trim();
+    return cleanText;
+  };
+
+  const handleQuillChange = (content) => {
+    setFormData({
+      ...formData,
+      quilText: content,
+      question: cleanHTMLContent(content)
+    });
+  };
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -56,14 +90,17 @@ const IntroductionForm = ({ onSaveForm, data, id, options, disableForm, disableT
 
 
   useEffect(() => {
-    // console.log(data,'data in select one choice form');
-    if (options) {
-      setFormData(data)
+    if (options && Array.isArray(options) && options.length > 0) {
+      setFormData(data);
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        id,
+        quilText: data?.quilText ?? prev.quilText,
+        question: data?.question ?? prev.question
+      }));
     }
-    else {
-      setFormData({ ...formData, id })
-    }
-  }, [data])
+  }, [data]);
   // console.log(id,'id in select one choice form');
   console.log(formData, 'formData in select one choice form');
   return (
@@ -110,24 +147,43 @@ const IntroductionForm = ({ onSaveForm, data, id, options, disableForm, disableT
     backgroundColor:'#F4FFF8',
   },
 }}>
-          <TextField fullWidth multiline id="standard-basic" label={!disableText ? "Insert Survey Introduction" : ''} variant='standard' size='small' required name='question' value={formData.question} 
-            sx={{
-              '& .MuiInputBase-root': {
-                fontWeight: isBold? 'bold' : 'normal',
-              },
-              width: disableButtons ? {xs:'100%',md:'80%' } : '100%', 
-            }}
-            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-
-            InputProps={{
-              readOnly: disableText,
-            }}
-          />
-          {/* <Button 
-          onClick={() => setIsBold(!isBold)}
-          >
-            Bold
-          </Button> */}
+          <Box sx={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            '&:hover .format-button': {
+              visibility: 'visible',
+            },
+          }}>
+            <div style={{ marginBottom: '20px', width: '100%' }}>
+              {!disableText && (
+                <label style={{
+                  fontSize: '0.75rem',
+                  color: 'rgba(0, 0, 0, 0.6)',
+                  marginBottom: '8px',
+                  display: 'block'
+                }}>
+                  Insert Survey Introduction *
+                </label>
+              )}
+              <ReactQuill
+                theme="snow"
+                value={formData.quilText}
+                onChange={handleQuillChange}
+                readOnly={disableText}
+                modules={modules}
+                formats={formats}
+                className="ql-container ql-snow"
+                style={{
+                  width: '100%',
+                  border: '0px solid rgba(0, 0, 0, 0.23)',
+                  borderRadius: '4px',
+                }}
+              />
+              <Divider />
+            </div>
+          </Box>
 
        
           <Stack spacing={5} direction='row' sx={{
