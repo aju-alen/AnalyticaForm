@@ -64,26 +64,69 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
+import Collapse from '@mui/material/Collapse';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Switch from '@mui/material/Switch';
+
+const DISPLAY_ONLY_FORM_TYPES = new Set(['IntroductionForm', 'PresentationTextForm', 'SectionHeadingForm', 'SectionSubHeadingForm']);
+
+const FORM_TYPE_LABELS = {
+  SinglePointForm: 'Single choice',
+  SingleCheckForm: 'Multiple choice',
+  IntroductionForm: 'Introduction',
+  MultiScalePoint: 'Multi scale (single)',
+  MultiScaleCheckBox: 'Multi scale (multiple)',
+  MultiSpreadsheet: 'Spreadsheet',
+  MapForm: 'Map',
+  SelectDropDownForm: 'Dropdown',
+  CommentBoxForm: 'Comment box',
+  SingleRowTextForm: 'Single row text',
+  EmailAddressForm: 'Email address',
+  ContactInformationForm: 'Contact information',
+  StarRatingForm: 'Star rating',
+  SmileyRatingForm: 'Smiley rating',
+  ThumbUpDownForm: 'Thumbs up/down',
+  SliderTextForm: 'Slider text',
+  NumericSliderForm: 'Numeric slider',
+  SelectOneImageForm: 'Select one image',
+  SelectMultipleImageForm: 'Select multiple images',
+  RankOrderForm: 'Rank order',
+  ConstantSumForm: 'Constant sum',
+  PickAndRankForm: 'Pick and rank',
+  PresentationTextForm: 'Presentation text',
+  SectionHeadingForm: 'Section heading',
+  SectionSubHeadingForm: 'Section subheading',
+  DateTimeForm: 'Date & time',
+  GoogleRecaptchaForm: 'reCAPTCHA',
+  CalenderForm: 'Calendar',
+  RankOrderImage: 'Rank order (images)',
+};
+
+const AUTO_SAVE_DELAY_MS = 1800;
 
 const CreateNewSurvey = () => {
-  const frontendUrl = import.meta.env.VITE_FRONTEND_URL
   const navigate = useNavigate();
   const { surveyId } = useParams();
 
   const [showInfo, setShowInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [addIntro, setAddIntro] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // drawer open close
-  const [selectedItems, setSelectedItems] = useState([]); // selected items 
-  const [isSaved, setIsSaved] = useState('Saved'); // saved or not
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [subscriptionEndDate, setSubscriptionEndDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const open = Boolean(anchorEl);
   const [country, setCountry] = useState('NIL');
-  console.log(country, 'country in CreateNewSurvey-------------------');
-  
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // off by default to avoid forms disappearing when adding many quickly
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
@@ -93,12 +136,12 @@ const CreateNewSurvey = () => {
     targetCountry: 'NIL'
   });
 
-  // Ref holding the latest form data from each form component (by form id).
   const formDataRefs = useRef({});
-  // Refs to form component instances that expose getFormData() for synchronous read at submit (fixes first form losing options).
   const formInstanceRefs = useRef({});
-
-  console.log(surveyData, 'surveyData in CreateNewSurvey-------------------');
+  const surveyDataRef = useRef(surveyData);
+  const autoSaveTimerRef = useRef(null);
+  const skipFirstAutoSaveRef = useRef(true);
+  const initialLoadDoneRef = useRef(false);
   
 
   // Memoize form components object to prevent recreation on each render
@@ -135,12 +178,8 @@ const CreateNewSurvey = () => {
 
   // Memoize handlers that don't need to change between renders
   const handleCopy = React.useCallback(() => {
-    navigator.clipboard.writeText(`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`).then(() => {
-      console.log('Text copied to clipboard');
-    }).catch(err => {
-      console.error('Could not copy text: ', err);
-    });
-  }, [frontendUrl, surveyId]);
+    navigator.clipboard.writeText(`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`).then(() => {}).catch(() => {});
+  }, [surveyId]);
 
   const handleDeleteSelectOneForm = React.useCallback((id) => {
     delete formDataRefs.current[id];
@@ -176,200 +215,175 @@ const CreateNewSurvey = () => {
     formDataRefs.current[formId] = formData;
   }, []);
 
-  // Memoize the form items rendering to prevent unnecessary re-renders
-  const selectItem = React.useMemo(() => {
-    return surveyData.surveyForms.map((item, index) => {
-      const FormComponent = formComponents[item.formType];
-    
-      if (!FormComponent) {
-        console.log('Unknown form type:', item.formType);
-        return null;
-      }
-    
-      return (
-        <Stack spacing={2} key={item.id} direction="row" position="relative">
-          <FormComponent
-            onSaveForm={handleSaveSinglePointForm}
-            data={item}
-            id={item.id}
-            options={item.options}
-            disableForm={true}
-            disableText={false}
-            disableButtons={false}
-            onHandleNext={() => 1}
-            onSetLoading={setLoading}
-          />
-          <Button
-            color="secondary"
-            size="large"
-            sx={{ position: 'absolute', right: {xs:10,md:30}, top: {xs:30,md:0} }}
-            onClick={() => handleDeleteSelectOneForm(item.id)}
-          >
-            <CancelIcon />
-          </Button>
-        </Stack>
-      );
-    });
-  }, [surveyData.surveyForms, formComponents, handleSaveSinglePointForm, handleDeleteSelectOneForm, setLoading]);
+  const handleSetFormMandate = React.useCallback((formId, checked) => {
+    setSurveyData(prev => ({
+      ...prev,
+      surveyForms: prev.surveyForms.map(f => (f.id === formId ? { ...f, formMandate: !!checked } : f)),
+    }));
+  }, []);
 
-  // Split the data fetching into a separate effect
+  const getQuestionPreview = React.useCallback((item) => {
+    if (item.question && String(item.question).trim() !== '') return item.question.trim();
+    if (item.quilText) {
+      const cleanText = item.quilText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      if (cleanText !== '') return cleanText;
+    }
+    return '(No question text)';
+  }, []);
+
+  // Keep ref in sync for auto-save
+  surveyDataRef.current = surveyData;
+
+  // Initial load: fetch survey and user/pro in parallel for faster load
   React.useEffect(() => {
     let mounted = true;
 
-    const getSurveyData = async () => {
+    const load = async () => {
       try {
         await refreshToken();
-        const getUserSurveyData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`);
-        
-        if (mounted) {
-          setSurveyData({
-            surveyTitle: getUserSurveyData.data.surveyTitle,
-            surveyForms: getUserSurveyData.data.surveyForms,
-            selectedItems: getUserSurveyData.data.selectedItems,
-            surveyIntroduction: getUserSurveyData.data.surveyIntroduction,
-            targetCountry: getUserSurveyData.data.targetCountry
-          });
-          setSelectedItems(getUserSurveyData.data.selectedItems);
-          setIsLoading(false);
-          setCountry(getUserSurveyData.data.targetCountry);
-        }
+        const userAccess = localStorage.getItem('dubaiAnalytica-userAccess');
+        const [surveyRes, proRes, superAdminRes] = await Promise.all([
+          axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`),
+          userAccess ? axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${JSON.parse(userAccess).id}`).catch(() => ({ data: null })) : Promise.resolve({ data: null }),
+          axiosWithAuth.get(`${backendUrl}/api/auth/get-user`).catch(() => ({ data: { isSuperAdmin: false } }))
+        ]);
+
+        if (!mounted) return;
+        const d = surveyRes.data;
+        setSurveyData({
+          surveyTitle: d.surveyTitle,
+          surveyForms: d.surveyForms ?? [],
+          selectedItems: d.selectedItems ?? [],
+          surveyIntroduction: d.surveyIntroduction ?? '',
+          targetCountry: d.targetCountry ?? 'NIL'
+        });
+        setSelectedItems(d.selectedItems ?? []);
+        setCountry(d.targetCountry ?? 'NIL');
+        setIsLoading(false);
+        initialLoadDoneRef.current = true;
+        setIsSuperAdmin(superAdminRes.data?.isSuperAdmin ?? false);
+        setSubscriptionEndDate(proRes.data == null ? 0 : (proRes.data.subscriptionPeriodEnd ?? 0));
       } catch (err) {
         if (err.response?.status === 401) {
           localStorage.removeItem('dubaiAnalytica-userAccess');
           navigate('/login');
+          return;
         }
-        console.error(err);
+        if (mounted) setIsLoading(false);
       }
     };
 
-    getSurveyData();
-
-    return () => {
-      mounted = false;
-    };
+    load();
+    return () => { mounted = false; };
   }, [surveyId, navigate]);
 
   useEffect(() => {
-    const handlePopState = () => {
-      setShowInfo(true);
-    };
-
+    const handlePopState = () => setShowInfo(true);
     window.addEventListener('popstate', handlePopState);
-
-    // Cleanup event listener on component unmount
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  useEffect(() => {
-    const getUserIsProMember = async () => {
-      const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
-      console.log(userId, 'userId in CreateNewSurvey');
-      
-
-      const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
-      const userIsSuperAdmin = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user`);
-      setIsSuperAdmin(userIsSuperAdmin.data.isSuperAdmin);
-      if(userProMember.data === null) {
-        setSubscriptionEndDate(0);
+  const saveDraft = React.useCallback(async () => {
+    if (!surveyId) return;
+    setSaveStatus('saving');
+    try {
+      await refreshToken();
+      const current = surveyDataRef.current;
+      const surveyFormsToSubmit = (current.surveyForms ?? []).map((form) => {
+        const fromInstance = formInstanceRefs.current[form.id]?.getFormData?.();
+        return fromInstance ?? formDataRefs.current[form.id] ?? form;
+      });
+      const payload = { ...current, surveyForms: surveyFormsToSubmit };
+      await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2000);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem('dubaiAnalytica-userAccess');
+        navigate('/login');
+        return;
       }
-      else{
-        setSubscriptionEndDate(userProMember?.data?.subscriptionPeriodEnd);
-
-      }
-      
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
     }
-    getUserIsProMember();
-  }, []);
+  }, [surveyId, navigate]);
 
-  console.log(subscriptionEndDate, 'subscriptionEndDate in CreateNewSurvey');
-  
+  React.useEffect(() => {
+    if (!autoSaveEnabled) return;
+    if (!initialLoadDoneRef.current) return;
+    if (skipFirstAutoSaveRef.current) {
+      skipFirstAutoSaveRef.current = false;
+      return;
+    }
+    autoSaveTimerRef.current = setTimeout(() => {
+      saveDraft();
+    }, AUTO_SAVE_DELAY_MS);
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+  }, [autoSaveEnabled, surveyData, saveDraft]);
 
   const handleClose = () => {
     setShowInfo(false);
     navigate(1); // Move forward in history, essentially canceling the back navigation
   };
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
+  const toggleDrawer = React.useCallback(() => {
+    setIsDrawerOpen(prev => !prev);
+  }, []);
 
-  const handleItemSelect = (item) => {
-    console.log(item, 'item in handleItemSelect');
-    console.log(selectedItems, 'selectedItems in handleItemSelect');
-    console.log(surveyData, 'surveyData in handleItemSelect');
-    if(item === 'IntroductionForm') {
-      setSelectedItems([item,...selectedItems]);
-      setSurveyData({ ...surveyData, surveyForms: [ { id: uid(5), formType: item },...surveyData.surveyForms] })
-
+  const handleItemSelect = React.useCallback((item) => {
+    if (item === 'IntroductionForm') {
+      setSelectedItems(prev => [item, ...prev]);
+      setSurveyData(prev => ({
+        ...prev,
+        surveyForms: [{ id: uid(5), formType: item }, ...prev.surveyForms]
+      }));
+    } else if (item === 'DropDownTemplateForm') {
+      setSurveyData(prev => ({ ...prev, surveyForms: dropDownTemplate }));
+    } else if (item === 'CheckBoxTemplateForm') {
+      setSurveyData(prev => ({ ...prev, surveyForms: checkBoxTemplate }));
+    } else {
+      setSelectedItems(prev => [...prev, item]);
+      setSurveyData(prev => ({
+        ...prev,
+        surveyForms: [...prev.surveyForms, { id: uid(5), formType: item }]
+      }));
     }
-    else if(item === 'DropDownTemplateForm'){
-      console.log('inside test componenenennen');
-      console.log(surveyData, 'surveyData in handleItemSelect-------jk---');
-      setSurveyData({
-        ...surveyData,surveyForms:dropDownTemplate
-      })
-    }
-    else if(item === 'CheckBoxTemplateForm'){
-      console.log('inside test componenenennen');
-      console.log(surveyData, 'surveyData in handleItemSelect-------jk---');
-      setSurveyData({
-        ...surveyData,surveyForms:checkBoxTemplate
-      })
-    }
-    else{
-      setSelectedItems([...selectedItems, item]);
-      setSurveyData({ ...surveyData, surveyForms: [...surveyData.surveyForms, { id: uid(5), formType: item }] })
+  }, []);
 
-    }
-  };
+  const handleFormChange = React.useCallback((e) => {
+    const { name, value } = e.target;
+    setSurveyData(prev => ({ ...prev, [name]: value }));
+  }, []);
 
-  const handleFormChange = (e) => {
-    setSurveyData({
-      ...surveyData,
-      [e.target.name]: e.target.value,
-    });
-  }
+  const handleSaveIntro = React.useCallback((formData) => {
+    setSurveyData(prev => ({ ...prev, surveyIntroduction: formData }));
+  }, []);
 
-  const handleSaveIntro = (formData) => {
-    console.log(formData, 'formData in the parent');
-    setSurveyData({ ...surveyData, surveyIntroduction: formData });
-  }
-
-  const handleDeleteIntro = () => {
-    setSurveyData({ ...surveyData, surveyIntroduction: '' });
+  const handleDeleteIntro = React.useCallback(() => {
+    setSurveyData(prev => ({ ...prev, surveyIntroduction: '' }));
     setAddIntro(false);
-  }
+  }, []);
 
-  const handleSubmitForm = async () => {
+  const handleSubmitForm = React.useCallback(async () => {
     try {
       await refreshToken();
-      // Prefer synchronous getFormData() from form ref so first form (and others) never lose options; fallback to ref then state.
-      const surveyFormsToSubmit = surveyData.surveyForms.map((form) => {
+      const current = surveyDataRef.current;
+      const surveyFormsToSubmit = (current.surveyForms ?? []).map((form) => {
         const fromInstance = formInstanceRefs.current[form.id]?.getFormData?.();
         return fromInstance ?? formDataRefs.current[form.id] ?? form;
       });
-      const payload = { ...surveyData, surveyForms: surveyFormsToSubmit };
-      console.log(payload, 'surveyData in Create Survey Form');
-      const updateSurveyData = await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
+      const payload = { ...current, surveyForms: surveyFormsToSubmit };
+      await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
       navigate('/dashboard');
-    }
-    catch (err) {
-      if (err.response.status === 401) {
-        console.log('unauthorized');
+    } catch (err) {
+      if (err.response?.status === 401) {
         localStorage.removeItem('dubaiAnalytica-userAccess');
         navigate('/login');
       }
-      else {
-        console.log(err);
-      }
     }
-
-  }
-
-  console.log(surveyData, 'surveyData in the parent');
-  // console.log(surveyData.surveyForms, 'surveyFormsssss in surveyData in the parent');
+  }, [surveyId, navigate]);
 
   const handleShare = React.useCallback((platform) => {
     const surveyUrl = `${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`;
@@ -395,18 +409,16 @@ const CreateNewSurvey = () => {
     }
   }, [surveyId, surveyData.surveyTitle]);
 
-  const handleClick = (event) => {
+  const handleClick = React.useCallback((event) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
+  const handleMenuClose = React.useCallback(() => setAnchorEl(null), []);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleCountryChange = (event) => {
-    setCountry(event.target.value);
-    setSurveyData(prevState => ({...prevState, targetCountry: event.target.value}))
-  };
+  const handleCountryChange = React.useCallback((event) => {
+    const v = event.target.value;
+    setCountry(v);
+    setSurveyData(prev => ({ ...prev, targetCountry: v }));
+  }, []);
 
   return (
     isLoading ? (
@@ -446,18 +458,86 @@ const CreateNewSurvey = () => {
                     Add Question
                   </Button>
                   
-                  <Button
-                    variant="contained"
-                    color="success"
-                    onClick={handleSubmitForm}
-                    disabled={loading}
-                    fullWidth={false}
-                    sx={{
-                      width: { xs: '100%', sm: 'auto' }
-                    }}
-                  >
-                    Submit Your Survey
-                  </Button>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={autoSaveEnabled}
+                          onChange={(e) => setAutoSaveEnabled(e.target.checked)}
+                          color="primary"
+                          size="small"
+                        />
+                      }
+                      label={<Typography variant="body2">Auto-save</Typography>}
+                      sx={{ mr: 0.5 }}
+                    />
+                    {autoSaveEnabled && saveStatus === 'saving' && (
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 700,
+                          color: 'primary.main',
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 1,
+                          bgcolor: 'primary.light',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                        }}
+                      >
+                        Saving…
+                      </Typography>
+                    )}
+                    {autoSaveEnabled && saveStatus === 'saved' && (
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 700,
+                          color: 'success.dark',
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 1,
+                          bgcolor: 'success.light',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                        }}
+                      >
+                        Saved
+                      </Typography>
+                    )}
+                    {autoSaveEnabled && saveStatus === 'error' && (
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 700,
+                          color: 'error.dark',
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 1,
+                          bgcolor: 'error.light',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                        }}
+                      >
+                        Save failed
+                      </Typography>
+                    )}
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={handleSubmitForm}
+                      disabled={loading || (autoSaveEnabled && saveStatus === 'saving')}
+                      fullWidth={false}
+                      sx={{
+                        width: { xs: '100%', sm: 'auto' }
+                      }}
+                    >
+                      Submit Your Survey
+                    </Button>
+                  </Box>
                 </Toolbar>
               </AppBar>
           <TextField
@@ -567,6 +647,64 @@ const CreateNewSurvey = () => {
                 <MenuItem value="QA">Qatar</MenuItem>
               </Select>
             </FormControl>}
+
+          {surveyData.surveyForms.length > 0 && (
+            <Box sx={{ mt: 2, mb: 2 }}>
+              <ListItem
+                button
+                onClick={() => setSummaryOpen(prev => !prev)}
+                sx={{ px: 0, borderRadius: 1 }}
+                aria-expanded={summaryOpen}
+                aria-label="Question summary"
+              >
+                <Typography variant="subtitle1" fontWeight="medium">
+                  Question summary
+                </Typography>
+                {summaryOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={summaryOpen}>
+                <List dense disablePadding>
+                  {surveyData.surveyForms.map((item) => {
+                    const isDisplayOnly = DISPLAY_ONLY_FORM_TYPES.has(item.formType);
+                    const typeLabel = FORM_TYPE_LABELS[item.formType] ?? item.formType;
+                    return (
+                      <ListItem
+                        key={item.id}
+                        sx={{
+                          flexDirection: 'column',
+                          alignItems: 'stretch',
+                          opacity: isDisplayOnly ? 0.7 : 1,
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, flexWrap: 'wrap' }}>
+                          <Typography variant="body2" color={isDisplayOnly ? 'text.secondary' : 'text.primary'} sx={{ fontWeight: 500, minWidth: 140 }}>
+                            {typeLabel}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ flex: 1, wordBreak: 'break-word' }}>
+                            {getQuestionPreview(item)}
+                          </Typography>
+                          {!isDisplayOnly && (
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={!!item.formMandate}
+                                  onChange={(e) => handleSetFormMandate(item.id, e.target.checked)}
+                                  size="small"
+                                  aria-label="Mandatory"
+                                />
+                              }
+                              label="Mandatory"
+                              sx={{ flexShrink: 0 }}
+                            />
+                          )}
+                        </Box>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Collapse>
+            </Box>
+          )}
 
           <Stack spacing={4} sx={{ 
             width: '100%',

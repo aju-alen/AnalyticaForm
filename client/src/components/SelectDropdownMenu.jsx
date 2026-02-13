@@ -151,7 +151,8 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
         ...formData, 
         id,
         quilText: data?.quilText || '',
-        question: data?.question || ''
+        question: data?.question || '',
+        formMandate: data?.formMandate ?? formData?.formMandate
       });
     }
   }, [data]);
@@ -168,82 +169,106 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
           bgcolor: 'white',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          alignItems: 'stretch',
           flexGrow: 1,
-          height: "100%",
-          mt: { xs: 4, md: 0 },
+          mt: { xs: 2, md: 0 },
           width: '100%',
-          boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
-          borderRadius: 2, // Increased border radius for rounded corners
-          p: 2, // Increased padding for inner content
-          overflowX: 'auto',
-          border: '2px solid #f0fbf0', // Added border for more distinction
-          transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
-          position: 'relative', // Make sure the box is positioned relative for the pseudo-element
+          boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)',
+          borderRadius: 2,
+          p: { xs: 1.5, sm: 2 },
+          overflowX: 'hidden',
+          border: '2px solid #f0fbf0',
+          transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
+          position: 'relative',
           backgroundColor: '#F4F3F6',
           '&::before': {
             content: '""',
             position: 'absolute',
             top: 0,
-            left: '0%', // Set initial left position for the line
-            transform: 'translateX(-50%)',
+            left: 0,
             height: '100%',
-            width: '12px', // Adjust the width of the line
-            bgcolor: '#1976d2', // Change to your desired color
-            opacity: 0, // Initially hidden
-            transition: 'opacity 0.3s ease-in-out', // Smooth transition for the line
+            width: '12px',
+            bgcolor: '#1976d2',
+            opacity: 0,
+            transition: 'opacity 0.3s ease-in-out',
           },
-
           '&:hover::before': {
-            opacity: 1, // Make the lines visible on hover
+            opacity: 1,
           },
           '&:hover': {
-            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)', // Updated box shadow on hover
-            transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
+            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)',
+            transform: 'scale(0.98)',
             backgroundColor: '#F4FFF8',
           },
         }}>
-                         <div style={{ marginBottom: '20px', width: '100%' }}>
-              {!disableText && (
-                <label style={{ 
-                  fontSize: '0.75rem', 
-                  color: 'rgba(0, 0, 0, 0.6)', 
-                  marginBottom: '8px',
-                  display: 'block' 
-                }}>
-                  Insert input *
-                </label>
-              )}
-              <ReactQuill
-                theme="snow"
-                value={formData.quilText}
-                onChange={handleQuillChange}
-                readOnly={disableText}
-                modules={modules}
-                formats={formats}
-                className={`ql-container ql-snow`}
-                style={{
-                  width: '100%',
-                  border: '0px solid rgba(0, 0, 0, 0.23)',
-                  borderRadius: '4px',
+          {/* Question / editor section – constrained so it doesn't overlap */}
+          <Box
+            sx={{
+              width: '100%',
+              flexShrink: 0,
+              mb: 2,
+              minHeight: 0,
+              '& .ql-toolbar': {
+                borderRadius: '4px 4px 0 0',
+              },
+              '& .ql-container': {
+                border: '0px solid rgba(0, 0, 0, 0.23)',
+                borderRadius: '0 0 4px 4px',
+              },
+              '& .ql-editor': {
+                minHeight: { xs: 60, sm: 80 },
+                maxHeight: 200,
+                overflowY: 'auto',
+              },
+            }}
+          >
+            {!disableText && (
+              <InputLabel
+                shrink={false}
+                sx={{
+                  fontSize: '0.75rem',
+                  color: 'rgba(0, 0, 0, 0.6)',
+                  mb: 1,
+                  display: 'block',
                 }}
-              />
-              <Divider />
-            </div>
+              >
+                Insert input *
+              </InputLabel>
+            )}
+            <ReactQuill
+              theme="snow"
+              value={formData.quilText}
+              onChange={handleQuillChange}
+              readOnly={disableText}
+              modules={modules}
+              formats={formats}
+              className="ql-container ql-snow"
+              style={{
+                width: '100%',
+                borderRadius: '4px',
+              }}
+            />
+            <Divider sx={{ mt: 2 }} />
+          </Box>
 
-          <Stack spacing={1} sx={{
-           width: { xs: '100%', md: '20%' },
-            marginRight: 'auto',
-          }}>
+          {/* Response / options section – clear separation below question */}
+          <Stack
+            spacing={1.5}
+            sx={{
+              width: '100%',
+              maxWidth: { xs: '100%', sm: 360 },
+              mt: 1,
+            }}
+          >
             {disableForm && formData.options.map((option) => (
-              <Stack direction="row" spacing={2} key={option.id}>
+              <Stack direction="row" spacing={2} key={option.id} sx={{ minWidth: 0, width: '100%' }}>
                 <Box
                   sx={{
                     position: 'relative',
                     display: 'flex',
                     alignItems: 'center',
-                    width: '100%',
+                    minWidth: 0,
+                    flex: 1,
                     '&:hover .delete-button': {
                       visibility: 'visible',
                     },
@@ -312,27 +337,27 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
             }
             {!disableButtons && (
               <Button
-                sx={{
-                  width: '70%',
-                }}
+                sx={{ width: { xs: '100%', sm: 'auto' }, minWidth: 120 }}
                 onClick={handleAddOptions}
-                variant='outlined'
+                variant="outlined"
                 color="primary"
                 size="small"
-              >Add new row</Button>
+              >
+                Add new row
+              </Button>
             )}
           </Stack>
           {disableButtons && (
-            <FormControl fullWidth sx={{ mt: 4 }}>
+            <FormControl fullWidth sx={{ mt: 2, minWidth: 0 }}>
               <InputLabel id="demo-simple-select-label">Select an option</InputLabel>
               <Select
-                 labelId="demo-simple-select-label"
-                 id="demo-simple-select"
-                 value={age}
-                 variant="filled"
-                 label="Age"
-                 onChange={handleChange}
-                 sx={{ width: 'auto' }} // or specify a value like '300px'
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={age}
+                variant="filled"
+                label="Select an option"
+                onChange={handleChange}
+                sx={{ width: '100%' }}
               >
                 {formData.options.map((option,idx) => (
                   <MenuItem
@@ -349,31 +374,17 @@ const SelectDropdownMenu = ({ onSaveForm, data, id, options, disableForm, disabl
             </FormControl>
           )}
 
-          <Stack spacing={2} direction='row' sx={{
-                marginTop: '1rem',
-              }}>
-            {/* {!disableButtons && (
-                <Button
-                  onClick={handleAddOptions}
-                  variant='outlined'
-                  color="primary"
-                  size="small"
-                >Add new row</Button>
-              )} */}
-
-            {disableButtons && <Button
-              variant='contained'
-              color="success"
-             
-              onClick={handleSaveForm}>
-              Next Question
-            </Button>}
-            {/* {!disableButtons && <Button
-              variant='contained'
-              color="primary"
-              onClick={handleMandateForm}>
-               Mandate This Form
-            </Button>} */}
+          <Stack spacing={2} direction="row" sx={{ mt: 2, flexWrap: 'wrap' }}>
+            {disableButtons && (
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleSaveForm}
+                fullWidth={isMobile}
+              >
+                Next Question
+              </Button>
+            )}
           </Stack>
         </Box>
       </Container>

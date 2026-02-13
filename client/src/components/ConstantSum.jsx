@@ -3,6 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
 import { Button, Divider, Stack, useTheme, useMediaQuery } from '@mui/material';
 import { uid } from 'uid';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -198,7 +199,8 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
             ...formData, 
             id,
             quilText: data?.quilText || '',
-            question: data?.question || ''
+            question: data?.question || '',
+            formMandate: data?.formMandate ?? formData?.formMandate
           });
         }
       }, [data]);
@@ -215,78 +217,74 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                     bgcolor: 'white',
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    alignItems: 'stretch',
                     flexGrow: 1,
-                    height: "100%",
                     mt: { xs: 4, md: 0 },
                     width: '100%',
-                    boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)', // Updated box shadow for a subtle effect
-                    borderRadius: 2, // Increased border radius for rounded corners
-                    p: 2, // Increased padding for inner content
-                    overflowX: 'auto',
-                    border: '2px solid #f0fbf0', // Added border for more distinction
-                    transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out', // Added transition effect for box shadow and transform
-                    position: 'relative', // Make sure the box is positioned relative for the pseudo-element
+                    boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)',
+                    borderRadius: 2,
+                    p: 2,
+                    overflowX: 'hidden',
+                    border: '2px solid #f0fbf0',
+                    transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
+                    position: 'relative',
                     backgroundColor: '#F4F3F6',
                     '&::before': {
                         content: '""',
                         position: 'absolute',
                         top: 0,
-                        left: '0%', // Set initial left position for the line
-                        transform: 'translateX(-50%)',
+                        left: 0,
                         height: '100%',
-                        width: '12px', // Adjust the width of the line
-                        bgcolor: '#1976d2', // Change to your desired color
-                        opacity: 0, // Initially hidden
-                        transition: 'opacity 0.3s ease-in-out', // Smooth transition for the line
+                        width: '12px',
+                        bgcolor: '#1976d2',
+                        opacity: 0,
+                        transition: 'opacity 0.3s ease-in-out',
                     },
-
                     '&:hover::before': {
-                        opacity: 1, // Make the lines visible on hover
+                        opacity: 1,
                     },
                     '&:hover': {
-                        boxShadow: '0px 1px rgba(0, 0, 0, 0.2)', // Updated box shadow on hover
-                        transform: 'scale(0.98)', // Slightly scale down the box to create an inward effect
+                        boxShadow: '0px 1px rgba(0, 0, 0, 0.2)',
+                        transform: 'scale(0.98)',
                         backgroundColor: '#F4FFF8',
                     },
                 }}>
-                   <div style={{ marginBottom: '20px', width: '100%' }}>
-              {!disableText && (
-                <label style={{ 
-                  fontSize: '0.75rem', 
-                  color: 'rgba(0, 0, 0, 0.6)', 
-                  marginBottom: '8px',
-                  display: 'block' 
-                }}>
-                  Insert input *
-                </label>
-              )}
-                 <ReactQuill
-                theme="snow"
-                value={formData.quilText}
-                onChange={handleQuillChange}
-                readOnly={disableText}
-                modules={modules}
-                formats={formats}
-                className={`ql-container ql-snow`}
-                style={{
-                  width: '100%',
-                  border: '0px solid rgba(0, 0, 0, 0.23)',
-                  borderRadius: '4px',
-                }}
-              />
-              <Divider />
-            </div>
+                    {/* Question / editor section – constrained so it doesn't overlap */}
+                    <Box sx={{
+                        width: '100%',
+                        flexShrink: 0,
+                        mb: 2,
+                        minHeight: 0,
+                        '& .ql-toolbar': { borderRadius: '4px 4px 0 0' },
+                        '& .ql-container': { border: '0px solid rgba(0, 0, 0, 0.23)', borderRadius: '0 0 4px 4px' },
+                        '& .ql-editor': {
+                            minHeight: 60,
+                            maxHeight: 200,
+                            overflowY: 'auto',
+                        },
+                    }}>
+                        {!disableText && (
+                            <InputLabel shrink={false} sx={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)', mb: 1, display: 'block' }}>
+                                Insert input *
+                            </InputLabel>
+                        )}
+                        <ReactQuill
+                            theme="snow"
+                            value={formData.quilText}
+                            onChange={handleQuillChange}
+                            readOnly={disableText}
+                            modules={modules}
+                            formats={formats}
+                            className="ql-container ql-snow"
+                            style={{ width: '100%', borderRadius: '4px' }}
+                        />
+                        <Divider sx={{ mt: 2 }} />
+                    </Box>
 
-                    <Stack spacing={6} sx={{
-                        width: '90%',
-                        marginY: '1rem',
-                        marginX: 'auto',
-                    }} >
+                    {/* Options / sliders section – separate below question */}
+                    <Stack spacing={3} sx={{ width: '100%', maxWidth: 720, mt: 1, mx: 'auto' }}>
                         {formData.options.map((option) => (
-                            <Stack direction="row" key={option.id}>
-
+                            <Stack direction="row" key={option.id} sx={{ minWidth: 0, width: '100%', alignItems: 'center' }}>
                                 <Box
                                     sx={{
                                         position: 'relative',
@@ -295,6 +293,8 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
                                         width: '100%',
+                                        minWidth: 0,
+                                        gap: { xs: 1, md: 2 },
                                         '&:hover .delete-button': {
                                             visibility: 'visible',
                                         },
@@ -342,31 +342,33 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                                                 borderBottom: 'none',
                                             },
                                             width: { xs: '100%', md: '30%' },
+                                            minWidth: 0,
                                         }}
                                     />
                                     <Slider
-                                        value={typeof value === 'number' ? option.value : 0}
+                                        value={typeof option.value === 'number' ? option.value : 0}
                                         onChange={(event) => handleSliderChange(event, option.id)}
                                         aria-labelledby="input-slider"
                                         disabled={disableForm}
                                         sx={{
                                             width: { xs: '100%', md: '50%' },
+                                            minWidth: 80,
                                         }}
-                                        size='medium'
+                                        size="medium"
                                     />
                                     <TextField
-                                        fullWidth
                                         type="number"
-                                        size='small'
-                                        value={formData.selectedValue.find(opt => opt.id === option.id).answer}
+                                        size="small"
+                                        value={formData.selectedValue.find(opt => opt.id === option.id)?.answer ?? ''}
                                         onChange={(event) => handleInputChange(event, option.id)}
                                         inputProps={{ min: 0, max: 100 }}
                                         disabled={disableForm}
                                         sx={{
-                                            width: { xs: '30%', md: '20%' },
+                                            width: { xs: 80, md: 72 },
+                                            minWidth: 56,
+                                            flexShrink: 0,
                                         }}
                                     />
-                                    <Divider orientation="horizontal" flexItem />
 
 
 
@@ -395,30 +397,23 @@ const ConstantSum = ({ onSaveForm, data, id, options, disableForm, disableText, 
                         }
                     </Stack>
 
-                    <Stack spacing={2} direction='row'  sx={{
-                            marginTop: '1rem',
-                        }}>
+                    <Stack spacing={2} direction="row" sx={{ mt: 2, flexWrap: 'wrap' }}>
                         {!disableButtons && (
                             <Button
                                 onClick={handleAddOptions}
-                                variant='outlined'
+                                variant="outlined"
                                 color="primary"
                                 size="small"
-                            >Add new row</Button>
+                                sx={{ width: { xs: '100%', sm: 'auto' }, minWidth: 120 }}
+                            >
+                                Add new row
+                            </Button>
                         )}
-
-                        {disableButtons && <Button
-                            variant='contained'
-                            color="success"
-                            onClick={handleSaveForm}>
-                            Next Question
-                        </Button>}
-                        {/* {!disableButtons && <Button
-              variant='contained'
-              color="primary"
-              onClick={handleMandateForm}>
-               Mandate This Form
-            </Button>} */}
+                        {disableButtons && (
+                            <Button variant="contained" color="success" onClick={handleSaveForm} fullWidth={isMobile}>
+                                Next Question
+                            </Button>
+                        )}
                     </Stack>
                 </Box>
             </Container>

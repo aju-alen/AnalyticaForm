@@ -197,7 +197,8 @@ const SelectSingleRadio = forwardRef(({ onSaveForm, registerFormData, data, id, 
         id,
         quilText: data?.quilText ?? prev.quilText,
         question: data?.question ?? prev.question,
-        hasOtherOption: data?.hasOtherOption ?? prev.hasOtherOption
+        hasOtherOption: data?.hasOtherOption ?? prev.hasOtherOption,
+        formMandate: data?.formMandate ?? prev.formMandate
       }));
     }
   }, [data]);

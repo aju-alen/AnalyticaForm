@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, CssBaseline, Container, Box, Stack, Radio, Button, Typography,useTheme, useMediaQuery } from '@mui/material';
+import { TextField, CssBaseline, Container, Box, Stack, Radio, Button, Typography, InputLabel, useTheme, useMediaQuery } from '@mui/material';
 import { uid } from 'uid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -39,9 +39,8 @@ const initialFormData = {
   formType: 'MultiScalePoint',
 };
 
-const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
+const SelectMultiScalePoint = ({ onSaveForm, registerFormData, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
   const [formData, setFormData] = useState(initialFormData);
-  const [debouncedValue, setDebouncedValue] = useState('');
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
@@ -93,19 +92,21 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
     });
   };
   
+  // Keep parent ref updated so auto-save always has latest (Response, sub question, etc.)
+  useEffect(() => {
+    if (typeof registerFormData === 'function' && id) {
+      registerFormData(id, formData);
+    }
+  }, [formData, id, registerFormData]);
+
+  // Debounced save to parent state so auto-save can run (600ms after last change)
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedValue(formData);
       onSaveForm(formData);
-      // onSaveIndicator('Saved')
-    }, 2000); // 500ms delay
+    }, 600);
 
-    // Cleanup function to cancel the timeout if value changes before delay
-    return () => {
-      // onSaveIndicator('Not Saaved')
-      clearTimeout(handler);
-    };
-  }, [formData]);
+    return () => clearTimeout(handler);
+  }, [formData, onSaveForm]);
 
    // Update the useEffect for data initialization
    useEffect(() => {
@@ -116,7 +117,8 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
         ...formData, 
         id,
         quilText: data?.quilText || '',
-        question: data?.question || ''
+        question: data?.question || '',
+        formMandate: data?.formMandate ?? formData?.formMandate
       });
     }
   }, [data]);
@@ -132,7 +134,6 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
   };
 
   const handleDeleteColumn = (id) => {
-    console.log(formData, 'formData before deleting');
     const newColumnTextField = formData.columnTextField.filter(column => column.id !== id);
     const newOptions = formData.options.map((row) => ({ ...row, columns: row.columns.filter(column => column.id !== id) }));
     setFormData({ ...formData, columnTextField: newColumnTextField, options: newOptions });
@@ -160,14 +161,12 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
 
 
   const handleSaveForm = () => {
-    console.log('save handleSaveForm', formData);
     onSaveForm(formData);
     onHandleNext();
   };
 
   const handleMandateForm = () => {
-    console.log('mandate handleMandateForm');
-    setFormData({ ...formData, formMandate: true })
+    setFormData(prev => ({ ...prev, formMandate: true }));
   }
 
   const handleRadioChange = (rowIndex, columnIndex) => {
@@ -179,9 +178,8 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
     newSelectedValue[rowIndex].question = formData.options[rowIndex].rowQuestion;
 
     newSelectedValue[rowIndex].answer = formData.columnTextField[columnIndex].value;
-    setFormData({ ...formData, selectedValue: newSelectedValue });
+    setFormData(prev => ({ ...prev, selectedValue: newSelectedValue }));
   };
-  console.log(formData, 'formData in select one choice form updatedddd');
 
   return (
     <React.Fragment>
@@ -191,31 +189,28 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
           bgcolor: 'white',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          alignItems: 'stretch',
           flexGrow: 1,
-          height: "100%",
           mt: { xs: 2, sm: 3, md: 0 },
           width: '100%',
           boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.5)',
           borderRadius: 2,
           p: { xs: 1, sm: 2 },
-          overflowX: 'auto',
+          overflowX: 'hidden',
           border: '2px solid #f0fbf0',
           backgroundColor: '#F4F3F6',
+          position: 'relative',
           '&::before': {
             content: '""',
             position: 'absolute',
             top: 0,
-            left: '0%',
-            transform: 'translateX(-50%)',
+            left: 0,
             height: '100%',
             width: '12px',
             bgcolor: '#1976d2',
             opacity: 0,
             transition: 'opacity 0.3s ease-in-out',
           },
-
           '&:hover::before': {
             opacity: 1,
           },
@@ -225,36 +220,40 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
             backgroundColor: '#F4FFF8',
           },
         }}>
-               <div style={{ marginBottom: '20px', width: '100%' }}>
-              {!disableText && (
-                <label style={{ 
-                  fontSize: '0.75rem', 
-                  color: 'rgba(0, 0, 0, 0.6)', 
-                  marginBottom: '8px',
-                  display: 'block' 
-                }}>
-                  Insert input *
-                </label>
-              )}
-               <ReactQuill
-                theme="snow"
-                value={formData.quilText}
-                onChange={handleQuillChange}
-                readOnly={disableText}
-                modules={modules}
-                formats={formats}
-                className={`ql-container ql-snow`}
-                style={{
-                  width: '100%',
-                  border: '0px solid rgba(0, 0, 0, 0.23)',
-                  borderRadius: '4px',
-                }}
-              />
-              <Divider />
-            </div>
-          
-          {/* Desktop/Tablet View */}
-          <Box sx={{ display: { xs: 'none', sm: 'block' }, width: '100%' }}>
+          {/* Question / editor section – constrained so it doesn't overlap */}
+          <Box sx={{
+            width: '100%',
+            flexShrink: 0,
+            mb: 2,
+            minHeight: 0,
+            '& .ql-toolbar': { borderRadius: '4px 4px 0 0' },
+            '& .ql-container': { border: '0px solid rgba(0, 0, 0, 0.23)', borderRadius: '0 0 4px 4px' },
+            '& .ql-editor': {
+              minHeight: 60,
+              maxHeight: 200,
+              overflowY: 'auto',
+            },
+          }}>
+            {!disableText && (
+              <InputLabel shrink={false} sx={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)', mb: 1, display: 'block' }}>
+                Insert input *
+              </InputLabel>
+            )}
+            <ReactQuill
+              theme="snow"
+              value={formData.quilText}
+              onChange={handleQuillChange}
+              readOnly={disableText}
+              modules={modules}
+              formats={formats}
+              className="ql-container ql-snow"
+              style={{ width: '100%', borderRadius: '4px' }}
+            />
+            <Divider sx={{ mt: 2 }} />
+          </Box>
+
+          {/* Desktop/Tablet View – table separate below question */}
+          <Box sx={{ display: { xs: 'none', sm: 'block' }, width: '100%', mt: 1, minWidth: 0, overflowX: 'auto' }}>
             <Table sx={{ minWidth: { sm: 500, md: 650 } }}>
               <TableHead>
                 <TableRow>
@@ -378,23 +377,23 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                 ))}
               </TableBody>
             </Table>
-            {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddRow}>Add Row</Button>)}
+            {!disableButtons && (
+              <Button variant="outlined" color="primary" size="small" onClick={handleAddRow} sx={{ width: { xs: '100%', sm: 'auto' }, minWidth: 100 }}>
+                Add Row
+              </Button>
+            )}
           </Box>
 
           {/* Mobile View */}
-          <Box sx={{ display: { xs: 'block', sm: 'none' }, width: '100%' }}>
+          <Box sx={{ display: { xs: 'block', sm: 'none' }, width: '100%', mt: 1, minWidth: 0 }}>
             {formData.options.map((row, rowIndex) => (
-              <Accordion 
-                key={row.id} 
+              <Accordion
+                key={row.id}
                 sx={{
                   mb: 1,
                   '& .MuiAccordionSummary-content': {
                     margin: '8px 0',
-                  }
+                  },
                 }}
               >
                 <AccordionSummary
@@ -402,9 +401,9 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
                   aria-controls="panel1-content"
                   id="panel1-header"
                 >
-                  <div className=" w-full">
-                    <h3>{row.rowQuestion}</h3>
-                  </div>
+                  <Typography variant="subtitle2" sx={{ flex: 1 }}>
+                    {row.rowQuestion?.trim() || `Question ${rowIndex + 1}`}
+                  </Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{ p: 1 }}>
                   <Stack spacing={2}>
@@ -433,34 +432,27 @@ const SelectMultiScalePoint = ({ onSaveForm, data, id, options, disableForm, dis
             ))}
           </Box>
 
-          <Stack 
-            direction={{ xs: 'column', sm: 'row' }} 
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
             spacing={{ xs: 1, sm: 2 }}
-            sx={{
-              mt: 2,
-              width: '100%',
-              justifyContent: 'center'
-            }}
+            sx={{ mt: 2, width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}
           >
-            {!disableButtons && (<Button
-              variant='outlined'
-              color="primary"
-              size='small'
-              onClick={handleAddColumn}>Add Column</Button>)}
-
-            {disableButtons && <Button
-              variant='contained'
-              color="success"
-              onClick={handleSaveForm}>
-              Next Question
-            </Button>}
-
-            {/* {!disableButtons && <Button
-              variant='contained'
-              color="primary"
-              onClick={handleMandateForm}>
-               Mandate This Form
-            </Button>} */}
+            {!disableButtons && (
+              <Button
+                variant="outlined"
+                color="primary"
+                size="small"
+                onClick={handleAddColumn}
+                sx={{ width: { xs: '100%', sm: 'auto' }, minWidth: 120 }}
+              >
+                Add Column
+              </Button>
+            )}
+            {disableButtons && (
+              <Button variant="contained" color="success" onClick={handleSaveForm} fullWidth={isMobile}>
+                Next Question
+              </Button>
+            )}
           </Stack>
         </Box>
       </Container>

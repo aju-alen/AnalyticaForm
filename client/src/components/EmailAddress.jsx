@@ -121,7 +121,8 @@ const EmailAddress = ({ onSaveForm, data, id, options, disableForm, disableText,
           ...formData, 
           id,
           quilText: data?.quilText || '',
-          question: data?.question || ''
+          question: data?.question || '',
+          formMandate: data?.formMandate ?? formData?.formMandate
         });
       }
     }, [data]);

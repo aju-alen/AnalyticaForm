@@ -29,6 +29,18 @@ export const getUserSurvey = async (req, res) => {
         const getSurveyAll = await prisma.survey.findMany({
             where: {
                 userId
+            },
+            select: {
+                id: true,
+                surveyTitle: true,
+                surveyStatus: true,
+                surveyIntroduction: true,
+                createdAt: true,
+                updatedAt: true,
+                surveyResponses: true,
+                userId: true,
+                surveyViews: true,
+                surveyCompleted: true,
             }
         });
         await prisma.$disconnect();

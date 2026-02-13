@@ -182,7 +182,8 @@ const SelectSingleCheckBox = ({ onSaveForm, data, id, options, disableForm, disa
         id,
         quilText: data?.quilText ?? prev.quilText,
         question: data?.question ?? prev.question,
-        hasOtherOption: data?.hasOtherOption ?? prev.hasOtherOption
+        hasOtherOption: data?.hasOtherOption ?? prev.hasOtherOption,
+        formMandate: data?.formMandate ?? prev.formMandate
       }));
     }
   }, [data]);

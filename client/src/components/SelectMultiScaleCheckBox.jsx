@@ -43,9 +43,8 @@ const initialFormData = {
     formType: 'MultiScaleCheckBox',
 };
 
-const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
+const SelectMultiScaleCheckBox = ({ onSaveForm, registerFormData, data, id, options, disableForm, disableText, disableButtons, onHandleNext }) => {
     const [formData, setFormData] = useState(initialFormData);
-    const [debouncedValue, setDebouncedValue] = useState('');
     const [boldFields, setBoldFields] = useState(new Set());
 
     const theme = useTheme();
@@ -99,19 +98,21 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
     };
     
 
+    // Keep parent ref updated so auto-save always has latest (Response, sub question, etc.)
+    useEffect(() => {
+        if (typeof registerFormData === 'function' && id) {
+            registerFormData(id, formData);
+        }
+    }, [formData, id, registerFormData]);
+
+    // Debounced save to parent state so auto-save can run (600ms after last change)
     useEffect(() => {
         const handler = setTimeout(() => {
-            setDebouncedValue(formData);
             onSaveForm(formData);
-            // onSaveIndicator('Saved')
-        }, 2000); // 500ms delay
+        }, 600);
 
-        // Cleanup function to cancel the timeout if value changes before delay
-        return () => {
-            // onSaveIndicator('Not Saaved')
-            clearTimeout(handler);
-        };
-    }, [formData]);
+        return () => clearTimeout(handler);
+    }, [formData, onSaveForm]);
 
 
     const handleAddColumn = () => {
@@ -124,7 +125,6 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
     };
 
     const handleDeleteColumn = (id) => {
-        console.log(formData, 'formData before deleting');
         const newColumnTextField = formData.columnTextField.filter(column => column.id !== id);
         const newOptions = formData.options.map((row) => ({ ...row, columns: row.columns.filter(column => column.id !== id) }));
         setFormData({ ...formData, columnTextField: newColumnTextField, options: newOptions });
@@ -199,13 +199,11 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, data, id, options, disableForm, 
         ...formData, 
         id,
         quilText: data?.quilText || '',
-        question: data?.question || ''
+        question: data?.question || '',
+        formMandate: data?.formMandate ?? formData?.formMandate
       });
     }
   }, [data]);
-
-
-    console.log(formData, 'formData in multi scale point');
 
     return (
         <React.Fragment>
