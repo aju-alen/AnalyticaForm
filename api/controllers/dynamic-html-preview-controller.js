@@ -11,7 +11,6 @@ export const dynamicMetaHtml = async (req, res) => {
             },
             select: {
                 surveyTitle: true,
-                surveyDescription: true,
             }
         })
 
