@@ -95,11 +95,10 @@ model UserSurveyResponse{
   introduction Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+  responseConfirmationEmailSentAt DateTime?
 
   survey Survey @relation(fields: [surveyId], references: [id])
   surveyId String
- 
 }
 
 model ResponsePurchase {

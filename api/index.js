@@ -18,6 +18,9 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { htmlMessage,healthCheckMessage } from './utils/static/static-data.js';
 import { dynamicMetaHtml } from './controllers/dynamic-html-preview-controller.js';
+import cron from 'node-cron';
+import { runDefenceReadinessResponseEmails } from './jobs/defenceReadinessResponseEmails.js';
+import chalk from 'chalk';
 dotenv.config();
 
 
@@ -56,7 +59,13 @@ app.get('/health', (req, res) => {
 
 
 app.use(errorHandler);
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Backend running at port ${PORT}`);
-})
+  cron.schedule('*/1 * * * *', () => {
+    runDefenceReadinessResponseEmails().catch((err) =>
+      console.error('[cron] defenceReadinessResponseEmails:', err?.message || err)
+    );
+  });
+  console.log(chalk.blue.bgRed.bold('Cron: Defence readiness response emails every 1 minute'));
+});
