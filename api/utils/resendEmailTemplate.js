@@ -7,8 +7,9 @@ const resendDRIndex = new Resend(process.env.RESEND_API_KEY_PHD_DEFENCE_READINES
 
 export const resendEmailDRIndex = async (senderEmail, recipientEmail, subject, html, attachments = []) => {
     try {
+        const fromAddress = senderEmail?.includes('<') ? senderEmail : `Defence Readiness Index <${senderEmail}>`;
         const emailData = {
-            from: senderEmail,
+            from: fromAddress,
             to: recipientEmail,
             subject: subject,
             html: html,
