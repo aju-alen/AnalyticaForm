@@ -185,7 +185,8 @@ export const userRegister = async (req, res, next) => {
             if(!newUser){
                 return res.status(400).json({ message: "User registration failed. please try again" });
             }
-            sendVerificationEmail(req.body.email, newUser.emailVerificationToken, 'Guest');
+            const registerHTMLTemplate = registerEmailTemplate(firstName, newUser.emailVerificationToken, backendUrl);
+            await resendEmailBoiler(process.env.GMAIL_AUTH_USER_SUPPORT, newUser.email, 'Verify Your Email Address', registerHTMLTemplate);
             res.status(201).json({ message: "User registered successfully. Please verify your details by email.",user: newUser });
             
             
