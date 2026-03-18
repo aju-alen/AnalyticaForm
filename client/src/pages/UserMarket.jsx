@@ -303,7 +303,17 @@ const UserMarket = () => {
         setLoading(false);
       } catch (error) {
         console.error('Error handling guest checkout:', error);
-        setEmailError(error.response.data.message);
+        const status = error?.response?.status;
+        const responseData = error?.response?.data;
+        const responseMessage =
+          responseData?.message ?? (typeof responseData === "string" ? responseData : null);
+        const messageToShow = responseMessage ?? "Request failed. Please try again.";
+
+        if (status >= 400 && status < 500) {
+          window.alert(messageToShow);
+        }
+
+        setEmailError(messageToShow);
         setLoading(false);
       }
     };
