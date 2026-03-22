@@ -21,10 +21,12 @@ import { dynamicMetaHtml } from './controllers/dynamic-html-preview-controller.j
 import cron from 'node-cron';
 import { runDefenceReadinessResponseEmails } from './jobs/defenceReadinessResponseEmails.js';
 import chalk from 'chalk';
+import helmet from 'helmet';
 dotenv.config();
 
 
 const app = express();
+app.use(helmet());
 // app.set('trust proxy', true);
 app.use(cors(corsOptions));
 
