@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import puppeteer from 'puppeteer';
+import fs from 'node:fs';
 
 const prisma = new PrismaClient();
 const CHROME_EXECUTABLE_PATH =
@@ -10,16 +11,34 @@ const CHROME_EXECUTABLE_PATH =
 const baseLaunchArgs = ['--no-sandbox', '--disable-setuid-sandbox'];
 
 async function launchPdfBrowser() {
-  const launchOptions = {
+  const baseOptions = {
     headless: true,
     args: baseLaunchArgs,
   };
 
-  if (CHROME_EXECUTABLE_PATH) {
-    launchOptions.executablePath = CHROME_EXECUTABLE_PATH;
+  // 1) Prefer explicit env path only when it exists.
+  if (CHROME_EXECUTABLE_PATH && fs.existsSync(CHROME_EXECUTABLE_PATH)) {
+    return puppeteer.launch({
+      ...baseOptions,
+      executablePath: CHROME_EXECUTABLE_PATH,
+    });
   }
 
-  return puppeteer.launch(launchOptions);
+  // 2) Try Puppeteer's resolved browser path (from installed cache).
+  try {
+    const resolvedExecutablePath = puppeteer.executablePath();
+    if (resolvedExecutablePath && fs.existsSync(resolvedExecutablePath)) {
+      return puppeteer.launch({
+        ...baseOptions,
+        executablePath: resolvedExecutablePath,
+      });
+    }
+  } catch (_) {
+    // Ignore and continue to final fallback.
+  }
+
+  // 3) Final fallback: let Puppeteer resolve internally.
+  return puppeteer.launch(baseOptions);
 }
 const interimCategoryNames = [
   'Research Knowledge & Foundations',
