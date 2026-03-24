@@ -75,7 +75,7 @@ GENERATE A REPORT WITH:
 4. 14-day improvement plan (specific, actionable steps)
 5. 3 examiner-style practice questions based on weak areas
 6. Warm invitation to book a Strategy Session
-7. The link to book a session is https://calendly.com/riseltd
+7. The link to book a session is https://scheduler.phdsuccess.ae/
 8. Set the heading font color to #E30613.
 9. Make sure to add the users score on top.
 

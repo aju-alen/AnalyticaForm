@@ -7,6 +7,7 @@ dotenv.config();
 
 import stripe from 'stripe';
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
+const StripeDri = stripe(process.env.STRIPE_SECRET_KEY_DRI || '');
 
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient();
@@ -49,6 +50,291 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
         console.log(err);
         res.status(500).json({ message: err.message })
     }
+}
+
+export const createCheckoutSessionForDriInterimUnlock = async (req, res) => {
+  try {
+    const DRI_BASE_URL = process.env.DRI_BASE_URL || 'http://localhost:5174';
+    const { responseId } = req.body || {};
+    if (!responseId) {
+      return res.status(400).json({ message: 'responseId is required' });
+    }
+
+    const driResponse = await prisma.userSurveyResponse.findUnique({
+      where: { id: String(responseId) },
+    });
+
+    if (!driResponse) {
+      return res.status(404).json({ message: 'DRI interim response not found' });
+    }
+
+    const unitAmountAed = 39 * 100; // AED 39 in fils
+
+    // Create a temporary product + price to avoid needing static Stripe price IDs.
+    const product = await StripeDri.products.create({
+      name: 'DRI Interim Unlock',
+      description: 'Unlock interim DRI score + report access (AED 39)',
+    });
+
+    const price = await StripeDri.prices.create({
+      unit_amount: unitAmountAed,
+      currency: 'aed',
+      product: product.id,
+      tax_behavior: 'exclusive',
+    });
+
+    const session = await StripeDri.checkout.sessions.create({
+      mode: 'payment',
+      line_items: [{ price: price.id, quantity: 1 }],
+      billing_address_collection: 'auto',
+      // Only set customer_email if it looks like an email (Stripe will still work without it).
+      ...(driResponse.userEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(driResponse.userEmail))
+        ? { customer_email: driResponse.userEmail }
+        : {}),
+      success_url: `${DRI_BASE_URL}/payment-summary/${encodeURIComponent(String(responseId))}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${DRI_BASE_URL}/payment-summary/${encodeURIComponent(String(responseId))}?canceled=true`,
+      metadata: {
+        responseId: String(responseId),
+        purchaseType: 'dri-interim',
+      },
+    });
+
+    return res.status(200).json({ sessionId: session.id, sessionUrl: session.url });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: err?.message || 'Failed to create checkout session' });
+  }
+};
+
+export const createCheckoutSessionForDriFullUnlock = async (req, res) => {
+  try {
+    const DRI_BASE_URL = process.env.DRI_BASE_URL || 'http://localhost:5174';
+    const { responseId } = req.body || {};
+    if (!responseId) {
+      return res.status(400).json({ message: 'responseId is required' });
+    }
+
+    const driResponse = await prisma.userSurveyResponse.findUnique({
+      where: { id: String(responseId) },
+    });
+    if (!driResponse) {
+      return res.status(404).json({ message: 'DRI response not found' });
+    }
+
+    const unitAmountAed = 385 * 100;
+    const product = await StripeDri.products.create({
+      name: 'DRI Full Unlock',
+      description: 'Unlock full DRI report access (AED 385)',
+    });
+    const price = await StripeDri.prices.create({
+      unit_amount: unitAmountAed,
+      currency: 'aed',
+      product: product.id,
+      tax_behavior: 'exclusive',
+    });
+
+    const session = await StripeDri.checkout.sessions.create({
+      mode: 'payment',
+      line_items: [{ price: price.id, quantity: 1 }],
+      billing_address_collection: 'auto',
+      ...(driResponse.userEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(driResponse.userEmail))
+        ? { customer_email: driResponse.userEmail }
+        : {}),
+      success_url: `${DRI_BASE_URL}/full-payment-summary/${encodeURIComponent(String(responseId))}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${DRI_BASE_URL}/full-payment-summary/${encodeURIComponent(String(responseId))}?canceled=true`,
+      metadata: {
+        responseId: String(responseId),
+        purchaseType: 'dri-full-report',
+      },
+    });
+
+    return res.status(200).json({ sessionId: session.id, sessionUrl: session.url });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: err?.message || 'Failed to create full checkout session' });
+  }
+};
+
+export const getDriInterimPaymentStatus = async (req, res) => {
+  try {
+    const responseId = String(req.params.responseId || '')
+    if (!responseId) {
+      return res.status(400).json({ message: 'responseId is required' })
+    }
+
+    const driResponse = await prisma.userSurveyResponse.findUnique({
+      where: { id: responseId },
+      select: { surveyId: true, userEmail: true },
+    })
+    console.log(driResponse, 'driResponse');
+    
+
+    const interimPayment = await prisma.driInterim10SummaryPayment.findUnique({
+      where: { responseId },
+      select: { paidStatus: true },
+    })
+
+    console.log(interimPayment, 'interimPayment');
+    console.log(responseId, 'responseId');
+    
+
+    const interimData = await prisma.driresponseData.findUnique({
+      where: { responseId },
+      select: {
+        cat1: true,
+        cat2: true,
+        cat3: true,
+        cat4: true,
+        cat5: true,
+        cat6: true,
+        cat7: true,
+        cat8: true,
+        cat9: true,
+        cat10: true,
+        bandPositionLabel: true,
+        fullCat1: true,
+        fullCat2: true,
+        fullCat3: true,
+        fullCat4: true,
+        fullCat5: true,
+        fullCat6: true,
+        fullCat7: true,
+        fullCat8: true,
+        fullCat9: true,
+        fullCat10: true,
+        fullBandPositionLabel: true,
+      },
+    })
+    console.log(interimData, 'interimData');
+
+    const paid = Boolean(interimPayment?.paidStatus)
+    const resolvedCat1 = interimData?.cat1 ?? interimData?.fullCat1 ?? null
+    const resolvedCat2 = interimData?.cat2 ?? interimData?.fullCat2 ?? null
+    const resolvedCat3 = interimData?.cat3 ?? interimData?.fullCat3 ?? null
+    const resolvedCat4 = interimData?.cat4 ?? interimData?.fullCat4 ?? null
+    const resolvedCat5 = interimData?.cat5 ?? interimData?.fullCat5 ?? null
+    const resolvedCat6 = interimData?.cat6 ?? interimData?.fullCat6 ?? null
+    const resolvedCat7 = interimData?.cat7 ?? interimData?.fullCat7 ?? null
+    const resolvedCat8 = interimData?.cat8 ?? interimData?.fullCat8 ?? null
+    const resolvedCat9 = interimData?.cat9 ?? interimData?.fullCat9 ?? null
+    const resolvedCat10 = interimData?.cat10 ?? interimData?.fullCat10 ?? null
+
+    const categoryValues = [
+      resolvedCat1,
+      resolvedCat2,
+      resolvedCat3,
+      resolvedCat4,
+      resolvedCat5,
+      resolvedCat6,
+      resolvedCat7,
+      resolvedCat8,
+      resolvedCat9,
+      resolvedCat10,
+    ].filter((v) => typeof v === 'number')
+    const interimScore =
+      categoryValues.length > 0
+        ? Math.round((categoryValues.reduce((a, b) => a + b, 0) / categoryValues.length) * 100) / 100
+        : null
+    const categoryScores = {
+      cat1: resolvedCat1,
+      cat2: resolvedCat2,
+      cat3: resolvedCat3,
+      cat4: resolvedCat4,
+      cat5: resolvedCat5,
+      cat6: resolvedCat6,
+      cat7: resolvedCat7,
+      cat8: resolvedCat8,
+      cat9: resolvedCat9,
+      cat10: resolvedCat10,
+    }
+
+    const continueBase =
+      process.env.DEFENCE_READINESS_FULL_DRI_URL ||
+      process.env.FRONTEND_URL ||
+      process.env.CLIENT_URL ||
+      YOUR_DOMAIN
+
+    const continueUrl = driResponse?.surveyId
+      ? `${continueBase.replace(/\/$/, '')}/user-survey/${encodeURIComponent(String(driResponse.surveyId))}?responseId=${encodeURIComponent(responseId)}&continueDri=1`
+      : null
+
+    return res.status(200).json({
+      paid,
+      interimScore,
+      bandPositionLabel: interimData?.bandPositionLabel ?? interimData?.fullBandPositionLabel ?? null,
+      categoryScores,
+      continueUrl,
+      emailId: driResponse?.userEmail ?? null,
+    })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ message: err?.message || 'Failed to get payment status' })
+  }
+}
+
+export const getDriFullPaymentStatus = async (req, res) => {
+  try {
+    const responseId = String(req.params.responseId || '').trim();
+    if (!responseId) {
+      return res.status(400).json({ message: 'responseId is required' });
+    }
+
+    const driResponse = await prisma.userSurveyResponse.findUnique({
+      where: { id: responseId },
+      select: { surveyId: true, userEmail: true },
+    });
+    const fullPayment = await prisma.driFullReportPayment.findUnique({
+      where: { responseId },
+      select: { paidStatus: true },
+    });
+    const fullData = await prisma.driresponseData.findUnique({
+      where: { responseId },
+      select: {
+        fullCat1: true, fullCat2: true, fullCat3: true, fullCat4: true, fullCat5: true,
+        fullCat6: true, fullCat7: true, fullCat8: true, fullCat9: true, fullCat10: true,
+        fullBandPositionLabel: true,
+        fullScorePercent: true,
+      },
+    });
+
+    const categoryScores = {
+      fullCat1: fullData?.fullCat1 ?? null,
+      fullCat2: fullData?.fullCat2 ?? null,
+      fullCat3: fullData?.fullCat3 ?? null,
+      fullCat4: fullData?.fullCat4 ?? null,
+      fullCat5: fullData?.fullCat5 ?? null,
+      fullCat6: fullData?.fullCat6 ?? null,
+      fullCat7: fullData?.fullCat7 ?? null,
+      fullCat8: fullData?.fullCat8 ?? null,
+      fullCat9: fullData?.fullCat9 ?? null,
+      fullCat10: fullData?.fullCat10 ?? null,
+    };
+    const fullScore = typeof fullData?.fullScorePercent === 'number'
+      ? fullData.fullScorePercent
+      : null;
+
+    const continueBase =
+      process.env.DEFENCE_READINESS_FULL_DRI_URL ||
+      process.env.FRONTEND_URL ||
+      process.env.CLIENT_URL ||
+      YOUR_DOMAIN;
+
+    const continueUrl = driResponse?.surveyId
+      ? `${continueBase.replace(/\/$/, '')}/user-survey/${encodeURIComponent(String(driResponse.surveyId))}?responseId=${encodeURIComponent(responseId)}&continueDri=1`
+      : null;
+
+    return res.status(200).json({
+      paid: Boolean(fullPayment?.paidStatus),
+      fullScore,
+      bandPositionLabel: fullData?.fullBandPositionLabel ?? null,
+      categoryScores,
+      continueUrl,
+      emailId: driResponse?.userEmail ?? null,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: err?.message || 'Failed to get full payment status' });
+  }
 }
 
 export const stripeWebhook = async (request, response) => {
@@ -434,6 +720,119 @@ export const stripeWebhook = async (request, response) => {
   // Return a 200 response to acknowledge receipt of the event
   response.send();
 
+};
+
+export const stripeDriWebhook = async (request, response) => {
+  const endpointSecret =
+    process.env.STRIPE_WEBHOOK_SIGNING_SECRET_DRI || '';
+  const sig = request.headers['stripe-signature'];
+
+  if (!sig) {
+    console.error('DRI Webhook Error: Missing stripe-signature header');
+    return response.status(400).send('Missing stripe-signature header');
+  }
+
+  if (!endpointSecret) {
+    console.error('DRI Webhook Error: Webhook signing secret is not configured');
+    return response.status(500).send('Webhook configuration error');
+  }
+
+  if (!request.body || !Buffer.isBuffer(request.body)) {
+    console.error('DRI Webhook Error: Request body is not a Buffer');
+    return response.status(400).send('Invalid request body format - body must be raw Buffer');
+  }
+
+  let event;
+  try {
+    event = StripeDri.webhooks.constructEvent(request.body, sig, endpointSecret);
+  } catch (err) {
+    console.error('DRI Webhook Error:', err.message);
+    return response.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const checkoutSession = event.data.object;
+    const { responseId, purchaseType } = checkoutSession.metadata || {};
+
+    if (!responseId) {
+      console.warn('DRI Webhook: Missing metadata.responseId');
+      return response.send();
+    }
+
+    const isInterim = purchaseType === 'dri-interim';
+    const isFullReport = purchaseType === 'dri-full-report';
+
+    if (!isInterim && !isFullReport) {
+      return response.send();
+    }
+
+    try {
+      const driResponse = await prisma.userSurveyResponse.findUnique({
+        where: { id: String(responseId) },
+      });
+
+      if (!driResponse) {
+        console.warn('DRI Webhook: No userSurveyResponse for responseId', responseId);
+        return response.send();
+      }
+
+      const stripeId = checkoutSession.id;
+      const emailId =
+        checkoutSession.customer_details?.email ||
+        checkoutSession.customer_email ||
+        driResponse.userEmail ||
+        'unknown';
+
+      if (isInterim) {
+        await prisma.driInterim10SummaryPayment.upsert({
+          where: { responseId: String(responseId) },
+          update: {
+            paidStatus: true,
+            stripeId,
+            emailId,
+          },
+          create: {
+            responseId: String(responseId),
+            paidStatus: true,
+            stripeId,
+            emailId,
+          },
+        });
+      }
+
+      if (isFullReport) {
+        await prisma.driFullReportPayment.upsert({
+          where: { responseId: String(responseId) },
+          update: {
+            paidStatus: true,
+            stripeId,
+            emailId,
+          },
+          create: {
+            responseId: String(responseId),
+            paidStatus: true,
+            stripeId,
+            emailId,
+          },
+        });
+      }
+
+      // Unlock by allowing the confirmation-email job to run again.
+      // The job sends the interim score/report when responseConfirmationEmailSentAt is null.
+      if (driResponse.responseConfirmationEmailSentAt !== null) {
+        if (isInterim) {
+          await prisma.userSurveyResponse.update({
+            where: { id: String(responseId) },
+            data: { responseConfirmationEmailSentAt: null },
+          });
+        }
+      }
+    } catch (err) {
+      console.error('DRI Webhook unlock error:', err?.message || err);
+    }
+  }
+
+  return response.send();
 };
 
 const calculatePrice = (users) => {

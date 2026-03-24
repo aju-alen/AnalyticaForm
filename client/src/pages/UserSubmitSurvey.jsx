@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { backendUrl } from '../utils/backendUrl'
-import { useParams,useNavigate } from 'react-router-dom'
+import { useParams,useNavigate, useSearchParams } from 'react-router-dom'
 import SelectSingleCheckBox from '../components/SelectSingleCheckBox'
 import SelectSingleRadio from '../components/SelectSingleRadio'
 import IntroductionForm from '../components/IntroductionForm'
@@ -53,7 +53,16 @@ import { CheckCircle } from 'lucide-react';
 
 const UserSubmitSurvey = () => {
     const { surveyId,surveyTitle } = useParams();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const isDefenceReadinessSurvey =
+        surveyId && surveyId === import.meta.env.VITE_DEFENCE_READINESS_SURVEY_ID;
+    const continueResponseId = (searchParams.get('responseId') || '').trim();
+    const continueDriFlag = (searchParams.get('continueDri') || '').trim();
+    const isDriContinueSession =
+        isDefenceReadinessSurvey &&
+        Boolean(continueResponseId) &&
+        (continueDriFlag === '1' || continueDriFlag.toLowerCase() === 'true');
 
     const [openDrawer, setOpenDrawer] = React.useState(false);
 
@@ -73,7 +82,11 @@ const UserSubmitSurvey = () => {
     const [skippedFields, setSkippedFields] = useState([]);
     const [startDate, setStartDate] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isSubmittingResponse, setIsSubmittingResponse] = useState(false);
     const [open, setOpen] = React.useState(false);
+    const [driInterimModalOpen, setDriInterimModalOpen] = useState(false);
+    const [driInterimSubmitted, setDriInterimSubmitted] = useState(false);
+    const [driInterimSubmitting, setDriInterimSubmitting] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
     const handleClickOpen = () => {
@@ -82,6 +95,75 @@ const UserSubmitSurvey = () => {
   
     const handleClose = () => {
       setOpen(false);
+    };
+
+    const handleDriInterimModalClose = () => {
+        if (!isDefenceReadinessSurvey) return;
+        if (driInterimSubmitting) return;
+        setDriInterimModalOpen(false);
+    };
+
+    const handleDriInterimEmailSubmit = async (event) => {
+        event.preventDefault();
+        if (!isDefenceReadinessSurvey) return;
+        const email = (formData.userEmail || '').trim();
+        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!emailOk) {
+            setSnackbar({
+                open: true,
+                message: 'Please enter a valid email address.',
+                severity: 'warning',
+            });
+            return;
+        }
+        setDriInterimSubmitting(true);
+        try {
+            const firstTenAnswered = (surveyData?.surveyForms || [])
+                .filter((form) => form?.formType !== 'IntroductionForm')
+                .filter((form) => Array.isArray(form?.selectedValue) && form.selectedValue.length > 0)
+                .slice(0, 10)
+                .map((form, i) => ({
+                    formType: form.formType,
+                    question: form.question,
+                    questionId: i + 1,
+                    selectedValue: form.selectedValue.map((option) => option),
+                }));
+
+            const formQuestions = firstTenAnswered.map((form) => ({
+                [form.question]: form.selectedValue.map((option) => option.answer ?? option.value ?? ''),
+            }));
+
+            await axios.post(
+                `${backendUrl}/api/user-response-survey/submit-dri-interim/${surveyId}`,
+                {
+                    userEmail: email,
+                    userResponse: firstTenAnswered,
+                    formQuestions,
+                    introduction: false,
+                    userTimeSpent: startDate
+                        ? `${Math.floor((Date.now() - startDate) / 60000)}m ${Math.round(((Date.now() - startDate) % 60000) / 1000)}s`
+                        : '0m 0s',
+                }
+            );
+
+            setFormData((prev) => ({ ...prev, userEmail: email }));
+            setDriInterimModalOpen(false);
+            setDriInterimSubmitted(true);
+            setSnackbar({
+                open: true,
+                message: 'Interim summary saved. Check your email for the link to continue.',
+                severity: 'success',
+            });
+        } catch (err) {
+            console.log(err);
+            setSnackbar({
+                open: true,
+                message: 'Could not save interim summary right now. Please try again.',
+                severity: 'error',
+            });
+        } finally {
+            setDriInterimSubmitting(false);
+        }
     };
 
 
@@ -189,6 +271,8 @@ const UserSubmitSurvey = () => {
 
     const handleSaveForm = async (e) => {
         e.preventDefault();
+        if (isSubmittingResponse) return;
+        setIsSubmittingResponse(true);
 
         try {
             //response time calculation
@@ -445,7 +529,8 @@ const UserSubmitSurvey = () => {
                 userEmail: formData.userEmail,
                 formQuestions: formQuestions,
                 introduction: introduction,
-                userTimeSpent: timeSpentString
+                userTimeSpent: timeSpentString,
+                responseId: isDriContinueSession ? continueResponseId : undefined
 
 
             }
@@ -454,12 +539,22 @@ const UserSubmitSurvey = () => {
             
 
             const sendUserResp = await axios.post(`${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`, finalData);
+            const savedResponseId = sendUserResp?.data?.createUserResponse?.id;
+            const isFullDriSubmission = isDefenceReadinessSurvey && data.length >= 50;
+            if (isFullDriSubmission && savedResponseId) {
+                const driPageBase = (import.meta.env.VITE_DRI_BASE_URL || 'http://localhost:5174').replace(/\/$/, '');
+                window.location.assign(`${driPageBase}/full-payment-summary/${encodeURIComponent(String(savedResponseId))}`);
+                return;
+            }
             setResponseSubmitted(true);
             setIsLoading(false);
             console.log(sendUserResp, 'sendUserResp');
         }
         catch (err) {
             console.log(err);
+        }
+        finally {
+            setIsSubmittingResponse(false);
         }
 
     }
@@ -468,8 +563,53 @@ const UserSubmitSurvey = () => {
     useEffect(() => {
         const fetchSurveyData = async () => {
             try {
-                const surveyData = await axios.get(`${backendUrl}/api/user-response-survey/get-one-survey/user/${surveyId}`);
-                setSurveyData(surveyData.data);
+                const surveyDataResp = await axios.get(`${backendUrl}/api/user-response-survey/get-one-survey/user/${surveyId}`);
+                let nextSurveyData = surveyDataResp.data;
+
+                if (isDriContinueSession) {
+                    const resumeResp = await axios.get(
+                        `${backendUrl}/api/user-response-survey/dri-interim-response/${surveyId}/${encodeURIComponent(continueResponseId)}`
+                    );
+                    const savedAnswers = Array.isArray(resumeResp?.data?.userResponse)
+                        ? resumeResp.data.userResponse
+                        : [];
+
+                    let answeredIndex = 0;
+                    const mergedSurveyForms = (nextSurveyData?.surveyForms || []).map((form) => {
+                        if (form?.formType === 'IntroductionForm') {
+                            return form;
+                        }
+                        if (answeredIndex >= savedAnswers.length) {
+                            return form;
+                        }
+
+                        const savedForm = savedAnswers[answeredIndex];
+                        answeredIndex += 1;
+
+                        return {
+                            ...form,
+                            selectedValue: Array.isArray(savedForm?.selectedValue)
+                                ? savedForm.selectedValue
+                                : form.selectedValue,
+                        };
+                    });
+
+                    nextSurveyData = {
+                        ...nextSurveyData,
+                        surveyForms: mergedSurveyForms,
+                    };
+
+                    setFormData((prev) => ({
+                        ...prev,
+                        userEmail: resumeResp?.data?.userEmail || prev.userEmail,
+                    }));
+                    setIntroduction(false);
+                    setWelcomePage(false);
+                    setDriInterimSubmitted(true);
+                    setCurrentIndex(11);
+                }
+
+                setSurveyData(nextSurveyData);
                 setStartDate(Date.now());
             }
             catch (err) {
@@ -477,7 +617,7 @@ const UserSubmitSurvey = () => {
             }
         }
         fetchSurveyData();
-    }, [])
+    }, [continueResponseId, isDriContinueSession, surveyId])
 
     useEffect(() => {
         const checkIfUserViewedSurvey = async () => {
@@ -491,6 +631,25 @@ const UserSubmitSurvey = () => {
         }
         checkIfUserViewedSurvey();
     }, []);
+
+    useEffect(() => {
+        if (!isDefenceReadinessSurvey || introduction || driInterimSubmitted || isDriContinueSession) {
+            return;
+        }
+        if (currentIndex >= 11) {
+            setDriInterimModalOpen(true);
+        } else {
+            setDriInterimModalOpen(false);
+        }
+    }, [currentIndex, isDefenceReadinessSurvey, introduction, driInterimSubmitted, isDriContinueSession]);
+
+    useEffect(() => {
+        if (!isDefenceReadinessSurvey) {
+            setDriInterimModalOpen(false);
+            setDriInterimSubmitted(false);
+        }
+    }, [isDefenceReadinessSurvey]);
+
     console.log(surveyData, 'surveyData');
 
 
@@ -541,9 +700,17 @@ const UserSubmitSurvey = () => {
                             <Button 
                               variant="contained" 
                               type="submit"
+                              disabled={isSubmittingResponse}
                               className="w-full py-4 text-lg bg-blue-600 hover:bg-blue-700"
                             >
-                              Submit Response
+                              {isSubmittingResponse ? (
+                                <span className="inline-flex items-center gap-2">
+                                  <CircularProgress size={18} color="inherit" />
+                                  Submitting...
+                                </span>
+                              ) : (
+                                'Submit Response'
+                              )}
                             </Button>
                           </div>
                         </form>
@@ -1438,16 +1605,24 @@ const UserSubmitSurvey = () => {
                        <h1 className="text-3xl md:text-4xl font-bold mb-4">
                         {surveyData.surveyTitle}
                        </h1>
-                       {/* <p className="text-blue-100 text-lg max-w-xl mx-auto">
-                        {surveyData.surveyDescription}
-                       </p> */}
+                       {isDefenceReadinessSurvey && (
+                        <div className="text-blue-100 text-base md:text-lg max-w-xl mx-auto mt-2 space-y-2 text-left">
+                          <p>
+                            In 5 minutes, measure how prepared you are for your PhD viva defense — and spot the gaps before examiners do.
+                          </p>
+                            <p><span className="font-bold">- 50-question DRI built around real viva readiness factors</span></p>
+                            <p><span className="font-bold">- Start free (no signup)</span></p>
+                            <p><span className="font-bold">- Get a personalized report + score when you&apos;re ready</span></p>
+                        </div>
+                       )}
                      </motion.div>
                    </div>
                  </div>
          
                  {/* Content Section */}
                  <div className="px-8 py-12">
-                   {/* Features Grid */}
+                   {/* Features Grid (hidden for defence readiness survey) */}
+                   {!isDefenceReadinessSurvey && (
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                      {features.map((feature, index) => (
                        <motion.div
@@ -1467,33 +1642,47 @@ const UserSubmitSurvey = () => {
                        </motion.div>
                      ))}
                    </div>
+                   )}
          
                    {/* Start Button */}
                    <motion.div
                      initial={{ opacity: 0 }}
                      animate={{ opacity: 1 }}
                      transition={{ delay: 0.8 }}
-                     className="text-center"
+                     className="text-center w-full"
                    >
+                    <div className="flex flex-col items-center justify-center gap-2 sm:gap-3 w-full max-w-lg mx-auto px-2 sm:px-0">
                      <button
+                       type="button"
                        onClick={handleChangeIntroduction}
-                       className="group relative inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-200 ease-in-out hover:shadow-lg hover:shadow-blue-500/25"
+                       className="group relative inline-flex w-full sm:w-auto min-w-0 max-w-full flex-wrap sm:flex-nowrap items-center justify-center gap-x-2 gap-y-1 px-4 sm:px-8 py-3 text-base sm:text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-200 ease-in-out hover:shadow-lg hover:shadow-blue-500/25"
                      >
-                       <span>Start Survey</span>
-                       <svg 
-                         className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" 
-                         fill="none" 
-                         stroke="currentColor" 
+                       <span className="text-center leading-snug">
+                         {isDefenceReadinessSurvey
+                           ? 'Start Free DRI Assessment (Question 1)'
+                           : 'Start Survey'}
+                       </span>
+                       <svg
+                         className="shrink-0 w-5 h-5 transition-transform group-hover:translate-x-1"
+                         fill="none"
+                         stroke="currentColor"
                          viewBox="0 0 24 24"
+                         aria-hidden
                        >
-                         <path 
-                           strokeLinecap="round" 
-                           strokeLinejoin="round" 
-                           strokeWidth={2} 
-                           d="M13 7l5 5m0 0l-5 5m5-5H6" 
+                         <path
+                           strokeLinecap="round"
+                           strokeLinejoin="round"
+                           strokeWidth={2}
+                           d="M13 7l5 5m0 0l-5 5m5-5H6"
                          />
                        </svg>
                      </button>
+                     {isDefenceReadinessSurvey && (
+                       <p className="text-gray-600 text-xs sm:text-sm text-center max-w-sm leading-relaxed px-1">
+                         No email required until after Question 10.
+                       </p>
+                     )}
+                     </div>
 
                    </motion.div>
                  </div>
@@ -1519,7 +1708,40 @@ const UserSubmitSurvey = () => {
                     </Button>
                 </div>)
                 }
-                {(surveyData.surveyForms && !introduction) && renderCurrentComponent()}
+                {(surveyData.surveyForms && !introduction) && (
+                    isDefenceReadinessSurvey && currentIndex >= 11 && !isDriContinueSession ? (
+                        <div className="w-full min-h-[60vh] flex items-center justify-center px-4">
+                            <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-8 text-center">
+                                {driInterimSubmitted ? (
+                                    <>
+                                        <h2 className="text-2xl font-bold text-blue-700 mb-3">
+                                            Interim summary requested
+                                        </h2>
+                                        <p className="text-gray-700">
+                                            Check your email to continue and unlock your DRI interim report access link.
+                                        </p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h2 className="text-2xl font-bold text-blue-700 mb-3">
+                                            Want your interim readiness summary?
+                                        </h2>
+                                        <p className="text-gray-700 mb-5">
+                                            Submit your email to get your first 10-answer summary and interim access link.
+                                        </p>
+                                        <Button
+                                            variant="contained"
+                                            disabled={driInterimSubmitting}
+                                            onClick={() => setDriInterimModalOpen(true)}
+                                        >
+                                            Email My DRI Interim Summary
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    ) : renderCurrentComponent()
+                )}
 
             </div>
             <AppBar position="fixed" sx={{ display: { xs: "none", md: "block" } }} >
@@ -1646,6 +1868,78 @@ const UserSubmitSurvey = () => {
           <Button type="submit">Send Report</Button>
         </DialogActions>
       </Dialog>
+
+      {isDefenceReadinessSurvey && (
+      <Dialog
+        open={driInterimModalOpen}
+        onClose={handleDriInterimModalClose}
+        maxWidth="sm"
+        fullWidth
+        BackdropProps={{
+          sx: {
+            backdropFilter: 'blur(8px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.35)',
+          },
+        }}
+        PaperProps={{
+          component: 'form',
+          onSubmit: handleDriInterimEmailSubmit,
+          sx: {
+            backgroundColor: '#ffffff',
+            opacity: 1,
+          },
+        }}
+      >
+        <DialogTitle sx={{ pr: 6 }}>
+          Want your interim readiness summary?
+        </DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 0.5 }}>
+            <Typography variant="body1" color="text.primary">
+              A clear summary of your first 10 answers (no score yet)
+            </Typography>
+            <Typography variant="body1" color="text.primary">
+              A private link to unlock your interim DRI score + interim report
+            </Typography>
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="dri-interim-email"
+              name="driInterimEmail"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="outlined"
+              value={formData.userEmail}
+              disabled={driInterimSubmitting}
+              onChange={(e) =>
+                setFormData({ ...formData, userEmail: e.target.value })
+              }
+            />
+            <Typography variant="caption" color="text.secondary" display="block">
+              We&apos;ll only use this to send your DRI links and report access
+            </Typography>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, justifyContent: 'flex-end' }}>
+          <Button type="submit" variant="contained" color="primary" disabled={driInterimSubmitting}>
+            {driInterimSubmitting ? 'Submitting...' : 'Email My DRI Interim Summary'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      )}
+
+      {driInterimSubmitting && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/50">
+          <div className="rounded-xl bg-white px-8 py-6 shadow-xl text-center">
+            <CircularProgress size={36} />
+            <Typography sx={{ mt: 2, fontWeight: 600 }}>
+              Submitting your interim summary...
+            </Typography>
+          </div>
+        </div>
+      )}
 
       {/* Snackbar for alerts */}
       <Snackbar

@@ -99,6 +99,73 @@ model UserSurveyResponse{
 
   survey Survey @relation(fields: [surveyId], references: [id])
   surveyId String
+
+  // Payment records created when users purchase interim/full DRI access
+  driInterim10SummaryPayments DriInterim10SummaryPayment[]
+  driFullReportPayments       DriFullReportPayment[]
+  driresponseData             DriresponseData?
+}
+
+model DriInterim10SummaryPayment {
+  id        String   @id @default(cuid())
+  responseId String  @unique
+  paidStatus Boolean @default(false)
+  stripeId   String  @unique
+  emailId    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  response   UserSurveyResponse @relation(fields: [responseId], references: [id])
+}
+
+model DriFullReportPayment {
+  id        String   @id @default(cuid())
+  responseId String  @unique
+  paidStatus Boolean @default(false)
+  stripeId   String  @unique
+  emailId    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  response   UserSurveyResponse @relation(fields: [responseId], references: [id])
+}
+
+model DriresponseData {
+  id        String   @id @default(cuid())
+  responseId String  @unique
+  // Interim score derived from Q1-Q10 responses (normalized to ~0-10).
+  cat1 Float?
+  cat2 Float?
+  cat3 Float?
+  cat4 Float?
+  cat5 Float?
+  cat6 Float?
+  cat7 Float?
+  cat8 Float?
+  cat9 Float?
+  cat10 Float?
+  fullCat1 Float?
+  fullCat2 Float?
+  fullCat3 Float?
+  fullCat4 Float?
+  fullCat5 Float?
+  fullCat6 Float?
+  fullCat7 Float?
+  fullCat8 Float?
+  fullCat9 Float?
+  fullCat10 Float?
+  fullBandPositionLabel String?
+  fullScorePercent Float?
+  htmlContent String? @db.LongText
+  fullHtmlContent String? @db.LongText
+  // Qualitative band derived from the interim score.
+  bandPositionLabel     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  response UserSurveyResponse @relation(fields: [responseId], references: [id])
+
+  @@map("driresponseData")
 }
 
 model ResponsePurchase {

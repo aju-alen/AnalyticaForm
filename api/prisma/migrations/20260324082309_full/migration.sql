@@ -1,0 +1,13 @@
+-- AlterTable
+ALTER TABLE `driresponseData` ADD COLUMN `fullBandPositionLabel` VARCHAR(191) NULL,
+    ADD COLUMN `fullCat1` DOUBLE NULL,
+    ADD COLUMN `fullCat10` DOUBLE NULL,
+    ADD COLUMN `fullCat2` DOUBLE NULL,
+    ADD COLUMN `fullCat3` DOUBLE NULL,
+    ADD COLUMN `fullCat4` DOUBLE NULL,
+    ADD COLUMN `fullCat5` DOUBLE NULL,
+    ADD COLUMN `fullCat6` DOUBLE NULL,
+    ADD COLUMN `fullCat7` DOUBLE NULL,
+    ADD COLUMN `fullCat8` DOUBLE NULL,
+    ADD COLUMN `fullCat9` DOUBLE NULL,
+    ADD COLUMN `fullScorePercent` DOUBLE NULL;

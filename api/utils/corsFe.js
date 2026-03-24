@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-export const frontendURL = process.env.FRONTEND_URL || ['http://localhost:5173',];
+export const frontendURL = process.env.FRONTEND_URL || ['http://localhost:5173', 'http://localhost:5174'];
 
 export const corsOptions = {
     origin :  (origin, callback) => { 
