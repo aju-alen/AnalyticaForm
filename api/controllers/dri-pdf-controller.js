@@ -2,6 +2,25 @@ import { PrismaClient } from '@prisma/client';
 import puppeteer from 'puppeteer';
 
 const prisma = new PrismaClient();
+const CHROME_EXECUTABLE_PATH =
+  process.env.PUPPETEER_EXECUTABLE_PATH ||
+  process.env.CHROME_PATH ||
+  process.env.GOOGLE_CHROME_BIN;
+
+const baseLaunchArgs = ['--no-sandbox', '--disable-setuid-sandbox'];
+
+async function launchPdfBrowser() {
+  const launchOptions = {
+    headless: true,
+    args: baseLaunchArgs,
+  };
+
+  if (CHROME_EXECUTABLE_PATH) {
+    launchOptions.executablePath = CHROME_EXECUTABLE_PATH;
+  }
+
+  return puppeteer.launch(launchOptions);
+}
 const interimCategoryNames = [
   'Research Knowledge & Foundations',
   'Writing Progress & Structure',
@@ -182,10 +201,7 @@ export const downloadDriInterimPdf = async (req, res) => {
       return res.status(404).json({ message: 'Interim report HTML content not found' });
     }
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    const browser = await launchPdfBrowser();
 
     try {
       const page = await browser.newPage();
@@ -222,6 +238,11 @@ export const downloadDriInterimPdf = async (req, res) => {
     }
   } catch (err) {
     console.error('[downloadDriInterimPdf]', err?.message || err);
+    if (String(err?.message || '').toLowerCase().includes('could not find chrome')) {
+      console.error(
+        '[downloadDriInterimPdf] Chrome not found. Ensure Puppeteer browser install runs during build, or set PUPPETEER_EXECUTABLE_PATH / CHROME_PATH.'
+      );
+    }
     return res.status(500).json({ message: 'Failed to generate PDF' });
   }
 };
@@ -252,10 +273,7 @@ export const downloadDriFullPdf = async (req, res) => {
       return res.status(404).json({ message: 'Full report HTML content not found' });
     }
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    const browser = await launchPdfBrowser();
 
     try {
       const page = await browser.newPage();
@@ -291,6 +309,11 @@ export const downloadDriFullPdf = async (req, res) => {
     }
   } catch (err) {
     console.error('[downloadDriFullPdf]', err?.message || err);
+    if (String(err?.message || '').toLowerCase().includes('could not find chrome')) {
+      console.error(
+        '[downloadDriFullPdf] Chrome not found. Ensure Puppeteer browser install runs during build, or set PUPPETEER_EXECUTABLE_PATH / CHROME_PATH.'
+      );
+    }
     return res.status(500).json({ message: 'Failed to generate full PDF' });
   }
 };
