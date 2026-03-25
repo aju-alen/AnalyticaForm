@@ -1602,7 +1602,7 @@ const UserSubmitSurvey = () => {
                        transition={{ delay: 0.2 }}
                        className="text-center"
                      >
-                       <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                      <h1 className="text-2xl md:text-4xl font-bold mb-4">
                         {surveyData.surveyTitle}
                        </h1>
                        {isDefenceReadinessSurvey && (
