@@ -1,10 +1,11 @@
 import HomeNavBar from '../components/HomeNavBar';
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
+import { Box, Button } from '@mui/material';
 import Hero from '../components/Hero';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme } from '@mui/material/styles';
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import TagManager from "react-gtm-module";
 import { useEffect } from 'react';
 import {motion} from 'framer-motion';
@@ -12,6 +13,10 @@ import {motion} from 'framer-motion';
 
 export default function Home() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const searchParams = new URLSearchParams(location.search);
+  const survey = searchParams.get('survey');
 
   const [mode, setMode] = React.useState(localStorage.getItem('mode') === 'true' ? true : false);
   const prefersDarkMode = useMediaQuery(`(prefers-color-scheme:${mode?"light":"dark"} )`);
@@ -65,6 +70,25 @@ export default function Home() {
       <CssBaseline />
       <HomeNavBar />
       <Hero />
+
+      {survey ? (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1100,
+          }}
+        >
+          <Button
+            variant="contained"
+            onClick={() => navigate(`/user-survey/${encodeURIComponent(survey)}`)}
+          >
+            Go back to survey
+          </Button>
+        </Box>
+      ) : null}
     </div>
     </motion.div>
   );

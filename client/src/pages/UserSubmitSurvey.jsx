@@ -49,7 +49,7 @@ import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import { motion } from 'framer-motion';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, X } from 'lucide-react';
 
 const UserSubmitSurvey = () => {
     const { surveyId,surveyTitle } = useParams();
@@ -1748,7 +1748,7 @@ const UserSubmitSurvey = () => {
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="body2" color="inherit">
             Powered by 
-            <Button onClick={()=>navigate('/')} variant='text' sx={{color:'white'}}>
+            <Button onClick={()=>navigate(`/?survey=${encodeURIComponent(surveyId ?? '')}`)} variant='text' sx={{color:'white'}}>
             Dubai Analytica
             </Button>
           </Typography>
@@ -1770,7 +1770,7 @@ const UserSubmitSurvey = () => {
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="body2" color="inherit">
             Powered by 
-            <Button onClick={()=>navigate('/')} variant='text' sx={{color:'white'}}>
+            <Button onClick={()=>navigate(`/?survey=${encodeURIComponent(surveyId ?? '')}`)} variant='text' sx={{color:'white'}}>
             Dubai Analytica
             </Button>
           </Typography>
@@ -1801,6 +1801,12 @@ const UserSubmitSurvey = () => {
       
         
 
+        <MenuItem>
+           <Button variant="body2" color="inherit" onClick={toggleDrawer(false)}>
+             <X className="w-6 h-6" />
+           </Button>
+        </MenuItem>
+        
         <MenuItem>
            <Button variant="body2" color="inherit" onClick={() => navigate('/login')}>
               Create Your Own Survey
