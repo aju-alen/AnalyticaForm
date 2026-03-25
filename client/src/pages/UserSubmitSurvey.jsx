@@ -1606,7 +1606,7 @@ const UserSubmitSurvey = () => {
                         {surveyData.surveyTitle}
                        </h1>
                        {isDefenceReadinessSurvey && (
-                        <div className="text-blue-100 text-base md:text-lg max-w-xl mx-auto mt-2 space-y-2 text-left">
+                        <div className="text-blue-100 text-sm md:text-lg max-w-xl mx-auto mt-2 space-y-2 text-left">
                           <p>
                             In 5 minutes, measure how prepared you are for your PhD viva defense — and spot the gaps before examiners do.
                           </p>
