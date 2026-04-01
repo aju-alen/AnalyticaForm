@@ -236,6 +236,7 @@ export const getDefenceReadinessInterimResponseForUser = async (req, res) => {
 export const postDefenceReadinessInterimSummaryForUser = async (req, res) => {
     const surveyId = req.params.surveyId;
     const configuredSurveyId = process.env.DEFENCE_READINESS_SURVEY_ID;
+    const guardedDriSurveyId = 'cmlyr2y9d00d7110v520atode';
 
     if (!configuredSurveyId || surveyId !== configuredSurveyId) {
         return res.status(403).send({ message: 'Forbidden for this survey' });
@@ -253,6 +254,23 @@ export const postDefenceReadinessInterimSummaryForUser = async (req, res) => {
         : [];
 
     try {
+        if (surveyId === guardedDriSurveyId) {
+            const existingInterimResponse = await prisma.userSurveyResponse.findFirst({
+                where: {
+                    surveyId,
+                    userEmail: trimmedEmail,
+                },
+                select: { id: true },
+            });
+
+            if (existingInterimResponse) {
+                return res.status(409).send({
+                    message: 'This email has already been used to create a DRI interim summary. Please refer to the previously sent email link.',
+                    code: 'DRI_EMAIL_ALREADY_USED',
+                });
+            }
+        }
+
         const createUserResponse = await prisma.userSurveyResponse.create({
             data: {
                 surveyId,

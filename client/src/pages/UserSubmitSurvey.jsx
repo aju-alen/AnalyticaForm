@@ -72,6 +72,8 @@ const UserSubmitSurvey = () => {
 
     const [surveyData, setSurveyData] = React.useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
+    console.log(currentIndex, 'currentIndex');
+    
     const [introduction, setIntroduction] = useState(true)
     const [welcomePage, setWelcomePage] = useState(true)
     const [responseSubmitted, setResponseSubmitted] = useState(false);
@@ -85,6 +87,7 @@ const UserSubmitSurvey = () => {
     const [isSubmittingResponse, setIsSubmittingResponse] = useState(false);
     const [open, setOpen] = React.useState(false);
     const [driInterimModalOpen, setDriInterimModalOpen] = useState(false);
+    const [driEmailAlreadyUsedModalOpen, setDriEmailAlreadyUsedModalOpen] = useState(false);
     const [driInterimSubmitted, setDriInterimSubmitted] = useState(false);
     const [driInterimSubmitting, setDriInterimSubmitting] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
@@ -101,6 +104,9 @@ const UserSubmitSurvey = () => {
         if (!isDefenceReadinessSurvey) return;
         if (driInterimSubmitting) return;
         setDriInterimModalOpen(false);
+        if (currentIndex === 10) {
+            setCurrentIndex(11);
+        }
     };
 
     const handleDriInterimEmailSubmit = async (event) => {
@@ -156,6 +162,15 @@ const UserSubmitSurvey = () => {
             });
         } catch (err) {
             console.log(err);
+            const duplicateDriEmail =
+                err?.response?.status === 409 &&
+                err?.response?.data?.code === 'DRI_EMAIL_ALREADY_USED';
+
+            if (duplicateDriEmail) {
+                setDriInterimModalOpen(false);
+                setDriEmailAlreadyUsedModalOpen(true);
+                return;
+            }
             setSnackbar({
                 open: true,
                 message: 'Could not save interim summary right now. Please try again.',
@@ -636,7 +651,7 @@ const UserSubmitSurvey = () => {
         if (!isDefenceReadinessSurvey || introduction || driInterimSubmitted || isDriContinueSession) {
             return;
         }
-        if (currentIndex >= 11) {
+        if (currentIndex === 10) {
             setDriInterimModalOpen(true);
         } else {
             setDriInterimModalOpen(false);
@@ -1709,7 +1724,7 @@ const UserSubmitSurvey = () => {
                 </div>)
                 }
                 {(surveyData.surveyForms && !introduction) && (
-                    isDefenceReadinessSurvey && currentIndex >= 11 && !isDriContinueSession ? (
+                    isDefenceReadinessSurvey && currentIndex === 10 && !isDriContinueSession ? (
                         <div className="w-full min-h-[60vh] flex items-center justify-center px-4">
                             <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-8 text-center">
                                 {driInterimSubmitted ? (
@@ -1718,7 +1733,7 @@ const UserSubmitSurvey = () => {
                                             Interim summary requested
                                         </h2>
                                         <p className="text-gray-700">
-                                            Check your email to continue and unlock your DRI interim report access link.
+                                        Check your email to unlock your Interim DRI report and continue.
                                         </p>
                                     </>
                                 ) : (
@@ -1931,6 +1946,28 @@ const UserSubmitSurvey = () => {
         <DialogActions sx={{ px: 3, pb: 2, justifyContent: 'flex-end' }}>
           <Button type="submit" variant="contained" color="primary" disabled={driInterimSubmitting}>
             {driInterimSubmitting ? 'Submitting...' : 'Email My DRI Interim Summary'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      )}
+
+      {isDefenceReadinessSurvey && (
+      <Dialog
+        open={driEmailAlreadyUsedModalOpen}
+        onClose={() => setDriEmailAlreadyUsedModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Email already used for DRI</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" color="text.primary">
+            This email has already been used to create your DRI interim summary earlier.
+            Please refer to the email link that was already sent to continue.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDriEmailAlreadyUsedModalOpen(false)} variant="contained">
+            OK
           </Button>
         </DialogActions>
       </Dialog>
