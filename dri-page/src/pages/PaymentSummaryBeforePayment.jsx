@@ -37,6 +37,9 @@ export default function PaymentSummaryBeforePayment() {
     emailId: null,
   })
 
+  console.log(status, 'status');
+  
+
   const apiBaseUrl =
     import.meta.env.VITE_API_BASE_URL_DRI || 'http://localhost:3001'
 

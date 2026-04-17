@@ -141,7 +141,7 @@ function buildInterimCtaUrl(responseId) {
 }
 
 const DRI_INTERIM_WATERMARK_LOGO_URL =
-  'https://i.postimg.cc/ZYDC5pz4/phdsuccess-logo-page-0001.jpg';
+  'https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/phdsuccess_logo_page-0001.jpg';
 const DRI_INTERIM_FOOTER_ADDRESS =
   'Gate Avenue, Zone D, Level 1, 201, Al Mustaqbal St, Dubai, UAE.';
 

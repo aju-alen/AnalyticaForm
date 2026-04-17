@@ -136,7 +136,7 @@ function extractBodyFragment(html) {
 
 function buildFullHtmlDocument(bodyInnerHtml) {
   const inner = String(bodyInnerHtml || '').trim();
-  const logo = 'https://i.postimg.cc/ZYDC5pz4/phdsuccess-logo-page-0001.jpg';
+  const logo = 'https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/phdsuccess_logo_page-0001.jpg';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>

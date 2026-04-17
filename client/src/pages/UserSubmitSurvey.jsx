@@ -1767,6 +1767,7 @@ const UserSubmitSurvey = () => {
             Dubai Analytica
             </Button>
           </Typography>
+          {surveyId !== 'cmlyr2y9d00d7110v520atode' && (
           <Stack spacing={1} direction="row" alignItems="center">
             <Typography variant="body2" color="inherit">
               Create Your Own Survey
@@ -1775,6 +1776,7 @@ const UserSubmitSurvey = () => {
               Create Survey
             </Button>
           </Stack>
+          )}
           <Button variant="body2" color="inherit" onClick={handleClickOpen}>
             Report Abuse
           </Button>
