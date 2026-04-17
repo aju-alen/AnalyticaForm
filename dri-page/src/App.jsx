@@ -23,7 +23,7 @@ function App() {
     <Routes>
       
       <Route
-        path="/payment-summary/:responseId"
+        path="/interim-report/:responseId"
         element={<PaymentSummaryBeforePayment />}
       />
       <Route
