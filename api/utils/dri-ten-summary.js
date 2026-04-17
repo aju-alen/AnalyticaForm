@@ -136,8 +136,8 @@ function buildInterimCtaUrl(responseId) {
   const cleanBase = String(base || '').replace(/\/$/, '');
   const rid = encodeURIComponent(String(responseId || ''));
 
-  if (cleanBase) return `${cleanBase}/payment-summary/${rid}`;
-  return `/payment-summary/${rid}`;
+  if (cleanBase) return `${cleanBase}/interim-report/${rid}`;
+  return `/interim-report/${rid}`;
 }
 
 const DRI_INTERIM_WATERMARK_LOGO_URL =

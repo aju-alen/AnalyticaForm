@@ -1,0 +1,1783 @@
+[
+    {
+      "id": "a7fa7",
+      "options": [
+        {
+          "id": "7fa7c",
+          "value": "",
+          "question": ""
+        }
+      ],
+      "formType": "EmailAddressForm",
+      "question": "Email",
+      "quilText": "<p><strong>Email</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ]
+    },
+    {
+        "id": "2131f",
+        "options": [
+          {
+            "id": "f7554",
+            "value": "Not defined"
+          },
+          {
+            "id": "7554c",
+            "value": "Somewhat defined but unclear"
+          },
+          {
+            "id": "7506f",
+            "value": "Clear but not fully articulated"
+          },
+          {
+            "id": "6f6b9",
+            "value": "Very clear and well-articulated"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q1. How well defined is your research problem?",
+        "quilText": "<p><strong>Q1. How well defined is your research problem?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      }, 
+    {
+        "id": "e55b7",
+        "options": [
+          {
+            "id": "2506e",
+            "value": "Not structured"
+          },
+          {
+            "id": "506e9",
+            "value": "Rough draft only"
+          },
+          {
+            "id": "d2f85",
+            "value": "Structure mostly in place"
+          },
+          {
+            "id": "6d7f9",
+            "value": "Clear, well-organised chapters"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q2. How well structured are your chapters?",
+        "quilText": "<p><strong>Q2. How well structured are your chapters?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+    {
+        "id": "d8d28",
+        "options": [
+          {
+            "id": "d3435",
+            "value": "Not prepared"
+          },
+          {
+            "id": "34358",
+            "value": "Occasionally prepared"
+          },
+          {
+            "id": "2a30d",
+            "value": "Mostly prepared"
+          },
+          {
+            "id": "0d4f5",
+            "value": "Always well-prepared"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q3. How well do you prepare for meetings?",
+        "quilText": "<p><strong>Q3. How well do you prepare for meetings?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+    {
+        "id": "ba686",
+        "options": [
+          {
+            "id": "093e4",
+            "value": "Not well"
+          },
+          {
+            "id": "93e4e",
+            "value": "Sometimes"
+          },
+          {
+            "id": "a231a",
+            "value": "Mostly good"
+          },
+          {
+            "id": "d5768",
+            "value": "Very well-prioritised"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q4. How well do you prioritize tasks?",
+        "quilText": "<p><strong>Q4. How well do you prioritize tasks?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+    {
+        "id": "4c523",
+        "options": [
+          {
+            "id": "51f90",
+            "value": "Very poorly"
+          },
+          {
+            "id": "1f907",
+            "value": "Not well"
+          },
+          {
+            "id": "9b3cd",
+            "value": "Fairly well"
+          },
+          {
+            "id": "cd21b",
+            "value": "Very effectively"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q5. How effectively do you manage distractions?",
+        "quilText": "<p><strong>Q5. How effectively do you manage distractions?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+    {
+        "id": "bff07",
+        "options": [
+          {
+            "id": "930a9",
+            "value": "Overwhelming"
+          },
+          {
+            "id": "30a91",
+            "value": "High"
+          },
+          {
+            "id": "b7e76",
+            "value": "Manageable"
+          },
+          {
+            "id": "d7048",
+            "value": "Well-managed"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q6. How manageable is your PhD-related stress?",
+        "quilText": "<p><strong>Q6. How manageable is your PhD-related stress?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+    {
+        "id": "e7b74",
+        "options": [
+          {
+            "id": "5d172",
+            "value": "Very poor"
+          },
+          {
+            "id": "d1721",
+            "value": "Poor"
+          },
+          {
+            "id": "56e21",
+            "value": "Good"
+          },
+          {
+            "id": "21393",
+            "value": "Very good"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q7. How well do you maintain work-life balance?",
+        "quilText": "<p><strong>Q7. How well do you maintain work-life balance?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+    {
+        "id": "503b7",
+        "options": [
+          {
+            "id": "02add",
+            "value": "Not easily"
+          },
+          {
+            "id": "2add4",
+            "value": "With difficulty"
+          },
+          {
+            "id": "c455c",
+            "value": "Fairly well"
+          },
+          {
+            "id": "7dec3",
+            "value": "Very well"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q8. How easily do you overcome setbacks?",
+        "quilText": "<p><strong>Q8. How easily do you overcome setbacks?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+    {
+      "id": "f76c1",
+      "options": [
+        {
+          "id": "c1da1",
+          "value": "I don't understand the theoretical foundations"
+        },
+        {
+          "id": "6ed9f",
+          "value": "I have partial understanding"
+        },
+        {
+          "id": "e2d3b",
+          "value": "I understand the core concepts"
+        },
+        {
+          "id": "44a7f",
+          "value": "I clearly understand and can explain the theoretical basis"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q9. How clear are you about the theoretical foundations of your PhD?",
+      "quilText": "<p><strong>Q9. How clear are you about the theoretical foundations of your PhD?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+        "id": "4d4a4",
+        "options": [
+          {
+            "id": "ad0a5",
+            "value": "Not defined"
+          },
+          {
+            "id": "d0a56",
+            "value": "Partially defined"
+          },
+          {
+            "id": "da08d",
+            "value": "Mostly defined"
+          },
+          {
+            "id": "8d58c",
+            "value": "Very well defined"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q10. How well defined are your milestones?",
+        "quilText": "<p><strong>Q10. How well defined are your milestones?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+      {
+        "id": "f98f7",
+        "options": [
+          {
+            "id": "pkx4u",
+            "value": "",
+            "placeholder": "Name"
+          },
+          {
+            "id": "lpp12",
+            "value": "",
+            "placeholder": "Email"
+          },
+          {
+            "id": "ijn0m",
+            "value": "",
+            "placeholder": "Dicipline"
+          },
+          {
+            "id": "edc1n",
+            "value": "",
+            "placeholder": "Defence Timeline (Date)"
+          }
+        ],
+        "formType": "ContactInformationForm",
+        "question": "Fill in these details to continue with the form.",
+        "quilText": "<p><strong>Fill in these details to continue with the form.</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "id": "pkx4u",
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": "Name"
+          },
+          {
+            "id": "lpp12",
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": "Email"
+          },
+          {
+            "id": "ijn0m",
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": "Dicipline"
+          },
+          {
+            "id": "edc1n",
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": "Defence Timeline (Date)"
+          }
+        ]
+      },
+      {
+        "id": "90aef",
+        "options": [
+          {
+            "id": "0825a",
+            "value": "Not prepared"
+          },
+          {
+            "id": "825a7",
+            "value": "Somewhat prepared"
+          },
+          {
+            "id": "4f26b",
+            "value": "Mostly prepared"
+          },
+          {
+            "id": "6be4c",
+            "value": "Very prepared"
+          }
+        ],
+        "formType": "SinglePointForm",
+        "question": "Q11. How prepared are you for potential defense questions?",
+        "quilText": "<p><strong>Q11. How prepared are you for potential defense questions?</strong></p>",
+        "formMandate": true,
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ],
+        "hasOtherOption": false
+      },
+    {
+      "id": "ec5f2",
+      "options": [
+        {
+          "id": "be11d",
+          "value": "Very limited"
+        },
+        {
+          "id": "e11d7",
+          "value": "Some basic sources"
+        },
+        {
+          "id": "d51e1",
+          "value": "Solid understanding of key authors"
+        },
+        {
+          "id": "e1c02",
+          "value": "Strong, comprehensive understanding of the field"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q12. How confident are you in your literature background?",
+      "quilText": "<p><strong>Q12. How confident are you in your literature background?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "0f735",
+      "options": [
+        {
+          "id": "20366",
+          "value": "Unclear"
+        },
+        {
+          "id": "0366c",
+          "value": "I know the basics"
+        },
+        {
+          "id": "fcb5f",
+          "value": "Clear but need refinement"
+        },
+        {
+          "id": "5fa6a",
+          "value": "Very clear and logically structured"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q13. How strong is your understanding of your study design?",
+      "quilText": "<p><strong>Q13. How strong is your understanding of your study design?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "89966",
+      "options": [
+        {
+          "id": "9c3bc",
+          "value": "Not clear"
+        },
+        {
+          "id": "c3bc1",
+          "value": "Somewhat clear"
+        },
+        {
+          "id": "1f7be",
+          "value": "Mostly clear"
+        },
+        {
+          "id": "ab429",
+          "value": "Very clear & well-articulated"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q14. How clear are you about the contribution your PhD will make?",
+      "quilText": "<p><strong>Q14. How clear are you about the contribution your PhD will make?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "c6302",
+      "options": [
+        {
+          "id": "9c51e",
+          "value": "No progress"
+        },
+        {
+          "id": "c51e5",
+          "value": "Very inconsistent"
+        },
+        {
+          "id": "890c1",
+          "value": "Fairly consistent"
+        },
+        {
+          "id": "c1a60",
+          "value": "Strong, regular writing progress"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q15. How consistent is your writing progress?",
+      "quilText": "<p><strong>Q15. How consistent is your writing progress?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "9c54c",
+      "options": [
+        {
+          "id": "b9a19",
+          "value": "Not confident"
+        },
+        {
+          "id": "9a199",
+          "value": "Somewhat confident"
+        },
+        {
+          "id": "708cb",
+          "value": "Fairly confident"
+        },
+        {
+          "id": "cbff7",
+          "value": "Very confident"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q16. How confident are you in your academic writing skills?",
+      "quilText": "<p><strong>Q16. How confident are you in your academic writing skills?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "4af21",
+      "options": [
+        {
+          "id": "ef7f8",
+          "value": "Very poorly"
+        },
+        {
+          "id": "f7f83",
+          "value": "Needs improvement"
+        },
+        {
+          "id": "d38d9",
+          "value": "Good but not strong"
+        },
+        {
+          "id": "d9aca",
+          "value": "Very clear, coherent arguments"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q17. How well do you express your arguments in writing?",
+      "quilText": "<p><strong>Q17. How well do you express your arguments in writing?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "83542",
+      "options": [
+        {
+          "id": "b937b",
+          "value": "Not started"
+        },
+        {
+          "id": "937ba",
+          "value": "Rough notes only"
+        },
+        {
+          "id": "c3ccd",
+          "value": "Draft in progress"
+        },
+        {
+          "id": "cda8b",
+          "value": "Nearly complete or complete"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q18. How close are you to completing a full chapter draft?",
+      "quilText": "<p><strong>Q18. How close are you to completing a full chapter draft?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "bacaa",
+      "options": [
+        {
+          "id": "62185",
+          "value": "Rarely"
+        },
+        {
+          "id": "21853",
+          "value": "Occasionally"
+        },
+        {
+          "id": "35e5d",
+          "value": "Regular"
+        },
+        {
+          "id": "dfeb9",
+          "value": "Very regular and structured"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q19. How frequent are your meetings with your supervisor?",
+      "quilText": "<p><strong>Q19. How frequent are your meetings with your supervisor?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "cc961",
+      "options": [
+        {
+          "id": "4cfe5",
+          "value": "Not clear"
+        },
+        {
+          "id": "cfe55",
+          "value": "Sometimes unclear"
+        },
+        {
+          "id": "30f32",
+          "value": "Mostly clear"
+        },
+        {
+          "id": "32f8f",
+          "value": "Very clear and effective"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q20. How clear is your communication with your supervisor?",
+      "quilText": "<p><strong>Q20. How clear is your communication with your supervisor?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "53a16",
+      "options": [
+        {
+          "id": "61edf",
+          "value": "Not useful"
+        },
+        {
+          "id": "1edf8",
+          "value": "Sometimes useful"
+        },
+        {
+          "id": "a2b5c",
+          "value": "Mostly useful"
+        },
+        {
+          "id": "b2175",
+          "value": "Very useful and actionable"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q21. How useful is the feedback you receive?",
+      "quilText": "<p><strong>Q21. How useful is the feedback you receive?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "f8627",
+      "options": [
+        {
+          "id": "0f19a",
+          "value": "Rarely"
+        },
+        {
+          "id": "f19a7",
+          "value": "Sometimes"
+        },
+        {
+          "id": "471c9",
+          "value": "Mostly"
+        },
+        {
+          "id": "78b9b",
+          "value": "Always implement effectively"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q22. How effectively do you act on your supervisor's feedback?",
+      "quilText": "<p><strong>Q22. How effectively do you act on your supervisor's feedback?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "4c704",
+      "options": [
+        {
+          "id": "6bea1",
+          "value": "No planning"
+        },
+        {
+          "id": "bea10",
+          "value": "Basic planning"
+        },
+        {
+          "id": "224c4",
+          "value": "Good planning habits"
+        },
+        {
+          "id": "c48d9",
+          "value": "Very effective, consistent planning"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q23. How effectively do you plan your weekly PhD work?",
+      "quilText": "<p><strong>Q23. How effectively do you plan your weekly PhD work?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "7cc10",
+      "options": [
+        {
+          "id": "90ded",
+          "value": "Almost never"
+        },
+        {
+          "id": "0ded4",
+          "value": "Sometimes"
+        },
+        {
+          "id": "158db",
+          "value": "Often"
+        },
+        {
+          "id": "39145",
+          "value": "Most weeks"
+        }
+      ],
+      "formType": "SinglePointForm",
+    "question": "Q24. How often do you meet your weekly goals?",
+      "quilText": "<p><strong>Q24. How often do you meet your weekly goals?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "0758d",
+      "options": [
+        {
+          "id": "06ffb",
+          "value": "Not disciplined"
+        },
+        {
+          "id": "6ffbf",
+          "value": "Somewhat disciplined"
+        },
+        {
+          "id": "f6c22",
+          "value": "Fairly disciplined"
+        },
+        {
+          "id": "22ebd",
+          "value": "Very disciplined"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q25. How disciplined are your study/work routines?",
+      "quilText": "<p><strong>Q25. How disciplined are your study/work routines?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "9156e",
+      "options": [
+        {
+          "id": "03f24",
+          "value": "Not motivated"
+        },
+        {
+          "id": "3f24c",
+          "value": "Low motivation"
+        },
+        {
+          "id": "daa81",
+          "value": "Fairly motivated"
+        },
+        {
+          "id": "81f6e",
+          "value": "Highly motivated"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q26. How motivated do you feel?",
+      "quilText": "<p><strong>Q26. How motivated do you feel?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "2cc8c",
+      "options": [
+        {
+          "id": "699e6",
+          "value": "Not confident"
+        },
+        {
+          "id": "99e60",
+          "value": "Slightly confident"
+        },
+        {
+          "id": "39570",
+          "value": "Mostly confident"
+        },
+        {
+          "id": "7089e",
+          "value": "Very confident"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q27. How confident do you feel about finishing your PhD?",
+      "quilText": "<p><strong>Q27. How confident do you feel about finishing your PhD?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "add40",
+      "options": [
+        {
+          "id": "76e9e",
+          "value": "Not clear"
+        },
+        {
+          "id": "6e9e7",
+          "value": "Somewhat clear"
+        },
+        {
+          "id": "83a8a",
+          "value": "Mostly clear"
+        },
+        {
+          "id": "8a07c",
+          "value": "Very clear"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q28. How clear are your methodological choices?",
+      "quilText": "<p><strong>Q28. How clear are your methodological choices?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "e9e7b",
+      "options": [
+        {
+          "id": "a5d74",
+          "value": "Not prepared"
+        },
+        {
+          "id": "5d74c",
+          "value": "Somewhat prepared"
+        },
+        {
+          "id": "6bac7",
+          "value": "Mostly prepared"
+        },
+        {
+          "id": "c73d2",
+          "value": "Fully prepared"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q29. How prepared are you for data collection?",
+      "quilText": "<p><strong>Q29. How prepared are you for data collection?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "d74c1",
+      "options": [
+        {
+          "id": "5aa85",
+          "value": "Not confident"
+        },
+        {
+          "id": "aa85b",
+          "value": "Somewhat confident"
+        },
+        {
+          "id": "2b813",
+          "value": "Mostly confident"
+        },
+        {
+          "id": "13a10",
+          "value": "Very confident"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q30. How confident are you in your data analysis plan?",
+      "quilText": "<p><strong>Q30. How confident are you in your data analysis plan?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "5ae33",
+      "options": [
+        {
+          "id": "2342b",
+          "value": "No progress"
+        },
+        {
+          "id": "342bc",
+          "value": "Slow progress"
+        },
+        {
+          "id": "4b6f0",
+          "value": "Good progress"
+        },
+        {
+          "id": "f099b",
+          "value": "Very good progress"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q31. How well are you progressing with data analysis?",
+    "quilText": "<p><strong>Q31. How well are you progressing with data analysis?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "5c723",
+      "options": [
+        {
+          "id": "1fae5",
+          "value": "Very disorganized"
+        },
+        {
+          "id": "fae58",
+          "value": "Somewhat organized"
+        },
+        {
+          "id": "b7e8f",
+          "value": "Mostly organized"
+        },
+        {
+          "id": "8f546",
+          "value": "Very organized"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q32. How organized is your data and documentation?",
+      "quilText": "<p><strong>Q32. How organized is your data and documentation?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "58967",
+      "options": [
+        {
+          "id": "9d0ab",
+          "value": "Not regular"
+        },
+        {
+          "id": "d0abb",
+          "value": "Occasionally"
+        },
+        {
+          "id": "2cc86",
+          "value": "Mostly regular"
+        },
+        {
+          "id": "38417",
+          "value": "Very consistent"
+        }
+      ],
+      "formType": "SinglePointForm",
+    "question": "Q33. How regular are your writing habits?",
+      "quilText": "<p><strong>Q33. How regular are your writing habits?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "b9a11",
+      "options": [
+        {
+          "id": "9e3e8",
+          "value": "Not effective"
+        },
+        {
+          "id": "e3e82",
+          "value": "Somewhat effective"
+        },
+        {
+          "id": "d0d30",
+          "value": "Effective"
+        },
+        {
+          "id": "308cf",
+          "value": "Very effective"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q34. How effective is your writing routine?",
+      "quilText": "<p><strong>Q34. How effective is your writing routine?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "26640",
+      "options": [
+        {
+          "id": "c114c",
+          "value": "Rarely"
+        },
+        {
+          "id": "114c2",
+          "value": "Sometimes"
+        },
+        {
+          "id": "3e592",
+          "value": "Often"
+        },
+        {
+          "id": "924f2",
+          "value": "Very Often"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q35. How well do you stay in writing flow?",
+      "quilText": "<p><strong>Q35. How well do you stay in writing flow?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "c27d7",
+      "options": [
+        {
+          "id": "23244",
+          "value": "Not at all"
+        },
+        {
+          "id": "3244c",
+          "value": "Inconsistently"
+        },
+        {
+          "id": "5c07a",
+          "value": "Consistently"
+        },
+        {
+          "id": "7a54d",
+          "value": "Very consistently"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q36. How well do you track your writing progress?",
+      "quilText": "<p><strong>Q36. How well do you track your writing progress?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "5320b",
+      "options": [
+        {
+          "id": "864dd",
+          "value": "Very little"
+        },
+        {
+          "id": "64dde",
+          "value": "Some"
+        },
+        {
+          "id": "8d5fd",
+          "value": "Good amountGood amount"
+        },
+        {
+          "id": "fdf57",
+          "value": "A strong amount"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q37. How much quality writing do you produce weekly?",
+      "quilText": "<p><strong>Q37. How much quality writing do you produce weekly?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "140b1",
+      "options": [
+        {
+          "id": "02f9f",
+          "value": "Not clear"
+        },
+        {
+          "id": "2f9fa",
+          "value": "Rough outline"
+        },
+        {
+          "id": "f12f6",
+          "value": "Mostly clear"
+        },
+        {
+          "id": "f6c76",
+          "value": "Very clear and structured"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q38. How clear is your PhD timeline?",
+      "quilText": "<p><strong>Q38. How clear is your PhD timeline?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "f1425",
+      "options": [
+        {
+          "id": "0d112",
+          "value": "Very poorly"
+        },
+        {
+          "id": "d112a",
+          "value": "Poorly"
+        },
+        {
+          "id": "47ce8",
+          "value": "Fairly well"
+        },
+        {
+          "id": "e86d2",
+          "value": "Very accurately"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q39. How accurately do you estimate task duration?",
+    "quilText": "<p><strong>Q39. How accurately do you estimate task duration?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "2a259",
+      "options": [
+        {
+          "id": "9a6f3",
+          "value": "Not at all"
+        },
+        {
+          "id": "a6f3f",
+          "value": "Inconsistently"
+        },
+        {
+          "id": "ffbc8",
+          "value": "Consistently"
+        },
+        {
+          "id": "cd201",
+          "value": "Very consistently"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q40. How well do you track your progress toward milestones?",
+      "quilText": "<p><strong>Q40. How well do you track your progress toward milestones?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "d72db",
+      "options": [
+        {
+          "id": "cc99d",
+          "value": "Not confident"
+        },
+        {
+          "id": "c99d2",
+          "value": "Somewhat confident"
+        },
+        {
+          "id": "ed6ab",
+          "value": "Mostly confident"
+        },
+        {
+          "id": "ab013",
+          "value": "Very confident"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q41. How confident are you in meeting long-term deadlines?",
+      "quilText": "<p><strong>Q41. How confident are you in meeting long-term deadlines?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "aaa34",
+      "options": [
+        {
+          "id": "b9854",
+          "value": "Very weak"
+        },
+        {
+          "id": "9854b",
+          "value": "Weak"
+        },
+        {
+          "id": "4ebf8",
+          "value": "Good"
+        },
+        {
+          "id": "f8859",
+          "value": "Very strong"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q42. How strong is your academic support network?",
+      "quilText": "<p><strong>Q42. How strong is your academic support network?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "2ad4f",
+      "options": [
+        {
+          "id": "4a832",
+          "value": "Not connected"
+        },
+        {
+          "id": "a8322",
+          "value": "Somewhat connected"
+        },
+        {
+          "id": "1ba8b",
+          "value": "Connected"
+        },
+        {
+          "id": "8ba14",
+          "value": "Well connected"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q43. How connected do you feel to your research community?",
+      "quilText": "<p><strong>Q43. How connected do you feel to your research community?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "d81f8",
+      "options": [
+        {
+          "id": "c45f7",
+          "value": "Never"
+        },
+        {
+          "id": "45f76",
+          "value": "Occasionally"
+        },
+        {
+          "id": "35fdc",
+          "value": "Often"
+        },
+        {
+          "id": "99952",
+          "value": "Very Often"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q44. How frequently do you receive helpful feedback from peers?",
+      "quilText": "<p><strong>Q44. How frequently do you receive helpful feedback from peers?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "754c3",
+      "options": [
+        {
+          "id": "375d5",
+          "value": "Not well"
+        },
+        {
+          "id": "75d5f",
+          "value": "Somewhat"
+        },
+        {
+          "id": "2cb8b",
+          "value": "Well"
+        },
+        {
+          "id": "8bbf3",
+          "value": "Very Well"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q45. How well do you collaborate with other researchers?",
+      "quilText": "<p><strong>Q45. How well do you collaborate with other researchers?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "f4346",
+      "options": [
+        {
+          "id": "a60e0",
+          "value": "Very low"
+        },
+        {
+          "id": "60e04",
+          "value": "Low"
+        },
+        {
+          "id": "ca9e6",
+          "value": "Good"
+        },
+        {
+          "id": "336c2",
+          "value": "Very strong"
+        }
+      ],
+      "formType": "SinglePointForm",
+    "question": "Q46. How strong is your sense of belonging in academia?",
+      "quilText": "<p><strong>Q46. How strong is your sense of belonging in academia?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "73452",
+      "options": [
+        {
+          "id": "ac023",
+          "value": "Not confident"
+        },
+        {
+          "id": "c0237",
+          "value": "Somewhat confident"
+        },
+        {
+          "id": "4fa1b",
+          "value": "Mostly confident"
+        },
+        {
+          "id": "1bef1",
+          "value": "Very confident"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q47. How confident are you in explaining your research verbally?",
+      "quilText": "<p><strong>Q47. How confident are you in explaining your research verbally?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "a73a2",
+      "options": [
+        {
+          "id": "cc909",
+          "value": "Not aware"
+        },
+        {
+          "id": "c909f",
+          "value": "Somewhat aware"
+        },
+        {
+          "id": "0f07a",
+          "value": "Aware"
+        },
+        {
+          "id": "7a018",
+          "value": "Very aware & prepared"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q48. How strong is your understanding of your thesis' weaknesses?",
+      "quilText": "<p><strong>Q48. How strong is your understanding of your thesis' weaknesses?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "03389",
+      "options": [
+        {
+          "id": "5c4b8",
+          "value": "Not well"
+        },
+        {
+          "id": "c4b8e",
+          "value": "Somewhat"
+        },
+        {
+          "id": "2005a",
+          "value": "Well"
+        },
+        {
+          "id": "c6969",
+          "value": "Very Well"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q49. How well can you justify your methodological choices?",
+    "quilText": "<p><strong>Q49. How well can you justify your methodological choices?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    },
+    {
+      "id": "3a269",
+      "options": [
+        {
+          "id": "72b9f",
+          "value": "Not ready"
+        },
+        {
+          "id": "2b9f2",
+          "value": "Somewhat ready"
+        },
+        {
+          "id": "bf7c5",
+          "value": "Mostly ready"
+        },
+        {
+          "id": "c5a53",
+          "value": "Fully ready"
+        }
+      ],
+      "formType": "SinglePointForm",
+      "question": "Q50. How ready do you feel for your Viva/Defense?",
+      "quilText": "<p><strong>Q50. How ready do you feel for your Viva/Defense?</strong></p>",
+      "formMandate": true,
+      "selectedValue": [
+        {
+          "index": "",
+          "value": "",
+          "answer": "",
+          "question": ""
+        }
+      ],
+      "hasOtherOption": false
+    }
+  ]

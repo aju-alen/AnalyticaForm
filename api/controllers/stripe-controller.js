@@ -91,8 +91,8 @@ export const createCheckoutSessionForDriInterimUnlock = async (req, res) => {
       ...(driResponse.userEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(driResponse.userEmail))
         ? { customer_email: driResponse.userEmail }
         : {}),
-      success_url: `${DRI_BASE_URL}/payment-summary/${encodeURIComponent(String(responseId))}?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${DRI_BASE_URL}/payment-summary/${encodeURIComponent(String(responseId))}?canceled=true`,
+      success_url: `${DRI_BASE_URL}/interim-report/${encodeURIComponent(String(responseId))}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${DRI_BASE_URL}/interim-report/${encodeURIComponent(String(responseId))}?canceled=true`,
       metadata: {
         responseId: String(responseId),
         purchaseType: 'dri-interim',
