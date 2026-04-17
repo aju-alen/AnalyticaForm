@@ -164,6 +164,23 @@ export default function PaymentSummaryBeforePayment() {
       ? `${apiBaseUrl}/user-survey/${encodeURIComponent(String(import.meta.env.VITE_DEFENCE_READINESS_SURVEY_ID || ''))}?responseId=${encodeURIComponent(String(responseId))}&continueDri=1`
       : '#'
 
+  const interimScoreTone =
+    typeof status.interimScore === 'number'
+      ? status.interimScore >= 80
+        ? 'high'
+        : status.interimScore >= 60
+          ? 'moderate'
+          : 'low'
+      : 'unknown'
+  const readinessLabel =
+    interimScoreTone === 'high'
+      ? 'High Readiness'
+      : interimScoreTone === 'moderate'
+        ? 'Moderate Readiness'
+        : interimScoreTone === 'low'
+          ? 'Low Readiness'
+          : null
+
   return (
     <main className="page">
       <section className="card">
@@ -190,12 +207,16 @@ export default function PaymentSummaryBeforePayment() {
                     : '—'}
                 </div>
                 <div className="overall-band">
-                  <span className="overall-band-pill">
-                    {status.bandPositionLabel
+                  <span className={`overall-band-pill tone-${interimScoreTone}`}>
+                    {readinessLabel
                       ? typeof status.interimScore === 'number'
-                        ? `${status.bandPositionLabel} (${status.interimScore.toFixed(1)}%)`
-                        : status.bandPositionLabel
-                      : 'Band —'}
+                        ? `${readinessLabel} (${status.interimScore.toFixed(1)}%)`
+                        : readinessLabel
+                      : status.bandPositionLabel
+                        ? typeof status.interimScore === 'number'
+                          ? `${status.bandPositionLabel} (${status.interimScore.toFixed(1)}%)`
+                          : status.bandPositionLabel
+                        : 'Band —'}
                   </span>
                 </div>
               </div>

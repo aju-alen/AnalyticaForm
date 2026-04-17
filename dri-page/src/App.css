@@ -187,6 +187,24 @@ h1 {
   font-size: 0.95rem;
 }
 
+.overall-band-pill.tone-high {
+  background: #dcfce7;
+  border-color: rgba(22, 163, 74, 0.35);
+  color: #166534;
+}
+
+.overall-band-pill.tone-moderate {
+  background: #fef3c7;
+  border-color: rgba(217, 119, 6, 0.35);
+  color: #b45309;
+}
+
+.overall-band-pill.tone-low {
+  background: #fee2e2;
+  border-color: rgba(220, 38, 38, 0.35);
+  color: #b91c1c;
+}
+
 .button[aria-disabled='true'] {
   pointer-events: none;
   opacity: 0.65;
