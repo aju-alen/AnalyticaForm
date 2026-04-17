@@ -123,7 +123,7 @@ export default function FullPaymentSummaryBeforePayment() {
             <div className="score-panel" aria-hidden="false">
               <div className="score-panel-header">
                 <span className="pill">Unlocked</span>
-                <span className="response-id">Response: {responseId}</span>
+                <span className="response-id">INTERIM DRI REPORT: {responseId}</span>
               </div>
               <div className="overall-score">
                 <div className="overall-score-value">
@@ -180,7 +180,7 @@ export default function FullPaymentSummaryBeforePayment() {
             <div className="score-panel locked" aria-hidden="true">
               <div className="score-panel-header">
                 <span className="pill">Preview</span>
-                <span className="response-id">Response: {responseId}</span>
+                <span className="response-id">INTERIM DRI REPORT: {responseId}</span>
               </div>
               <div className="score-grid">
                 {categoryNames.map((name) => (

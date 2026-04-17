@@ -172,7 +172,7 @@ export default function PaymentSummaryBeforePayment() {
           <h1>Checking your payment status...</h1>
         ) : status.paid ? (
           <>
-            <h1>Your interim DRI score is ready (unlocked)</h1>
+            <h1>Your interim DRI report is ready (unlocked)</h1>
             <p className="body">
               Your interim score and band are now available. Continue the full DRI assessment to unlock the next step.
             </p>
@@ -180,7 +180,7 @@ export default function PaymentSummaryBeforePayment() {
             <div className="score-panel" aria-hidden="false">
               <div className="score-panel-header">
                 <span className="pill">Unlocked</span>
-                <span className="response-id">Response: {responseId}</span>
+                <span className="response-id">INTERIM DRI REPORT: {responseId}</span>
               </div>
 
               <div className="overall-score">
@@ -256,7 +256,7 @@ export default function PaymentSummaryBeforePayment() {
           </>
         ) : (
           <>
-            <h1>Your interim DRI score is ready (locked)</h1>
+            <h1>Your interim DRI report is ready (locked)</h1>
             <p className="body">
               Your first 10 answers were analyzed. Unlock your interim score and
               full report instantly for AED 39.
@@ -265,7 +265,7 @@ export default function PaymentSummaryBeforePayment() {
             <div className="score-panel locked" aria-hidden="true">
               <div className="score-panel-header">
                 <span className="pill">Preview</span>
-                <span className="response-id">Response: {responseId}</span>
+                <span className="response-id">INTERIM DRI REPORT: {responseId}</span>
               </div>
               <div className="score-grid">
                 {scoreCategories.map((item) => (
