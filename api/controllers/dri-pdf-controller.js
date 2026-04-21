@@ -99,8 +99,9 @@ function injectInterimCategoryScores(html, report) {
     ? html.replace('</head>', `${scoreCss}</head>`)
     : `${scoreCss}${html}`;
 
-  if (withScoreCss.includes('</footer>')) {
-    return withScoreCss.replace('</footer>', `${scoreSection}</footer>`);
+  // Place scores above the footer so the branded address/footer stays at the bottom of the document.
+  if (/<footer[\s>]/i.test(withScoreCss)) {
+    return withScoreCss.replace(/<footer[\s>]/i, (m) => `${scoreSection}${m}`);
   }
   if (withScoreCss.includes('</body>')) {
     return withScoreCss.replace('</body>', `${scoreSection}</body>`);
