@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useParams, useSearchParams } from 'react-router-dom'
 
 const categoryNames = [
@@ -182,14 +183,18 @@ export default function PaymentSummaryBeforePayment() {
           : null
 
   return (
-    <main className="page">
-      <section className="card">
+    <>
+      <Helmet>
+        <title>Interim DRI Report</title>
+      </Helmet>
+      <main className="page">
+        <section className="card">
         <p className="eyebrow">Interim DRI Snapshot</p>
         {isLoadingStatus ? (
           <h1>Checking your payment status...</h1>
         ) : status.paid ? (
           <>
-            <h1>Your interim DRI report is ready (unlocked)</h1>
+            <h1>Your interim DRI report is ready</h1>
             <p className="body">
               Your interim score and band are now available. Continue the full DRI assessment to unlock the next step.
             </p>
@@ -197,26 +202,31 @@ export default function PaymentSummaryBeforePayment() {
             <div className="score-panel" aria-hidden="false">
               <div className="score-panel-header">
                 <span className="pill">Unlocked</span>
-                <span className="response-id">INTERIM DRI REPORT: {responseId}</span>
+                <span className="response-id">DRI TEST ID: {responseId}</span>
               </div>
 
               <div className="overall-score">
-                <div className="overall-score-value">
+              <h2 className="overall-band-title">Readiness Band</h2>
+                <div className={`overall-score-value tone-${interimScoreTone}`}>
                   {typeof status.interimScore === 'number'
                     ? `${status.interimScore.toFixed(1)}%`
                     : '—'}
                 </div>
                 <div className="overall-band">
-                  <span className={`overall-band-pill tone-${interimScoreTone}`}>
-                    {readinessLabel
-                      ? typeof status.interimScore === 'number'
-                        ? `${readinessLabel} (${status.interimScore.toFixed(1)}%)`
-                        : readinessLabel
-                      : status.bandPositionLabel
-                        ? typeof status.interimScore === 'number'
-                          ? `${status.bandPositionLabel} (${status.interimScore.toFixed(1)}%)`
-                          : status.bandPositionLabel
-                        : 'Band —'}
+                
+                </div>
+                <div className="band-legend" aria-label="Readiness band legend">
+                  <span className="legend-item">
+                    <span className="legend-dot tone-high" aria-hidden="true" />
+                    High readiness (Green)
+                  </span>
+                  <span className="legend-item">
+                    <span className="legend-dot tone-moderate" aria-hidden="true" />
+                    Moderate readiness (Amber)
+                  </span>
+                  <span className="legend-item">
+                    <span className="legend-dot tone-low" aria-hidden="true" />
+                    Low readiness (Red)
                   </span>
                 </div>
               </div>
@@ -277,7 +287,7 @@ export default function PaymentSummaryBeforePayment() {
           </>
         ) : (
           <>
-            <h1>Your interim DRI report is ready (locked)</h1>
+            <h1>Your interim DRI report is ready</h1>
             <p className="body">
               Your first 10 answers were analyzed. Unlock your interim score and
               full report instantly for AED 39.
@@ -286,7 +296,7 @@ export default function PaymentSummaryBeforePayment() {
             <div className="score-panel locked" aria-hidden="true">
               <div className="score-panel-header">
                 <span className="pill">Preview</span>
-                <span className="response-id">INTERIM DRI REPORT: {responseId}</span>
+                <span className="response-id">DRI TEST ID: {responseId}</span>
               </div>
               <div className="score-grid">
                 {scoreCategories.map((item) => (
@@ -327,8 +337,9 @@ export default function PaymentSummaryBeforePayment() {
             </div>
           </>
         )}
-      </section>
-    </main>
+        </section>
+      </main>
+    </>
   )
 }
 

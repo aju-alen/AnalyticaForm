@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useParams, useSearchParams } from 'react-router-dom'
 
 const categoryNames = [
@@ -111,19 +112,23 @@ export default function FullPaymentSummaryBeforePayment() {
   }
 
   return (
-    <main className="page">
+    <>
+      <Helmet>
+        <title>Full DRI Report</title>
+      </Helmet>
+      <main className="page">
       <section className="card">
         <p className="eyebrow">Full DRI Snapshot</p>
         {isLoadingStatus ? (
           <h1>Checking your full report payment status...</h1>
         ) : status.paid ? (
           <>
-            <h1>Your full DRI report is ready (unlocked)</h1>
+            <h1>Your full DRI report is ready</h1>
             <p className="body">Your complete 50-question report is now available.</p>
             <div className="score-panel" aria-hidden="false">
               <div className="score-panel-header">
                 <span className="pill">Unlocked</span>
-                <span className="response-id">INTERIM DRI REPORT: {responseId}</span>
+                <span className="response-id">DRI TEST ID: {responseId}</span>
               </div>
               <div className="overall-score">
                 <div className="overall-score-value">
@@ -180,7 +185,7 @@ export default function FullPaymentSummaryBeforePayment() {
             <div className="score-panel locked" aria-hidden="true">
               <div className="score-panel-header">
                 <span className="pill">Preview</span>
-                <span className="response-id">INTERIM DRI REPORT: {responseId}</span>
+                <span className="response-id">DRI TEST ID: {responseId}</span>
               </div>
               <div className="score-grid">
                 {categoryNames.map((name) => (
@@ -206,7 +211,8 @@ export default function FullPaymentSummaryBeforePayment() {
             </div>
           </>
         )}
-      </section>
-    </main>
+        </section>
+      </main>
+    </>
   )
 }
