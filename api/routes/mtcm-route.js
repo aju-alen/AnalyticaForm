@@ -4,5 +4,6 @@ import { ContactUs, MembershipEnquiry } from '../controllers/resendEmailControll
 
 router.post('/contact-us', ContactUs);
 router.post('/membership-enquiry', MembershipEnquiry);
+router.post('/resources', ResourcesRequest);
 
 export default router;

@@ -1,4 +1,4 @@
-import { resendEmailContactUs, resendEmailMembershipEnquiry } from '../utils/resendEmailTemplate.js';
+import { resendEmailContactUs, resendEmailMembershipEnquiry, resendEmailResourcesRequest } from '../utils/resendEmailTemplate.js';
 export const ContactUs = async (req, res) => {
     try {
         const { name, email, body} = req.body;
@@ -77,3 +77,19 @@ export const MembershipEnquiry = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
+
+export const ResourcesRequest = async (req, res) => {
+    try {
+        const {  name,
+            email,
+            documentType,
+            message,} = req.body;
+        const emailResponse = await resendEmailResourcesRequest(name, email, documentType, message);
+        res.status(200).json({ message: 'Email sent successfully', emailResponse });
+    }
+    catch (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+}
+

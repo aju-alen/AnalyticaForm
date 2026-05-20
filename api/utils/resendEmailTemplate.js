@@ -142,3 +142,34 @@ export const resendEmailBoiler = async (senderEmail, recipientEmail, subject, ht
         throw error;
     }
 }
+
+export const resendEmailResourcesRequest = async (name, email, documentType, message) => {
+    try {
+        const html = resendEmailResourcesRequestTemplate(name, email, documentType, message);
+        const emailData = {
+            from: process.env.RESEND_EMAILID_MTC,
+            to: process.env.RESEND_EMAILID_MTC,
+            subject: 'Resources Request',
+            html: html,
+        };
+        const response = await mtcResend.emails.send(emailData);
+        return response;
+    } catch (error) {
+        console.error('Error sending resources request email:', error);
+        throw error;
+    }
+}
+
+export const resendEmailResourcesRequestTemplate = (name, email, documentType, message) => {
+    return `<html>
+            <body>
+                <p>Hello Admin,</p>
+                <p>You have received a new resources request.</p>
+                <br>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Document type:</strong> ${documentType}</p>
+                <p><strong>Message:</strong> ${message}</p>
+            </body>
+            </html>`;
+}
