@@ -57,7 +57,7 @@ app.use('/api/send-email', sendEmailRoute)
 app.use('/api/survey-count', sendSurveyCountRoute)
 app.use('/api/google-vertex', vertexGoogleApi)
 app.use('/api/dri', driPdfRoute)
-app.use('/api/mtc', mtcRoute)
+app.use('/api/mtcm', mtcRoute)
 app.get('/survey-meta/:surveyId', dynamicMetaHtml)
 
 
