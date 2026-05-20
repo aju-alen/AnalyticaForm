@@ -11,8 +11,8 @@ export const resendEmailContactUs = async (name, email, message) => {
     try {
         const html = resendEmailContactUsTemplate(name, email, message);
         const emailData = {
-            from: process.env.MTC_EMAIL_ID,
-            to: process.env.MTC_EMAIL_ID,
+            from: process.env.RESEND_EMAILID_MTC,
+            to: process.env.RESEND_EMAILID_MTC,
             subject: 'Contact Us',
             html: html,
         };
