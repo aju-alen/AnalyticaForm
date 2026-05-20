@@ -15,6 +15,7 @@ import vertexGoogleApi from './routes/open-ai-route.js';
 import sendEmailRoute from './routes/sendEmail-route.js';
 import sendSurveyCountRoute from './routes/survey-count-route.js';
 import driPdfRoute from './routes/dri-pdf-route.js';
+import mtcRoute from './routes/mtcm-route.js';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { htmlMessage,healthCheckMessage } from './utils/static/static-data.js';
@@ -56,7 +57,9 @@ app.use('/api/send-email', sendEmailRoute)
 app.use('/api/survey-count', sendSurveyCountRoute)
 app.use('/api/google-vertex', vertexGoogleApi)
 app.use('/api/dri', driPdfRoute)
+app.use('/api/mtc', mtcRoute)
 app.get('/survey-meta/:surveyId', dynamicMetaHtml)
+
 
 app.get('/health', (req, res) => {
   res.status(200).json(healthCheckMessage);
