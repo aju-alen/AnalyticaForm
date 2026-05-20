@@ -120,3 +120,25 @@ export const resendEmailMembershipEnquiry = async (payload) => {
         throw error;
     }
 };
+
+export const resendEmailBoiler = async (senderEmail, recipientEmail, subject, html, attachments = []) => {
+    try {
+        const emailData = {
+            from: senderEmail,
+            to: recipientEmail,
+            subject: subject,
+            html: html,
+        };
+        
+        if (attachments && attachments.length > 0) {
+            emailData.attachments = attachments;
+        }
+        
+        const response = await resend.emails.send(emailData);
+        return response;
+    }
+    catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
+}
