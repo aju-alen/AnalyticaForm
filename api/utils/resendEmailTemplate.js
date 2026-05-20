@@ -52,7 +52,7 @@ export const resendEmailContactUsTemplate = (name, email, message) => {
     return `<html>
             <body>
                 <p>Hello Admin,</p>
-                <p>You have received a new query on Dubai Analytica</p>
+                <p>You have received a new query on MTCM Foundation</p>
                 <br>
                 <p>Name: ${name}</p>
                 <p>Email: ${email}</p>

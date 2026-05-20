@@ -1,8 +1,8 @@
 import { resendEmailContactUs, resendEmailMembershipEnquiry } from '../utils/resendEmailTemplate.js';
 export const ContactUs = async (req, res) => {
     try {
-        const { name, email, message} = req.body;
-        const emailResponse = await resendEmailContactUs(name, email, message);
+        const { name, email, body} = req.body;
+        const emailResponse = await resendEmailContactUs(name, email, body);
         res.status(200).json({ message: 'Email sent successfully', emailResponse });
     }
     catch (error) {
