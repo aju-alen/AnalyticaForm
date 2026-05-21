@@ -16,8 +16,9 @@ const Layout = ({ children }) => {
   const hideNavBarPages = ['/', '/signup', '/login', '/forget-password','/about','/features','/pricing','/market','/contact-us','/phdsuccess-consultation'];
   const hideFooterPages = ['/user-survey', '/phdsuccess-consultation'];
   const isDynamicRoute = (path) => /^\/user-survey\/.+$/.test(path);
-  const shouldHideNavBar = hideNavBarPages.includes(location.pathname) || isDynamicRoute(location.pathname);
-  const shouldHideFooter = hideFooterPages.includes(location.pathname) || isDynamicRoute(location.pathname);
+  const isPhdConsultationRoute = (path) => /^\/phdsuccess-consultation(\/|$)/.test(path);
+  const shouldHideNavBar = hideNavBarPages.includes(location.pathname) || isDynamicRoute(location.pathname) || isPhdConsultationRoute(location.pathname);
+  const shouldHideFooter = hideFooterPages.includes(location.pathname) || isDynamicRoute(location.pathname) || isPhdConsultationRoute(location.pathname);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", maxWidth: "100vw" }}>

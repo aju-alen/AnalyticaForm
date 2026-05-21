@@ -18,6 +18,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import baseTheme from '../utils/theme';
 import { backendUrl } from '../utils/backendUrl';
+import { redirectOutsideEmbed } from '../utils/phdSuccessRedirect';
 
 const redTheme = createTheme(baseTheme, {
   palette: {
@@ -73,17 +74,12 @@ const PhdSuccessConsultation = () => {
     event.preventDefault();
     setSubmitting(true);
     try {
-      await axios.post(`${backendUrl}/api/dri//phd-success-consultation-form`, formData);
-      setFormData(initialFormData);
-      setAlertStatus('success');
-      setAlertText('Message sent successfully. We will contact you shortly.');
-      setOpen(true);
-      window.location.href = 'https://scheduler.phdsuccess.ae';
+      await axios.post(`${backendUrl}/api/dri/phd-success-consultation-form`, formData);
+      redirectOutsideEmbed(formData.email);
     } catch {
       setAlertStatus('error');
       setAlertText('Failed to send message. Please try again later.');
       setOpen(true);
-    } finally {
       setSubmitting(false);
     }
   };
