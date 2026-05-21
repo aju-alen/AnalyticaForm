@@ -18,7 +18,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import baseTheme from '../utils/theme';
 import { backendUrl } from '../utils/backendUrl';
-import { redirectOutsideEmbed } from '../utils/phdSuccessRedirect';
+import {
+  navigateSchedulerTab,
+  openSchedulerTabPlaceholder,
+} from '../utils/phdSuccessRedirect';
 
 const redTheme = createTheme(baseTheme, {
   palette: {
@@ -72,14 +75,25 @@ const PhdSuccessConsultation = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const schedulerTab = openSchedulerTabPlaceholder();
     setSubmitting(true);
     try {
       await axios.post(`${backendUrl}/api/dri/phd-success-consultation-form`, formData);
-      redirectOutsideEmbed(formData.email);
+      const tabOpened = navigateSchedulerTab(schedulerTab, formData.email);
+      setFormData(initialFormData);
+      setAlertStatus('success');
+      setAlertText(
+        tabOpened
+          ? 'Form submitted. A new tab has opened to schedule your session.'
+          : 'Form submitted. Please allow pop-ups, then click Submit again to open the scheduler.'
+      );
+      setOpen(true);
     } catch {
+      schedulerTab?.close();
       setAlertStatus('error');
       setAlertText('Failed to send message. Please try again later.');
       setOpen(true);
+    } finally {
       setSubmitting(false);
     }
   };

@@ -9,16 +9,25 @@ export const getSchedulerRedirectUrl = (email) => {
   return url.toString();
 };
 
-/** Navigate the top-level window (breaks out of WordPress iframe embeds). */
-export const redirectOutsideEmbed = (email) => {
+/** Open a blank tab immediately (call synchronously on submit click). */
+export const openSchedulerTabPlaceholder = () =>
+  window.open('about:blank', '_blank', 'noopener,noreferrer');
+
+/** Navigate a tab opened via openSchedulerTabPlaceholder to the scheduler URL. */
+export const navigateSchedulerTab = (tab, email) => {
+  if (!tab) return false;
   const url = getSchedulerRedirectUrl(email);
   try {
-    if (window.top && window.top !== window.self) {
-      window.top.location.href = url;
-      return;
-    }
+    tab.location.href = url;
+    tab.focus?.();
+    return true;
   } catch {
-    // cross-origin access blocked; fall through
+    return false;
   }
-  window.location.href = url;
+};
+
+/** Open scheduler in a new browser tab (does not navigate the iframe). */
+export const openSchedulerInNewTab = (email) => {
+  const tab = openSchedulerTabPlaceholder();
+  return navigateSchedulerTab(tab, email);
 };
