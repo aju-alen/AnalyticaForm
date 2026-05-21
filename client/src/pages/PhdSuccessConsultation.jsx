@@ -18,10 +18,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import baseTheme from '../utils/theme';
 import { backendUrl } from '../utils/backendUrl';
-import {
-  navigateSchedulerTab,
-  openSchedulerTabPlaceholder,
-} from '../utils/phdSuccessRedirect';
+import { openSchedulerInNewTab } from '../utils/phdSuccessRedirect';
 
 const redTheme = createTheme(baseTheme, {
   palette: {
@@ -75,11 +72,11 @@ const PhdSuccessConsultation = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const schedulerTab = openSchedulerTabPlaceholder();
+    const schedulerTab = openSchedulerInNewTab(formData.email);
     setSubmitting(true);
     try {
       await axios.post(`${backendUrl}/api/dri/phd-success-consultation-form`, formData);
-      const tabOpened = navigateSchedulerTab(schedulerTab, formData.email);
+      const tabOpened = schedulerTab;
       setFormData(initialFormData);
       setAlertStatus('success');
       setAlertText(

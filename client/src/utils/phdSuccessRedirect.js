@@ -9,25 +9,13 @@ export const getSchedulerRedirectUrl = (email) => {
   return url.toString();
 };
 
-/** Open a blank tab immediately (call synchronously on submit click). */
-export const openSchedulerTabPlaceholder = () =>
-  window.open('about:blank', '_blank', 'noopener,noreferrer');
-
-/** Navigate a tab opened via openSchedulerTabPlaceholder to the scheduler URL. */
-export const navigateSchedulerTab = (tab, email) => {
-  if (!tab) return false;
-  const url = getSchedulerRedirectUrl(email);
-  try {
-    tab.location.href = url;
-    tab.focus?.();
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-/** Open scheduler in a new browser tab (does not navigate the iframe). */
+/**
+ * Open scheduler in a new tab. Call synchronously on submit (user click) so the
+ * browser allows the pop-up and loads the URL immediately. Do not pass noopener —
+ * it returns null and prevents navigating the new tab from the opener.
+ */
 export const openSchedulerInNewTab = (email) => {
-  const tab = openSchedulerTabPlaceholder();
-  return navigateSchedulerTab(tab, email);
+  const url = getSchedulerRedirectUrl(email);
+  const tab = window.open(url, '_blank');
+  return Boolean(tab);
 };
