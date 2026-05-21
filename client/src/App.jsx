@@ -13,8 +13,8 @@ TagManager.initialize(tagManagerArgs);
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const hideNavBarPages = ['/', '/signup', '/login', '/forget-password','/about','/features','/pricing','/market','/contact-us'];
-  const hideFooterPages = ['/user-survey'];
+  const hideNavBarPages = ['/', '/signup', '/login', '/forget-password','/about','/features','/pricing','/market','/contact-us','/phdsuccess-consultation'];
+  const hideFooterPages = ['/user-survey', '/phdsuccess-consultation'];
   const isDynamicRoute = (path) => /^\/user-survey\/.+$/.test(path);
   const shouldHideNavBar = hideNavBarPages.includes(location.pathname) || isDynamicRoute(location.pathname);
   const shouldHideFooter = hideFooterPages.includes(location.pathname) || isDynamicRoute(location.pathname);
@@ -45,6 +45,7 @@ const Error404 = lazy(() => import('./pages/404Error'));
 const UserAnalytics = lazy(() => import('./pages/UserAnalytics'));
 const Usersurveyanalytics = lazy(() => import('./pages/User-survey-analytics'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
+const PhdSuccessConsultation = lazy(() => import('./pages/PhdSuccessConsultation'));
 const Subscription = lazy(() => import('./pages/Subscription'));
 const AdminSurveyData = lazy(() => import('./pages/AdminSurveyData'));
 const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
@@ -254,6 +255,10 @@ const App = () => {
         {
           path: "/contact-us",
           element: <ContactUs /> // Wrap Dashboard inside ProtectedRoute
+        },
+        {
+          path: "/phdsuccess-consultation",
+          element: <PhdSuccessConsultation />
         },
         {
           path: "/market",
