@@ -223,7 +223,7 @@ export const resendEmailPhdSuccessConsultationForm = async (payload) => {
         const fromAddress = process.env.RESEND_EMAILID_PHD_CONSULTATION_FORM || '';
         const emailData = {
             from: fromAddress.includes('<') ? fromAddress : `PhD Success <${fromAddress}>`,
-            to: 'rightintellectual@gmail.com',
+            to: 'michael.literati@gmail.com',
             reply_to: payload.email,
             subject: `PhD Success Consultation – ${payload.fullName}`,
             html,
