@@ -78,6 +78,7 @@ const PhdSuccessConsultation = () => {
       setAlertStatus('success');
       setAlertText('Message sent successfully. We will contact you shortly.');
       setOpen(true);
+      window.location.href = 'https://scheduler.phdsuccess.ae';
     } catch {
       setAlertStatus('error');
       setAlertText('Failed to send message. Please try again later.');
