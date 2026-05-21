@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import puppeteer from 'puppeteer';
 import fs from 'node:fs';
+import { resendEmailPhdSuccessConsultationForm } from '../utils/resendEmailTemplate.js';
 
 const prisma = new PrismaClient();
 const CHROME_EXECUTABLE_PATH =
@@ -335,5 +336,56 @@ export const downloadDriFullPdf = async (req, res) => {
       );
     }
     return res.status(500).json({ message: 'Failed to generate full PDF' });
+  }
+};
+
+const phdSuccessConsultationRequiredFields = [
+  'fullName',
+  'email',
+  'phone',
+  'university',
+  'dissertationStage',
+  'needsDescription',
+  'consultationMethod',
+  'budget',
+  'urgency',
+  'importance',
+];
+
+export const postPhdSuccessConsultationFormPdf = async (req, res) => {
+  try {
+    const missing = phdSuccessConsultationRequiredFields.filter((key) => {
+      const value = req.body?.[key];
+      return value === undefined || value === null || String(value).trim() === '';
+    });
+
+    if (missing.length > 0) {
+      return res.status(400).json({
+        message: 'Missing required fields',
+        missing,
+      });
+    }
+
+    const payload = {
+      fullName: String(req.body.fullName).trim(),
+      email: String(req.body.email).trim(),
+      phone: String(req.body.phone).trim(),
+      university: String(req.body.university).trim(),
+      dissertationStage: String(req.body.dissertationStage).trim(),
+      needsDescription: String(req.body.needsDescription).trim(),
+      consultationMethod: String(req.body.consultationMethod).trim(),
+      budget: String(req.body.budget).trim(),
+      urgency: String(req.body.urgency).trim(),
+      importance: String(req.body.importance).trim(),
+      additionalComments: req.body.additionalComments
+        ? String(req.body.additionalComments).trim()
+        : '',
+    };
+
+    await resendEmailPhdSuccessConsultationForm(payload);
+    return res.status(200).json({ message: 'Consultation form submitted successfully' });
+  } catch (err) {
+    console.error('[postPhdSuccessConsultationFormPdf]', err?.message || err);
+    return res.status(500).json({ message: 'Failed to submit consultation form' });
   }
 };

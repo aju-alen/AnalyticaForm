@@ -173,3 +173,65 @@ export const resendEmailResourcesRequestTemplate = (name, email, documentType, m
             </body>
             </html>`;
 }
+
+export const resendEmailPhdSuccessConsultationFormTemplate = (payload) => {
+    const e = escapeHtml;
+    const {
+        fullName,
+        email,
+        phone,
+        university,
+        dissertationStage,
+        needsDescription,
+        consultationMethod,
+        budget,
+        urgency,
+        importance,
+        additionalComments,
+    } = payload;
+
+    return `<html>
+            <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #1f2937; line-height: 1.5;">
+                <div style="border-bottom: 3px solid #c62828; padding-bottom: 12px; margin-bottom: 20px;">
+                    <h2 style="margin: 0; color: #c62828; font-weight: 600;">PhD Success Consultation</h2>
+                    <p style="margin: 8px 0 0; color: #6b7280; font-size: 14px;">New consultation request</p>
+                </div>
+                <p>Hello Admin,</p>
+                <p>You have received a new PhD Success consultation form submission.</p>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Full Name</td><td style="padding: 8px 0;">${e(fullName)}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Email</td><td style="padding: 8px 0;"><a href="mailto:${e(email)}">${e(email)}</a></td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Phone Number</td><td style="padding: 8px 0;">${e(phone)}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">University/Institution</td><td style="padding: 8px 0;">${e(university)}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Current Stage of Dissertation</td><td style="padding: 8px 0;">${e(dissertationStage)}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Preferred Method of Consultation</td><td style="padding: 8px 0;">${e(consultationMethod)}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Budget</td><td style="padding: 8px 0;">${e(budget)}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Range of Urgency</td><td style="padding: 8px 0;">${e(urgency)}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Range of Importance</td><td style="padding: 8px 0;">${e(importance)}</td></tr>
+                </table>
+                <p style="margin-top: 20px; font-weight: 600;">Brief Description of Needs/Challenges</p>
+                <p style="white-space: pre-wrap; background: #f9fafb; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb;">${e(needsDescription)}</p>
+                <p style="margin-top: 16px; font-weight: 600;">Additional Comments</p>
+                <p style="white-space: pre-wrap; background: #f9fafb; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb;">${e(additionalComments || '(none)')}</p>
+            </body>
+            </html>`;
+};
+
+export const resendEmailPhdSuccessConsultationForm = async (payload) => {
+    try {
+        const html = resendEmailPhdSuccessConsultationFormTemplate(payload);
+        const fromAddress = process.env.RESEND_EMAILID_PHD_CONSULTATION_FORM || '';
+        const emailData = {
+            from: fromAddress.includes('<') ? fromAddress : `PhD Success <${fromAddress}>`,
+            to: 'rightintellectual@gmail.com',
+            reply_to: payload.email,
+            subject: `PhD Success Consultation – ${payload.fullName}`,
+            html,
+        };
+        const response = await resendDRIndex.emails.send(emailData);
+        return response;
+    } catch (error) {
+        console.error('Error sending PhD Success consultation email:', error);
+        throw error;
+    }
+};

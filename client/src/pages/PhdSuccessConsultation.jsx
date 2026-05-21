@@ -4,23 +4,57 @@ import {
   Button,
   Container,
   FormControl,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Snackbar,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import Alert from '@mui/material/Alert';
-import { ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
-import theme from '../utils/theme';
+import baseTheme from '../utils/theme';
 import { backendUrl } from '../utils/backendUrl';
 
+const redTheme = createTheme(baseTheme, {
+  palette: {
+    primary: {
+      main: '#c62828',
+      light: '#ef5350',
+      dark: '#8e0000',
+      contrastText: '#fff',
+    },
+  },
+});
+
+const DISSERTATION_STAGES = [
+  'Research',
+  'Editing',
+  'Writing',
+  'Data Collection & Analysis',
+];
+
+const CONSULTATION_METHODS = ['Phone', 'Video Call', 'In Person'];
+
+const URGENCY_OPTIONS = Array.from({ length: 6 }, (_, i) => `${i + 1} week${i === 0 ? '' : 's'}`);
+
+const IMPORTANCE_OPTIONS = Array.from({ length: 10 }, (_, i) => `${(i + 1) * 10}%`);
+
 const initialFormData = {
-  username: '',
+  fullName: '',
   email: '',
-  message: '',
-  contact: '',
+  phone: '',
+  university: '',
+  dissertationStage: '',
+  needsDescription: '',
+  consultationMethod: '',
+  budget: '',
+  urgency: '',
+  importance: '',
+  additionalComments: '',
 };
 
 const PhdSuccessConsultation = () => {
@@ -39,10 +73,7 @@ const PhdSuccessConsultation = () => {
     event.preventDefault();
     setSubmitting(true);
     try {
-      await axios.post(`${backendUrl}/api/send-email/contact-us`, {
-        ...formData,
-        message: `[PhD Success Consultation]\n\n${formData.message}`,
-      });
+      await axios.post(`${backendUrl}/api/dri//phd-success-consultation-form`, formData);
       setFormData(initialFormData);
       setAlertStatus('success');
       setAlertText('Message sent successfully. We will contact you shortly.');
@@ -56,8 +87,27 @@ const PhdSuccessConsultation = () => {
     }
   };
 
+  const selectField = (name, label, options, required = true) => (
+    <FormControl fullWidth required={required} variant="standard">
+      <InputLabel id={`${name}-label`}>{label}</InputLabel>
+      <Select
+        labelId={`${name}-label`}
+        name={name}
+        value={formData[name]}
+        label={label}
+        onChange={handleFormChange}
+      >
+        {options.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={redTheme}>
       <Box
         component="main"
         sx={{
@@ -76,6 +126,7 @@ const PhdSuccessConsultation = () => {
                   fontWeight: 300,
                   fontSize: { xs: '1.1rem', sm: '1.25rem' },
                   textAlign: 'center',
+                  color: 'primary.main',
                 }}
               >
                 PhD Success Consultation
@@ -97,17 +148,17 @@ const PhdSuccessConsultation = () => {
                   <TextField
                     fullWidth
                     required
-                    label="Given Name"
+                    label="Full Name"
                     variant="standard"
-                    name="username"
-                    value={formData.username}
+                    name="fullName"
+                    value={formData.fullName}
                     onChange={handleFormChange}
                   />
                   <TextField
                     fullWidth
                     required
                     type="email"
-                    label="Email Address"
+                    label="Email"
                     variant="standard"
                     name="email"
                     value={formData.email}
@@ -115,21 +166,54 @@ const PhdSuccessConsultation = () => {
                   />
                   <TextField
                     fullWidth
-                    label="Contact Number"
+                    required
+                    label="Phone Number"
                     variant="standard"
-                    name="contact"
-                    value={formData.contact}
+                    name="phone"
+                    value={formData.phone}
                     onChange={handleFormChange}
                   />
                   <TextField
                     fullWidth
                     required
-                    label="Your Message"
+                    label="University/Institution"
+                    variant="standard"
+                    name="university"
+                    value={formData.university}
+                    onChange={handleFormChange}
+                  />
+                  {selectField('dissertationStage', 'Current Stage of Dissertation', DISSERTATION_STAGES)}
+                  <TextField
+                    fullWidth
+                    required
+                    label="Brief Description of Your Needs/Challenges"
                     variant="filled"
-                    name="message"
-                    value={formData.message}
+                    name="needsDescription"
+                    value={formData.needsDescription}
                     multiline
                     rows={4}
+                    onChange={handleFormChange}
+                  />
+                  {selectField('consultationMethod', 'Preferred Method of Consultation', CONSULTATION_METHODS)}
+                  <TextField
+                    fullWidth
+                    required
+                    label="Enter Your Budget"
+                    variant="standard"
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleFormChange}
+                  />
+                  {selectField('urgency', 'Range of Urgency (How fast do you need it)', URGENCY_OPTIONS)}
+                  {selectField('importance', 'Range of Importance (How important is this to you)', IMPORTANCE_OPTIONS)}
+                  <TextField
+                    fullWidth
+                    label="Additional Comments"
+                    variant="filled"
+                    name="additionalComments"
+                    value={formData.additionalComments}
+                    multiline
+                    rows={3}
                     onChange={handleFormChange}
                   />
                   <Button
@@ -142,7 +226,7 @@ const PhdSuccessConsultation = () => {
                       width: { xs: '100%', sm: '60%' },
                     }}
                   >
-                    {submitting ? 'Sending…' : 'Send Message'}
+                    {submitting ? 'Sending…' : 'Submit'}
                   </Button>
                 </Stack>
               </FormControl>
