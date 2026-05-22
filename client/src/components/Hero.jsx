@@ -393,10 +393,11 @@ const Hero = () => {
               justifyContent: 'center',
               fontSize: {xs: '1.7rem',  md: '3.0rem'},
               textAlign: 'center',
+              fontWeight: 600,
               mt: 0,
             }}
           >
-           All-in-One Survey Software for Market and Academic Research
+           A UAE-based market research and data intelligence platform
           </Typography>
           <Stack
             spacing={3}
@@ -409,12 +410,12 @@ const Hero = () => {
               textAlign='center'
               color="text.secondary"
               sx={{
-                 width: { sm: '100%', md: '120%' },
+                 width: { sm: '100%', md: '190%' },
                  paddingX:{xs:1,md:5},
              }}
-             fontSize = {{xs: '0.9.5rem', md: '1.1rem'}}
+             fontSize = {{xs: '0.9.5rem', md: '1.3rem'}}
             >
-             Create, distribute, and analyse surveys—all in one place. Gain deeper insights with data gathered from surveys.
+             That runs managed research, collects targeted survey responses, and transforms data into actionable insights for researchers, students, and organizations.
             </Typography>
             
 
@@ -439,7 +440,7 @@ const Hero = () => {
               size="large"
               onClick={() => navigate('/dashboard')}
             >
-              Sign up is free.
+             Start a Research Project
             </Button>
           </Stack>
         </Stack>
@@ -459,8 +460,7 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 4, sm: 10 },
-        pb: { xs: 8, sm: 4},
+        py: { xs: 8, sm: 12 }
       }}
     >
      
@@ -488,7 +488,8 @@ const Hero = () => {
                 fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               }}
             >
-              Create remarkable surveys
+              Research execution and data intelligence, in one system
+
             </Typography>
             <Typography
               variant="body1"
@@ -500,7 +501,10 @@ const Hero = () => {
                 paddingX:{xs:1,md:0},
               }}
             >
-              Reach your desired target audience by creating incredible surveys. Choose from multiple-choice question types, add logic, and customize with your branding. Your creativity sets the boundaries. And yes, it&apos;s incredibly easy! Discover how we make it happen.
+             Dubai Analytica combines data collection, survey deployment, and research analysis within a single workflow.
+It is designed for projects that require structured data gathering alongside meaningful interpretation.
+Research progresses through one connected process, from setup through to outcome.
+
             </Typography>
           </Stack>
           <Paper
@@ -535,8 +539,7 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 4, sm: 10 },
-        pb: { xs: 8, sm: 4 },
+
       }}
     >
       
@@ -596,7 +599,7 @@ const Hero = () => {
                 fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               }}
             >
-              Fast-track better decision-making
+             From research question to structured insight
             </Typography>
             <Typography
               variant="body1"
@@ -608,7 +611,68 @@ const Hero = () => {
                 paddingX:{xs:1,md:0},
               }}
             >
-              Our reports simplify your analysis. With real-time, shareable dashboards and a complete analytics suite, we empower you to quickly transform data into actionable insights.
+             Step 1 — Define the research objective
+Each project begins with a clear question or requirement. This establishes what needs to be understood and the purpose behind the study.
+
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+             
+Step 2 — Design and deploy surveys
+Surveys are prepared around the research objective and deployed to relevant audiences.
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+             
+             Step 3 — Collect targeted responses
+Responses are gathered from selected participants and stored in a structured format for review and analysis.
+
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+             
+             Step 4 — Process and analyse data
+Collected responses are reviewed to identify patterns, trends, and relevant findings.
+
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+             
+             Step 5 — Generate insights
+Findings are translated into clear outputs that support academic work, research studies, and business decision-making.
+
             </Typography>
           </Stack>
         </Stack>
@@ -621,8 +685,7 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 4, sm: 10 },
-        pb: { xs: 8, sm: 4 },
+        py: { xs: 8, sm: 12 }
       }}
     >
      
@@ -650,7 +713,7 @@ const Hero = () => {
                 fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               }}
             >
-              Designed for enterprise use
+              Structured research you can rely on
             </Typography>
             <Typography
               variant="body1"
@@ -662,8 +725,124 @@ const Hero = () => {
                 paddingX:{xs:1,md:0},
               }}
             >
-              We meet all the needs of today&apos;s modern enterprise. From robust security and time-saving integrations to advanced collaboration features, we've got it covered. Plus, our world-class account service team is here to support you every step of the way.
+             Dubai Analytica is built around controlled research execution, from how data is collected to how it is interpreted.
+Each project follows a defined process so that results remain consistent with the original research objective.
+
             </Typography>
+
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                fontWeight: 'bold',
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+            Controlled data collection
+
+            </Typography>
+            
+             <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+             Responses are gathered through targeted survey deployment aligned with the defined study requirements. This reduces irrelevant input and ensures data reflects the intended audience.
+            </Typography>
+
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                fontWeight: 'bold',
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+            Structured research process
+
+            </Typography>
+            
+             <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+             Every study follows the same operational flow. From survey design to response collection and analysis, the process remains consistent across projects.
+            </Typography>
+
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                fontWeight: 'bold',
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+            Interpreted analysis
+
+            </Typography>
+            
+             <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+             Collected data is reviewed to identify patterns, recurring signals, and relevant findings within the dataset. Interpretation stays anchored to the original research question.
+            </Typography>
+
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                fontWeight: 'bold',
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+          Transparent execution
+
+
+            </Typography>
+            
+             <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                marginLeft: '40px',
+                width: { xs: '100%', sm: '80%' },
+                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                paddingX:{xs:1,md:0},
+              }}
+            >
+           Research projects follow a clear workflow from initiation through to final output. Each stage is traceable within the structure of the study.
+            </Typography>
+
           </Stack>
           <Paper
         elevation={6}
@@ -698,8 +877,8 @@ const Hero = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: { xs: 4, sm: 10 },
-        pb: { xs: 8, sm: 4 },
+        py: { xs: 8, sm: 12 }
+
       }}
     >
       
@@ -771,6 +950,235 @@ const Hero = () => {
     </Container>
 
     <Container
+          maxWidth="lg"
+          sx={{
+
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            py: { xs: 8, sm: 12 }
+          }}
+        >
+          <Typography
+            variant="h2"
+            textAlign="center"
+            sx={{
+              mb: 3,
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: 600,
+            }}
+          >
+            Built for researchers, students, and organizations in the UAE
+          </Typography>
+
+
+          <Typography
+            variant="h5"
+            textAlign="center"
+            sx={{
+              mb: 2,
+              maxWidth: '800px',
+              fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+              color: 'text.secondary',
+            }}
+          >
+            Dubai Analytica supports students working on academic projects, researchers conducting studies, startups testing ideas, and organizations seeking structured feedback and insight.
+
+
+          </Typography>
+          <Typography
+            variant="h5"
+            textAlign="center"
+            sx={{
+              mb: 2,
+              maxWidth: '800px',
+              fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+              color: 'text.secondary',
+            }}
+          >
+            Research needs differ across these groups, but the requirement is often the same: reliable responses and a clear framework for interpretation.
+            
+
+          </Typography>
+          <Typography
+            variant="h5"
+            textAlign="center"
+            sx={{
+              mb: 2,
+              maxWidth: '800px',
+              fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+              color: 'text.secondary',
+            }}
+          >
+            Projects may be conducted independently or supported through managed research execution depending on scope and complexity.
+            
+
+          </Typography>
+    </Container>
+    <Container
+          maxWidth="lg"
+          sx={{
+
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            py: { xs: 8, sm: 12 }
+          }}
+        >
+          <Typography
+            variant="h2"
+            textAlign="center"
+            sx={{
+              mb: 3,
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: 600,
+            }}
+          >
+           What the platform enables
+
+          </Typography>
+
+          <Grid
+            container
+            sx={{
+              width: '100%',
+              mt: { xs: 4, md: 7 },
+              px: { xs: 1, sm: 2, md: 0 },
+            }}
+          >
+            {[
+              {
+                title: 'Data collection',
+                body: 'The platform supports targeted surveys, structured questionnaires, and controlled response gathering aligned with defined research objectives.',
+              },
+              {
+                title: 'Research execution',
+                body: 'Studies can be planned and deployed through managed workflows that align data collection with the intended research outcome.',
+              },
+              {
+                title: 'Analysis and insights',
+                body: 'Responses are reviewed to identify patterns, interpret sentiment where relevant, and develop structured insights for reporting and decision-making.',
+              },
+            ].map((item, index, items) => (
+              <Grid
+                item
+                xs={12}
+                md={4}
+                key={item.title}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  px: { xs: 2, sm: 3, md: 4 },
+                  py: { xs: 3, md: 2 },
+                  borderRight: {
+                    md: index < items.length - 1 ? '1px solid' : 'none',
+                  },
+                  borderBottom: {
+                    xs: index < items.length - 1 ? '1px solid' : 'none',
+                    md: 'none',
+                  },
+                  borderColor: 'divider',
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  sx={{
+                    mb: 2,
+                    fontSize: 'clamp(1rem, 2vw, 1.6rem)',
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {item.title}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    maxWidth: 360,
+                    fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+                    color: 'text.secondary',
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {item.body}
+                </Typography>
+              </Grid>
+            ))}
+          </Grid>
+    </Container>
+
+    <Container
+          maxWidth="lg"
+          sx={{
+
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            py: { xs: 8, sm: 12 }
+          }}
+        >
+          <Typography
+            variant="h2"
+            textAlign="center"
+            sx={{
+              mb: 3,
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: 600,
+            }}
+          >
+          A complete research workflow
+          </Typography>
+
+
+          <Typography
+            variant="h5"
+            textAlign="center"
+            sx={{
+              mb: 2,
+              maxWidth: '800px',
+              fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+              color: 'text.secondary',
+            }}
+          >
+            Dubai Analytica connects data collection and analysis within a single system designed for structured research outcomes.
+
+
+
+          </Typography>
+          <Typography
+            variant="h5"
+            textAlign="center"
+            sx={{
+              mb: 2,
+              maxWidth: '800px',
+              fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+              color: 'text.secondary',
+            }}
+          >
+            Research can move from study design through to interpretation without fragmented tools or disconnected processes.
+          
+            
+
+          </Typography>
+          <Typography
+            variant="h5"
+            textAlign="center"
+            sx={{
+              mb: 2,
+              maxWidth: '800px',
+              fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+              color: 'text.secondary',
+            }}
+          >
+             The focus is to make research more manageable, organised, and easier to translate into usable insight.
+            
+
+          </Typography>
+    </Container>
+
+    {/* <Container
           maxWidth="xl"
           sx={{
             display: 'flex',
@@ -915,7 +1323,7 @@ const Hero = () => {
               Transform Your Data Collection Today
             </Button>
           </Box>
-        </Container>
+    </Container> */}
                 <Container
                     maxWidth='md'
                     sx={{
@@ -941,7 +1349,8 @@ const Hero = () => {
                             sx={{ height: 'full' }}
                             fontWeight={540}
                         >
-                            Ready to Get started?
+                          Start your research project
+
                         </Typography>
 
                         <Typography
@@ -951,7 +1360,8 @@ const Hero = () => {
                             fontSize={'clamp(1.3rem, 3vw, 1rem)'}
 
                         >
-                            Make use of the best online survey software for reliable actionable insights.
+                            Define your research objective and move from data collection to structured analysis and insight generation.
+
                         </Typography>
 
                         <Button
@@ -964,13 +1374,13 @@ const Hero = () => {
                                 width: { xs: '100%', sm: '30%'},
                             }}
                         >
-                            Sign up free.
+                            Start a Research Project.
                         </Button>
                     </Stack>
 
 
                 </Container>
-
+{/* 
                 <Container
                 maxWidth="xl"
                     sx={{
@@ -1116,7 +1526,7 @@ const Hero = () => {
                         >
                           <WhatsAppIcon sx={{ fontSize: 32 }} />
                         </ReactWhatsapp>
-                </Container>
+                </Container> */}
             </Container>
         </Box>
         </ThemeProvider>
