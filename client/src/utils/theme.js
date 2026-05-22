@@ -14,6 +14,11 @@ const theme = createTheme({
       'Arial',
     ].join(','),
   },
+  palette: {
+    text: {
+      secondary: '#000',
+    },
+  },
 });
 
 export default theme;

@@ -389,18 +389,19 @@ const Hero = () => {
           alignItems="center"
           useFlexGap
           sx={{
-            width: { xs: '100%', sm: '60%' },
+           
           }}
         >
           <Typography
             variant="h1"
             sx={{
+              width: { xs: '100%', sm: '60%' },
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'center',
               fontSize: {xs: '1.7rem',  md: '2.5rem'},
               textAlign: 'center',
-              fontWeight: 600,
+              fontWeight: 700,
               mt: 0,
               lineHeight: 1.5,
             }}
@@ -418,10 +419,10 @@ const Hero = () => {
               textAlign='center'
               color="text.secondary"
               sx={{
-                 width: { sm: '100%', md: '190%' },
+                width: { sm: '100%', md: '190%' },
                  paddingX:{xs:1,md:5},
              }}
-             fontSize = {{xs: '0.9.5rem', md: '1.25rem'}}
+             fontSize = {{xs: '0.9.5rem', md: '1.3rem'}}
             >
              That runs managed research, collects targeted survey responses, and transforms data into actionable insights for researchers, students, and organizations.
             </Typography>
@@ -505,13 +506,25 @@ const Hero = () => {
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
-             Dubai Analytica combines data collection, survey deployment, and research analysis within a single workflow.
-It is designed for projects that require structured data gathering alongside meaningful interpretation.
-Research progresses through one connected process, from setup through to outcome.
+              <div className="">
+              Dubai Analytica combines data collection, survey deployment, and research analysis within a single workflow.
+              </div>
+<br />              
+              <div className="">
+               <ul>
+  <li >                 
+• Designed for projects that require structured data gathering alongside meaningful interpretation.
+</li>
+<br />
+<li>
+• Research progresses through one connected process, from setup through to outcome.
+</li>
+</ul>
+</div>
 
             </Typography>
           </Stack>
