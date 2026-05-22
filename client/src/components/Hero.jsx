@@ -628,7 +628,7 @@ const Hero = () => {
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -642,7 +642,7 @@ Each project begins with a clear question or requirement. This establishes what 
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -656,7 +656,7 @@ Surveys are prepared around the research objective and deployed to relevant audi
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -671,7 +671,7 @@ Responses are gathered from selected participants and stored in a structured for
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -686,7 +686,7 @@ Collected responses are reviewed to identify patterns, trends, and relevant find
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -742,7 +742,7 @@ Findings are translated into clear outputs that support academic work, research 
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -758,7 +758,7 @@ Each project follows a defined process so that results remain consistent with th
                 fontWeight: 'bold',
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -772,7 +772,7 @@ Each project follows a defined process so that results remain consistent with th
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -786,7 +786,7 @@ Each project follows a defined process so that results remain consistent with th
                 fontWeight: 'bold',
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -800,7 +800,7 @@ Each project follows a defined process so that results remain consistent with th
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -814,7 +814,7 @@ Each project follows a defined process so that results remain consistent with th
                 fontWeight: 'bold',
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -828,7 +828,7 @@ Each project follows a defined process so that results remain consistent with th
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -842,7 +842,7 @@ Each project follows a defined process so that results remain consistent with th
                 fontWeight: 'bold',
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -857,7 +857,7 @@ Each project follows a defined process so that results remain consistent with th
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
@@ -960,7 +960,7 @@ Each project follows a defined process so that results remain consistent with th
               sx={{
                 marginLeft: '40px',
                 width: { xs: '100%', sm: '80%' },
-                fontSize: 'clamp(1.0rem, 3vw, 1rem)',
+                fontSize: {xs: '0.9.5rem', md: '1.25rem'},
                 paddingX:{xs:1,md:0},
               }}
             >
