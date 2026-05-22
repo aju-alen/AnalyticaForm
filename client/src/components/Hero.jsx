@@ -371,7 +371,7 @@ const Hero = () => {
         }}
       >
         <SEO
-          title="Dubai Analytica: Market Research & Data Intelligence Platform UAE"
+          title="Market Research & Data Intelligence Platform UAE"
 
           description="Dubai Analytica is a UAE-based hybrid market research and data intelegence platform for managed research, targeted surveys, and actionable insights."
 
