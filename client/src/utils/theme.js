@@ -5,9 +5,11 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   typography: {
     fontFamily: [
-      'Montserrat',
+      'Figtree',
       'Lato',
-      'Poppins', // Add the Poppins font
+      'Nunito Sans',
+      'Raleway',
+      'Roboto',
       'sans-serif',
       'Arial',
     ].join(','),
