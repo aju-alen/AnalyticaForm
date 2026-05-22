@@ -398,7 +398,7 @@ const Hero = () => {
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'center',
-              fontSize: {xs: '1.7rem',  md: '3.0rem'},
+              fontSize: {xs: '1.7rem',  md: '2.5rem'},
               textAlign: 'center',
               fontWeight: 600,
               mt: 0,
