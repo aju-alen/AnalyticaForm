@@ -371,10 +371,17 @@ const Hero = () => {
         }}
       >
         <SEO
-          title="Online Survey Software for Researchers"
-          description="Easy to distribute and analyze surveys with Dubai Analytica, the best online survey software that helps UAE brands turn data into decisions."
+          title="Dubai Analytica: Market Research & Data Intelligence Platform UAE"
+
+          description="Dubai Analytica is a UAE-based hybrid market research and data intelegence platform for managed research, targeted surveys, and actionable insights."
+
+
+          ogTitle="Dubai Analytica: Market Research & Data Intelligence Platform UAE"
+          ogDescription="Managed research, targeted surveys, and actionable insights for researchers, students, and organizations in the UAE."
+          keywords="market research UAE"
+          canonicalUrl="https://dubaianalytica.com/"
           name="Dubai Analytica"
-          type="Homepage"
+          type="website"
         />
         <Stack
           spacing={1}
