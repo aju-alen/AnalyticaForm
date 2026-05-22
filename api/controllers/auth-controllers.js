@@ -210,7 +210,7 @@ export const userRegister = async (req, res, next) => {
             })
             console.log(userToken, 'userToken');
             if (!userToken) {
-                return res.redirect(`https://app.dubaianalytica.com/login`);
+                return res.redirect(`https://dubaianalytica.com/login`);
             }
 
             const updatedUser = await prisma.user.update({
@@ -227,7 +227,7 @@ export const userRegister = async (req, res, next) => {
             const emailResponse = await resendEmailBoiler(process.env.GMAIL_AUTH_USER_SUPPORT, updatedUser.email, 'Welcome to Dubai Analytica', welcomeHTMLTemplate);
             console.log(emailResponse, 'emailResponse');
             console.log(updatedUser, 'updatedUser');
-            res.redirect(`https://app.dubaianalytica.com/login`);
+            res.redirect(`https://dubaianalytica.com/login`);
         }
         catch (err) {
             console.log(err);
