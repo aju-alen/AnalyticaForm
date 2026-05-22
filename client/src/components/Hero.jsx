@@ -371,12 +371,12 @@ const Hero = () => {
         }}
       >
         <SEO
-          title="Market Research & Data Intelligence Platform UAE"
+          title="Market Research & Data Intelligence Platform UAE | Dubai Analytica"
 
           description="Dubai Analytica is a UAE-based hybrid market research and data intelegence platform for managed research, targeted surveys, and actionable insights."
 
 
-          ogTitle="Dubai Analytica: Market Research & Data Intelligence Platform UAE"
+          ogTitle="Dubai Analytica | Market Research & Data Intelligence Platform UAE"
           ogDescription="Managed research, targeted surveys, and actionable insights for researchers, students, and organizations in the UAE."
           keywords="market research UAE"
           canonicalUrl="https://dubaianalytica.com/"
@@ -389,7 +389,7 @@ const Hero = () => {
           alignItems="center"
           useFlexGap
           sx={{
-            width: { xs: '100%', sm: '85%' },
+            width: { xs: '100%', sm: '60%' },
           }}
         >
           <Typography
@@ -402,6 +402,7 @@ const Hero = () => {
               textAlign: 'center',
               fontWeight: 600,
               mt: 0,
+              lineHeight: 1.5,
             }}
           >
            A UAE-based market research and data intelligence platform
@@ -420,7 +421,7 @@ const Hero = () => {
                  width: { sm: '100%', md: '190%' },
                  paddingX:{xs:1,md:5},
              }}
-             fontSize = {{xs: '0.9.5rem', md: '1.3rem'}}
+             fontSize = {{xs: '0.9.5rem', md: '1.25rem'}}
             >
              That runs managed research, collects targeted survey responses, and transforms data into actionable insights for researchers, students, and organizations.
             </Typography>
@@ -1145,7 +1146,7 @@ Each project follows a defined process so that results remain consistent with th
             sx={{
               mb: 2,
               maxWidth: '800px',
-              fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+              fontSize: 'clamp(1rem, 2vw, 1.25rem)',
               color: 'text.secondary',
             }}
           >
@@ -1160,7 +1161,7 @@ Each project follows a defined process so that results remain consistent with th
             sx={{
               mb: 2,
               maxWidth: '800px',
-              fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+              fontSize: 'clamp(1rem, 2vw, 1.25rem)',
               color: 'text.secondary',
             }}
           >
@@ -1175,7 +1176,7 @@ Each project follows a defined process so that results remain consistent with th
             sx={{
               mb: 2,
               maxWidth: '800px',
-              fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+              fontSize: 'clamp(1rem, 2vw, 1.25rem)',
               color: 'text.secondary',
             }}
           >
