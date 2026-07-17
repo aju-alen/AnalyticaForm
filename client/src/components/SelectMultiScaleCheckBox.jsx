@@ -495,26 +495,33 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, registerFormData, data, id, opti
                             visibility: 'visible',
                         },
                     }}>
-                        <TextField
-                            fullWidth
-                            multiline
-                            id="standard-basic"
-                            label={!disableText ? "Insert input" : ''} variant="standard"
-                            name='question'
-                            value={formData.question}
-                            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                            InputProps={{
-                                readOnly: disableText,
-                            }}
-                            sx={{
-                                '& .MuiInputBase-root': {
-                                    fontSize: { xs: '1rem', md: '1.3rem' },
-                                    fontWeight: boldFields.has('question') ? 'bold' : 'normal',
-                                },
-                                width: '100%',
-                                mx: { xs: 1, md: 2 }
-                            }}
-                        />
+                          <div style={{ marginBottom: '20px', width: '100%' }}>
+              {!disableText && (
+                <label style={{ 
+                  fontSize: '0.75rem', 
+                  color: 'rgba(0, 0, 0, 0.6)', 
+                  marginBottom: '8px',
+                  display: 'block' 
+                }}>
+                  Insert input *
+                </label>
+              )}
+              <ReactQuill
+                theme="snow"
+                value={formData.quilText}
+                onChange={handleQuillChange}
+                readOnly={disableText}
+                modules={modules}
+                formats={formats}
+                className={`ql-container ql-snow`}
+                style={{
+                  width: '100%',
+                  border: '0px solid rgba(0, 0, 0, 0.23)',
+                  borderRadius: '4px',
+                }}
+              />
+              <Divider />
+            </div>
                         
                     </Box>
                          {formData.options.map((row, rowIndex) => (
