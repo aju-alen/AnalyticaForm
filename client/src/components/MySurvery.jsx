@@ -15,6 +15,7 @@ import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Chip from '@mui/material/Chip';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -22,6 +23,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import { alpha } from '@mui/material/styles';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React from 'react';
@@ -32,6 +34,7 @@ import { refreshToken } from '../utils/refreshToken';
 
 export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDataChanged }) {
   console.log(userSurveyData,'--userSurveyData--');
+  const primaryColor = 'rgb(25, 118, 210)';
   
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
@@ -203,15 +206,48 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
   };
 
   return (
-    <Box component="section" sx={{ p: { xs: 0, md: 10 }, pt: { xs: 4 } }}>
-      <Container maxWidth="2xl">
+    <Box component="section" sx={{ p: { xs: 0, md: 2 }, pt: { xs: 2 } }}>
+      <Container maxWidth={false} sx={{ px: { xs: 0.5, md: 1 } }}>
         <CssBaseline />
-        <Box sx={{ boxShadow: 3, borderRadius: 2, bgcolor: 'background.paper' }}>
+        <Box
+          sx={{
+            borderRadius: 3,
+            bgcolor: alpha('#ffffff', 0.88),
+            border: `1px solid ${alpha(primaryColor, 0.2)}`,
+            boxShadow: `0 20px 34px ${alpha(primaryColor, 0.08)}`,
+            overflow: 'hidden'
+          }}
+        >
+          <Box
+            sx={{
+              p: { xs: 1.5, md: 2.5 },
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 1,
+              borderBottom: `1px solid ${alpha(primaryColor, 0.15)}`,
+              backgroundColor: alpha(primaryColor, 0.08)
+            }}
+          >
+            <Typography sx={{ fontWeight: 800, color: '#0f172a' }}>
+              Your Surveys
+            </Typography>
+            <Chip
+              label={`${userSurveyData.length} total`}
+              sx={{
+                fontWeight: 700,
+                color: primaryColor,
+                backgroundColor: alpha(primaryColor, 0.2),
+                border: `1px solid ${alpha(primaryColor, 0.25)}`
+              }}
+            />
+          </Box>
           <TableContainer 
             component={Paper} 
             sx={{ 
-              borderRadius: 2,
-              bgcolor: 'background.paper',
+              borderRadius: 0,
+              bgcolor: 'transparent',
+              boxShadow: 'none',
               '@media (max-width: 600px)': {
                 '& table': {
                   display: 'block'
@@ -226,14 +262,15 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                 '& tr': {
                   display: 'block',
                   marginBottom: '1.5rem',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                  boxShadow: `0 12px 20px ${alpha(primaryColor, 0.08)}`,
                   borderRadius: '12px',
                   padding: '1.25rem',
-                  backgroundColor: '#fff',
+                  backgroundColor: alpha('#ffffff', 0.95),
+                  border: `1px solid ${alpha(primaryColor, 0.2)}`,
                   transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
                   '&:hover': {
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)'
+                    boxShadow: `0 14px 24px ${alpha(primaryColor, 0.12)}`
                   }
                 },
                 '& td': {
@@ -261,13 +298,13 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           >
             <Table>
               <TableHead>
-                <TableRow sx={{ bgcolor: 'grey.50' }}>
-                  <TableCell align="center" sx={{ fontWeight: 'bold', py: 2.5 }}>Survey Name</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold', display: { xs: 'none', sm: 'table-cell' }, py: 2.5 }}>Created At</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold', display: { xs: 'none', sm: 'table-cell' }, py: 2.5 }}>Modified At</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold', py: 2.5 }}>Status</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold', py: 2.5 }}>Response</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold', py: 2.5 }}>Action</TableCell>
+                <TableRow sx={{ bgcolor: alpha(primaryColor, 0.12) }}>
+                  <TableCell align="center" sx={{ fontWeight: 'bold', py: 2.5, color: '#0f172a' }}>Survey Name</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 'bold', display: { xs: 'none', sm: 'table-cell' }, py: 2.5, color: '#0f172a' }}>Created At</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 'bold', display: { xs: 'none', sm: 'table-cell' }, py: 2.5, color: '#0f172a' }}>Modified At</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 'bold', py: 2.5, color: '#0f172a' }}>Status</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 'bold', py: 2.5, color: '#0f172a' }}>Response</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 'bold', py: 2.5, color: '#0f172a' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -276,7 +313,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                     key={survey.id}
                     sx={{
                       '&:last-child td, &:last-child th': { border: 0 },
-                      '&:hover': { bgcolor: 'grey.50' },
+                      '&:hover': { bgcolor: alpha(primaryColor, 0.08) },
                       transition: 'background-color 0.2s ease'
                     }}
                   >
@@ -288,9 +325,10 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                           sx={{ 
                             width: { xs: '100%', sm: 'auto' },
                             justifyContent: 'flex-start',
-                            fontWeight: 500,
+                            fontWeight: 700,
+                            color: primaryColor,
                             '&:hover': {
-                              bgcolor: 'primary.50'
+                              bgcolor: alpha(primaryColor, 0.2)
                             }
                           }}
                         >
@@ -315,10 +353,11 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                             py: 1,
                             px: 2,
                             borderRadius: '20px',
-                            bgcolor: survey.surveyStatus === 'Active' ? 'success.50' : 'grey.100',
-                            color: survey.surveyStatus === 'Active' ? 'success.main' : 'text.secondary',
+                            bgcolor: survey.surveyStatus === 'Active' ? alpha(primaryColor, 0.2) : alpha('#cbd5e1', 0.4),
+                            color: survey.surveyStatus === 'Active' ? primaryColor : '#475569',
                             fontWeight: 500
-                          }
+                          },
+                          '&:before, &:after': { display: 'none' }
                         }}
                       >
                         <MenuItem value={'Active'}>
@@ -337,8 +376,8 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                           px: 2,
                           py: 0.5,
                           borderRadius: '16px',
-                          bgcolor: 'primary.50',
-                          color: 'primary.main',
+                          bgcolor: alpha(primaryColor, 0.25),
+                          color: primaryColor,
                           fontWeight: 600
                         }}
                       >
@@ -352,12 +391,12 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                           p: 1,
                           borderRadius: '50%',
                           '&:hover': {
-                            bgcolor: 'grey.100'
+                            bgcolor: alpha(primaryColor, 0.2)
                           }
                         }}
                         onClick={(event) => handleClickMenu(event, survey.id)}
                       >
-                        <MenuOpenIcon color='action' />
+                        <MenuOpenIcon sx={{ color: primaryColor }} />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -380,7 +419,8 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
               minWidth: '200px',
               borderRadius: 2,
               mt: 1,
-              boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)'
+              border: `1px solid ${alpha(primaryColor, 0.2)}`,
+              boxShadow: `0 14px 28px ${alpha(primaryColor, 0.12)}`
             }
           }}
         >
@@ -390,7 +430,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
               py: 1.5,
               px: 2.5,
               '&:hover': {
-                bgcolor: 'error.50',
+                bgcolor: alpha('#fee2e2', 1),
                 color: 'error.main'
               }
             }}
@@ -403,8 +443,8 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
               py: 1.5,
               px: 2.5,
               '&:hover': {
-                bgcolor: 'primary.50',
-                color: 'primary.main'
+                bgcolor: alpha(primaryColor, 0.08),
+                color: primaryColor
               }
             }}
           >
@@ -416,8 +456,8 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
               py: 1.5,
               px: 2.5,
               '&:hover': {
-                bgcolor: 'primary.50',
-                color: 'primary.main'
+                bgcolor: alpha(primaryColor, 0.08),
+                color: primaryColor
               }
             }}
           >
@@ -425,7 +465,16 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           </MenuItem>
         </Menu>
       </Container>
-      <Dialog open={deleteOpen} onClose={handleClose}>
+      <Dialog
+        open={deleteOpen}
+        onClose={handleClose}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            border: `1px solid ${alpha(primaryColor, 0.2)}`
+          }
+        }}
+      >
                         <DialogTitle>{"Are you sure you want to delete this survey?"}</DialogTitle>
                         <DialogContent>
                           <DialogContentText>
@@ -442,13 +491,22 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
   {isloading? <CircularProgress color='error' /> :"Delete"}
 
 </Button>
-                          <Button onClick={handleClose} variant="contained">
+                          <Button onClick={handleClose} variant="contained" sx={{ bgcolor: primaryColor, '&:hover': { bgcolor: primaryColor } }}>
                             Cancel
                           </Button>
                         </DialogActions>
                       </Dialog>
 
-                      <Dialog open={open} onClose={handleClose}>
+                      <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                          sx: {
+                            borderRadius: 3,
+                            border: `1px solid ${alpha(primaryColor, 0.2)}`
+                          }
+                        }}
+                      >
                         <DialogTitle>{"Export User Responses"}</DialogTitle>
                         <DialogContent>
                           <DialogContentText>
@@ -472,7 +530,16 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                       </Dialog>
 
       {/* Pricing Dialog */}
-      <Dialog open={pricingDialogOpen} onClose={() => handlePricingDialogClose(false)}>
+      <Dialog
+        open={pricingDialogOpen}
+        onClose={() => handlePricingDialogClose(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            border: `1px solid ${alpha(primaryColor, 0.2)}`
+          }
+        }}
+      >
         <DialogTitle>Upgrade Required</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -483,7 +550,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           <Button onClick={() => handlePricingDialogClose(false)} color="secondary">
             Cancel
           </Button>
-          <Button onClick={() => handlePricingDialogClose(true)} variant="contained" color="primary">
+          <Button onClick={() => handlePricingDialogClose(true)} variant="contained" sx={{ bgcolor: primaryColor, '&:hover': { bgcolor: primaryColor } }}>
             View Pricing
           </Button>
         </DialogActions>

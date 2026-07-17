@@ -1578,18 +1578,22 @@ const UserSubmitSurvey = () => {
         <ThemeProvider theme={theme}>
               <SEO
             robotText="noindex, nofollow"
-          title={surveyData.surveyTitle}
-          description={`Dubai Analytica Survey Page - ${surveyData.surveyTitle}`}
+          title={`Dubai Analytica: ${surveyData.surveyTitle}`}
+          description={`Complete the ${surveyData.surveyTitle} survey on Dubai Analytica.`}
+          ogTitle={surveyData.surveyTitle}
+          ogDescription={`Share your feedback — ${surveyData.surveyTitle}`}
+          keywords={`survey, ${surveyData.surveyTitle}, Dubai Analytica, online form`}
+          canonicalUrl={`https://www.dubaianalytica.com/user-survey/${surveyId}`}
           name="Dubai Analytica"
-          type="Web Form"
-          surveyImage='https://i.postimg.cc/X7fPCLRg/Untitled-design.png'
-          surveyUrl="https://www.dubaianalytica.com/user-survey/clxl91ta500018xf57ty8g6fl"
+          type="website"
+          surveyImage="https://i.postimg.cc/X7fPCLRg/Untitled-design.png"
+          surveyUrl={`https://www.dubaianalytica.com/user-survey/${surveyId}`}
           schema={{
             "@context": "https://schema.org",
             "@type": "WebPage",
             "name": `${surveyData.surveyTitle}`,
             "description": "A page to gather user survey responses",
-            "url": "https://www.dubaianalytica.com/user-survey/clxl91ta500018xf57ty8g6fl"
+            "url": `https://www.dubaianalytica.com/user-survey/${surveyId}`
           }}
         />
             <CssBaseline />
@@ -1674,7 +1678,7 @@ const UserSubmitSurvey = () => {
                      >
                        <span className="text-center leading-snug">
                          {isDefenceReadinessSurvey
-                           ? 'Start Free DRI Assessment (Question 1)'
+                           ? 'Start Free DRI Assessment'
                            : 'Start Survey'}
                        </span>
                        <svg
@@ -1692,11 +1696,7 @@ const UserSubmitSurvey = () => {
                          />
                        </svg>
                      </button>
-                     {isDefenceReadinessSurvey && (
-                       <p className="text-gray-600 text-xs sm:text-sm text-center max-w-sm leading-relaxed px-1">
-                         No email required until after Question 10.
-                       </p>
-                     )}
+                  
                      </div>
 
                    </motion.div>

@@ -6,7 +6,7 @@ import { refreshToken } from '../utils/refreshToken';
 import MySurvery from '../components/MySurvery';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, alpha } from '@mui/material/styles';
 import theme from '../utils/theme';
 import { Box, Grid, TextField, CircularProgress, Snackbar, Alert, Typography, Card, CardContent, Button } from '@mui/material';
 import Joyride, { STATUS } from 'react-joyride';
@@ -162,6 +162,11 @@ const Dashboard = () => {
         }
     }, []);
 
+    const totalResponses = userSurveyData.reduce((acc, survey) => acc + (survey.surveyResponses || 0), 0);
+    const activeSurveys = userSurveyData.filter((survey) => survey.surveyStatus === 'Active').length;
+    const recentSurvey = userSurveyData[0]?.surveyTitle || 'No surveys yet';
+    const primaryColor = 'rgb(25, 118, 210)';
+
     return isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: '100vh' }}>
             <CircularProgress />
@@ -182,29 +187,52 @@ const Dashboard = () => {
                     },
                 }}
             />
-            <Box component="section" sx={{ p: { md: 1 }, pt: { xs: 1 }, backgroundColor: '#f1f1f1', minHeight: '100vh' }}>
+            <Box
+                component="section"
+                sx={{
+                    p: { xs: 2, md: 3 },
+                    minHeight: '100vh',
+                    backgroundColor: '#f5f8fc',
+                }}
+            >
                 <Box sx={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
                     alignItems: 'center', 
-                    mb: 3, 
-                    px: 3 
+                    mb: 3,
+                    px: { xs: 1, md: 3 },
+                    py: 2.5,
+                    borderRadius: 4,
+                    backgroundColor: primaryColor,
+                    border: `1px solid ${alpha(primaryColor, 0.45)}`,
+                    boxShadow: `0 20px 40px ${alpha(primaryColor, 0.25)}`
                 }}>
-                    <Typography 
-                        className="survey-dashboard-title"
-                        variant="h4" 
-                        sx={{ color: '#333' }}
-                    >
-                        Survey Dashboard
-                    </Typography>
+                    <Box>
+                        <Typography
+                            className="survey-dashboard-title"
+                            variant="h4"
+                            sx={{
+                                color: '#f8fafc',
+                                fontWeight: 900,
+                                letterSpacing: 0.3
+                            }}
+                        >
+                            Survey Dashboard
+                        </Typography>
+                        <Typography sx={{ color: alpha('#f8fafc', 0.88), mt: 0.5 }}>
+                            Create, manage, and track all surveys from one place.
+                        </Typography>
+                    </Box>
                     <Card 
                         className="subscription-card"
                         sx={{ 
                             display: { xs: 'none', md: 'block' },
-                            maxWidth: 200,
-                            backgroundColor: isSubscribed ? '#4caf50' : '#2196f3',
+                            maxWidth: 240,
+                            borderRadius: 3,
+                            backgroundColor: isSubscribed ? '#2e7d32' : primaryColor,
                             color: 'white',
-                            transform: 'rotate(3deg)'
+                            border: `1px solid ${alpha('#ffffff', 0.24)}`,
+                            boxShadow: `0 18px 30px ${alpha('#0f172a', 0.35)}`,
                         }}
                     >
                         <CardContent>
@@ -223,9 +251,15 @@ const Dashboard = () => {
                                     {!isSubscribed && (
                                     <Button
                                     variant='contained'
-                                    color='warning'
                                     sx={{
                                         textTransform: 'none',
+                                        mt: 1,
+                                        backgroundColor: alpha('#ffffff', 0.2),
+                                        color: '#ffffff',
+                                        border: `1px solid ${alpha('#ffffff', 0.38)}`,
+                                        '&:hover': {
+                                            backgroundColor: alpha('#ffffff', 0.3),
+                                        },
                                     }}
                                     >
                                         See Plans
@@ -237,11 +271,52 @@ const Dashboard = () => {
                     </Card>
                 </Box>
 
-                <Grid container spacing={3} alignItems="center" justifyContent="center" sx={{ 
-                    py: 2,
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                    borderRadius: 2,
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                <Grid container spacing={2} sx={{ px: { xs: 1, md: 3 }, mb: 3 }}>
+                    {[
+                        { label: 'Total Surveys', value: userSurveyData.length },
+                        { label: 'Active Surveys', value: activeSurveys },
+                        { label: 'Total Responses', value: totalResponses },
+                        { label: 'Latest Survey', value: recentSurvey, isText: true },
+                    ].map((item) => (
+                        <Grid key={item.label} item xs={12} sm={6} lg={3}>
+                            <Card
+                                sx={{
+                                    borderRadius: 3,
+                                    height: '100%',
+                                    backgroundColor: alpha('#ffffff', 0.88),
+                                    border: `1px solid ${alpha(primaryColor, 0.25)}`,
+                                    boxShadow: `0 14px 28px ${alpha(primaryColor, 0.08)}`,
+                                }}
+                            >
+                                <CardContent>
+                                    <Typography sx={{ color: primaryColor, fontWeight: 700, fontSize: 13 }}>
+                                        {item.label}
+                                    </Typography>
+                                    <Typography
+                                        sx={{
+                                            color: '#0f172a',
+                                            fontWeight: 900,
+                                            mt: 0.5,
+                                            fontSize: item.isText ? 15 : 30,
+                                            lineHeight: 1.2,
+                                            wordBreak: 'break-word',
+                                        }}
+                                    >
+                                        {item.value}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+
+                <Grid container spacing={3} alignItems="center" justifyContent="center" sx={{
+                    py: 2.5,
+                    px: { xs: 1, md: 2 },
+                    backgroundColor: alpha('#ffffff', 0.9),
+                    borderRadius: 3,
+                    border: `1px solid ${alpha(primaryColor, 0.3)}`,
+                    boxShadow: `0 16px 32px ${alpha(primaryColor, 0.08)}`
                 }}>
                     <Grid item>
                         <Fab
@@ -252,12 +327,15 @@ const Dashboard = () => {
                             color="primary"
                             sx={{
                                 fontWeight: 'bold',
-                                boxShadow: 3,
+                                color: '#eff6ff',
+                                boxShadow: `0 12px 24px ${alpha(primaryColor, 0.2)}`,
                                 textTransform: 'none',
+                                backgroundColor: primaryColor,
                                 transition: '0.3s ease-in-out',
                                 '&:hover': {
                                     transform: 'scale(1.05)',
-                                    boxShadow: 6,
+                                    boxShadow: `0 16px 28px ${alpha(primaryColor, 0.24)}`,
+                                    backgroundColor: primaryColor,
                                 },
                             }}
                         >
@@ -279,15 +357,23 @@ const Dashboard = () => {
                                 fullWidth
                                 sx={{
                                     minWidth: 250,
-                                    backgroundColor: 'white',
-                                    borderRadius: 1,
-                                    boxShadow: 1,
+                                    borderRadius: 2,
+                                    boxShadow: `0 10px 22px ${alpha(primaryColor, 0.1)}`,
                                     '& .MuiFilledInput-root': {
-                                        backgroundColor: '#ffffff',
+                                        backgroundColor: alpha('#ffffff', 0.9),
+                                        borderRadius: 2,
+                                        border: `1px solid ${alpha(primaryColor, 0.24)}`,
                                         transition: '0.3s',
+                                        '&:before, &:after': {
+                                            display: 'none',
+                                        },
                                     },
                                     '&:hover .MuiFilledInput-root': {
-                                        backgroundColor: '#f8f8f8',
+                                        backgroundColor: '#ffffff',
+                                        border: `1px solid ${alpha(primaryColor, 0.36)}`,
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                        color: primaryColor,
                                     },
                                 }}
                             />
@@ -295,7 +381,18 @@ const Dashboard = () => {
                     )}
                 </Grid>
 
-                <Box sx={{ px: 3, mt: 3 }} className="survey-list">
+                <Box
+                    sx={{
+                        px: { xs: 1, md: 3 },
+                        mt: 3,
+                        py: 2.5,
+                        borderRadius: 3,
+                        backgroundColor: alpha('#ffffff', 0.9),
+                        border: `1px solid ${alpha(primaryColor, 0.2)}`,
+                        boxShadow: `0 18px 35px ${alpha(primaryColor, 0.08)}`
+                    }}
+                    className="survey-list"
+                >
                     <MySurvery 
                         userSurveyData={userSurveyData} 
                         isSubscribed={isSubscribed}  

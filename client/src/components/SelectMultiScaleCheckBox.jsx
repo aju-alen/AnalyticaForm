@@ -470,7 +470,8 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, registerFormData, data, id, opti
                         {disableButtons && <Button
                             variant='contained'
                             color="success"
-                            onClick={handleSaveForm}>
+                            onClick={handleSaveForm}
+                            sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
                             Next Question
                         </Button>}
 
