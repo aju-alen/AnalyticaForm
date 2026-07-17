@@ -485,7 +485,7 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, registerFormData, data, id, opti
 
                     </Stack>
 
-                    <Container sx={{ display: { xs: '', md: "none" } }} maxWidth='xl' >
+                    <Container sx={{ display: { xs: 'block', md: "none" }, px: { xs: 0.5, sm: 2 }, width: '100%', minWidth: 0, overflowX: 'hidden' }} maxWidth='xl' >
                     <Box sx={{
                         position: 'relative',
                         display: 'flex',
@@ -525,95 +525,80 @@ const SelectMultiScaleCheckBox = ({ onSaveForm, registerFormData, data, id, opti
                         
                     </Box>
                          {formData.options.map((row, rowIndex) => (
-              <Accordion sx={{
+              <Accordion key={row.id} sx={{
                 width: '100%',
+                minWidth: 0,
+                mb: 1,
                 '& .MuiAccordionSummary-content': {
-                    margin: { xs: '8px 0', md: '12px 0' }
+                    margin: '8px 0',
+                    minWidth: 0,
                 },
                 '& .MuiAccordionDetails-root': {
-                    padding: { xs: 1, md: 2 }
+                    padding: 1,
                 }
               }}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel1-content"
                   id="panel1-header"
+                  sx={{ px: 1, minWidth: 0 }}
                 >
-                  <div className=" w-full">
-                    <h3>{row.rowQuestion}</h3>
+                  <div className="w-full" style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
+                    <h3 style={{ margin: 0, fontSize: '0.95rem', wordBreak: 'break-word' }}>{row.rowQuestion}</h3>
                   </div>
                 </AccordionSummary>
-                <AccordionDetails>
-                  <div className="">
-                    <Table
-                      sx={{ minWidth: 650 }}
-                      aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          {formData.columnTextField.map((column) => (
-                            <TableCell
-                              key={column.id}
-                              sx={{ width: 'auto ', overflowX: 'auto', }}>
-                              <Box sx={{
-                                position: 'relative',
-                                display: 'flex',
-                                alignItems: 'center',
-                                width: '100%',
-                                '&:hover .format-button': {
-                                    visibility: 'visible',
-                                },
-                              }}>
-                                <TextField
-                                  key={column.id}
-                                  id="standard-basic"
-                                  label={!disableText ? "Type Your Response Here" : ''} variant="standard"
-                                  name='columnTextField'
-                                  value={column.value}
-                                  onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
-                                  InputProps={{
-                                    readOnly: disableText,
-                                  }}
-                                  sx={{
-                                    '& .MuiInputBase-root': {
-                                      fontSize: { xs: '1rem', md: '0.9rem' },
-                                      fontWeight: boldFields.has(column.id) ? 'bold' : 'normal',
-                                    },
-                                    '& .MuiInput-underline:before': {
-                                      borderBottom: 'none',
-                                    },
-                                    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                                      borderBottom: 'none',
-                                    },
-                                    minWidth: { xs: 100, md: 200 },
-                                  }}
-                                  fullWidth
-                                  multiline
-                                />
-                               
-                              </Box>
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                <AccordionDetails sx={{ px: 1, py: 1 }}>
+                  <Stack spacing={1.5} sx={{ width: '100%', minWidth: 0 }}>
+                    {formData.columnTextField.map((column, columnIndex) => (
+                        <Box
+                          key={column.id}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: 1,
+                            width: '100%',
+                            minWidth: 0,
+                            p: 1,
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                          }}
                         >
-                          {row.columns.map((column, columnIndex) =>
-                            <TableCell key={column.id} align='center' >
-                              <Checkbox
-                                                    disabled={disableForm}
-                                                    key={column.id}
-                                                    onChange={() => handleCheckBoxChange(row.id, column.id, columnIndex)}
-                                                    checked={formData.selectedValue.some((item) => item.rowId === row.id && item.colId === column.id)}
-                                                    size='small'
-                                                />
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
+                          <TextField
+                            id="standard-basic"
+                            label={!disableText ? "Type Your Response Here" : ''}
+                            variant="standard"
+                            name='columnTextField'
+                            value={column.value}
+                            onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
+                            InputProps={{
+                              readOnly: disableText,
+                            }}
+                            sx={{
+                              flex: 1,
+                              minWidth: 0,
+                              '& .MuiInputBase-root': {
+                                fontSize: '0.9rem',
+                                fontWeight: boldFields.has(column.id) ? 'bold' : 'normal',
+                              },
+                              '& .MuiInput-underline:before': {
+                                borderBottom: 'none',
+                              },
+                              '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                                borderBottom: 'none',
+                              },
+                            }}
+                            fullWidth
+                            multiline
+                          />
+                          <Checkbox
+                            disabled={disableForm}
+                            onChange={() => handleCheckBoxChange(row.id, column.id, columnIndex)}
+                            checked={formData.selectedValue.some((item) => item.rowId === row.id && item.colId === column.id)}
+                            size='small'
+                            sx={{ flexShrink: 0, mt: 0.5 }}
+                          />
+                        </Box>
+                    ))}
+                  </Stack>
                 </AccordionDetails>
                 </Accordion>
                 ))}
