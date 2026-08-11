@@ -97,7 +97,8 @@ export const updateSurveyById = async (req, res) => {
                 surveyForms: req.body.surveyForms,
                 selectedItems: req.body.selectedItems,
                 surveyIntroduction: req.body.surveyIntroduction,
-                targetCountry: req.body.targetCountry
+                targetCountry: req.body.targetCountry,
+                targetCountries: Array.isArray(req.body.targetCountries) ? req.body.targetCountries : []
             }
         });
         await prisma.$disconnect();

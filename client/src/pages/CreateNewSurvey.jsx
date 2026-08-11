@@ -62,8 +62,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
+import FormGroup from '@mui/material/FormGroup';
 import Collapse from '@mui/material/Collapse';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -109,6 +108,31 @@ const FORM_TYPE_LABELS = {
 
 const AUTO_SAVE_DELAY_MS = 1800;
 
+const TARGET_REGION_OPTIONS = [
+  { code: 'AE', label: 'United Arab Emirates' },
+  { code: 'SA', label: 'Saudi Arabia' },
+  { code: 'CN', label: 'China' },
+  { code: 'UK', label: 'United Kingdom' },
+  { code: 'US', label: 'United States Of America' },
+  { code: 'QA', label: 'Qatar' },
+];
+
+function deriveLegacyTargetCountry(codes) {
+  if (!codes?.length) return 'NIL';
+  if (codes.length === 1) return codes[0];
+  return 'MULTI';
+}
+
+function normalizeTargetCountriesFromSurvey(d) {
+  if (Array.isArray(d.targetCountries) && d.targetCountries.length > 0) {
+    return d.targetCountries.filter((c) => TARGET_REGION_OPTIONS.some((o) => o.code === c));
+  }
+  if (d.targetCountry && d.targetCountry !== 'NIL' && d.targetCountry !== 'MULTI') {
+    return [d.targetCountry];
+  }
+  return [];
+}
+
 const CreateNewSurvey = () => {
   const navigate = useNavigate();
   const { surveyId } = useParams();
@@ -123,7 +147,7 @@ const CreateNewSurvey = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const open = Boolean(anchorEl);
-  const [country, setCountry] = useState('NIL');
+  const [selectedCountries, setSelectedCountries] = useState([]);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // off by default to avoid forms disappearing when adding many quickly
@@ -133,7 +157,8 @@ const CreateNewSurvey = () => {
     surveyForms: [],
     selectedItems: [],
     surveyIntroduction: '',
-    targetCountry: 'NIL'
+    targetCountry: 'NIL',
+    targetCountries: [],
   });
 
   const formDataRefs = useRef({});
@@ -250,15 +275,17 @@ const CreateNewSurvey = () => {
 
         if (!mounted) return;
         const d = surveyRes.data;
+        const normalized = normalizeTargetCountriesFromSurvey(d);
         setSurveyData({
           surveyTitle: d.surveyTitle,
           surveyForms: d.surveyForms ?? [],
           selectedItems: d.selectedItems ?? [],
           surveyIntroduction: d.surveyIntroduction ?? '',
-          targetCountry: d.targetCountry ?? 'NIL'
+          targetCountries: normalized,
+          targetCountry: deriveLegacyTargetCountry(normalized),
         });
         setSelectedItems(d.selectedItems ?? []);
-        setCountry(d.targetCountry ?? 'NIL');
+        setSelectedCountries(normalized);
         setIsLoading(false);
         initialLoadDoneRef.current = true;
         setIsSuperAdmin(superAdminRes.data?.isSuperAdmin ?? false);
@@ -414,10 +441,18 @@ const CreateNewSurvey = () => {
   }, []);
   const handleMenuClose = React.useCallback(() => setAnchorEl(null), []);
 
-  const handleCountryChange = React.useCallback((event) => {
-    const v = event.target.value;
-    setCountry(v);
-    setSurveyData(prev => ({ ...prev, targetCountry: v }));
+  const handleRegionToggle = React.useCallback((code) => {
+    setSelectedCountries((prev) => {
+      const next = prev.includes(code)
+        ? prev.filter((c) => c !== code)
+        : [...prev, code];
+      setSurveyData((prevData) => ({
+        ...prevData,
+        targetCountries: next,
+        targetCountry: deriveLegacyTargetCountry(next),
+      }));
+      return next;
+    });
   }, []);
 
   return (
@@ -628,25 +663,31 @@ const CreateNewSurvey = () => {
   </Box>
   
 )}
- {isSuperAdmin &&  <FormControl fullWidth sx={{ mt: 3, mb: 3 }}>
- <InputLabel id="country-select-label" sx={{ mb: 2 }}>Select Target Country</InputLabel>
-              <Select
-                labelId="country-select-label"
-                id="country-select"
-                value={country}
-                label="Country"
-                onChange={handleCountryChange}
-                sx={{ mt: 1.5, mb: 0 }}
-              >
-                <MenuItem value="NIL">--- None ---</MenuItem>
-                <MenuItem value="AE">United Arab Emirates</MenuItem>
-                <MenuItem value="SA">Saudi Arabia</MenuItem>
-                <MenuItem value="CN">China</MenuItem>
-                <MenuItem value="UK">United Kingdom</MenuItem>
-                <MenuItem value="US">United States Of America</MenuItem>
-                <MenuItem value="QA">Qatar</MenuItem>
-              </Select>
-            </FormControl>}
+ {isSuperAdmin && (
+            <FormControl component="fieldset" fullWidth sx={{ mt: 3, mb: 3 }}>
+              <Typography variant="subtitle1" component="legend" sx={{ mb: 1 }}>
+                Select Target Regions
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                On each response, one selected region is chosen at random and a matching IP is assigned.
+              </Typography>
+              <FormGroup>
+                {TARGET_REGION_OPTIONS.map(({ code, label }) => (
+                  <FormControlLabel
+                    key={code}
+                    control={
+                      <Checkbox
+                        checked={selectedCountries.includes(code)}
+                        onChange={() => handleRegionToggle(code)}
+                        size="small"
+                      />
+                    }
+                    label={label}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
+          )}
 
           {surveyData.surveyForms.length > 0 && (
             <Box sx={{ mt: 2, mb: 2 }}>

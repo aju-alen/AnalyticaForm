@@ -6,6 +6,25 @@ import { resendEmailDRIndex } from '../utils/resendEmailTemplate.js';
 import { generateFullSummaryFromFifty } from '../utils/dri-50-summary.js';
 const prisma = new PrismaClient();
 
+const SUPPORTED_COUNTRY_CODES = new Set(['AE', 'SA', 'CN', 'UK', 'US', 'QA']);
+
+function resolveTargetCountryCodes(survey) {
+    const fromArray = Array.isArray(survey.targetCountries)
+        ? survey.targetCountries.filter((c) => SUPPORTED_COUNTRY_CODES.has(c))
+        : [];
+    if (fromArray.length > 0) return fromArray;
+
+    const legacy = survey.targetCountry;
+    if (legacy && legacy !== 'NIL' && legacy !== 'MULTI' && SUPPORTED_COUNTRY_CODES.has(legacy)) {
+        return [legacy];
+    }
+    return [];
+}
+
+function pickRandomCountryCode(codes) {
+    return codes[Math.floor(Math.random() * codes.length)];
+}
+
 export const getSingleSurveyDataForUser = async (req, res) => {
     const surveyId = req.params.surveyId;
     try{
@@ -40,16 +59,19 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 id:surveyId
             },
             select:{
-                targetCountry:true
+                targetCountry: true,
+                targetCountries: true,
             }
         });
         let ipAddress;
-        switch(getCountryDataFromSurvey.targetCountry){
-            case 'NIL':
-                ipAddress = userIP.split(',')[0];
-                break;
-            default:
-                ipAddress = generateIpAddressesForCountry(getCountryDataFromSurvey.targetCountry,1);
+        const targetCodes = resolveTargetCountryCodes(getCountryDataFromSurvey);
+
+        if (targetCodes.length === 0) {
+            ipAddress = userIP.split(',')[0];
+        } else {
+            const chosenCountry = pickRandomCountryCode(targetCodes);
+            ipAddress = generateIpAddressesForCountry(chosenCountry, 1);
+            console.log(chosenCountry, targetCodes, 'chosenCountry and targetCodes in postSingleSurveyDataForUser');
         }
         console.log(ipAddress, 'ipAddress in postSingleSurveyDataForUser');
 
