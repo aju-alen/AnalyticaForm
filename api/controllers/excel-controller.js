@@ -97,6 +97,65 @@ const processResponse = (headers, subHeaders, response, selected, userResponses)
     }
 };
 
+const CONSENT_HEADER_BY_TYPE = {
+    ConsentForm: 'Form Consent',
+    QualitativeConsentForm: 'Interview Consent',
+    DynamicConsentForm: 'Dynamic Consent (Quantitative)',
+    DynamicQualitativeConsentForm: 'Dynamic Consent (Qualitative)',
+};
+
+const fillConsentAnswer = (headers, subHeaders, response, selected, userResponses) => {
+    const headerName = CONSENT_HEADER_BY_TYPE[response.formType];
+    if (!headerName) return;
+
+    if (response.formType === 'ConsentForm') {
+        const headerIndex = headers.indexOf(headerName);
+        if (headerIndex !== -1) {
+            userResponses[headerIndex - 4] = selected.answer || '';
+        }
+        return;
+    }
+
+    const matchingIndices = headers.reduce((acc, h, i) => {
+        if (h === headerName) acc.push(i);
+        return acc;
+    }, []);
+
+    const selectedLabel = selected.question || '';
+    for (const i of matchingIndices) {
+        if (subHeaders[i] === selectedLabel || (selectedLabel && subHeaders[i].includes(selectedLabel))) {
+            userResponses[i - 4] = selected.answer || '';
+            break;
+        }
+    }
+};
+
+const fillConsentIndex = (headers, subHeaders, response, selected, userResponses) => {
+    const headerName = CONSENT_HEADER_BY_TYPE[response.formType];
+    if (!headerName) return;
+
+    if (response.formType === 'ConsentForm') {
+        const headerIndex = headers.indexOf(headerName);
+        if (headerIndex !== -1) {
+            userResponses[headerIndex - 4] = selected.index ?? '';
+        }
+        return;
+    }
+
+    const matchingIndices = headers.reduce((acc, h, i) => {
+        if (h === headerName) acc.push(i);
+        return acc;
+    }, []);
+
+    const selectedLabel = selected.question || '';
+    for (const i of matchingIndices) {
+        if (subHeaders[i] === selectedLabel || (selectedLabel && subHeaders[i].includes(selectedLabel))) {
+            userResponses[i - 4] = selected.index ?? '';
+            break;
+        }
+    }
+};
+
 // Process different form types
 const formTypeHandlers = {
     MultiScalePoint: (headers, subHeaders, response, selected, userResponses) => {
@@ -133,6 +192,11 @@ const formTypeHandlers = {
             }
         }
     },
+
+    ConsentForm: fillConsentAnswer,
+    QualitativeConsentForm: fillConsentAnswer,
+    DynamicConsentForm: fillConsentAnswer,
+    DynamicQualitativeConsentForm: fillConsentAnswer,
 
     CommentBoxForm: (headers, subHeaders, response, selected, userResponses) => {
         console.log('insidedede');
@@ -390,7 +454,10 @@ const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
     user.userResponse.forEach(response => {
         response.selectedValue.forEach(selected => {
             
-            if(response.formType === "MultiScalePoint"){
+            if (CONSENT_HEADER_BY_TYPE[response.formType]) {
+                fillConsentIndex(headers, subHeaders, response, selected, userResponses);
+            }
+            else if(response.formType === "MultiScalePoint"){
                 const headerIndex = headers.indexOf(response.question);
                 const subHeaderIndex = subHeaders.findIndex((header, index) => {
                     return header.includes(selected.question) && index >= headerIndex;

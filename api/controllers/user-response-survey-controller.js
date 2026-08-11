@@ -6,7 +6,7 @@ import { resendEmailDRIndex } from '../utils/resendEmailTemplate.js';
 import { generateFullSummaryFromFifty } from '../utils/dri-50-summary.js';
 const prisma = new PrismaClient();
 
-const SUPPORTED_COUNTRY_CODES = new Set(['AE', 'SA', 'CN', 'UK', 'US', 'QA']);
+const SUPPORTED_COUNTRY_CODES = new Set(['AE', 'SA', 'CN', 'UK', 'US', 'QA', 'IN']);
 
 function resolveTargetCountryCodes(survey) {
     const fromArray = Array.isArray(survey.targetCountries)

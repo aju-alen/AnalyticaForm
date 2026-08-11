@@ -33,6 +33,10 @@ import RankOrderImage from '../components/RankOrderImage';
 import PresentationText from '../components/PresentationText';
 import SectionHeading from '../components/SectionHeading';
 import SectionSubHeading from '../components/SectionSubHeading';
+import ConsentForm from '../components/ConsentForm';
+import QualitativeConsentForm from '../components/QualitativeConsentForm';
+import DynamicConsentForm from '../components/DynamicConsentForm';
+import DynamicQualitativeConsentForm from '../components/DynamicQualitativeConsentForm';
 import PickAndRank from '../components/PickAndRank';
 import { Stack } from '@mui/material';
 import { uid } from 'uid';
@@ -73,6 +77,25 @@ import ListItem from '@mui/material/ListItem';
 import Switch from '@mui/material/Switch';
 
 const DISPLAY_ONLY_FORM_TYPES = new Set(['IntroductionForm', 'PresentationTextForm', 'SectionHeadingForm', 'SectionSubHeadingForm']);
+const ALWAYS_MANDATORY_FORM_TYPES = new Set([
+  'ConsentForm',
+  'QualitativeConsentForm',
+  'DynamicConsentForm',
+  'DynamicQualitativeConsentForm',
+]);
+const CONSENT_FORM_TYPES = new Set([
+  'ConsentForm',
+  'QualitativeConsentForm',
+  'DynamicConsentForm',
+  'DynamicQualitativeConsentForm',
+]);
+
+function insertIndexForConsent(forms) {
+  let i = 0;
+  if (forms[0]?.formType === 'IntroductionForm') i = 1;
+  while (i < forms.length && CONSENT_FORM_TYPES.has(forms[i].formType)) i += 1;
+  return i;
+}
 
 const FORM_TYPE_LABELS = {
   SinglePointForm: 'Single choice',
@@ -104,6 +127,10 @@ const FORM_TYPE_LABELS = {
   GoogleRecaptchaForm: 'reCAPTCHA',
   CalenderForm: 'Calendar',
   RankOrderImage: 'Rank order (images)',
+  ConsentForm: 'Form Consent',
+  QualitativeConsentForm: 'Interview Consent',
+  DynamicConsentForm: 'Dynamic Consent (Quantitative)',
+  DynamicQualitativeConsentForm: 'Dynamic Consent (Qualitative)',
 };
 
 const AUTO_SAVE_DELAY_MS = 1800;
@@ -115,6 +142,7 @@ const TARGET_REGION_OPTIONS = [
   { code: 'UK', label: 'United Kingdom' },
   { code: 'US', label: 'United States Of America' },
   { code: 'QA', label: 'Qatar' },
+  { code: 'IN', label: 'India' },
 ];
 
 function deriveLegacyTargetCountry(codes) {
@@ -199,6 +227,10 @@ const CreateNewSurvey = () => {
     'DateTimeForm': DateTime,
     'GoogleRecaptchaForm': GoogleRecaptcha,
     'CalenderForm' : Calender,
+    'ConsentForm': ConsentForm,
+    'QualitativeConsentForm': QualitativeConsentForm,
+    'DynamicConsentForm': DynamicConsentForm,
+    'DynamicQualitativeConsentForm': DynamicQualitativeConsentForm,
   }), []);
 
   // Memoize handlers that don't need to change between renders
@@ -362,14 +394,29 @@ const CreateNewSurvey = () => {
   const handleItemSelect = React.useCallback((item) => {
     if (item === 'IntroductionForm') {
       setSelectedItems(prev => [item, ...prev]);
-      setSurveyData(prev => ({
-        ...prev,
-        surveyForms: [{ id: uid(5), formType: item }, ...prev.surveyForms]
-      }));
+      setSurveyData(prev => {
+        const newForm = { id: uid(5), formType: item };
+        const forms = prev.surveyForms ?? [];
+        const surveyForms = [newForm, ...forms];
+        return { ...prev, surveyForms };
+      });
     } else if (item === 'DropDownTemplateForm') {
       setSurveyData(prev => ({ ...prev, surveyForms: dropDownTemplate }));
     } else if (item === 'CheckBoxTemplateForm') {
       setSurveyData(prev => ({ ...prev, surveyForms: checkBoxTemplate }));
+    } else if (CONSENT_FORM_TYPES.has(item)) {
+      setSelectedItems(prev => [...prev, item]);
+      setSurveyData(prev => {
+        const forms = prev.surveyForms ?? [];
+        const insertAt = insertIndexForConsent(forms);
+        const newForm = { id: uid(5), formType: item, formMandate: true };
+        const surveyForms = [
+          ...forms.slice(0, insertAt),
+          newForm,
+          ...forms.slice(insertAt),
+        ];
+        return { ...prev, surveyForms };
+      });
     } else {
       setSelectedItems(prev => [...prev, item]);
       setSurveyData(prev => ({
@@ -707,6 +754,7 @@ const CreateNewSurvey = () => {
                 <List dense disablePadding>
                   {surveyData.surveyForms.map((item) => {
                     const isDisplayOnly = DISPLAY_ONLY_FORM_TYPES.has(item.formType);
+                    const isAlwaysMandatory = ALWAYS_MANDATORY_FORM_TYPES.has(item.formType);
                     const typeLabel = FORM_TYPE_LABELS[item.formType] ?? item.formType;
                     return (
                       <ListItem
@@ -724,7 +772,21 @@ const CreateNewSurvey = () => {
                           <Typography variant="body2" color="text.secondary" sx={{ flex: 1, wordBreak: 'break-word' }}>
                             {getQuestionPreview(item)}
                           </Typography>
-                          {!isDisplayOnly && (
+                          {isAlwaysMandatory && (
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked
+                                  disabled
+                                  size="small"
+                                  aria-label="Mandatory"
+                                />
+                              }
+                              label="Mandatory"
+                              sx={{ flexShrink: 0 }}
+                            />
+                          )}
+                          {!isDisplayOnly && !isAlwaysMandatory && (
                             <FormControlLabel
                               control={
                                 <Checkbox

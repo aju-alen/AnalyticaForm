@@ -282,6 +282,46 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                 </Grid>
                 <Grid item xs={12}>
                   <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleItemClick('ConsentForm')}>
+                      <ListItemText
+                        primary={'Form Consent'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleItemClick('QualitativeConsentForm')}>
+                      <ListItemText
+                        primary={'Interview Consent'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleItemClick('DynamicConsentForm')}>
+                      <ListItemText
+                        primary={'Dynamic Consent (Quantitative)'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleItemClick('DynamicQualitativeConsentForm')}>
+                      <ListItemText
+                        primary={'Dynamic Consent (Qualitative)'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12}>
+                  <ListItem disablePadding>
                     <ListItemButton onClick={() => handleItemClick('CalenderForm')}>
                       <ListItemText
                         primary={'Calender Select'}

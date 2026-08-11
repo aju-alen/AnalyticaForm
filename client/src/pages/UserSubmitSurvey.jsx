@@ -36,7 +36,12 @@ import RankOrderImage from '../components/RankOrderImage'
 import PresentationText from '../components/PresentationText'
 import SectionHeading from '../components/SectionHeading'
 import SectionSubHeading from '../components/SectionSubHeading'
+import ConsentForm from '../components/ConsentForm'
+import QualitativeConsentForm from '../components/QualitativeConsentForm'
+import DynamicConsentForm from '../components/DynamicConsentForm'
+import DynamicQualitativeConsentForm from '../components/DynamicQualitativeConsentForm'
 import MapForm from '../components/MapForm'
+import { evaluateConsentProgress } from '../utils/consentProgress'
 import { axiosWithAuth } from '../utils/customAxios'
 import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog';
@@ -263,6 +268,11 @@ const UserSubmitSurvey = () => {
     const handleNext = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
     }
+
+    const handleConsentDisagree = () => {
+        navigate('/');
+    };
+
     const handlePrevious = () => {
         if (currentIndex === 0) {
             return;
@@ -306,7 +316,22 @@ const UserSubmitSurvey = () => {
                 console.log(form, 'form');
             })
 
+            const consentFormTypes = new Set([
+                'ConsentForm',
+                'QualitativeConsentForm',
+                'DynamicConsentForm',
+                'DynamicQualitativeConsentForm',
+            ]);
+
             const skippedMandatoryFields = mandatoryFields.filter((form) => {
+                if (consentFormTypes.has(form.formType)) {
+                    if (form.formType === 'ConsentForm') {
+                        const answer = form.selectedValue?.[0]?.answer || '';
+                        return !answer || answer.startsWith('No');
+                    }
+                    const progress = evaluateConsentProgress(form.items || [], form.selectedValue || []);
+                    return !progress.canProceed || progress.shouldExit;
+                }
                 // Check if 'selectedValue' exists and has items
                 if (form.selectedValue && form.selectedValue.length > 0) {
                   // Check if any item in 'selectedValue' has an empty 'answer'
@@ -499,6 +524,39 @@ const UserSubmitSurvey = () => {
                 }
                 else if (form.formType === 'IntroductionForm') {
                     return null;
+                }
+
+                else if (form.formType === 'ConsentForm') {
+                    return {
+                        'Form Consent': ['Response']
+                    };
+                }
+
+                else if (form.formType === 'QualitativeConsentForm') {
+                    const labels = (form.items || []).map((item, index) =>
+                        item.label?.trim() ? item.label : `Option ${index + 1}`
+                    );
+                    return {
+                        'Interview Consent': labels.length ? labels : ['Option 1']
+                    };
+                }
+
+                else if (form.formType === 'DynamicConsentForm') {
+                    const labels = (form.items || []).map((item, index) =>
+                        item.label?.trim() ? item.label : `Option ${index + 1}`
+                    );
+                    return {
+                        'Dynamic Consent (Quantitative)': labels.length ? labels : ['Option 1']
+                    };
+                }
+
+                else if (form.formType === 'DynamicQualitativeConsentForm') {
+                    const labels = (form.items || []).map((item, index) =>
+                        item.label?.trim() ? item.label : `Option ${index + 1}`
+                    );
+                    return {
+                        'Dynamic Consent (Qualitative)': labels.length ? labels : ['Option 1']
+                    };
                 }
 
                 else if (form.formType === "SinglePointForm") {
@@ -1370,6 +1428,126 @@ const UserSubmitSurvey = () => {
                             disableText={true}
                             disableButtons={true}
                             onSetLoading={setIsLoading} />
+                    </div>
+                );
+
+            case 'ConsentForm':
+                return (
+                    <div className=" w-11/12 h-4/6">
+                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        <ConsentForm
+                            data={currentItem}
+                            onHandleNext={handleNext}
+                            onSaveForm={handleSaveSinglePointForm}
+                            onConsentDisagree={handleConsentDisagree}
+                            onMandatoryIncomplete={() => setSnackbar({
+                                open: true,
+                                message: 'Please fill the mandatory fields',
+                                severity: 'warning',
+                            })}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true}
+                        />
+                    </div>
+                );
+
+            case 'QualitativeConsentForm':
+                return (
+                    <div className=" w-11/12 h-4/6">
+                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        <QualitativeConsentForm
+                            data={currentItem}
+                            onHandleNext={handleNext}
+                            onSaveForm={handleSaveSinglePointForm}
+                            onConsentDisagree={handleConsentDisagree}
+                            onMandatoryIncomplete={() => setSnackbar({
+                                open: true,
+                                message: 'Please fill the mandatory fields',
+                                severity: 'warning',
+                            })}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true}
+                        />
+                    </div>
+                );
+
+            case 'DynamicConsentForm':
+                return (
+                    <div className=" w-11/12 h-4/6">
+                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        <DynamicConsentForm
+                            data={currentItem}
+                            onHandleNext={handleNext}
+                            onSaveForm={handleSaveSinglePointForm}
+                            onConsentDisagree={handleConsentDisagree}
+                            onMandatoryIncomplete={() => setSnackbar({
+                                open: true,
+                                message: 'Please fill the mandatory fields',
+                                severity: 'warning',
+                            })}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true}
+                        />
+                    </div>
+                );
+
+            case 'DynamicQualitativeConsentForm':
+                return (
+                    <div className=" w-11/12 h-4/6">
+                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                            <KeyboardBackspaceIcon fontSize='large' />
+                        </Button>}
+
+                        <DynamicQualitativeConsentForm
+                            data={currentItem}
+                            onHandleNext={handleNext}
+                            onSaveForm={handleSaveSinglePointForm}
+                            onConsentDisagree={handleConsentDisagree}
+                            onMandatoryIncomplete={() => setSnackbar({
+                                open: true,
+                                message: 'Please fill the mandatory fields',
+                                severity: 'warning',
+                            })}
+                            id={currentItem.id}
+                            options={currentItem.options}
+                            disableForm={false}
+                            disableText={true}
+                            disableButtons={true}
+                        />
                     </div>
                 );
 

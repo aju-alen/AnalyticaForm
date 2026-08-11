@@ -17,7 +17,10 @@ const countryIPRanges = {
     ],
     "QA": [
     { start: "178.152.0.0", end: "178.153.255.255" },
-  ]
+  ],
+    "IN": [
+      { start: "117.0.0.0", end: "117.255.255.255" }
+    ]
   };
   
   // Convert IP string to numeric value for comparison
