@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
-import { Button, Checkbox, FormControlLabel, Link, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Checkbox, FormControlLabel, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {
@@ -109,7 +109,6 @@ const QualitativeConsentForm = ({
       id: source?.id || formId,
       question: source?.question || cleanHTMLContent(source?.quilText || ''),
       quilText: source?.quilText || source?.question || '',
-      zoomLink: source?.zoomLink || '',
       formMandate: true,
       items,
       selectedValue:
@@ -190,9 +189,6 @@ const QualitativeConsentForm = ({
 
   const items = formData.items || defaultItems;
   const progress = evaluateConsentProgress(items, formData.selectedValue);
-  const showZoom =
-    Boolean(formData.zoomLink) &&
-    items.some((item, index) => item.showsZoomOnYes && getAnswer(index) === 'Yes');
 
   const primaryDisabled =
     disableButtons &&
@@ -227,19 +223,6 @@ const QualitativeConsentForm = ({
               style={{ width: '100%', borderRadius: '4px' }}
             />
           </div>
-
-          {!disableText && (
-            <TextField
-              fullWidth
-              label="Zoom / meeting link (optional)"
-              size="small"
-              variant="standard"
-              sx={{ mt: 2 }}
-              value={formData.zoomLink || ''}
-              onChange={(e) => setFormData((prev) => ({ ...prev, zoomLink: e.target.value }))}
-              placeholder="https://zoom.us/j/..."
-            />
-          )}
 
           <Stack spacing={2} sx={{ mt: 2 }}>
             {items.map((item, index) => (
@@ -296,21 +279,12 @@ const QualitativeConsentForm = ({
                 {!disableText && (
                   <Typography variant="caption" color="text.secondary">
                     Rule: {item.rule}
-                    {item.showsZoomOnYes ? ' · shows Zoom if Yes' : ''}
+                    {item.showsZoomOnYes ? ' · create unique Zoom meeting if Yes' : ''}
                   </Typography>
                 )}
               </Box>
             ))}
           </Stack>
-
-          {disableText && showZoom && (
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              Meeting link:{' '}
-              <Link href={formData.zoomLink} target="_blank" rel="noopener noreferrer">
-                {formData.zoomLink}
-              </Link>
-            </Typography>
-          )}
 
           {disableButtons && (
             <Button

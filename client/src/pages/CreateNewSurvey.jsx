@@ -179,6 +179,7 @@ const CreateNewSurvey = () => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // off by default to avoid forms disappearing when adding many quickly
+  const [zoomStatus, setZoomStatus] = useState({ connected: false, zoomEmail: null, loading: true });
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
@@ -299,10 +300,11 @@ const CreateNewSurvey = () => {
       try {
         await refreshToken();
         const userAccess = localStorage.getItem('dubaiAnalytica-userAccess');
-        const [surveyRes, proRes, superAdminRes] = await Promise.all([
+        const [surveyRes, proRes, superAdminRes, zoomRes] = await Promise.all([
           axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`),
           userAccess ? axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${JSON.parse(userAccess).id}`).catch(() => ({ data: null })) : Promise.resolve({ data: null }),
-          axiosWithAuth.get(`${backendUrl}/api/auth/get-user`).catch(() => ({ data: { isSuperAdmin: false } }))
+          axiosWithAuth.get(`${backendUrl}/api/auth/get-user`).catch(() => ({ data: { isSuperAdmin: false } })),
+          axiosWithAuth.get(`${backendUrl}/api/zoom/status`).catch(() => ({ data: { connected: false } })),
         ]);
 
         if (!mounted) return;
@@ -322,13 +324,21 @@ const CreateNewSurvey = () => {
         initialLoadDoneRef.current = true;
         setIsSuperAdmin(superAdminRes.data?.isSuperAdmin ?? false);
         setSubscriptionEndDate(proRes.data == null ? 0 : (proRes.data.subscriptionPeriodEnd ?? 0));
+        setZoomStatus({
+          connected: Boolean(zoomRes.data?.connected),
+          zoomEmail: zoomRes.data?.zoomEmail || null,
+          loading: false,
+        });
       } catch (err) {
         if (err.response?.status === 401) {
           localStorage.removeItem('dubaiAnalytica-userAccess');
           navigate('/login');
           return;
         }
-        if (mounted) setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+          setZoomStatus((prev) => ({ ...prev, loading: false }));
+        }
       }
     };
 
@@ -429,6 +439,33 @@ const CreateNewSurvey = () => {
   const handleFormChange = React.useCallback((e) => {
     const { name, value } = e.target;
     setSurveyData(prev => ({ ...prev, [name]: value }));
+  }, []);
+
+  const needsZoomConnection = surveyData.surveyForms.some((form) =>
+    form.formType === 'QualitativeConsentForm' || form.formType === 'DynamicQualitativeConsentForm'
+  );
+
+  const handleConnectZoom = React.useCallback(async () => {
+    try {
+      await refreshToken();
+      const res = await axiosWithAuth.get(`${backendUrl}/api/zoom/connect`);
+      if (res.data?.url) {
+        window.location.assign(res.data.url);
+      }
+    } catch (err) {
+      console.error('Zoom connect failed', err);
+      alert(err.response?.data?.message || err.message || 'Zoom connect failed');
+    }
+  }, []);
+
+  const handleDisconnectZoom = React.useCallback(async () => {
+    try {
+      await refreshToken();
+      await axiosWithAuth.delete(`${backendUrl}/api/zoom/disconnect`);
+      setZoomStatus({ connected: false, zoomEmail: null, loading: false });
+    } catch (err) {
+      console.error('Zoom disconnect failed', err);
+    }
   }, []);
 
   const handleSaveIntro = React.useCallback((formData) => {
@@ -632,6 +669,31 @@ const CreateNewSurvey = () => {
             onChange={handleFormChange}
             sx={{ mt: 2 }}
           />
+          <Box sx={{ mt: 2, mb: 1, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1.5 }}>
+            <Typography variant="body2" color="text.secondary">
+              Zoom (for unique interview links):{' '}
+              {zoomStatus.loading
+                ? 'Checking…'
+                : zoomStatus.connected
+                  ? `Connected${zoomStatus.zoomEmail ? ` (${zoomStatus.zoomEmail})` : ''}`
+                  : 'Not connected'}
+            </Typography>
+            {!zoomStatus.loading && !zoomStatus.connected && (
+              <Button size="small" variant="outlined" onClick={handleConnectZoom}>
+                Connect Zoom
+              </Button>
+            )}
+            {!zoomStatus.loading && zoomStatus.connected && (
+              <Button size="small" variant="text" color="secondary" onClick={handleDisconnectZoom}>
+                Disconnect
+              </Button>
+            )}
+          </Box>
+          {needsZoomConnection && !zoomStatus.loading && !zoomStatus.connected && (
+            <Typography variant="body2" color="warning.main" sx={{ mb: 1 }}>
+              This survey includes interview consent. Connect Zoom so respondents who agree to AV recording receive a unique join link after submit.
+            </Typography>
+          )}
          {surveyData.surveyForms.length > 0 && (
   <Box
     sx={{

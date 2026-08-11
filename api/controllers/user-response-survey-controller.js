@@ -4,6 +4,8 @@ import { generateIpAddressesForCountry } from '../utils/ipGenerator.js';
 import { generateInterimSummaryFromFirstTen } from '../utils/dri-ten-summary.js';
 import { resendEmailDRIndex } from '../utils/resendEmailTemplate.js';
 import { generateFullSummaryFromFifty } from '../utils/dri-50-summary.js';
+import { shouldCreateZoomForResponse } from '../utils/consentProgress.js';
+import { createZoomMeetingForHost, getValidZoomAccessToken } from '../utils/zoomApi.js';
 const prisma = new PrismaClient();
 
 const SUPPORTED_COUNTRY_CODES = new Set(['AE', 'SA', 'CN', 'UK', 'US', 'QA', 'IN']);
@@ -75,6 +77,90 @@ export const postSingleSurveyDataForUser = async (req, res) => {
         }
         console.log(ipAddress, 'ipAddress in postSingleSurveyDataForUser');
 
+        const surveyMeta = await prisma.survey.findUnique({
+            where: { id: surveyId },
+            select: {
+                surveyTitle: true,
+                surveyForms: true,
+                userId: true,
+            },
+        });
+
+        let userResponsePayload = Array.isArray(req.body.userResponse)
+            ? req.body.userResponse
+            : [];
+        let zoomJoinUrl = null;
+
+        const alreadyHasActiveZoom = userResponsePayload.some(
+            (form) => form?.zoomMeeting?.status === 'active' && form?.zoomMeeting?.joinUrl
+        );
+        const zoomCheck = shouldCreateZoomForResponse(
+            surveyMeta?.surveyForms,
+            userResponsePayload
+        );
+        if (zoomCheck.ok && !alreadyHasActiveZoom) {
+            try {
+                const tokenInfo = await getValidZoomAccessToken(surveyMeta.userId);
+                if (!tokenInfo?.accessToken) {
+                    userResponsePayload = userResponsePayload.map((form) => {
+                        if (form.id !== zoomCheck.answered?.id && form.formType !== zoomCheck.formDef?.formType) {
+                            return form;
+                        }
+                        if (zoomCheck.answered?.id && form.id !== zoomCheck.answered.id) return form;
+                        return {
+                            ...form,
+                            zoomMeeting: {
+                                status: 'failed',
+                                error: 'Survey author has not connected Zoom',
+                            },
+                        };
+                    });
+                } else {
+                    const meeting = await createZoomMeetingForHost(tokenInfo.accessToken, {
+                        topic: `${surveyMeta.surveyTitle || 'Survey'} — interview`,
+                        durationMinutes: 120,
+                    });
+                    zoomJoinUrl = meeting.joinUrl;
+                    userResponsePayload = userResponsePayload.map((form) => {
+                        if (zoomCheck.answered?.id && form.id === zoomCheck.answered.id) {
+                            return {
+                                ...form,
+                                zoomMeeting: {
+                                    ...meeting,
+                                    hostUserId: tokenInfo.connection.zoomUserId,
+                                },
+                            };
+                        }
+                        if (!zoomCheck.answered?.id && form.formType === zoomCheck.formDef?.formType) {
+                            return {
+                                ...form,
+                                zoomMeeting: {
+                                    ...meeting,
+                                    hostUserId: tokenInfo.connection.zoomUserId,
+                                },
+                            };
+                        }
+                        return form;
+                    });
+                }
+            } catch (zoomErr) {
+                console.error('[zoom create meeting]', zoomErr?.message || zoomErr);
+                userResponsePayload = userResponsePayload.map((form) => {
+                    const match =
+                        (zoomCheck.answered?.id && form.id === zoomCheck.answered.id) ||
+                        (!zoomCheck.answered?.id && form.formType === zoomCheck.formDef?.formType);
+                    if (!match) return form;
+                    return {
+                        ...form,
+                        zoomMeeting: {
+                            status: 'failed',
+                            error: zoomErr?.message || 'Failed to create Zoom meeting',
+                        },
+                    };
+                });
+            }
+        }
+
         const requestedResponseId = String(req.body.responseId || '').trim();
         let savedUserResponse;
         let isUpdate = false;
@@ -91,7 +177,7 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 savedUserResponse = await prisma.userSurveyResponse.update({
                     where: { id: requestedResponseId },
                     data: {
-                        userResponse:req.body.userResponse,
+                        userResponse: userResponsePayload,
                         userName:req.body.userName,
                         userEmail:req.body.userEmail,
                         formQuestions:req.body.formQuestions,
@@ -108,7 +194,7 @@ export const postSingleSurveyDataForUser = async (req, res) => {
             savedUserResponse = await prisma.userSurveyResponse.create({
                 data:{
                     surveyId,
-                    userResponse:req.body.userResponse,
+                    userResponse: userResponsePayload,
                     userName:req.body.userName,
                     userEmail:req.body.userEmail,
                     formQuestions:req.body.formQuestions,
@@ -198,10 +284,19 @@ export const postSingleSurveyDataForUser = async (req, res) => {
         if(getResponseCount.surveyResponses === 475 ){
             updateUserResponseLimit( getResponseCount.user.firstName, getResponseCount.user.email, getResponseCount.surveyTitle, 475 );
         }
+        if (!zoomJoinUrl) {
+            const fromSaved = (Array.isArray(savedUserResponse?.userResponse)
+                ? savedUserResponse.userResponse
+                : []
+            ).find((form) => form?.zoomMeeting?.joinUrl)?.zoomMeeting?.joinUrl;
+            zoomJoinUrl = fromSaved || null;
+        }
+
         res.status(201).send({
             message:'User response submitted successfully',
             createUserResponse: savedUserResponse,
             isUpdate,
+            zoomMeeting: zoomJoinUrl ? { joinUrl: zoomJoinUrl } : null,
         });
 
     }

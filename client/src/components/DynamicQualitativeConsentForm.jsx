@@ -9,7 +9,6 @@ import {
   FormControl,
   FormControlLabel,
   InputLabel,
-  Link,
   MenuItem,
   Select,
   Stack,
@@ -105,7 +104,6 @@ const DynamicQualitativeConsentForm = ({
       id: source?.id || formId,
       question: source?.question || cleanHTMLContent(source?.quilText || ''),
       quilText: source?.quilText || source?.question || '',
-      zoomLink: source?.zoomLink || '',
       formMandate: true,
       items,
       selectedValue:
@@ -206,9 +204,6 @@ const DynamicQualitativeConsentForm = ({
   };
 
   const progress = evaluateConsentProgress(formData.items, formData.selectedValue);
-  const showZoom =
-    Boolean(formData.zoomLink) &&
-    (formData.items || []).some((item, index) => item.showsZoomOnYes && getAnswer(index) === 'Yes');
   const primaryDisabled =
     disableButtons && !progress.shouldExit && !progress.canProceed;
 
@@ -240,19 +235,6 @@ const DynamicQualitativeConsentForm = ({
               style={{ width: '100%', borderRadius: '4px' }}
             />
           </div>
-
-          {!disableText && (
-            <TextField
-              fullWidth
-              label="Zoom / meeting link (optional)"
-              size="small"
-              variant="standard"
-              sx={{ mt: 2 }}
-              value={formData.zoomLink || ''}
-              onChange={(e) => setFormData((prev) => ({ ...prev, zoomLink: e.target.value }))}
-              placeholder="https://zoom.us/j/..."
-            />
-          )}
 
           <Stack spacing={2} sx={{ mt: 2 }}>
             {(formData.items || []).map((item, index) => (
@@ -323,7 +305,7 @@ const DynamicQualitativeConsentForm = ({
                           size="small"
                         />
                       }
-                      label="Show Zoom link if Yes"
+                      label="Create unique Zoom meeting if Yes"
                     />
                   </Stack>
                 ) : (
@@ -367,15 +349,6 @@ const DynamicQualitativeConsentForm = ({
             >
               Add consent option
             </Button>
-          )}
-
-          {disableText && showZoom && (
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              Meeting link:{' '}
-              <Link href={formData.zoomLink} target="_blank" rel="noopener noreferrer">
-                {formData.zoomLink}
-              </Link>
-            </Typography>
           )}
 
           {disableButtons && (

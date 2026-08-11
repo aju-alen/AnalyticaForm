@@ -123,6 +123,7 @@ const fillConsentAnswer = (headers, subHeaders, response, selected, userResponse
 
     const selectedLabel = selected.question || '';
     for (const i of matchingIndices) {
+        if (subHeaders[i] === 'Zoom join URL') continue;
         if (subHeaders[i] === selectedLabel || (selectedLabel && subHeaders[i].includes(selectedLabel))) {
             userResponses[i - 4] = selected.answer || '';
             break;
@@ -149,8 +150,27 @@ const fillConsentIndex = (headers, subHeaders, response, selected, userResponses
 
     const selectedLabel = selected.question || '';
     for (const i of matchingIndices) {
+        if (subHeaders[i] === 'Zoom join URL') continue;
         if (subHeaders[i] === selectedLabel || (selectedLabel && subHeaders[i].includes(selectedLabel))) {
             userResponses[i - 4] = selected.index ?? '';
+            break;
+        }
+    }
+};
+
+const fillZoomJoinUrl = (headers, subHeaders, response, userResponses) => {
+    if (
+        response.formType !== 'QualitativeConsentForm' &&
+        response.formType !== 'DynamicQualitativeConsentForm'
+    ) {
+        return;
+    }
+    const headerName = CONSENT_HEADER_BY_TYPE[response.formType];
+    if (!headerName) return;
+    const joinUrl = response?.zoomMeeting?.joinUrl || '';
+    for (let i = 0; i < headers.length; i++) {
+        if (headers[i] === headerName && subHeaders[i] === 'Zoom join URL') {
+            userResponses[i - 4] = joinUrl;
             break;
         }
     }
@@ -266,24 +286,12 @@ const createUserRow = (user, subHeaders, headers, questionMap) => {
     const userResponses = new Array(questionMap.length).fill('');
 
     user.userResponse.forEach(response => {
-        response.selectedValue.forEach(selected => {
-            // Special case for non-MultiScaleCheckBox forms with different questions
-            // if (selected.question && 
-            //     selected.question !== response.question && 
-            //     response.formType !== "MultiScaleCheckBox") {
-            //         console.log('--------------------------------');
-            //         console.log('inside not !MultiScaleCheckBox');
-            //         console.log('--------------------------------');
-                    
-                    
-            //     processResponse(headers, subHeaders, response, selected, userResponses);
-            //     return;
-            // }
-
+        (response.selectedValue || []).forEach(selected => {
             // Get the appropriate handler for the form type or use default
             const handler = formTypeHandlers[response.formType] || formTypeHandlers.default;
             handler(headers, subHeaders, response, selected, userResponses);
         });
+        fillZoomJoinUrl(headers, subHeaders, response, userResponses);
     });
 
     return userInfo.concat(userResponses);
@@ -452,7 +460,7 @@ const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
     const userResponses = new Array(questionMap.length).fill('');
 
     user.userResponse.forEach(response => {
-        response.selectedValue.forEach(selected => {
+        (response.selectedValue || []).forEach(selected => {
             
             if (CONSENT_HEADER_BY_TYPE[response.formType]) {
                 fillConsentIndex(headers, subHeaders, response, selected, userResponses);
@@ -536,6 +544,7 @@ const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
                 }
             }
         });
+        fillZoomJoinUrl(headers, subHeaders, response, userResponses);
     });
 
     return userInfo.concat(userResponses);

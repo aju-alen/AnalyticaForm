@@ -82,6 +82,7 @@ const UserSubmitSurvey = () => {
     const [introduction, setIntroduction] = useState(true)
     const [welcomePage, setWelcomePage] = useState(true)
     const [responseSubmitted, setResponseSubmitted] = useState(false);
+    const [zoomJoinUrl, setZoomJoinUrl] = useState('');
     const [formData, setFormData] = useState({
         userEmail: '',
         userName: '',
@@ -353,13 +354,26 @@ const UserSubmitSurvey = () => {
             console.log(introduction, 'introduction');
             console.log(surveyData.surveyForms, 'surveyData--surveyForm');
             
-            const data = surveyData.surveyForms.map(form =>
-            ({
-                formType: form.formType,
-                question: form.question,
-                selectedValue: form.selectedValue.map(option => option),
-
-            })).filter(ans => ans.formType !== "IntroductionForm");
+            const data = surveyData.surveyForms.map(form => {
+                const base = {
+                    formType: form.formType,
+                    question: form.question,
+                    selectedValue: (form.selectedValue || []).map(option => option),
+                };
+                if (
+                    form.formType === 'ConsentForm' ||
+                    form.formType === 'QualitativeConsentForm' ||
+                    form.formType === 'DynamicConsentForm' ||
+                    form.formType === 'DynamicQualitativeConsentForm'
+                ) {
+                    return {
+                        ...base,
+                        id: form.id,
+                        items: form.items || [],
+                    };
+                }
+                return base;
+            }).filter(ans => ans.formType !== "IntroductionForm");
 
             const formQuestions = surveyData.surveyForms.map(form => {
 
@@ -537,7 +551,7 @@ const UserSubmitSurvey = () => {
                         item.label?.trim() ? item.label : `Option ${index + 1}`
                     );
                     return {
-                        'Interview Consent': labels.length ? labels : ['Option 1']
+                        'Interview Consent': [...(labels.length ? labels : ['Option 1']), 'Zoom join URL']
                     };
                 }
 
@@ -555,7 +569,7 @@ const UserSubmitSurvey = () => {
                         item.label?.trim() ? item.label : `Option ${index + 1}`
                     );
                     return {
-                        'Dynamic Consent (Qualitative)': labels.length ? labels : ['Option 1']
+                        'Dynamic Consent (Qualitative)': [...(labels.length ? labels : ['Option 1']), 'Zoom join URL']
                     };
                 }
 
@@ -613,6 +627,10 @@ const UserSubmitSurvey = () => {
 
             const sendUserResp = await axios.post(`${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`, finalData);
             const savedResponseId = sendUserResp?.data?.createUserResponse?.id;
+            const joinUrlFromApi = sendUserResp?.data?.zoomMeeting?.joinUrl || '';
+            if (joinUrlFromApi) {
+                setZoomJoinUrl(joinUrlFromApi);
+            }
             const isFullDriSubmission = isDefenceReadinessSurvey && data.length >= 50;
             if (isFullDriSubmission && savedResponseId) {
                 const driPageBase = (import.meta.env.VITE_DRI_BASE_URL || 'http://localhost:5174').replace(/\/$/, '');
@@ -799,6 +817,22 @@ const UserSubmitSurvey = () => {
                           Response submitted successfully!
                         </h1>
                         <p className="text-gray-600">Thank you for your participation</p>
+                        {zoomJoinUrl && (
+                          <div className="mt-6 text-left max-w-lg mx-auto p-4 border border-gray-200 rounded">
+                            <p className="text-gray-800 font-medium mb-2">Your Zoom interview link</p>
+                            <p className="text-sm text-gray-600 mb-2">
+                              This link is valid for 2 hours from submission.
+                            </p>
+                            <a
+                              href={zoomJoinUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 break-all underline"
+                            >
+                              {zoomJoinUrl}
+                            </a>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
