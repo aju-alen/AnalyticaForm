@@ -3,6 +3,7 @@ import { updateUserResponseLimit } from './auth-controllers.js';
 import { generateIpAddressesForCountry } from '../utils/ipGenerator.js';
 import { generateInterimSummaryFromFirstTen } from '../utils/dri-ten-summary.js';
 import { resendEmailDRIndex } from '../utils/resendEmailTemplate.js';
+import { sendZoomInterviewAuthorEmail } from '../utils/zoomInterviewAuthorEmail.js';
 import { generateFullSummaryFromFifty } from '../utils/dri-50-summary.js';
 import { shouldCreateZoomForResponse } from '../utils/consentProgress.js';
 import { createZoomMeetingForHost, getValidZoomAccessToken } from '../utils/zoomApi.js';
@@ -290,6 +291,27 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 : []
             ).find((form) => form?.zoomMeeting?.joinUrl)?.zoomMeeting?.joinUrl;
             zoomJoinUrl = fromSaved || null;
+        }
+
+        if (zoomJoinUrl && getResponseCount?.user?.email) {
+            try {
+                const zoomForm = (Array.isArray(savedUserResponse?.userResponse)
+                    ? savedUserResponse.userResponse
+                    : []
+                ).find((form) => form?.zoomMeeting?.joinUrl === zoomJoinUrl);
+                await sendZoomInterviewAuthorEmail({
+                    authorEmail: getResponseCount.user.email,
+                    authorName: `${getResponseCount.user.firstName || ''} ${getResponseCount.user.lastName || ''}`.trim(),
+                    surveyTitle: getResponseCount.surveyTitle,
+                    joinUrl: zoomJoinUrl,
+                    respondentName: req.body.userName || savedUserResponse?.userName,
+                    respondentEmail: req.body.userEmail || savedUserResponse?.userEmail,
+                    responseId: savedUserResponse?.id,
+                    expiresAt: zoomForm?.zoomMeeting?.expiresAt,
+                });
+            } catch (emailErr) {
+                console.error('[zoom author email]', emailErr?.message || emailErr);
+            }
         }
 
         res.status(201).send({
