@@ -83,6 +83,7 @@ const UserSubmitSurvey = () => {
     const [welcomePage, setWelcomePage] = useState(true)
     const [responseSubmitted, setResponseSubmitted] = useState(false);
     const [zoomJoinUrl, setZoomJoinUrl] = useState('');
+    const [zoomInterviewExit, setZoomInterviewExit] = useState(false);
     const [formData, setFormData] = useState({
         userEmail: '',
         userName: '',
@@ -272,6 +273,126 @@ const UserSubmitSurvey = () => {
 
     const handleConsentDisagree = () => {
         navigate('/');
+    };
+
+    const handleZoomInterviewExit = async (consentPayload) => {
+        if (isSubmittingResponse) return;
+        setIsSubmittingResponse(true);
+        setZoomInterviewExit(true);
+        try {
+            const forms = (surveyData.surveyForms || []).map((form) =>
+                form.id === consentPayload.id ? consentPayload : form
+            );
+            setSurveyData((prev) => ({ ...prev, surveyForms: forms }));
+
+            const finishedDate = Date.now();
+            const timeSpentInSeconds = Math.round((finishedDate - startDate) / 1000);
+            const minutes = Math.floor(timeSpentInSeconds / 60);
+            const seconds = timeSpentInSeconds % 60;
+            const timeSpentString = `${minutes}m ${seconds}s`;
+
+            const formsUpTo = forms.slice(0, currentIndex + 1);
+            const userResponse = formsUpTo
+                .map((form) => {
+                    const base = {
+                        formType: form.formType,
+                        question: form.question,
+                        selectedValue: (form.selectedValue || []).map((option) => option),
+                    };
+                    if (
+                        form.formType === 'ConsentForm' ||
+                        form.formType === 'QualitativeConsentForm' ||
+                        form.formType === 'DynamicConsentForm' ||
+                        form.formType === 'DynamicQualitativeConsentForm'
+                    ) {
+                        return {
+                            ...base,
+                            id: form.id,
+                            items: form.items || [],
+                        };
+                    }
+                    return base;
+                })
+                .filter((ans) => ans.formType !== 'IntroductionForm');
+
+            const formQuestions = formsUpTo
+                .map((form) => {
+                    if (form.formType === 'ConsentForm') {
+                        return { 'Form Consent': ['Response'] };
+                    }
+                    if (form.formType === 'QualitativeConsentForm') {
+                        const labels = (form.items || []).map((item, index) =>
+                            item.label?.trim() ? item.label : `Option ${index + 1}`
+                        );
+                        return {
+                            'Interview Consent': [
+                                ...(labels.length ? labels : ['Option 1']),
+                                'Zoom join URL',
+                            ],
+                        };
+                    }
+                    if (form.formType === 'DynamicConsentForm') {
+                        const labels = (form.items || []).map((item, index) =>
+                            item.label?.trim() ? item.label : `Option ${index + 1}`
+                        );
+                        return {
+                            'Dynamic Consent (Quantitative)': labels.length ? labels : ['Option 1'],
+                        };
+                    }
+                    if (form.formType === 'DynamicQualitativeConsentForm') {
+                        const labels = (form.items || []).map((item, index) =>
+                            item.label?.trim() ? item.label : `Option ${index + 1}`
+                        );
+                        return {
+                            'Dynamic Consent (Qualitative)': [
+                                ...(labels.length ? labels : ['Option 1']),
+                                'Zoom join URL',
+                            ],
+                        };
+                    }
+                    if (form.formType === 'IntroductionForm') {
+                        return null;
+                    }
+                    return null;
+                })
+                .filter((ans) => ans !== null);
+
+            const finalData = {
+                userResponse,
+                userName: undefined,
+                userEmail: undefined,
+                formQuestions,
+                introduction: surveyData.surveyIntroduction === null ? false : true,
+                userTimeSpent: timeSpentString,
+                zoomInterviewExit: true,
+            };
+
+            const sendUserResp = await axios.post(
+                `${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`,
+                finalData
+            );
+            const joinUrlFromApi = sendUserResp?.data?.zoomMeeting?.joinUrl || '';
+            if (joinUrlFromApi) {
+                setZoomJoinUrl(joinUrlFromApi);
+            } else {
+                setSnackbar({
+                    open: true,
+                    message:
+                        'Your response was saved, but a Zoom link could not be created. Please contact the survey host.',
+                    severity: 'warning',
+                });
+            }
+        } catch (err) {
+            console.log(err);
+            setZoomInterviewExit(false);
+            setSnackbar({
+                open: true,
+                message: 'Could not save interview consent. Please try again.',
+                severity: 'error',
+            });
+        } finally {
+            setIsSubmittingResponse(false);
+        }
     };
 
     const handlePrevious = () => {
@@ -745,6 +866,56 @@ const UserSubmitSurvey = () => {
 
 
     const renderCurrentComponent = () => {
+        if (zoomInterviewExit) {
+            return (
+                <div className="relative min-h-screen flex items-center justify-center pb-20 bg-gray-50">
+                    <div className="w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+                        <div className="h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+                        <div className="p-8 text-center">
+                            {isSubmittingResponse ? (
+                                <div className="py-8">
+                                    <CircularProgress />
+                                    <p className="mt-4 text-gray-600">Preparing your interview link…</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <span className="text-2xl">✓</span>
+                                    </div>
+                                    <h1 className="font-bold text-green-500 text-xl mb-2">
+                                        Interview consent saved
+                                    </h1>
+                                    <p className="text-gray-600 mb-4">
+                                        Remaining survey questions will be covered in your Zoom interview.
+                                    </p>
+                                    {zoomJoinUrl ? (
+                                        <div className="mt-4 text-left p-4 border border-gray-200 rounded">
+                                            <p className="text-gray-800 font-medium mb-2">Your Zoom interview link</p>
+                                            <p className="text-sm text-gray-600 mb-2">
+                                                This link is valid for 2 hours from now.
+                                            </p>
+                                            <a
+                                                href={zoomJoinUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 break-all underline"
+                                            >
+                                                {zoomJoinUrl}
+                                            </a>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-amber-700">
+                                            No Zoom link is available yet. Please contact the survey host.
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
         const currentItem = surveyData?.surveyForms[currentIndex];
 
         if (!currentItem) {
@@ -1511,6 +1682,7 @@ const UserSubmitSurvey = () => {
                             onHandleNext={handleNext}
                             onSaveForm={handleSaveSinglePointForm}
                             onConsentDisagree={handleConsentDisagree}
+                            onZoomInterviewExit={handleZoomInterviewExit}
                             onMandatoryIncomplete={() => setSnackbar({
                                 open: true,
                                 message: 'Please fill the mandatory fields',
@@ -1571,6 +1743,7 @@ const UserSubmitSurvey = () => {
                             onHandleNext={handleNext}
                             onSaveForm={handleSaveSinglePointForm}
                             onConsentDisagree={handleConsentDisagree}
+                            onZoomInterviewExit={handleZoomInterviewExit}
                             onMandatoryIncomplete={() => setSnackbar({
                                 open: true,
                                 message: 'Please fill the mandatory fields',

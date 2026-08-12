@@ -11,6 +11,7 @@ import {
   CONSENT_RULE_MUST_YES,
   CONSENT_RULE_OPTIONAL,
   evaluateConsentProgress,
+  wantsZoomInterviewExit,
 } from '../utils/consentProgress';
 
 const cleanHTMLContent = (htmlString) => {
@@ -81,6 +82,7 @@ const QualitativeConsentForm = ({
   disableButtons,
   onHandleNext,
   onConsentDisagree,
+  onZoomInterviewExit,
   onMandatoryIncomplete,
 }) => {
   const theme = useTheme();
@@ -184,6 +186,10 @@ const QualitativeConsentForm = ({
       return;
     }
     onSaveForm(payload);
+    if (wantsZoomInterviewExit(payload)) {
+      onZoomInterviewExit?.(payload);
+      return;
+    }
     onHandleNext?.();
   };
 

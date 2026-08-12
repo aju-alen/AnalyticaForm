@@ -25,6 +25,7 @@ import {
   CONSENT_RULE_MUST_YES,
   CONSENT_RULE_OPTIONAL,
   evaluateConsentProgress,
+  wantsZoomInterviewExit,
 } from '../utils/consentProgress';
 import { QUALITATIVE_CONSENT_DEFAULT_ITEMS } from './QualitativeConsentForm';
 
@@ -78,6 +79,7 @@ const DynamicQualitativeConsentForm = ({
   disableButtons,
   onHandleNext,
   onConsentDisagree,
+  onZoomInterviewExit,
   onMandatoryIncomplete,
 }) => {
   const theme = useTheme();
@@ -200,6 +202,10 @@ const DynamicQualitativeConsentForm = ({
       return;
     }
     onSaveForm(payload);
+    if (wantsZoomInterviewExit(payload)) {
+      onZoomInterviewExit?.(payload);
+      return;
+    }
     onHandleNext?.();
   };
 

@@ -45,3 +45,26 @@ export function buildSelectedValueForItems(items, answersByIndex) {
     };
   });
 }
+
+const QUAL_ZOOM_EXIT_TYPES = new Set([
+  'QualitativeConsentForm',
+  'DynamicQualitativeConsentForm',
+]);
+
+/**
+ * True when interview consent can proceed and a showsZoomOnYes item (e.g. AV) is Yes.
+ */
+export function wantsZoomInterviewExit(form) {
+  if (!form || !QUAL_ZOOM_EXIT_TYPES.has(form.formType)) return false;
+  const items = Array.isArray(form.items) ? form.items : [];
+  const selectedValue = Array.isArray(form.selectedValue) ? form.selectedValue : [];
+  const progress = evaluateConsentProgress(items, selectedValue);
+  if (!progress.canProceed || progress.shouldExit) return false;
+
+  return items.some((item, index) => {
+    if (!item.showsZoomOnYes) return false;
+    const entry =
+      selectedValue.find((a) => Number(a.index) === index + 1) || selectedValue[index];
+    return String(entry?.answer || entry?.value || '').trim() === 'Yes';
+  });
+}
