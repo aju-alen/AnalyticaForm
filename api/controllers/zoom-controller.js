@@ -35,24 +35,41 @@ export const getZoomAuthUrl = async (req, res) => {
   }
 };
 
-export const zoomOAuthCallback = async (req, res) => {
+function zoomFrontendBase() {
   const frontend =
     process.env.STRIPE_FRONTEND_URL ||
     process.env.FRONTEND_URL?.replace(/[\[\]`"']/g, '').split(',')[0] ||
     'http://localhost:5173';
-  const redirectBase = String(frontend).includes('http')
+  return String(frontend).includes('http')
     ? String(frontend).replace(/\/$/, '')
     : 'http://localhost:5173';
+}
+
+function zoomErrorRedirect(redirectBase, reason) {
+  const params = new URLSearchParams({
+    zoom: 'error',
+    reason: String(reason || 'unknown').slice(0, 180),
+  });
+  return `${redirectBase}/dashboard?${params.toString()}`;
+}
+
+export const zoomOAuthCallback = async (req, res) => {
+  const redirectBase = zoomFrontendBase();
 
   try {
     const { code, state } = req.query;
     if (!code || !state) {
-      return res.redirect(`${redirectBase}/dashboard?zoom=error`);
+      return res.redirect(zoomErrorRedirect(redirectBase, 'missing_code_or_state'));
     }
-    const parsed = JSON.parse(Buffer.from(String(state), 'base64url').toString('utf8'));
-    const userId = parsed?.userId;
+    let userId;
+    try {
+      const parsed = JSON.parse(Buffer.from(String(state), 'base64url').toString('utf8'));
+      userId = parsed?.userId;
+    } catch {
+      return res.redirect(zoomErrorRedirect(redirectBase, 'invalid_state'));
+    }
     if (!userId) {
-      return res.redirect(`${redirectBase}/dashboard?zoom=error`);
+      return res.redirect(zoomErrorRedirect(redirectBase, 'missing_user_id'));
     }
 
     const tokens = await exchangeZoomCodeForTokens(String(code));
@@ -80,7 +97,7 @@ export const zoomOAuthCallback = async (req, res) => {
     return res.redirect(`${redirectBase}/dashboard?zoom=connected`);
   } catch (err) {
     console.error('[zoom callback]', err);
-    return res.redirect(`${redirectBase}/dashboard?zoom=error`);
+    return res.redirect(zoomErrorRedirect(redirectBase, err?.message || 'callback_failed'));
   }
 };
 
