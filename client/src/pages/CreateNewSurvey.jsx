@@ -337,16 +337,28 @@ const CreateNewSurvey = () => {
   const toggleDrawer = React.useCallback(() => {
     setIsDrawerOpen(prev => !prev);
   }, []);
+  const closeDrawer = React.useCallback(() => {
+    setIsDrawerOpen(false);
+  }, []);
+  const tabApiRef = React.useRef({ setTab: () => {} });
+  const pendingFocusFormIdRef = React.useRef(null);
+
+  const focusSurveyForm = React.useCallback((formId) => {
+    if (!formId) return;
+    pendingFocusFormIdRef.current = formId;
+    tabApiRef.current.setTab?.('build');
+    closeDrawer();
+  }, [closeDrawer]);
 
   const handleItemSelect = React.useCallback((item) => {
     if (item === 'IntroductionForm') {
+      const newForm = { id: uid(5), formType: item };
       setSelectedItems(prev => [item, ...prev]);
       setSurveyData(prev => {
-        const newForm = { id: uid(5), formType: item };
         const forms = prev.surveyForms ?? [];
-        const surveyForms = [newForm, ...forms];
-        return { ...prev, surveyForms };
+        return { ...prev, surveyForms: [newForm, ...forms] };
       });
+      focusSurveyForm(newForm.id);
     } else if (item === 'DropDownTemplateForm' || item === 'CheckBoxTemplateForm') {
       const template = item === 'DropDownTemplateForm' ? dropDownTemplate : checkBoxTemplate;
       const cloned = cloneTemplateWithFreshIds(template);
@@ -355,12 +367,13 @@ const CreateNewSurvey = () => {
         ...prev,
         surveyForms: [...(prev.surveyForms ?? []), ...cloned],
       }));
+      focusSurveyForm(cloned[cloned.length - 1]?.id);
     } else if (CONSENT_FORM_TYPES.has(item)) {
+      const newForm = { id: uid(5), formType: item, formMandate: true };
       setSelectedItems(prev => [...prev, item]);
       setSurveyData(prev => {
         const forms = prev.surveyForms ?? [];
         const insertAt = insertIndexForConsent(forms);
-        const newForm = { id: uid(5), formType: item, formMandate: true };
         const surveyForms = [
           ...forms.slice(0, insertAt),
           newForm,
@@ -368,14 +381,46 @@ const CreateNewSurvey = () => {
         ];
         return { ...prev, surveyForms };
       });
+      focusSurveyForm(newForm.id);
     } else {
+      const newForm = { id: uid(5), formType: item };
       setSelectedItems(prev => [...prev, item]);
       setSurveyData(prev => ({
         ...prev,
-        surveyForms: [...prev.surveyForms, { id: uid(5), formType: item }]
+        surveyForms: [...prev.surveyForms, newForm]
       }));
+      focusSurveyForm(newForm.id);
     }
-  }, []);
+  }, [focusSurveyForm]);
+
+  React.useEffect(() => {
+    const formId = pendingFocusFormIdRef.current;
+    if (!formId) return;
+    let cancelled = false;
+    let tries = 0;
+    const tryFocus = () => {
+      if (cancelled) return;
+      const el = document.querySelector(`[data-survey-form-id="${formId}"]`);
+      if (!el) {
+        if (tries < 25) {
+          tries += 1;
+          window.setTimeout(tryFocus, 50);
+        }
+        return;
+      }
+      pendingFocusFormIdRef.current = null;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const focusable = el.querySelector('textarea, input:not([type="hidden"]):not([disabled]), [contenteditable="true"]');
+      if (focusable && typeof focusable.focus === 'function') {
+        focusable.focus({ preventScroll: true });
+      }
+    };
+    const timer = window.setTimeout(tryFocus, 280);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [surveyData.surveyForms]);
 
   const handleFormChange = React.useCallback((e) => {
     const { name, value } = e.target;
@@ -582,6 +627,7 @@ const CreateNewSurvey = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SurveyBuilderChromeProvider
+          tabApiRef={tabApiRef}
           surveyData={surveyData}
           setSurveyData={setSurveyData}
           handleFormChange={handleFormChange}
@@ -894,7 +940,8 @@ const CreateNewSurvey = () => {
               return (
                 <Stack 
                   spacing={2} 
-                  key={item.id} 
+                  key={item.id}
+                  data-survey-form-id={item.id}
                   direction={{ xs: 'column', sm: 'row' }}
                   position="relative"
                   sx={{
@@ -949,7 +996,7 @@ const CreateNewSurvey = () => {
         </div>
       )}
 
-        <TemporaryDrawer open={isDrawerOpen} toggleDrawer={toggleDrawer} handleItemSelect={handleItemSelect} subscriptionEndDate={subscriptionEndDate} />
+        <TemporaryDrawer open={isDrawerOpen} toggleDrawer={closeDrawer} handleItemSelect={handleItemSelect} subscriptionEndDate={subscriptionEndDate} />
             </Box>
         </SurveyBuilderChromeProvider>
       </ThemeProvider>

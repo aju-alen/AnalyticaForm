@@ -302,8 +302,11 @@ function SettingsStack({ showAi }) {
   );
 }
 
-export function SurveyBuilderChromeProvider({ children, ...value }) {
+export function SurveyBuilderChromeProvider({ children, tabApiRef, ...value }) {
   const [tab, setTab] = useState('build');
+  if (tabApiRef) {
+    tabApiRef.current = { setTab };
+  }
   const ctx = { ...value, tab, setTab };
   return (
     <ChromeContext.Provider value={ctx}>
