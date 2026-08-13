@@ -1,6 +1,7 @@
 import { prisma } from '../utils/prisma.js'
-import { FREE_SURVEY_LIMIT, userHasActiveProSubscription } from '../utils/planLimits.js'
+import { assertCanCreateSurvey, userHasActiveProSubscription } from '../utils/planLimits.js'
 import { requesterIsSuperAdmin, requireSurveyAccess } from '../utils/surveyAccess.js'
+import { loadResponsesForExport } from '../utils/surveyExport.js'
 import bcrypt from 'bcrypt';
 
 export const createNewSurvey = async (req, res) => {
@@ -8,16 +9,9 @@ export const createNewSurvey = async (req, res) => {
     const userId = req.tokenId;
     console.log(surveyTitle, req.tokenId, 'req.body');
     try {
-        const surveyCount = await prisma.survey.count({
-            where: { userId },
-        });
-        if (surveyCount >= FREE_SURVEY_LIMIT) {
-            const isPro = await userHasActiveProSubscription(prisma, userId);
-            if (!isPro) {
-                return res.status(403).send({
-                    message: 'You can only create 5 surveys with a free account. Please upgrade to premium.',
-                });
-            }
+        const createLimit = await assertCanCreateSurvey(prisma, userId);
+        if (!createLimit.ok) {
+            return res.status(403).send({ message: createLimit.message });
         }
 
         const newSurvey = await prisma.survey.create({
@@ -117,7 +111,26 @@ export const updateSurveyById = async (req, res) => {
             targetCountry: req.body.targetCountry,
             targetCountries: Array.isArray(req.body.targetCountries) ? req.body.targetCountries : [],
             oneResponsePerPerson: Boolean(req.body.oneResponsePerPerson),
+            surveyLayout: req.body.surveyLayout === 'onePage' ? 'onePage' : 'oneQuestion',
+            hidePoweredBy: false,
         };
+        if (typeof req.body.brandLogoUrl === 'string') {
+            data.brandLogoUrl = req.body.brandLogoUrl.trim() || null;
+        }
+        if (req.body.clearBrandLogo) {
+            data.brandLogoUrl = null;
+        }
+        if (typeof req.body.brandColor === 'string') {
+            const color = req.body.brandColor.trim();
+            data.brandColor = /^#([0-9a-fA-F]{6})$/.test(color) ? color : null;
+        }
+        if (req.body.brandColor === '' || req.body.brandColor === null) {
+            data.brandColor = null;
+        }
+        const requesterPro = await userHasActiveProSubscription(prisma, req.tokenId);
+        if (requesterPro || await requesterIsSuperAdmin(req)) {
+            data.hidePoweredBy = Boolean(req.body.hidePoweredBy);
+        }
         if (req.body.closesAt === null || req.body.closesAt === '') {
             data.closesAt = null;
         } else if (req.body.closesAt) {
@@ -158,20 +171,8 @@ export const getAllSurveyResponse = async (req, res) => {
         const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
         if (!access) return;
 
-        const getAllResponse = await prisma.userSurveyResponse.findMany({
-            where: {
-                surveyId
-            },
-            include: {
-                survey: {
-                    select: {
-                        surveyTitle: true,
-                        surveyForms: true,
-                    }
-                }
-            },
-            ...(!isSubscribed ? { take: 500 } : {}),
-        });
+        const isOwnerPro = String(isSubscribed) === 'true';
+        const getAllResponse = await loadResponsesForExport(prisma, surveyId, { isOwnerPro });
         
         res.status(200).send(getAllResponse);
     }
@@ -432,14 +433,9 @@ export const cloneUserSurvey = async (req, res) => {
             return res.status(404).send({ message: 'Survey not found' });
         }
 
-        const surveyCount = await prisma.survey.count({ where: { userId: req.tokenId } });
-        if (surveyCount >= FREE_SURVEY_LIMIT) {
-            const isPro = await userHasActiveProSubscription(prisma, req.tokenId);
-            if (!isPro) {
-                return res.status(403).send({
-                    message: 'You can only create 5 surveys with a free account. Please upgrade to premium.',
-                });
-            }
+        const createLimit = await assertCanCreateSurvey(prisma, req.tokenId);
+        if (!createLimit.ok) {
+            return res.status(403).send({ message: createLimit.message });
         }
 
         const cloned = await prisma.survey.create({
@@ -458,6 +454,10 @@ export const cloneUserSurvey = async (req, res) => {
                 maxResponses: source.maxResponses,
                 oneResponsePerPerson: source.oneResponsePerPerson,
                 accessPasswordHash: source.accessPasswordHash,
+                surveyLayout: source.surveyLayout || 'oneQuestion',
+                brandLogoUrl: source.brandLogoUrl,
+                brandColor: source.brandColor,
+                hidePoweredBy: source.hidePoweredBy,
             },
         });
         const { accessPasswordHash, ...rest } = cloned;

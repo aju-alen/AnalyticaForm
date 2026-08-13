@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `Survey` ADD COLUMN `surveyLayout` VARCHAR(191) NOT NULL DEFAULT 'oneQuestion';
+ALTER TABLE `Survey` ADD COLUMN `brandLogoUrl` VARCHAR(512) NULL;
+ALTER TABLE `Survey` ADD COLUMN `brandColor` VARCHAR(16) NULL;
+ALTER TABLE `Survey` ADD COLUMN `hidePoweredBy` BOOLEAN NOT NULL DEFAULT false;

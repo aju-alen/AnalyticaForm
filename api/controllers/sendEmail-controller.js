@@ -2,6 +2,9 @@ import { prisma } from '../utils/prisma.js'
 import dotenv from 'dotenv';
 import ExcelJS from 'exceljs';
 import { resendEmailBoiler } from '../utils/resendEmailTemplate.js';
+import { requireSurveyAccess, requesterIsSuperAdmin } from '../utils/surveyAccess.js';
+import { userHasActiveProSubscription } from '../utils/planLimits.js';
+import { loadResponsesForExport } from '../utils/surveyExport.js';
 dotenv.config();
 
 export const contactUs = async (req, res) => {
@@ -207,27 +210,18 @@ const reportNSFWEmail = async (awsId,filesUrl,email,id,firstName) => {
 
 export const sendSurveyExcelViaEmail = async (req, res) => {
     try {
-        const { surveyId, recipientEmail, note, isSubscribed } = req.body;
+        const { surveyId, recipientEmail, note } = req.body;
         
         if (!surveyId || !recipientEmail) {
             return res.status(400).json({ message: 'Survey ID and recipient email are required' });
         }
 
-        // Fetch all responses for the survey
-        const getAllResponse = await prisma.userSurveyResponse.findMany({
-            where: {
-                surveyId
-            },
-            include: {
-                survey: {
-                    select: {
-                        surveyTitle: true,
-                        surveyForms: true,
-                    }
-                }
-            },
-            ...(!isSubscribed ? { take: 500 } : {}),
-        });
+        const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+        if (!access) return;
+
+        const isOwnerPro = await userHasActiveProSubscription(prisma, req.tokenId)
+            || await requesterIsSuperAdmin(req);
+        const getAllResponse = await loadResponsesForExport(prisma, surveyId, { isOwnerPro });
 
         if (!getAllResponse || getAllResponse.length === 0) {
             return res.status(404).json({ message: 'No responses found for this survey' });

@@ -1,47 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import axios from 'axios'
 import { backendUrl } from '../utils/backendUrl'
 import { useParams,useNavigate, useSearchParams } from 'react-router-dom'
-import SelectSingleCheckBox from '../components/SelectSingleCheckBox'
-import SelectSingleRadio from '../components/SelectSingleRadio'
-import IntroductionForm from '../components/IntroductionForm'
-import SelectMultiScalePoint from '../components/SelectMultiScalePoint'
-import { Button, TextField,Box,Typography, Stack, AppBar,Toolbar, Snackbar, Alert} from '@mui/material'
-import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox'
-import GoogleRecaptcha from '../components/GoogleRecaptcha'
-import SelectDropdownMenu from '../components/SelectDropdownMenu'
-import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet'
-import CommentBox from '../components/CommentBox'
+import { Button, TextField,Box,Typography, Stack, AppBar,Toolbar, Snackbar, Alert, LinearProgress} from '@mui/material'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import theme from '../utils/theme'
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import SingleRowText from '../components/SingleRowText';
-import EmailAddress from '../components/EmailAddress'
-import ContactInformation from '../components/ContactInformation'
-import StarRating from '../components/StarRating'
-import SmileyRating from '../components/SmileyRating'
-import ThumbsUpDown from '../components/ThumbsUpDown'
-import SliderText from '../components/SliderText'
-import DateTime from '../components/DateTime'
-import Calender from '../components/Calender'
-import RankOrder from '../components/RankOrder'
-import ConstantSum from '../components/ConstantSum'
-import NumericSlider from '../components/NumericSlider'
-// import SelectOneImage from '../components/SelectOneImage'
 import SEO from '../components/SEO'
-import SelectMultipleImage from '../components/SelectMultipleImage'
-import PickAndRank from '../components/PickAndRank'
-import RankOrderImage from '../components/RankOrderImage'
-import PresentationText from '../components/PresentationText'
-import SectionHeading from '../components/SectionHeading'
-import SectionSubHeading from '../components/SectionSubHeading'
-import ConsentForm from '../components/ConsentForm'
-import QualitativeConsentForm from '../components/QualitativeConsentForm'
-import DynamicConsentForm from '../components/DynamicConsentForm'
-import DynamicQualitativeConsentForm from '../components/DynamicQualitativeConsentForm'
-import MapForm from '../components/MapForm'
 import { evaluateConsentProgress } from '../utils/consentProgress'
+import { getQuestionType, DISPLAY_ONLY_FORM_TYPES } from '../questionTypes/registry'
 import { axiosWithAuth } from '../utils/customAxios'
 import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog';
@@ -49,10 +17,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import MenuIcon from '@mui/icons-material/Menu';
-import Drawer from '@mui/material/Drawer';
-import Divider from '@mui/material/Divider';
-import MenuItem from '@mui/material/MenuItem';
 import { motion } from 'framer-motion';
 import { CheckCircle, X } from 'lucide-react';
 
@@ -65,6 +29,7 @@ const UserSubmitSurvey = () => {
     const continueResponseId = (searchParams.get('responseId') || '').trim();
     const continueDriFlag = (searchParams.get('continueDri') || '').trim();
     const isPreview = searchParams.get('preview') === '1';
+    const isEmbed = searchParams.get('embed') === '1';
     const inviteToken = (searchParams.get('invite') || '').trim();
     const progressStorageKey = `da-progress-${surveyId}`;
     const passwordStorageKey = `da-survey-pw-${surveyId}`;
@@ -72,12 +37,6 @@ const UserSubmitSurvey = () => {
         isDefenceReadinessSurvey &&
         Boolean(continueResponseId) &&
         (continueDriFlag === '1' || continueDriFlag.toLowerCase() === 'true');
-
-    const [openDrawer, setOpenDrawer] = React.useState(false);
-
-    const toggleDrawer = (newOpen) => () => {
-      setOpenDrawer(newOpen);
-    };
 
     const [surveyData, setSurveyData] = React.useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -531,7 +490,7 @@ const UserSubmitSurvey = () => {
     }
 
     const handleSaveForm = async (e) => {
-        e.preventDefault();
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
         if (isSubmittingResponse) return;
         setIsSubmittingResponse(true);
 
@@ -715,43 +674,6 @@ const UserSubmitSurvey = () => {
                 }
 
 
-                else if (form.formType === 'SelectDropDownForm') {
-
-                    return {
-                        [form.subheading ? form.subheading : form.question]: form.options.map(option => {
-                            if (form.formType === "SelectDropDownForm") {
-                                // Return an array with a single null for SinglePointForm
-                                return null;
-                            }
-                            return option.rowQuestion;
-                        }).filter((item, index) => form.formType !== "SelectDropDownForm" || index === 0)
-                    };
-                }
-
-                else if (form.formType === "ThumbUpDownForm") {
-                    console.log(form, 'form in SmileyRatingForm');
-                    return {
-                        [form.subheading ? form.subheading : form.question]: form.options.map(option => {
-                            console.log(option, 'option SmileyRatingForm');
-                            return option.question;
-
-                        }).filter((item, index) => form.formType !== "ThumbUpDownForm" || index === 0)
-
-                    }
-                }
-
-                else if (form.formType === 'SelectDropDownForm') {
-
-                    return {
-                        [form.subheading ? form.subheading : form.question]: form.options.map(option => {
-                            if (form.formType === "SelectDropDownForm") {
-                                // Return an array with a single null for SinglePointForm
-                                return null;
-                            }
-                            return option.rowQuestion;
-                        }).filter((item, index) => form.formType !== "SelectDropDownForm" || index === 0)
-                    };
-                }
                 else if (form.formType === 'GoogleRecaptchaForm') {
 
                     return {
@@ -1041,7 +963,7 @@ const UserSubmitSurvey = () => {
     console.log(surveyData, 'surveyData');
 
 
-    const renderCurrentComponent = () => {
+    const renderCurrentComponent = (overrideItem, overrideIndex, onePage = false) => {
         if (zoomInterviewExit) {
             return (
                 <div className="relative min-h-screen flex items-center justify-center pb-20 bg-gray-50">
@@ -1092,7 +1014,8 @@ const UserSubmitSurvey = () => {
             );
         }
 
-        const currentItem = surveyData?.surveyForms[currentIndex];
+        const itemIndex = overrideIndex ?? currentIndex;
+        const currentItem = overrideItem || surveyData?.surveyForms[itemIndex];
 
         if (!currentItem) {
             return (
@@ -1278,10 +1201,10 @@ const UserSubmitSurvey = () => {
             ); // Handle case when currentIndex is out of bounds
         }
 
-        const hasMandatoryFields = currentItem.formMandate && currentItem.selectedValue.length === 0;
+        const hasMandatoryFields = currentItem.formMandate && (currentItem.selectedValue || []).length === 0;
 
         console.log(currentItem, 'currentItem--in--mandate field');
-        console.log(currentItem.selectedValue.length, 'skippedFields--in--mandate field');
+        console.log(currentItem.selectedValue?.length, 'skippedFields--in--mandate field');
         console.log(hasMandatoryFields, 'hasMandatoryFields--in--mandate field');
         
         
@@ -1293,839 +1216,75 @@ const UserSubmitSurvey = () => {
             return null; // Do not render the form until mandatory fields are filled
         }
 
-        switch (currentItem.formType) {
-            case 'SinglePointForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <SelectSingleRadio
-                            data={currentItem}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onHandleNext={handleNext}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading}
-                            />
-                    </div>
-                );
-            case 'IntroductionForm':
-                return (
-                    <div className=" w-full h-5/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <IntroductionForm
-                            data={currentItem}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onHandleNext={handleNext}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-            case 'MapForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <MapForm
-                            data={currentItem}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onHandleNext={handleNext}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-            case 'SelectDropDownForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <SelectDropdownMenu
-                            data={currentItem}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onHandleNext={handleNext}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'SingleCheckForm':
-                return (
-                    // <div className=' w-full'>
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SelectSingleCheckBox
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveSingleCheckForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />;
-                    </div>
-                );
-
-            case 'CommentBoxForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <CommentBox
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'SingleRowTextForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SingleRowText
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'EmailAddressForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <EmailAddress
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'ContactInformationForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <ContactInformation
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-            case 'StarRatingForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <StarRating
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'SmileyRatingForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SmileyRating
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'ThumbUpDownForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <ThumbsUpDown
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'DateTimeForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <DateTime
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'GoogleRecaptchaForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <GoogleRecaptcha
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'CalenderForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <Calender
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'RankOrderForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <RankOrder
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'ConstantSumForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <ConstantSum
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'SelectOneImageForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SelectOneImage
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-            case 'SelectMultipleImageForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SelectMultipleImage
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'RankOrderImageForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <RankOrderImage
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'PresentationTextForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <PresentationText
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'ConsentForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <ConsentForm
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onConsentDisagree={handleConsentDisagree}
-                            onMandatoryIncomplete={() => setSnackbar({
-                                open: true,
-                                message: 'Please fill the mandatory fields',
-                                severity: 'warning',
-                            })}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                        />
-                    </div>
-                );
-
-            case 'QualitativeConsentForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <QualitativeConsentForm
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onConsentDisagree={handleConsentDisagree}
-                            onZoomInterviewExit={handleZoomInterviewExit}
-                            onMandatoryIncomplete={() => setSnackbar({
-                                open: true,
-                                message: 'Please fill the mandatory fields',
-                                severity: 'warning',
-                            })}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                        />
-                    </div>
-                );
-
-            case 'DynamicConsentForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <DynamicConsentForm
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onConsentDisagree={handleConsentDisagree}
-                            onMandatoryIncomplete={() => setSnackbar({
-                                open: true,
-                                message: 'Please fill the mandatory fields',
-                                severity: 'warning',
-                            })}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                        />
-                    </div>
-                );
-
-            case 'DynamicQualitativeConsentForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <DynamicQualitativeConsentForm
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveSinglePointForm}
-                            onConsentDisagree={handleConsentDisagree}
-                            onZoomInterviewExit={handleZoomInterviewExit}
-                            onMandatoryIncomplete={() => setSnackbar({
-                                open: true,
-                                message: 'Please fill the mandatory fields',
-                                severity: 'warning',
-                            })}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                        />
-                    </div>
-                );
-
-            case 'SectionHeadingForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SectionHeading
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'SectionSubHeadingForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SectionSubHeading
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'NumericSliderForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <NumericSlider
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'PickAndRankForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <PickAndRank
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'SliderTextForm':
-                return (
-                    <div className=" w-11/12 h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SliderText
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'MultiScalePoint':
-                return (
-                    <div className=" w-full h-4/6">
-                    {/* <div className=" w-full"> */}
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-
-                        <SelectMultiScalePoint
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveMultiScalePointForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                             />
-                    </div>
-                );
-
-            case 'MultiScaleCheckBox':
-                return (
-                    <div className=" w-full h-4/6">
-                        {currentIndex !== 0 && <Button onClick={handlePrevious} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        {currentIndex === 0 && <Button onClick={handleGoToIntro} className=''>
-                            <KeyboardBackspaceIcon fontSize='large' />
-                        </Button>}
-
-                        <SelectMultiScaleCheckBox
-                            data={currentItem}
-                            onHandleNext={handleNext}
-                            onSaveForm={handleSaveSingleCheckForm}
-                            id={currentItem.id}
-                            options={currentItem.options}
-                            disableForm={false}
-                            disableText={true}
-                            disableButtons={true}
-                            onSetLoading={setIsLoading} />
-                    </div>
-                );
-
-            case 'MultiSpreadsheet':
-                return <SelectMultiSpreadsheet
+        const questionType = getQuestionType(currentItem.formType);
+        const FormComponent = questionType?.Component;
+        if (!FormComponent) return null;
+
+        const saveHandlers = {
+            point: handleSaveSinglePointForm,
+            check: handleSaveSingleCheckForm,
+            multiscale: handleSaveMultiScalePointForm,
+        };
+        const onSaveForm = saveHandlers[questionType.saveKind] || handleSaveSinglePointForm;
+        const formEl = (
+            <Suspense fallback={<CircularProgress size={24} />}>
+                <FormComponent
                     data={currentItem}
+                    onSaveForm={onSaveForm}
                     onHandleNext={handleNext}
-                    onSaveForm={handleSaveSingleCheckForm}
                     id={currentItem.id}
                     options={currentItem.options}
                     disableForm={false}
                     disableText={true}
                     disableButtons={true}
-                    onSetLoading={setIsLoading} />;
-            default:
-                return null;
-        }
+                    onSetLoading={setIsLoading}
+                    {...(questionType.consent ? {
+                        onConsentDisagree: handleConsentDisagree,
+                        onMandatoryIncomplete: () => setSnackbar({
+                            open: true,
+                            message: 'Please fill the mandatory fields',
+                            severity: 'warning',
+                        }),
+                    } : {})}
+                />
+            </Suspense>
+        );
+
+        if (!questionType.wrap) return formEl;
+
+        return (
+            <div className="w-full max-w-xl mx-auto px-4 pb-8">
+                {!onePage && itemIndex !== 0 && <Button onClick={handlePrevious} className=''>
+                    <KeyboardBackspaceIcon fontSize='large' />
+                </Button>}
+                {!onePage && itemIndex === 0 && <Button onClick={handleGoToIntro} className=''>
+                    <KeyboardBackspaceIcon fontSize='large' />
+                </Button>}
+                {formEl}
+            </div>
+        );
     }
 
-    
+
+    const isOnePage = surveyData.surveyLayout === 'onePage';
+    const hidePoweredBy = false;
+    const answerableForms = (surveyData.surveyForms || []).filter(
+        (form) => form && !DISPLAY_ONLY_FORM_TYPES.has(form.formType)
+    );
+    const totalAnswerable = answerableForms.length;
+    const currentAnswerableCount = isOnePage
+        ? answerableForms.filter((form) => Array.isArray(form.selectedValue) && form.selectedValue.length > 0).length
+        : Math.max(
+            1,
+            (surveyData.surveyForms || [])
+                .slice(0, currentIndex + 1)
+                .filter((form) => form && !DISPLAY_ONLY_FORM_TYPES.has(form.formType)).length
+        );
+    const progressPercent = totalAnswerable
+        ? Math.min(100, (currentAnswerableCount / totalAnswerable) * 100)
+        : 0;
+    const showProgress = Boolean(surveyData.surveyForms?.length) && !introduction && !responseSubmitted && !previewBlocked;
+
     const features = [
         {
           icon: <CheckCircle className="w-6 h-6" />,
@@ -2158,7 +1317,29 @@ const UserSubmitSurvey = () => {
           }}
         />
             <CssBaseline />
-            <div className=" flex justify-center items-center h-screen">
+            <div className={`flex justify-center ${isOnePage && !introduction ? 'items-start min-h-screen py-24' : 'items-center min-h-screen py-16'}`}>
+                {showProgress && (
+                    <Box sx={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1300,
+                        bgcolor: '#fff',
+                        px: 2,
+                        py: 1,
+                        borderBottom: '1px solid #e2e8f0',
+                    }}>
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+                            <Typography variant="caption" sx={{ flexGrow: 1 }}>
+                                {isOnePage
+                                    ? `${currentAnswerableCount} of ${totalAnswerable} answered`
+                                    : `${Math.min(currentAnswerableCount, totalAnswerable) || 0} of ${totalAnswerable}`}
+                            </Typography>
+                        </Stack>
+                        <LinearProgress variant="determinate" value={progressPercent} />
+                    </Box>
+                )}
                 {isPreview && (
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-11/12 max-w-xl">
                         <Alert severity="info">Preview only — answers are not saved.</Alert>
@@ -2307,7 +1488,7 @@ const UserSubmitSurvey = () => {
                 </div>)
                 }
                 {(surveyData.surveyForms && !introduction) && (
-                    isDefenceReadinessSurvey && currentIndex === 10 && !isDriContinueSession ? (
+                    isDefenceReadinessSurvey && currentIndex === 10 && !isDriContinueSession && !isOnePage ? (
                         <div className="w-full min-h-[60vh] flex items-center justify-center px-4">
                             <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-8 text-center">
                                 {driInterimSubmitted ? (
@@ -2338,19 +1519,53 @@ const UserSubmitSurvey = () => {
                                 )}
                             </div>
                         </div>
+                    ) : isOnePage ? (
+                        <Box
+                            className="w-full max-w-xl mx-auto px-3 pb-28"
+                            sx={{ '& .MuiButton-containedSuccess': { display: 'none' } }}
+                        >
+                            {(surveyData.surveyForms || []).map((item, index) => (
+                                <div key={item.id || index}>
+                                    {renderCurrentComponent(item, index, true)}
+                                </div>
+                            ))}
+                            {!responseSubmitted && (
+                                <Box sx={{ mt: 2, px: 1 }}>
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        size="large"
+                                        onClick={handleSaveForm}
+                                        disabled={isSubmittingResponse}
+                                    >
+                                        {isSubmittingResponse ? 'Submitting...' : 'Submit Response'}
+                                    </Button>
+                                </Box>
+                            )}
+                        </Box>
                     ) : renderCurrentComponent()
                 )}
 
             </div>
-            <AppBar position="fixed" sx={{ display: { xs: "none", md: "block" } }} >
+            <AppBar position="fixed" sx={{ display: isEmbed || showProgress ? 'none' : { xs: 'none', md: 'block' } }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
+          {hidePoweredBy ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {surveyData.brandLogoUrl ? (
+                <Box component="img" src={surveyData.brandLogoUrl} alt="" sx={{ height: 28, maxWidth: 120, objectFit: 'contain' }} />
+              ) : (
+                <Typography variant="body2" color="inherit">{surveyData.surveyTitle}</Typography>
+              )}
+            </Box>
+          ) : (
           <Typography variant="body2" color="inherit">
             Powered by 
             <Button onClick={()=>navigate(`/?survey=${encodeURIComponent(surveyId ?? '')}`)} variant='text' sx={{color:'white'}}>
             Dubai Analytica
             </Button>
           </Typography>
-          {surveyId !== 'cmlyr2y9d00d7110v520atode' && (
+          )}
+          {!hidePoweredBy && surveyId !== 'cmlyr2y9d00d7110v520atode' && (
           <Stack spacing={1} direction="row" alignItems="center">
             <Typography variant="body2" color="inherit">
               Create Your Own Survey
@@ -2366,61 +1581,25 @@ const UserSubmitSurvey = () => {
         </Toolbar>
       </AppBar>
 
-            <AppBar position="fixed" sx={{ display: { xs: "", md: "none" } }} >
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
+            <AppBar position="fixed" sx={{ display: isEmbed || showProgress ? 'none' : { xs: 'block', md: 'none' } }}>
+        <Toolbar sx={{ justifyContent: 'space-between', minHeight: 56 }}>
+          {hidePoweredBy ? (
+            surveyData.brandLogoUrl ? (
+              <Box component="img" src={surveyData.brandLogoUrl} alt="" sx={{ height: 24, maxWidth: 100, objectFit: 'contain' }} />
+            ) : (
+              <Typography variant="body2" color="inherit" noWrap>{surveyData.surveyTitle}</Typography>
+            )
+          ) : (
           <Typography variant="body2" color="inherit">
             Powered by 
             <Button onClick={()=>navigate(`/?survey=${encodeURIComponent(surveyId ?? '')}`)} variant='text' sx={{color:'white'}}>
             Dubai Analytica
             </Button>
           </Typography>
-
-          <Button
-              variant="text"
-              color="error"
-              aria-label="menu"
-              onClick={toggleDrawer(true)}
-              sx={{ minWidth: '30px', p: '4px' }}
-            >
-               <MenuIcon />
-
-             </Button>
-
-             <Drawer anchor="right" open={openDrawer} onClose={toggleDrawer(false)}>
-
-<Box
-     sx={{
-       minWidth: '60dvw',
-       p: 2,
-       backgroundColor: 'background.paper',
-       flexGrow: 1,
-     }}
-   >
-     
-      <Divider />
-      
-        
-
-        <MenuItem>
-           <Button variant="body2" color="inherit" onClick={toggleDrawer(false)}>
-             <X className="w-6 h-6" />
-           </Button>
-        </MenuItem>
-        
-        <MenuItem>
-           <Button variant="body2" color="inherit" onClick={() => navigate('/login')}>
-              Create Your Own Survey
-            </Button>
-    </MenuItem>
-
-        <MenuItem>
-           <Button variant="body2" color="inherit" onClick={handleClickOpen}>
+          )}
+          <Button variant="text" color="inherit" onClick={handleClickOpen} sx={{ minHeight: 44 }}>
             Report Abuse
           </Button>
-    </MenuItem>
-        
-    </Box>
-  </Drawer>
         </Toolbar>
       </AppBar>
       <Dialog

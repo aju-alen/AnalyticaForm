@@ -159,25 +159,16 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
     try {
       setIsLoading(true);
       await refreshToken();
-      const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
-      console.log(getAllUserResponse.data,'--getAllUserResponse--asjhdajhsbd');
-      if (getAllUserResponse.data.length === 0) {
-        setSnackbar({ open: true, message: 'No response available for this survey', severity: 'warning' });
-        setIsLoading(false);
-        handleClose();
-        return;
-      }
-      
-      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/export-to-excel`, getAllUserResponse.data, {
+      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/export-to-excel/${surveyId}`, {}, {
         responseType: 'blob'
       });
       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      console.log(getAllUserResponse.data[0]["survey"].surveyTitle,'final answer');
-      
-      a.download = `${getAllUserResponse.data[0]["survey"].surveyTitle} Answers.xlsx`;
+      const disposition = response.headers?.['content-disposition'] || '';
+      const named = disposition.match(/filename="?([^"]+)"?/);
+      a.download = named?.[1] || 'survey Answers.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
       setIsLoading(false);
@@ -199,23 +190,16 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
     try {
       setIsLoading(true);
       await refreshToken();
-      const getAllUserResponse = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`);
-      console.log(getAllUserResponse.data,'--getAllUserResponse--');
-      if (getAllUserResponse.data.length === 0) {
-        setSnackbar({ open: true, message: 'No response available for this survey', severity: 'warning' });
-        setIsLoading(false);
-        handleClose();
-        return;
-      }
-      
-      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/export-to-excel-index`, getAllUserResponse.data, {
+      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/export-to-excel-index/${surveyId}`, {}, {
         responseType: 'blob'
       });
       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${getAllUserResponse.data[0]["survey"].surveyTitle} Index.xlsx`;
+      const disposition = response.headers?.['content-disposition'] || '';
+      const named = disposition.match(/filename="?([^"]+)"?/);
+      a.download = named?.[1] || 'survey Index.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
       setIsLoading(false);

@@ -70,6 +70,10 @@ export const getSingleSurveyDataForUser = async (req, res) => {
                 maxResponses: true,
                 accessPasswordHash: true,
                 oneResponsePerPerson: true,
+                surveyLayout: true,
+                brandLogoUrl: true,
+                brandColor: true,
+                hidePoweredBy: true,
             },
         });
         if (!getSurveyData) {
@@ -109,6 +113,10 @@ export const getSingleSurveyDataForUser = async (req, res) => {
             closesAt: getSurveyData.closesAt,
             maxResponses: getSurveyData.maxResponses,
             alreadyResponded,
+            surveyLayout: getSurveyData.surveyLayout === 'onePage' ? 'onePage' : 'oneQuestion',
+            brandLogoUrl: getSurveyData.brandLogoUrl || null,
+            brandColor: getSurveyData.brandColor || null,
+            hidePoweredBy: Boolean(getSurveyData.hidePoweredBy && isOwnerPro),
             surveyForms: (!closedReason && passwordOk && !alreadyResponded) ? getSurveyData.surveyForms : [],
         };
         res.status(200).json(publicSurvey);

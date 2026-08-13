@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -11,44 +11,10 @@ import { refreshToken } from '../utils/refreshToken';
 import { getUserAccess, clearUserAccess } from '../utils/userAccess';
 import { useNavigate } from 'react-router-dom';
 import TemporaryDrawer from '../components/TempDrawer';
-import SelectSingleRadio from '../components/SelectSingleRadio';
-import SelectSingleCheckBox from '../components/SelectSingleCheckBox';
-import IntroductionForm from '../components/IntroductionForm';
-import CommentBox from '../components/CommentBox';
-import SingleRowText from '../components/SingleRowText';
-import EmailAddress from '../components/EmailAddress';
-import ContactInformation from '../components/ContactInformation';
-import StarRating from '../components/StarRating';
-import SmileyRating from '../components/SmileyRating';
-import ThumbsUpDown from '../components/ThumbsUpDown';
-import SliderText from '../components/SliderText';
-import Calender from '../components/Calender';
-import DateTime from '../components/DateTime';
-import CountrySlect from '../components/CountrySlect';
-import RankOrder from '../components/RankOrder';
-import ConstantSum from '../components/ConstantSum';
-import NumericSlider from '../components/NumericSlider';
-import SelectOneImage from '../components/SelectOneImage';
-import SelectMultipleImage from '../components/SelectMultipleImage';
-import RankOrderImage from '../components/RankOrderImage';
-import PresentationText from '../components/PresentationText';
-import SectionHeading from '../components/SectionHeading';
-import SectionSubHeading from '../components/SectionSubHeading';
-import ConsentForm from '../components/ConsentForm';
-import QualitativeConsentForm from '../components/QualitativeConsentForm';
-import DynamicConsentForm from '../components/DynamicConsentForm';
-import DynamicQualitativeConsentForm from '../components/DynamicQualitativeConsentForm';
-import PickAndRank from '../components/PickAndRank';
 import { Stack } from '@mui/material';
 import { uid } from 'uid';
-import SelectMultiScalePoint from '../components/SelectMultiScalePoint';
-import SelectMultiScaleCheckBox from '../components/SelectMultiScaleCheckBox';
-import SelectMultiSpreadsheet from '../components/SelectMultiSpreadsheet';
-import GoogleRecaptcha from '../components/GoogleRecaptcha';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CircularProgress from '@mui/material/CircularProgress';
-import SelectDropdownMenu from '../components/SelectDropdownMenu';
-import MapForm from '../components/MapForm';
 import SurveyIntro from '../components/SurveyIntro';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
@@ -77,6 +43,13 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Switch from '@mui/material/Switch';
 import Chip from '@mui/material/Chip';
+import {
+  BUILDER_COMPONENTS,
+  DISPLAY_ONLY_FORM_TYPES,
+  ALWAYS_MANDATORY_FORM_TYPES,
+  CONSENT_FORM_TYPES,
+  FORM_TYPE_LABELS,
+} from '../questionTypes/registry';
 
 function toDatetimeLocalValue(value) {
   if (!value) return '';
@@ -86,62 +59,12 @@ function toDatetimeLocalValue(value) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-const DISPLAY_ONLY_FORM_TYPES = new Set(['IntroductionForm', 'PresentationTextForm', 'SectionHeadingForm', 'SectionSubHeadingForm']);
-const ALWAYS_MANDATORY_FORM_TYPES = new Set([
-  'ConsentForm',
-  'QualitativeConsentForm',
-  'DynamicConsentForm',
-  'DynamicQualitativeConsentForm',
-]);
-const CONSENT_FORM_TYPES = new Set([
-  'ConsentForm',
-  'QualitativeConsentForm',
-  'DynamicConsentForm',
-  'DynamicQualitativeConsentForm',
-]);
-
 function insertIndexForConsent(forms) {
   let i = 0;
   if (forms[0]?.formType === 'IntroductionForm') i = 1;
   while (i < forms.length && CONSENT_FORM_TYPES.has(forms[i].formType)) i += 1;
   return i;
 }
-
-const FORM_TYPE_LABELS = {
-  SinglePointForm: 'Single choice',
-  SingleCheckForm: 'Multiple choice',
-  IntroductionForm: 'Introduction',
-  MultiScalePoint: 'Multi scale (single)',
-  MultiScaleCheckBox: 'Multi scale (multiple)',
-  MultiSpreadsheet: 'Spreadsheet',
-  MapForm: 'Map',
-  SelectDropDownForm: 'Dropdown',
-  CommentBoxForm: 'Comment box',
-  SingleRowTextForm: 'Single row text',
-  EmailAddressForm: 'Email address',
-  ContactInformationForm: 'Contact information',
-  StarRatingForm: 'Star rating',
-  SmileyRatingForm: 'Smiley rating',
-  ThumbUpDownForm: 'Thumbs up/down',
-  SliderTextForm: 'Slider text',
-  NumericSliderForm: 'Numeric slider',
-  SelectOneImageForm: 'Select one image',
-  SelectMultipleImageForm: 'Select multiple images',
-  RankOrderForm: 'Rank order',
-  ConstantSumForm: 'Constant sum',
-  PickAndRankForm: 'Pick and rank',
-  PresentationTextForm: 'Presentation text',
-  SectionHeadingForm: 'Section heading',
-  SectionSubHeadingForm: 'Section subheading',
-  DateTimeForm: 'Date & time',
-  GoogleRecaptchaForm: 'reCAPTCHA',
-  CalenderForm: 'Calendar',
-  RankOrderImage: 'Rank order (images)',
-  ConsentForm: 'Form Consent',
-  QualitativeConsentForm: 'Interview Consent',
-  DynamicConsentForm: 'Dynamic Consent (Quantitative)',
-  DynamicQualitativeConsentForm: 'Dynamic Consent (Qualitative)',
-};
 
 const AUTO_SAVE_DELAY_MS = 1800;
 
@@ -205,6 +128,10 @@ const CreateNewSurvey = () => {
     maxResponses: '',
     oneResponsePerPerson: false,
     passwordRequired: false,
+    surveyLayout: 'oneQuestion',
+    brandLogoUrl: '',
+    brandColor: '',
+    hidePoweredBy: false,
   });
 
   const formDataRefs = useRef({});
@@ -215,46 +142,19 @@ const CreateNewSurvey = () => {
   const initialLoadDoneRef = useRef(false);
   
 
-  // Memoize form components object to prevent recreation on each render
-  const formComponents = React.useMemo(() => ({
-    'SinglePointForm': SelectSingleRadio,
-    'SingleCheckForm': SelectSingleCheckBox,
-    'IntroductionForm': IntroductionForm,
-    'MultiScalePoint': SelectMultiScalePoint,
-    'MultiScaleCheckBox': SelectMultiScaleCheckBox,
-    'MultiSpreadsheet': SelectMultiSpreadsheet,
-    'MapForm': MapForm,
-    'SelectDropDownForm': SelectDropdownMenu,
-    'CommentBoxForm': CommentBox,
-    'SingleRowTextForm': SingleRowText,
-    'EmailAddressForm': EmailAddress,
-    'ContactInformationForm': ContactInformation,
-    'StarRatingForm': StarRating,
-    'SmileyRatingForm': SmileyRating,
-    'ThumbUpDownForm': ThumbsUpDown,
-    'SliderTextForm': SliderText,
-    'NumericSliderForm': NumericSlider,
-    'SelectOneImageForm': SelectOneImage,
-    'SelectMultipleImageForm': SelectMultipleImage,
-    'RankOrderForm': RankOrder,
-    'ConstantSumForm':ConstantSum,
-    'PickAndRankForm':PickAndRank,
-    'PresentationTextForm': PresentationText,
-    'SectionHeadingForm': SectionHeading,
-    'SectionSubHeadingForm': SectionSubHeading,
-    'DateTimeForm': DateTime,
-    'GoogleRecaptchaForm': GoogleRecaptcha,
-    'CalenderForm' : Calender,
-    'ConsentForm': ConsentForm,
-    'QualitativeConsentForm': QualitativeConsentForm,
-    'DynamicConsentForm': DynamicConsentForm,
-    'DynamicQualitativeConsentForm': DynamicQualitativeConsentForm,
-  }), []);
+  const formComponents = BUILDER_COMPONENTS;
 
   // Memoize handlers that don't need to change between renders
   const handleCopy = React.useCallback(() => {
     navigator.clipboard.writeText(`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`).then(() => {}).catch(() => {});
   }, [surveyId]);
+
+  const takeSurveyUrl = `${window.location.origin}/user-survey/${surveyId}`;
+  const embedSnippet = `<iframe src="${takeSurveyUrl}?embed=1" width="100%" height="800" style="border:0;" title="Survey"></iframe>`;
+
+  const handleCopyEmbed = React.useCallback(() => {
+    navigator.clipboard.writeText(embedSnippet).then(() => {}).catch(() => {});
+  }, [embedSnippet]);
 
   const handleDeleteSelectOneForm = React.useCallback((id) => {
     delete formDataRefs.current[id];
@@ -339,6 +239,10 @@ const CreateNewSurvey = () => {
           maxResponses: d.maxResponses ?? '',
           oneResponsePerPerson: Boolean(d.oneResponsePerPerson),
           passwordRequired: Boolean(d.passwordRequired),
+          surveyLayout: d.surveyLayout === 'onePage' ? 'onePage' : 'oneQuestion',
+          brandLogoUrl: d.brandLogoUrl || '',
+          brandColor: d.brandColor || '',
+          hidePoweredBy: Boolean(d.hidePoweredBy),
         });
         setSelectedItems(d.selectedItems ?? []);
         setSelectedCountries(normalized);
@@ -391,6 +295,7 @@ const CreateNewSurvey = () => {
         closesAt: current.closesAt === '' ? null : current.closesAt,
         accessPassword: accessPassword.trim() || undefined,
         clearAccessPassword,
+        clearBrandLogo: !current.brandLogoUrl,
       };
       await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
       setSaveStatus('saved');
@@ -529,6 +434,7 @@ const CreateNewSurvey = () => {
         closesAt: current.closesAt === '' ? null : current.closesAt,
         accessPassword: accessPassword.trim() || undefined,
         clearAccessPassword,
+        clearBrandLogo: !current.brandLogoUrl,
       };
       await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
       navigate('/dashboard');
@@ -559,6 +465,7 @@ const CreateNewSurvey = () => {
         closesAt: current.closesAt === '' ? null : current.closesAt,
         accessPassword: accessPassword.trim() || undefined,
         clearAccessPassword,
+        clearBrandLogo: !current.brandLogoUrl,
       };
       await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
       await axiosWithAuth.put(`${backendUrl}/api/survey/update-survey-status/${surveyId}`, { surveyStatus: 'Active' });
@@ -861,6 +768,22 @@ const CreateNewSurvey = () => {
               )}
             </Stack>
           </Box>
+          <Box sx={{ mt: 3, mb: 2, p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>Layout</Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={surveyData.surveyLayout === 'onePage'}
+                  onChange={(e) => setSurveyData((prev) => ({
+                    ...prev,
+                    surveyLayout: e.target.checked ? 'onePage' : 'oneQuestion',
+                  }))}
+                  size="small"
+                />
+              }
+              label="Show all questions on one page"
+            />
+          </Box>
          {surveyData.surveyForms.length > 0 && (
   <Box
     sx={{
@@ -951,6 +874,26 @@ const CreateNewSurvey = () => {
         This share URL will not collect responses until the survey is published.
       </Typography>
     )}
+    <TextField
+      label="Embed on your website"
+      value={embedSnippet}
+      InputProps={{ readOnly: true }}
+      fullWidth
+      size="small"
+      sx={{ mt: 2 }}
+    />
+    <Button size="small" onClick={handleCopyEmbed} sx={{ mt: 1, alignSelf: 'flex-start' }}>
+      Copy embed code
+    </Button>
+    <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
+      <Typography variant="body2" color="text.secondary">QR code</Typography>
+      <Box
+        component="img"
+        alt="Survey QR code"
+        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(takeSurveyUrl)}`}
+        sx={{ width: 160, height: 160, border: '1px solid #e2e8f0', borderRadius: 1 }}
+      />
+    </Box>
   </Box>
   
 )}
@@ -1097,6 +1040,7 @@ const CreateNewSurvey = () => {
                     '& > *': { width: '100%' }
                   }}
                 >
+                  <Suspense fallback={<CircularProgress size={24} />}>
                   <FormComponent
                     ref={item.formType === 'SinglePointForm' ? (el) => { if (el) formInstanceRefs.current[item.id] = el; else delete formInstanceRefs.current[item.id]; } : undefined}
                     onSaveForm={handleSaveSinglePointForm}
@@ -1110,6 +1054,7 @@ const CreateNewSurvey = () => {
                     onHandleNext={() => 1}
                     onSetLoading={setLoading}
                   />
+                  </Suspense>
                   <Button
                     color="secondary"
                     size="large"

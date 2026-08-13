@@ -16,3 +16,13 @@ export async function userHasActiveProSubscription(prisma, userId) {
     const nowUnix = Math.floor(Date.now() / 1000);
     return proMember.subscriptionPeriodEnd > nowUnix;
 }
+
+export async function assertCanCreateSurvey(prisma, userId) {
+    const surveyCount = await prisma.survey.count({ where: { userId } });
+    if (surveyCount < FREE_SURVEY_LIMIT) return { ok: true };
+    if (await userHasActiveProSubscription(prisma, userId)) return { ok: true };
+    return {
+        ok: false,
+        message: 'You can only create 5 surveys with a free account. Please upgrade to premium.',
+    };
+}

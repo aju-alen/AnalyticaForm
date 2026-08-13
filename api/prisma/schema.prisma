@@ -96,6 +96,10 @@ model Survey {
   maxResponses Int?
   accessPasswordHash String?
   oneResponsePerPerson Boolean @default(false)
+  surveyLayout String @default("oneQuestion")
+  brandLogoUrl String? @db.VarChar(512)
+  brandColor String? @db.VarChar(16)
+  hidePoweredBy Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

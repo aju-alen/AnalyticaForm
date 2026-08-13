@@ -304,19 +304,8 @@ const ResponseDashboard = () => {
     try {
       setExporting(type);
       await refreshToken();
-      const allResponsesRes = await axiosWithAuth.get(
-        `${backendUrl}/api/survey/get-all-user-response/${surveyId}/${isSubscribed}`,
-      );
-      const allResponses = Array.isArray(allResponsesRes.data) ? allResponsesRes.data : [];
-
-      if (!allResponses.length) {
-        handleSnackbar('No responses available to export.', 'warning');
-        setExporting(null);
-        return;
-      }
-
       const endpoint = type === 'answers' ? 'export-to-excel' : 'export-to-excel-index';
-      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/${endpoint}`, allResponses, {
+      const response = await axiosWithAuth.post(`${backendUrl}/api/excel/${endpoint}/${surveyId}`, {}, {
         responseType: 'blob',
       });
       const blob = new Blob([response.data], {

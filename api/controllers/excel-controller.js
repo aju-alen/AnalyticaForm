@@ -1,4 +1,8 @@
 import ExcelJS from 'exceljs';
+import { prisma } from '../utils/prisma.js';
+import { requireSurveyAccess, requesterIsSuperAdmin } from '../utils/surveyAccess.js';
+import { userHasActiveProSubscription } from '../utils/planLimits.js';
+import { loadResponsesForExport, writeWorkbookToResponse } from '../utils/surveyExport.js';
 
 // Function to extract form questions
 const extractFormQuestions = (data) => {
@@ -334,11 +338,9 @@ const addAnalyticsDataToWorksheet = (worksheet, analytics) => {
     });
 };
 
-// Helper function to generate Excel buffer (can be used by both export and email)
-export const generateExcelBuffer = async (data) => {
+const buildAnswersWorkbook = (data) => {
     const workbook = new ExcelJS.Workbook();
 
-    // User Data Sheet
     const userDataSheet = workbook.addWorksheet('User Data');
     const formQuestions = extractFormQuestions(data);
     const { headers, subHeaders, questionMap } = createHeadersAndSubHeaders(formQuestions);
@@ -353,24 +355,88 @@ export const generateExcelBuffer = async (data) => {
         styleUserRow(userRow);
     });
 
-    // Analytics Sheet
     const analyticsSheet = workbook.addWorksheet('Analytics');
     const analyticsData = createAnalyticsData(data);
     addAnalyticsDataToWorksheet(analyticsSheet, analyticsData);
 
-    // Write to buffer and return
-    return await workbook.xlsx.writeBuffer();
+    return workbook;
 };
 
-// Main function for exporting data to Excel
+const buildIndexWorkbook = (data) => {
+    const workbook = new ExcelJS.Workbook();
+
+    const userDataSheet = workbook.addWorksheet('User Data');
+    const formQuestions = extractFormQuestions(data);
+    const { headers, subHeaders, questionMap } = createHeadersAndSubHeaders(formQuestions);
+
+    addHeadersToWorksheet(userDataSheet, headers);
+    addSubHeadersToWorksheet(userDataSheet, subHeaders);
+    userDataSheet.addRow([]);
+
+    data.forEach(user => {
+        const row = createUserRowIndex(user, subHeaders, headers, questionMap);
+        const userRow = userDataSheet.addRow(row);
+        styleUserRow(userRow);
+    });
+
+    const analyticsSheet = workbook.addWorksheet('Analytics');
+    const analyticsData = createAnalyticsDataIndex(data);
+    addAnalyticsDataToWorksheet(analyticsSheet, analyticsData);
+
+    return workbook;
+};
+
+const exportFilename = (data, suffix) => {
+    const title = data?.[0]?.survey?.surveyTitle || 'survey';
+    return `${String(title).replace(/[\\/"]/g, '')} ${suffix}.xlsx`;
+};
+
+const loadExportRows = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+    if (!access) return null;
+    const isOwnerPro = await userHasActiveProSubscription(prisma, req.tokenId)
+        || await requesterIsSuperAdmin(req);
+    const data = await loadResponsesForExport(prisma, surveyId, { isOwnerPro });
+    if (!data.length) {
+        res.status(404).send({ message: 'No responses found for this survey' });
+        return null;
+    }
+    return data;
+};
+
+export const generateExcelBuffer = async (data) => {
+    const workbook = buildAnswersWorkbook(data);
+    return workbook.xlsx.writeBuffer();
+};
+
 export const exportToExcel = async (req, res) => {
     try {
         const data = req.body;
-        const buffer = await generateExcelBuffer(data);
-        
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', 'attachment; filename=data_with_analytics.xlsx');
-        res.send(buffer);
+        const workbook = buildAnswersWorkbook(data);
+        await writeWorkbookToResponse(res, workbook, 'data_with_analytics.xlsx');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+};
+
+export const exportSurveyToExcel = async (req, res) => {
+    try {
+        const data = await loadExportRows(req, res);
+        if (!data) return;
+        await writeWorkbookToResponse(res, buildAnswersWorkbook(data), exportFilename(data, 'Answers'));
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+};
+
+export const exportSurveyToExcelIndex = async (req, res) => {
+    try {
+        const data = await loadExportRows(req, res);
+        if (!data) return;
+        await writeWorkbookToResponse(res, buildIndexWorkbook(data), exportFilename(data, 'Index'));
     } catch (err) {
         console.error(err);
         res.status(500).send({ message: 'Internal server error' });
@@ -574,40 +640,12 @@ const createAnalyticsDataIndex = (data) => {
 };
 
 
-export const exportToExcelIndex = async (req, res) => {                             
+export const exportToExcelIndex = async (req, res) => {
     try {
         const data = req.body;
-        const workbook = new ExcelJS.Workbook();
-
-        // User Data Sheet
-        const userDataSheet = workbook.addWorksheet('User Data');
-        const formQuestions = extractFormQuestions(data);
-        const { headers, subHeaders, questionMap } = createHeadersAndSubHeaders(formQuestions);
-
-        addHeadersToWorksheet(userDataSheet, headers);
-        addSubHeadersToWorksheet(userDataSheet, subHeaders);
-        userDataSheet.addRow([]);
-
-        data.forEach(user => {
-            // const row = createUserRowIndexOld(user, subHeaders, headers, questionMap);
-            const row = createUserRowIndex(user, subHeaders, headers, questionMap);
-            const userRow = userDataSheet.addRow(row);
-            styleUserRow(userRow);
-        });
-
-        // Analytics Sheet
-        const analyticsSheet = workbook.addWorksheet('Analytics');
-        const analyticsData = createAnalyticsDataIndex(data);
-        addAnalyticsDataToWorksheet(analyticsSheet, analyticsData);
-
-        // Write to buffer and send as response
-        const buffer = await workbook.xlsx.writeBuffer();
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', 'attachment; filename=data_with_analytics.xlsx');
-        res.send(buffer);
+        await writeWorkbookToResponse(res, buildIndexWorkbook(data), 'data_with_analytics.xlsx');
     } catch (err) {
         console.error(err);
         res.status(500).send({ message: 'Internal server error' });
     }
-
-}
+};

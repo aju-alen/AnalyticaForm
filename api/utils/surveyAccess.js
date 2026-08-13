@@ -2,18 +2,18 @@ import { prisma } from './prisma.js';
 
 const isTruthyFlag = (value) => value === true || value === 'true';
 
-export async function requesterIsSuperAdmin(req) {
+export async function requesterIsSuperAdmin(req, db = prisma) {
     if (isTruthyFlag(req.tokenSuperAdmin)) return true;
     if (req.tokenSuperAdmin === false || req.tokenSuperAdmin === 'false') return false;
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
         where: { id: req.tokenId },
         select: { isSuperAdmin: true },
     });
     return Boolean(user?.isSuperAdmin);
 }
 
-export async function requireSurveyAccess(req, res, surveyId, { allowSuperAdmin = false } = {}) {
-    const survey = await prisma.survey.findUnique({
+export async function requireSurveyAccess(req, res, surveyId, { allowSuperAdmin = false, db = prisma } = {}) {
+    const survey = await db.survey.findUnique({
         where: { id: surveyId },
         select: { userId: true },
     });
@@ -22,7 +22,7 @@ export async function requireSurveyAccess(req, res, surveyId, { allowSuperAdmin 
         return null;
     }
     if (survey.userId === req.tokenId) return survey;
-    if (allowSuperAdmin && await requesterIsSuperAdmin(req)) return survey;
+    if (allowSuperAdmin && await requesterIsSuperAdmin(req, db)) return survey;
     res.status(403).send({ message: 'Unauthorized' });
     return null;
 }
