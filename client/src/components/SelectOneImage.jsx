@@ -10,6 +10,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { uid } from 'uid';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
+import { getUserAccess } from '../utils/userAccess';
 // import rekognition from '../utils/aws-config';
 
 const VisuallyHiddenInput = styled('input')({
@@ -52,7 +53,7 @@ const SelectOneImage = ({ onSaveForm, data, id, options, disableForm, disableTex
   }, [formData]);
 
   useEffect(() => {
-      const local = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess'));
+      const local = getUserAccess();
       console.log(userId, 'userId in CreateNewSurvey');
       setUserId(local);
       

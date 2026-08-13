@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { axiosWithCredentials } from '../utils/customAxios';
 import { errorHandler } from '../utils/errorHandler';
 import { backendUrl } from '../utils/backendUrl';
+import { setUserAccess } from '../utils/userAccess';
 import { Oval } from 'react-loader-spinner';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -49,7 +50,7 @@ export default function Login() {
       setAlertMessage(resp.data.message);
       setAlertColor('success');
       handleClick();
-      localStorage.setItem('dubaiAnalytica-userAccess', JSON.stringify(resp.data));
+      setUserAccess(resp.data);
       setLoading(false);
       navigate('/dashboard');
     } catch (error) {
@@ -65,7 +66,7 @@ export default function Login() {
       setAlertMessage(resp.data.message);
       setAlertColor('success');
       handleClick();
-      localStorage.setItem('dubaiAnalytica-userAccess', JSON.stringify(resp.data));
+      setUserAccess(resp.data);
       navigate('/dashboard');
     } catch (error) {
       errorHandler(error, setAlertMessage, setAlertColor, handleClick);

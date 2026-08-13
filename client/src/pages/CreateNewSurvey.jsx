@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import { backendUrl } from '../utils/backendUrl';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
+import { getUserAccess, clearUserAccess } from '../utils/userAccess';
 import { useNavigate } from 'react-router-dom';
 import TemporaryDrawer from '../components/TempDrawer';
 import SelectSingleRadio from '../components/SelectSingleRadio';
@@ -299,10 +300,10 @@ const CreateNewSurvey = () => {
     const load = async () => {
       try {
         await refreshToken();
-        const userAccess = localStorage.getItem('dubaiAnalytica-userAccess');
+        const user = getUserAccess();
         const [surveyRes, proRes, superAdminRes, zoomRes] = await Promise.all([
           axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`),
-          userAccess ? axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${JSON.parse(userAccess).id}`).catch(() => ({ data: null })) : Promise.resolve({ data: null }),
+          user?.id ? axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${user.id}`).catch(() => ({ data: null })) : Promise.resolve({ data: null }),
           axiosWithAuth.get(`${backendUrl}/api/auth/get-user`).catch(() => ({ data: { isSuperAdmin: false } })),
           axiosWithAuth.get(`${backendUrl}/api/zoom/status`).catch(() => ({ data: { connected: false } })),
         ]);
@@ -331,7 +332,7 @@ const CreateNewSurvey = () => {
         });
       } catch (err) {
         if (err.response?.status === 401) {
-          localStorage.removeItem('dubaiAnalytica-userAccess');
+          clearUserAccess();
           navigate('/login');
           return;
         }
@@ -368,7 +369,7 @@ const CreateNewSurvey = () => {
       setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (err) {
       if (err.response?.status === 401) {
-        localStorage.removeItem('dubaiAnalytica-userAccess');
+        clearUserAccess();
         navigate('/login');
         return;
       }
@@ -490,7 +491,7 @@ const CreateNewSurvey = () => {
       navigate('/dashboard');
     } catch (err) {
       if (err.response?.status === 401) {
-        localStorage.removeItem('dubaiAnalytica-userAccess');
+        clearUserAccess();
         navigate('/login');
       }
     }

@@ -15,6 +15,7 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import HomeNavBar from '../components/HomeNavBar';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
+import { getUserAccess } from '../utils/userAccess';
 
 
 const tiers = [
@@ -78,7 +79,7 @@ const ProductDisplayy = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const userDetails = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess'));
+        const userDetails = getUserAccess();
 
         setEmailId(userDetails?.email);
         setUserId(userDetails?.id);

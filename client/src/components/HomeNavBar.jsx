@@ -9,6 +9,7 @@ import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate,Link } from 'react-router-dom';
+import { getUserAccess } from '../utils/userAccess';
 
 // Updated styles
 const styles = {
@@ -76,8 +77,9 @@ function HomeNavBar() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('dubaiAnalytica-userAccess')) {
-      setUserExists(JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')));
+    const user = getUserAccess();
+    if (user) {
+      setUserExists(user);
     }
   }, []);
   console.log(userExists);

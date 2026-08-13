@@ -313,12 +313,13 @@ export const userRegister = async (req, res, next) => {
                         email: foundUser.email,
                         id: foundUser.id,
                         isAdmin: foundUser.isAdmin,
-                        firstName: foundUser.firstName
+                        firstName: foundUser.firstName,
+                        isSuperAdmin: foundUser.isSuperAdmin,
                     },
                     process.env.ACCESS_TOKEN_SECRET,
                     { expiresIn: '1h' }
                 )
-                res.json({ accessToken, message: "Trefreshed", email: foundUser.email, id: foundUser.id, firstName: foundUser.firstName, isAdmin: foundUser.isAdmin });
+                res.json({ accessToken, message: "Trefreshed", email: foundUser.email, id: foundUser.id, firstName: foundUser.firstName, isAdmin: foundUser.isAdmin, isSuperAdmin: foundUser.isSuperAdmin });
             });
 
     }

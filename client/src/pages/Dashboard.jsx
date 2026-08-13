@@ -3,6 +3,7 @@ import { backendUrl } from '../utils/backendUrl';
 import { useNavigate } from 'react-router-dom';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
+import { getUserAccess, clearUserAccess } from '../utils/userAccess';
 import MySurvery from '../components/MySurvery';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
@@ -27,7 +28,8 @@ const Dashboard = () => {
 
     useEffect(() => {
         const getUserIsProMember = async () => {
-            const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
+            const userId = getUserAccess()?.id;
+            if (!userId) return;
             const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
             const date = new Date();
             const unixTimestamp = Math.floor(date.getTime() / 1000);
@@ -54,7 +56,8 @@ const Dashboard = () => {
                 
                 if (userSurveyData.length > 4) {
                     // Check if user is a pro member before showing warning
-                    const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
+                    const userId = getUserAccess()?.id;
+                    if (!userId) return;
                     const userProMember = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
                     const date = new Date();
                     const unixTimestamp = Math.floor(date.getTime() / 1000);
@@ -76,7 +79,7 @@ const Dashboard = () => {
             }
         } catch (err) {
             if (err.response?.status === 401) {
-                localStorage.removeItem('dubaiAnalytica-userAccess');
+                clearUserAccess();
                 navigate('/login');
             } else if (err.response?.status === 403) {
                 setAlertMessage(err.response.data?.message || 'You can only create 5 surveys with a free account. Please upgrade to premium.');
@@ -102,7 +105,7 @@ const Dashboard = () => {
                 setIsLoading(false);
             } catch (err) {
                 if (err.response.status === 401) {
-                    localStorage.removeItem('dubaiAnalytica-userAccess');
+                    clearUserAccess();
                     navigate('/login');
                 } else {
                     console.log(err);

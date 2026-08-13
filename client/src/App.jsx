@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import { lazy, Suspense } from 'react';
 import TagManager from "react-gtm-module";
 import GoogleAnalytics from './components/GoogleAnalytics';
+import { isUserAuthenticated, isUserSuperAdmin } from './utils/userAccess';
 
 const tagManagerArgs = {
   gtmId: "GTM-MS8JP2FD", // Replace with your actual GTM ID
@@ -57,35 +58,26 @@ const FeaturesHome = lazy(() => import('./pages/FeaturesHome'));
 const ResponseDashboard = lazy(() => import('./pages/ResponseDashboard'));
 const App = () => {
 
-  // Function to check if the user is authenticated
-  const isAuthenticated = () => {
-    return !!localStorage.getItem('dubaiAnalytica-userAccess'); // Change this according to your authentication mechanism
-  };
+  const isAuthenticated = () => isUserAuthenticated();
 
-  const isSuperAdmin = () => {
-    console.log(JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).isSuperAdmin, 'isSuperAdmin in protected routes');
-    return JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).isSuperAdmin; // Change this according to your authentication mechanism
-  };
+  const isSuperAdmin = () => isUserSuperAdmin();
 
-  const SuperAdminProtectedRoute = ({ element, ...rest }) => {
-    if (isSuperAdmin()) {
-      return element;
-    } else {
-      console.log(isSuperAdmin(), 'isSuperAdmin in FINALSprotected routes');
-      console.log('User is not Super Admin');
-      return <Navigate to="/404" />;
-    }
-  };
-
-
-  const ProtectedRoute = ({ element, ...rest }) => {
-    if (isAuthenticated()) {
-      console.log('User is authenticated');
-      return element;
-    } else {
-      console.log('User is not authenticated');
+  const SuperAdminProtectedRoute = ({ element }) => {
+    if (!isAuthenticated()) {
       return <Navigate to="/login" />;
     }
+    if (isSuperAdmin()) {
+      return element;
+    }
+    return <Navigate to="/404" />;
+  };
+
+
+  const ProtectedRoute = ({ element }) => {
+    if (isAuthenticated()) {
+      return element;
+    }
+    return <Navigate to="/login" />;
   };
 
   const router = createBrowserRouter([

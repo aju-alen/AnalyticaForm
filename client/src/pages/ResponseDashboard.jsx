@@ -5,6 +5,7 @@ import theme from '../utils/theme';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
 import { refreshToken } from '../utils/refreshToken';
+import { getUserAccess, clearUserAccess } from '../utils/userAccess';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -203,7 +204,7 @@ const ResponseDashboard = () => {
     } catch (err) {
       console.error(err);
       if (err?.response?.status === 401) {
-        localStorage.removeItem('dubaiAnalytica-userAccess');
+        clearUserAccess();
         navigate('/login');
         return;
       }
@@ -222,7 +223,7 @@ const ResponseDashboard = () => {
       setError('');
       try {
         await refreshToken();
-        const user = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess'));
+        const user = getUserAccess();
         let subscribed = false;
         if (user?.id) {
           try {
@@ -245,7 +246,7 @@ const ResponseDashboard = () => {
       } catch (err) {
         console.error(err);
         if (err?.response?.status === 401) {
-          localStorage.removeItem('dubaiAnalytica-userAccess');
+          clearUserAccess();
           navigate('/login');
           return;
         }
@@ -374,7 +375,7 @@ const ResponseDashboard = () => {
     } catch (err) {
       console.error('Error sending email:', err);
       if (err?.response?.status === 401) {
-        localStorage.removeItem('dubaiAnalytica-userAccess');
+        clearUserAccess();
         navigate('/login');
       } else {
         const errorMessage = err?.response?.data?.message 

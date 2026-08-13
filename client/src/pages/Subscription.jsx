@@ -3,6 +3,7 @@ import { backendUrl } from '../utils/backendUrl';
 import { useNavigate } from 'react-router-dom';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
+import { getUserAccess, clearUserAccess } from '../utils/userAccess';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
 import {
@@ -43,7 +44,11 @@ const Subscription = () => {
   const fetchSubscriptionDetails = async () => {
     try {
       await refreshToken();
-      const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
+      const userId = getUserAccess()?.id;
+      if (!userId) {
+        navigate('/login');
+        return;
+      }
       const response = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-subscription-details/${userId}`);
       
       setSubscriptionData(response.data.subscription);
@@ -53,7 +58,7 @@ const Subscription = () => {
     } catch (err) {
       console.error('Error fetching subscription details:', err);
       if (err.response?.status === 401) {
-        localStorage.removeItem('dubaiAnalytica-userAccess');
+        clearUserAccess();
         navigate('/login');
       } else {
         setSubscriptionData(null);

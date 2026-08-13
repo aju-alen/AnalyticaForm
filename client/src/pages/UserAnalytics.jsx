@@ -18,6 +18,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { Container, Typography } from '@mui/material';
 import { refreshToken } from '../utils/refreshToken';
+import { getUserAccess, clearUserAccess } from '../utils/userAccess';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
 import { useNavigate } from 'react-router-dom';
@@ -107,7 +108,11 @@ export default function UserAnalytics() {
     const getAnalyticsData = async () => {
       try {
         await refreshToken();
-        const userId = JSON.parse(localStorage.getItem('dubaiAnalytica-userAccess')).id;
+        const userId = getUserAccess()?.id;
+        if (!userId) {
+          navigate('/login');
+          return;
+        }
         console.log(userId, 'userId');
         const getAllUserData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-sruvey-from-oneuser/${userId}`);
         setCustomerData(getAllUserData.data);
@@ -125,7 +130,7 @@ export default function UserAnalytics() {
       catch (err) {
         if (err.response.status === 401) {
           console.log('unauthorized');
-          localStorage.removeItem('dubaiAnalytica-userAccess');
+          clearUserAccess();
           navigate('/login');
         }
         else {
