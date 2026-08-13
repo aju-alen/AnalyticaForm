@@ -213,6 +213,22 @@ export const postSingleSurveyDataForUser = async (req, res) => {
         if (surveyMeta.oneResponsePerPerson && existingResponse?.isComplete) {
             return res.status(403).send({ message: 'You have already submitted a response to this survey.' });
         }
+
+        const inviteToken = String(req.body.inviteToken || '').trim();
+        let inviteRecipient = null;
+        if (inviteToken) {
+            inviteRecipient = await prisma.surveyInviteRecipient.findUnique({
+                where: { token: inviteToken },
+                include: { campaign: { select: { surveyId: true } } },
+            });
+            if (inviteRecipient && inviteRecipient.campaign.surveyId === surveyId && !inviteRecipient.unsubscribedAt) {
+                if (inviteRecipient.status === 'completed') {
+                    return res.status(403).send({ message: 'You have already submitted a response to this survey.' });
+                }
+            } else {
+                inviteRecipient = null;
+            }
+        }
         if (!existingResponse) {
             const isOwnerPro = await userHasActiveProSubscription(prisma, surveyMeta.userId);
             const closedReason = getSurveyClosedReason(surveyMeta, { isOwnerPro });
@@ -360,6 +376,12 @@ export const postSingleSurveyDataForUser = async (req, res) => {
             }
         }
         res.cookie(cookieName, savedUserResponse.id, surveyCookieOptions());
+        if (isComplete && inviteRecipient) {
+            await prisma.surveyInviteRecipient.update({
+                where: { id: inviteRecipient.id },
+                data: { status: 'completed', completedAt: new Date() },
+            });
+        }
         const getResponseCount = await prisma.survey.findUnique({
             where:{
                 id:surveyId

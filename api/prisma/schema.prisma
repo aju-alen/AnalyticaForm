@@ -34,6 +34,7 @@ model User {
 
    surveys   Survey[]
    responsePurchases ResponsePurchase[]
+   surveyContacts SurveyContact[]
 
    proMember ProMember?
    refundRequests RefundRequest[]
@@ -102,6 +103,7 @@ model Survey {
   userId    String      // Field to store the user id
 
   responses UserSurveyResponse[]
+  inviteCampaigns SurveyInviteCampaign[]
 }
 
 model UserSurveyResponse{
@@ -244,4 +246,57 @@ model RefundRequest {
 
   @@index([userId])
   @@index([proMemberId])
+}
+
+model SurveyContact {
+  id              String    @id @default(cuid())
+  userId          String
+  email           String
+  name            String?
+  unsubscribedAt  DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, email])
+  @@index([userId])
+}
+
+model SurveyInviteCampaign {
+  id                  String   @id @default(cuid())
+  surveyId            String
+  subject             String   @db.VarChar(120)
+  message             String   @default("") @db.VarChar(2000)
+  status              String   @default("queued")
+  reminderAfterHours  Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  survey     Survey                   @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  recipients SurveyInviteRecipient[]
+
+  @@index([surveyId, createdAt])
+}
+
+model SurveyInviteRecipient {
+  id              String    @id @default(cuid())
+  campaignId      String
+  email           String
+  name            String?
+  token           String    @unique @db.VarChar(64)
+  status          String    @default("queued")
+  errorMessage    String?   @db.VarChar(191)
+  sentAt          DateTime?
+  openedAt        DateTime?
+  completedAt     DateTime?
+  remindedAt      DateTime?
+  unsubscribedAt  DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  campaign SurveyInviteCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId, status])
+  @@index([email, campaignId])
 }

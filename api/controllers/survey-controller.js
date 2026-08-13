@@ -1,33 +1,7 @@
 import { prisma } from '../utils/prisma.js'
 import { FREE_SURVEY_LIMIT, userHasActiveProSubscription } from '../utils/planLimits.js'
+import { requesterIsSuperAdmin, requireSurveyAccess } from '../utils/surveyAccess.js'
 import bcrypt from 'bcrypt';
-
-const isTruthyFlag = (value) => value === true || value === 'true';
-
-async function requesterIsSuperAdmin(req) {
-    if (isTruthyFlag(req.tokenSuperAdmin)) return true;
-    if (req.tokenSuperAdmin === false || req.tokenSuperAdmin === 'false') return false;
-    const user = await prisma.user.findUnique({
-        where: { id: req.tokenId },
-        select: { isSuperAdmin: true },
-    });
-    return Boolean(user?.isSuperAdmin);
-}
-
-async function requireSurveyAccess(req, res, surveyId, { allowSuperAdmin = false } = {}) {
-    const survey = await prisma.survey.findUnique({
-        where: { id: surveyId },
-        select: { userId: true },
-    });
-    if (!survey) {
-        res.status(404).send({ message: 'Survey not found' });
-        return null;
-    }
-    if (survey.userId === req.tokenId) return survey;
-    if (allowSuperAdmin && await requesterIsSuperAdmin(req)) return survey;
-    res.status(403).send({ message: 'Unauthorized' });
-    return null;
-}
 
 export const createNewSurvey = async (req, res) => {
     const { surveyTitle } = req.body;

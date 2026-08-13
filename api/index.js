@@ -17,6 +17,7 @@ import sendSurveyCountRoute from './routes/survey-count-route.js';
 import driPdfRoute from './routes/dri-pdf-route.js';
 import mtcRoute from './routes/mtcm-route.js';
 import zoomRoute from './routes/zoom-route.js';
+import surveyInviteRoute from './routes/survey-invite.route.js';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { htmlMessage,healthCheckMessage } from './utils/static/static-data.js';
@@ -24,6 +25,7 @@ import { dynamicMetaHtml } from './controllers/dynamic-html-preview-controller.j
 import cron from 'node-cron';
 import { runDefenceReadinessResponseEmails } from './jobs/defenceReadinessResponseEmails.js';
 import { runExpireZoomMeetings } from './jobs/expireZoomMeetings.js';
+import { runSurveyInviteSends, runSurveyInviteReminders } from './jobs/surveyInviteJobs.js';
 import chalk from 'chalk';
 import compression from 'compression';
 import helmet from 'helmet';
@@ -66,6 +68,7 @@ app.use('/api/google-vertex', vertexGoogleApi)
 app.use('/api/dri', driPdfRoute)
 app.use('/api/mtcm', mtcRoute)
 app.use('/api/zoom', zoomRoute)
+app.use('/api/survey-invites', surveyInviteRoute)
 app.get('/survey-meta/:surveyId', dynamicMetaHtml)
 
 
@@ -88,6 +91,16 @@ app.listen(PORT, () => {
   cron.schedule('*/10 * * * *', () => {
     runExpireZoomMeetings().catch((err) =>
       console.error('[cron] expireZoomMeetings:', err?.message || err)
+    );
+  });
+  cron.schedule('* * * * *', () => {
+    runSurveyInviteSends().catch((err) =>
+      console.error('[cron] surveyInviteSends:', err?.message || err)
+    );
+  });
+  cron.schedule('*/15 * * * *', () => {
+    runSurveyInviteReminders().catch((err) =>
+      console.error('[cron] surveyInviteReminders:', err?.message || err)
     );
   });
   console.log(chalk.blue.bgRed.bold('Cron: Defence readiness response emails every 1 minute'));

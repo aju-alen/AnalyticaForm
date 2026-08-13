@@ -506,6 +506,26 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
             Analytics
           </MenuItem>
           <MenuItem 
+            onClick={() => {
+              handleCloseMenu();
+              if (!isSubscribed) {
+                setPricingDialogOpen(true);
+                return;
+              }
+              navigate(`/dashboard/invites/${surveyId}`);
+            }}
+            sx={{ 
+              py: 1.5,
+              px: 2.5,
+              '&:hover': {
+                bgcolor: alpha(primaryColor, 0.08),
+                color: primaryColor
+              }
+            }}
+          >
+            Email invitations
+          </MenuItem>
+          <MenuItem 
             onClick={() => handleDeleteOpen(surveyId)}
             sx={{ 
               py: 1.5,

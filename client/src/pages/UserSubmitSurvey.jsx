@@ -65,6 +65,7 @@ const UserSubmitSurvey = () => {
     const continueResponseId = (searchParams.get('responseId') || '').trim();
     const continueDriFlag = (searchParams.get('continueDri') || '').trim();
     const isPreview = searchParams.get('preview') === '1';
+    const inviteToken = (searchParams.get('invite') || '').trim();
     const progressStorageKey = `da-progress-${surveyId}`;
     const passwordStorageKey = `da-survey-pw-${surveyId}`;
     const isDriContinueSession =
@@ -257,6 +258,7 @@ const UserSubmitSurvey = () => {
                     isComplete: false,
                     skipZoom: true,
                     accessPassword: surveyPassword || undefined,
+                    inviteToken: inviteToken || undefined,
                 },
                 submitRequestConfig()
             );
@@ -464,6 +466,7 @@ const UserSubmitSurvey = () => {
                 isComplete: false,
                 responseId: isDriContinueSession ? continueResponseId : (savedResponseId || undefined),
                 accessPassword: surveyPassword || undefined,
+                inviteToken: inviteToken || undefined,
             };
 
             if (isPreview) {
@@ -858,6 +861,7 @@ const UserSubmitSurvey = () => {
                 responseId: isDriContinueSession ? continueResponseId : (savedResponseId || undefined),
                 isComplete: true,
                 accessPassword: surveyPassword || undefined,
+                inviteToken: inviteToken || undefined,
             }
             console.log(finalData, 'finalData');
 
@@ -1010,6 +1014,11 @@ const UserSubmitSurvey = () => {
         }
         checkIfUserViewedSurvey();
     }, [isPreview, surveyId]);
+
+    useEffect(() => {
+        if (!inviteToken || isPreview) return;
+        axios.get(`${backendUrl}/api/survey-invites/track/${encodeURIComponent(inviteToken)}`).catch(() => {});
+    }, [inviteToken, isPreview]);
 
     useEffect(() => {
         if (!isDefenceReadinessSurvey || introduction || driInterimSubmitted || isDriContinueSession) {
