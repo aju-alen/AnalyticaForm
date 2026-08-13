@@ -1337,14 +1337,31 @@ const UserSubmitSurvey = () => {
                                     ? `${currentAnswerableCount} of ${totalAnswerable} answered`
                                     : `${Math.min(currentAnswerableCount, totalAnswerable) || 0} of ${totalAnswerable}`}
                             </Typography>
+                            {isPreview && (
+                                <Typography variant="caption" color="text.secondary">
+                                    Preview only — answers are not saved
+                                </Typography>
+                            )}
                         </Stack>
                         <LinearProgress variant="determinate" value={progressPercent} />
                     </Box>
                 )}
-                {isPreview && (
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-11/12 max-w-xl">
-                        <Alert severity="info">Preview only — answers are not saved.</Alert>
-                    </div>
+                {isPreview && !showProgress && (
+                    <Box sx={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1300,
+                        bgcolor: '#fff',
+                        px: 2,
+                        py: 1,
+                        borderBottom: '1px solid #e2e8f0',
+                    }}>
+                        <Typography variant="caption" color="text.secondary">
+                            Preview only — answers are not saved
+                        </Typography>
+                    </Box>
                 )}
                 {previewBlocked && (
                     <h1 className=' font-bold text-blue-500 text-xl'>Log in to preview this survey.</h1>
