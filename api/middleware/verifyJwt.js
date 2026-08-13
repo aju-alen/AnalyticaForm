@@ -25,6 +25,7 @@ export const verifyJwt = (req, res, next) => {
         req.tokenId = decoded.id;
         req.tokenFirstName = decoded.firstName;
         req.tokenAdmin = decoded.isAdmin;
+        req.tokenSuperAdmin = decoded.isSuperAdmin;
         next();
     });
 };

@@ -75,9 +75,13 @@ const Dashboard = () => {
                 navigate(`/dashboard/create-survey/${surveyResp.data.newSurvey.id}`, { state: { surveyName: inputText } });
             }
         } catch (err) {
-            if (err.response.status === 401) {
+            if (err.response?.status === 401) {
                 localStorage.removeItem('dubaiAnalytica-userAccess');
                 navigate('/login');
+            } else if (err.response?.status === 403) {
+                setAlertMessage(err.response.data?.message || 'You can only create 5 surveys with a free account. Please upgrade to premium.');
+                setAlertColor('warning');
+                setOpen(true);
             } else {
                 console.log(err);
             }

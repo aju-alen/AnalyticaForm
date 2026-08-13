@@ -1,11 +1,51 @@
 import { PrismaClient } from '@prisma/client'
+import { FREE_SURVEY_LIMIT, userHasActiveProSubscription } from '../utils/planLimits.js'
 const prisma = new PrismaClient();
+
+const isTruthyFlag = (value) => value === true || value === 'true';
+
+async function requesterIsSuperAdmin(req) {
+    if (isTruthyFlag(req.tokenSuperAdmin)) return true;
+    if (req.tokenSuperAdmin === false || req.tokenSuperAdmin === 'false') return false;
+    const user = await prisma.user.findUnique({
+        where: { id: req.tokenId },
+        select: { isSuperAdmin: true },
+    });
+    return Boolean(user?.isSuperAdmin);
+}
+
+async function requireSurveyAccess(req, res, surveyId, { allowSuperAdmin = false } = {}) {
+    const survey = await prisma.survey.findUnique({
+        where: { id: surveyId },
+        select: { userId: true },
+    });
+    if (!survey) {
+        res.status(404).send({ message: 'Survey not found' });
+        return null;
+    }
+    if (survey.userId === req.tokenId) return survey;
+    if (allowSuperAdmin && await requesterIsSuperAdmin(req)) return survey;
+    res.status(403).send({ message: 'Unauthorized' });
+    return null;
+}
 
 export const createNewSurvey = async (req, res) => {
     const { surveyTitle } = req.body;
     const userId = req.tokenId;
     console.log(surveyTitle, req.tokenId, 'req.body');
     try {
+        const surveyCount = await prisma.survey.count({
+            where: { userId },
+        });
+        if (surveyCount >= FREE_SURVEY_LIMIT) {
+            const isPro = await userHasActiveProSubscription(prisma, userId);
+            if (!isPro) {
+                return res.status(403).send({
+                    message: 'You can only create 5 surveys with a free account. Please upgrade to premium.',
+                });
+            }
+        }
+
         const newSurvey = await prisma.survey.create({
             data: {
                 surveyTitle,
@@ -54,6 +94,9 @@ export const getUserSurvey = async (req, res) => {
 export const getSurveyById = async (req, res) => {
     const surveyId = req.params.surveyId;
     try {
+        const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+        if (!access) return;
+
         const getSurvey = await prisma.survey.findUnique({
             where: {
                 id: surveyId
@@ -88,6 +131,9 @@ export const updateSurveyById = async (req, res) => {
     const surveyId = req.params.surveyId;
     console.log(req.body, 'req.body in update');
     try {
+        const access = await requireSurveyAccess(req, res, surveyId);
+        if (!access) return;
+
         const updateSurvey = await prisma.survey.update({
             where: {
                 id: surveyId
@@ -116,6 +162,8 @@ export const getAllSurveyResponse = async (req, res) => {
     const {surveyId,isSubscribed} = req.params;
     
     try {
+        const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+        if (!access) return;
 
         const getAllResponse = await prisma.userSurveyResponse.findMany({
             where: {
@@ -148,6 +196,9 @@ export const getSurveyResponsesPaginated = async (req, res) => {
     const skip = (page - 1) * limit;
 
     try {
+        const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+        if (!access) return;
+
         const surveyDetails = await prisma.survey.findUnique({
             where: { id: surveyId },
             select: { surveyTitle: true, surveyStatus: true }
@@ -223,6 +274,9 @@ export const getSurveyResponsesPaginated = async (req, res) => {
 export const getAllSurveyOfOneUser = async (req, res) => {
     try{
         const userId = req.params.userId;
+        if (userId !== req.tokenId && !(await requesterIsSuperAdmin(req))) {
+            return res.status(403).send({ message: 'Unauthorized' });
+        }
         const getAllSurvey = await prisma.survey.findMany({
             where: {
                 userId
@@ -280,17 +334,9 @@ export const deleteUserSurvey = async (req, res) => {
     console.log(surveyId, 'surveyId');
     console.log(req.tokenId,'req.tokenId');
     try{
-        const confirmUserIsOwner = await prisma.survey.findUnique({
-            where:{
-                id:surveyId
-            },
-            select:{
-                userId:true
-            }
-        });
-        if(confirmUserIsOwner.userId !== req.tokenId){
-            return res.status(403).send({message:'Unauthorized'});
-        }
+        const access = await requireSurveyAccess(req, res, surveyId);
+        if (!access) return;
+
         const deleteUserResponse = await prisma.userSurveyResponse.deleteMany({
             where:{
                 surveyId:surveyId
@@ -314,6 +360,9 @@ export const deleteUserSurvey = async (req, res) => {
 export const updateUserStatus = async (req, res) => {
     const surveyId = req.params.surveyId;
     try {
+        const access = await requireSurveyAccess(req, res, surveyId);
+        if (!access) return;
+
         const updateStatus = await prisma.survey.update({
             where: {
                 id: surveyId
@@ -334,6 +383,9 @@ export const updateUserStatus = async (req, res) => {
 export const getIpOfSingleSurvey = async (req, res) => {
     const {surveyId} = req.params;
     try{
+        const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+        if (!access) return;
+
         const getIpOfOneSurvey = await prisma.userSurveyResponse.findMany({
             where:{
                 surveyId,

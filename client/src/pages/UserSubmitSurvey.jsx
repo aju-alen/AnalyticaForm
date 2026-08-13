@@ -387,8 +387,10 @@ const UserSubmitSurvey = () => {
             setZoomInterviewExit(false);
             setSnackbar({
                 open: true,
-                message: 'Could not save interview consent. Please try again.',
-                severity: 'error',
+                message: err.response?.status === 403
+                    ? (err.response.data?.message || 'This survey has exceeded its allotted responses. Please contact the host.')
+                    : 'Could not save interview consent. Please try again.',
+                severity: err.response?.status === 403 ? 'warning' : 'error',
             });
         } finally {
             setIsSubmittingResponse(false);
@@ -764,6 +766,13 @@ const UserSubmitSurvey = () => {
         }
         catch (err) {
             console.log(err);
+            if (err.response?.status === 403) {
+                setSnackbar({
+                    open: true,
+                    message: err.response.data?.message || 'This survey has exceeded its allotted responses. Please contact the host.',
+                    severity: 'warning',
+                });
+            }
         }
         finally {
             setIsSubmittingResponse(false);
@@ -1983,13 +1992,13 @@ const UserSubmitSurvey = () => {
         />
             <CssBaseline />
             <div className=" flex justify-center items-center h-screen">
-                {(surveyData.surveyResponses > 500) && (<h1 className=' font-bold text-blue-500 text-xl'> This survey has exceeded it's alloted responses. Please contact host.</h1>)}
+                {((surveyData.responseLimitReached ?? surveyData.surveyResponses > 500)) && (<h1 className=' font-bold text-blue-500 text-xl'> This survey has exceeded it's alloted responses. Please contact host.</h1>)}
 
               
 
                 {(surveyData.surveyStatus === 'Disable') ? (<h1 className=' font-bold text-blue-500 text-xl'> This survey is not active. Please contact host.</h1>) : null}
 
-                {(introduction && welcomePage && surveyData.surveyResponses <= 500 && surveyData.surveyStatus==='Active') && (
+                {(introduction && welcomePage && !(surveyData.responseLimitReached ?? surveyData.surveyResponses > 500) && surveyData.surveyStatus==='Active') && (
                <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 p-4">
                <motion.div 
                  initial={{ opacity: 0, y: 20 }}

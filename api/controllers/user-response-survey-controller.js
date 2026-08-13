@@ -7,7 +7,13 @@ import { sendZoomInterviewAuthorEmail } from '../utils/zoomInterviewAuthorEmail.
 import { generateFullSummaryFromFifty } from '../utils/dri-50-summary.js';
 import { shouldCreateZoomForResponse } from '../utils/consentProgress.js';
 import { createZoomMeetingForHost, getValidZoomAccessToken } from '../utils/zoomApi.js';
+import { FREE_RESPONSE_LIMIT, userHasActiveProSubscription } from '../utils/planLimits.js';
 const prisma = new PrismaClient();
+
+async function surveyHasReachedFreeResponseLimit(survey) {
+    if (!survey || survey.surveyResponses < FREE_RESPONSE_LIMIT) return false;
+    return !(await userHasActiveProSubscription(prisma, survey.userId));
+}
 
 const SUPPORTED_COUNTRY_CODES = new Set(['AE', 'SA', 'CN', 'UK', 'US', 'QA', 'IN']);
 
@@ -35,7 +41,11 @@ export const getSingleSurveyDataForUser = async (req, res) => {
             where:{
                 id:surveyId
             }});
-        res.status(200).json(getSurveyData);
+        if (!getSurveyData) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+        const responseLimitReached = await surveyHasReachedFreeResponseLimit(getSurveyData);
+        res.status(200).json({ ...getSurveyData, responseLimitReached });
     }catch(err){
         console.log(err);
         res.status(500).send({message:'Internal server error'});
@@ -66,6 +76,9 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 targetCountries: true,
             }
         });
+        if (!getCountryDataFromSurvey) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
         let ipAddress;
         const targetCodes = resolveTargetCountryCodes(getCountryDataFromSurvey);
 
@@ -84,8 +97,28 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 surveyTitle: true,
                 surveyForms: true,
                 userId: true,
+                surveyResponses: true,
             },
         });
+        if (!surveyMeta) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+
+        const requestedResponseId = String(req.body.responseId || '').trim();
+        let existingResponse = null;
+        if (requestedResponseId) {
+            existingResponse = await prisma.userSurveyResponse.findFirst({
+                where: {
+                    id: requestedResponseId,
+                    surveyId,
+                },
+            });
+        }
+        if (!existingResponse && await surveyHasReachedFreeResponseLimit(surveyMeta)) {
+            return res.status(403).send({
+                message: 'This survey has exceeded its allotted responses. Please contact the host.',
+            });
+        }
 
         let userResponsePayload = Array.isArray(req.body.userResponse)
             ? req.body.userResponse
@@ -162,33 +195,23 @@ export const postSingleSurveyDataForUser = async (req, res) => {
             }
         }
 
-        const requestedResponseId = String(req.body.responseId || '').trim();
         let savedUserResponse;
         let isUpdate = false;
 
-        if (requestedResponseId) {
-            const existingResponse = await prisma.userSurveyResponse.findFirst({
-                where: {
-                    id: requestedResponseId,
-                    surveyId,
+        if (existingResponse) {
+            savedUserResponse = await prisma.userSurveyResponse.update({
+                where: { id: requestedResponseId },
+                data: {
+                    userResponse: userResponsePayload,
+                    userName:req.body.userName,
+                    userEmail:req.body.userEmail,
+                    formQuestions:req.body.formQuestions,
+                    introduction:req.body.introduction,
+                    ipAddress:ipAddress,
+                    userTimeSpent:req.body.userTimeSpent,
                 },
             });
-
-            if (existingResponse) {
-                savedUserResponse = await prisma.userSurveyResponse.update({
-                    where: { id: requestedResponseId },
-                    data: {
-                        userResponse: userResponsePayload,
-                        userName:req.body.userName,
-                        userEmail:req.body.userEmail,
-                        formQuestions:req.body.formQuestions,
-                        introduction:req.body.introduction,
-                        ipAddress:ipAddress,
-                        userTimeSpent:req.body.userTimeSpent,
-                    },
-                });
-                isUpdate = true;
-            }
+            isUpdate = true;
         }
 
         if (!savedUserResponse) {
@@ -408,6 +431,19 @@ export const postDefenceReadinessInterimSummaryForUser = async (req, res) => {
                     code: 'DRI_EMAIL_ALREADY_USED',
                 });
             }
+        }
+
+        const driSurvey = await prisma.survey.findUnique({
+            where: { id: surveyId },
+            select: { userId: true, surveyResponses: true },
+        });
+        if (!driSurvey) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+        if (await surveyHasReachedFreeResponseLimit(driSurvey)) {
+            return res.status(403).send({
+                message: 'This survey has exceeded its allotted responses. Please contact the host.',
+            });
         }
 
         const createUserResponse = await prisma.userSurveyResponse.create({
