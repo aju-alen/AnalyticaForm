@@ -25,8 +25,7 @@ import theme from '../utils/theme';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { dropDownTemplate } from '../utils/templateData';
-import { checkBoxTemplate } from '../utils/templateData';
+import { dropDownTemplate, checkBoxTemplate, cloneTemplateWithFreshIds } from '../utils/templateData';
 import Collapse from '@mui/material/Collapse';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -348,10 +347,14 @@ const CreateNewSurvey = () => {
         const surveyForms = [newForm, ...forms];
         return { ...prev, surveyForms };
       });
-    } else if (item === 'DropDownTemplateForm') {
-      setSurveyData(prev => ({ ...prev, surveyForms: dropDownTemplate }));
-    } else if (item === 'CheckBoxTemplateForm') {
-      setSurveyData(prev => ({ ...prev, surveyForms: checkBoxTemplate }));
+    } else if (item === 'DropDownTemplateForm' || item === 'CheckBoxTemplateForm') {
+      const template = item === 'DropDownTemplateForm' ? dropDownTemplate : checkBoxTemplate;
+      const cloned = cloneTemplateWithFreshIds(template);
+      setSelectedItems((prev) => [...prev, ...cloned.map((form) => form.formType)]);
+      setSurveyData((prev) => ({
+        ...prev,
+        surveyForms: [...(prev.surveyForms ?? []), ...cloned],
+      }));
     } else if (CONSENT_FORM_TYPES.has(item)) {
       setSelectedItems(prev => [...prev, item]);
       setSurveyData(prev => {

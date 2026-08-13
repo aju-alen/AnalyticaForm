@@ -1,3 +1,17 @@
+import { uid } from 'uid';
+
+export function cloneTemplateWithFreshIds(template) {
+  return template.map((form) => ({
+    ...form,
+    id: uid(5),
+    options: (form.options ?? []).map((opt) => ({
+      ...opt,
+      id: uid(5),
+    })),
+    selectedValue: (form.selectedValue ?? []).map((sv) => ({ ...sv })),
+  }));
+}
+
 export const dropDownTemplate = [
     {
         "id": "e007d",
