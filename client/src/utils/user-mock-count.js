@@ -29,6 +29,11 @@ export const Region = [
         "region": "China",
         "populationPercent": 6,
     },
+    {
+        "id": 7,
+        "region": "India",
+        "populationPercent": 8,
+    },
     
 ]
 
@@ -82,6 +87,11 @@ export const Industries = [
         "id": 10,
         "industry": "Aviation",
         "industryPercent": 3,
+    },
+    {
+        "id": 11,
+        "industry": "FMCG",
+        "industryPercent": 5,
     },
 ]
 

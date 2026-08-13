@@ -6,7 +6,12 @@ import { loadResponsesForExport, writeWorkbookToResponse } from '../utils/survey
 
 // Function to extract form questions
 const extractFormQuestions = (data) => {
-    return data[data.length - 1].formQuestions;
+    for (let i = data.length - 1; i >= 0; i -= 1) {
+        if (Array.isArray(data[i]?.formQuestions) && data[i].formQuestions.length) {
+            return data[i].formQuestions;
+        }
+    }
+    return [];
 };
 
 // Function to create headers and sub-headers dynamically
@@ -16,7 +21,9 @@ const createHeadersAndSubHeaders = (formQuestions) => {
     const questionMap = [];
 
     formQuestions.forEach(formQuestion => {
+        if (!formQuestion || typeof formQuestion !== 'object') return;
         Object.entries(formQuestion).forEach(([key, values]) => {
+            if (!Array.isArray(values)) return;
             const validValues = values.filter(value => value !== null);
             const repeatCount = validValues.length > 0 ? validValues.length : 1;
 
@@ -91,14 +98,57 @@ const styleUserRow = (userRow) => {
 
 // Helper function to find header index and update responses
 const processResponse = (headers, subHeaders, response, selected, userResponses) => {
-
-    const headerIndex = headers.indexOf(response.question);
-    const subHeaderIndex = subHeaders.findIndex((header, index) => 
-        header.includes(selected.question) && index >= headerIndex
-    );
-    if (subHeaderIndex !== -1) {
-        userResponses[subHeaderIndex - 4] = selected.answer;
+    const answer = selected.answer ?? selected.value ?? '';
+    const selectedLabel = String(selected.question || '').trim();
+    let headerIndex = headers.indexOf(response.question);
+    if (headerIndex === -1 && response.question) {
+        headerIndex = headers.findIndex((header) => typeof header === 'string' && header.includes(response.question));
     }
+    if (headerIndex === -1) return;
+
+    if (!selectedLabel) {
+        userResponses[headerIndex - 4] = answer;
+        return;
+    }
+
+    const subHeaderIndex = subHeaders.findIndex((header, index) => {
+        if (index < headerIndex) return false;
+        const sub = String(header || '');
+        return sub === selectedLabel || sub.includes(selectedLabel);
+    });
+    if (subHeaderIndex !== -1) {
+        userResponses[subHeaderIndex - 4] = answer;
+        return;
+    }
+    userResponses[headerIndex - 4] = answer;
+};
+
+const fillTypedTextAnswer = (typeHeader, headers, subHeaders, response, selected, userResponses) => {
+    const answer = selected.answer ?? selected.value ?? '';
+    const selectedLabel = String(selected.question || response.question || '').trim();
+    const indices = [];
+    headers.forEach((header, index) => {
+        if (header === typeHeader) indices.push(index);
+    });
+    if (!indices.length && response.question) {
+        headers.forEach((header, index) => {
+            if (header === response.question) indices.push(index);
+        });
+    }
+    if (!indices.length) return;
+
+    for (const i of indices) {
+        const sub = String(subHeaders[i] || '');
+        if (!sub.trim()) {
+            userResponses[i - 4] = answer;
+            return;
+        }
+        if (selectedLabel && (sub === selectedLabel || sub.includes(selectedLabel) || selectedLabel.includes(sub))) {
+            userResponses[i - 4] = answer;
+            return;
+        }
+    }
+    userResponses[indices[0] - 4] = answer;
 };
 
 const CONSENT_HEADER_BY_TYPE = {
@@ -188,16 +238,24 @@ const formTypeHandlers = {
 
     SingleCheckForm: (headers, subHeaders, response, selected, userResponses) => {
         const isOther = selected.value === '__OTHER__' || selected.id === 'other';
-        const subLabel = isOther ? 'Other' : (selected.rowQuestion ?? selected.answer ?? '');
+        const subLabel = isOther ? 'Other' : String(selected.rowQuestion || selected.answer || selected.value || '').trim();
         const matchingHeaderIndices = headers.reduce((indices, header, index) => {
             if (header === response.question) indices.push(index);
             return indices;
         }, []);
 
         for (const headerIndex of matchingHeaderIndices) {
-            if (subHeaders[headerIndex] === subLabel || (!isOther && subHeaders[headerIndex].includes(subLabel))) {
+            const sub = String(subHeaders[headerIndex] || '');
+            if (sub && (sub === subLabel || (subLabel && sub.includes(subLabel)))) {
                 userResponses[headerIndex - 4] = selected.answer;
-                break;
+                return;
+            }
+        }
+        for (const headerIndex of matchingHeaderIndices) {
+            const sub = String(subHeaders[headerIndex] || '');
+            if (!sub.trim() && !userResponses[headerIndex - 4]) {
+                userResponses[headerIndex - 4] = selected.answer;
+                return;
             }
         }
     },
@@ -223,43 +281,13 @@ const formTypeHandlers = {
     DynamicQualitativeConsentForm: fillConsentAnswer,
 
     CommentBoxForm: (headers, subHeaders, response, selected, userResponses) => {
-        console.log('insidedede');
-        
-        const matchingHeaderIndices = subHeaders.reduce((indices, subHeader, index) => {            
-
-            if (subHeader === response.selectedValue[0].question && headers[index] === 'Comment Box') indices.push(index);
-            return indices;
-        }, []);
-        
-        console.log(matchingHeaderIndices,'matchingHeaderIndices in CommentBoxForm');
-        
-
-        // Find the correct header-subheader pair
-        for (const headerIndex of matchingHeaderIndices) { 
-            if (subHeaders[headerIndex].includes(selected.question)) {
-                userResponses[headerIndex - 4] = selected.answer;
-                break;
-            }
-        }
+        fillTypedTextAnswer('Comment Box', headers, subHeaders, response, selected, userResponses);
     },
     SingleRowTextForm: (headers, subHeaders, response, selected, userResponses) => {
-        
-        const matchingHeaderIndices = subHeaders.reduce((indices, subHeader, index) => {            
-
-            if (subHeader === response.selectedValue[0].question && headers[index] === 'Single Row Text') indices.push(index);
-            return indices;
-        }, []);
-        
-        console.log(matchingHeaderIndices,'matchingHeaderIndices in rowText');
-        
-
-        // Find the correct header-subheader pair
-        for (const headerIndex of matchingHeaderIndices) { 
-            if (subHeaders[headerIndex].includes(selected.question)) {
-                userResponses[headerIndex - 4] = selected.answer;
-                break;
-            }
-        }
+        fillTypedTextAnswer('Single Row Text', headers, subHeaders, response, selected, userResponses);
+    },
+    EmailAddressForm: (headers, subHeaders, response, selected, userResponses) => {
+        fillTypedTextAnswer('Email Address', headers, subHeaders, response, selected, userResponses);
     },
 
     MultiScaleCheckBox: (headers, subHeaders, response, selected, userResponses) => {
@@ -272,7 +300,9 @@ const formTypeHandlers = {
     },
 
     SelectDropDownForm: (headers, subHeaders, response, selected, userResponses) => {
-        const headerIndex = headers.findIndex(header => header.includes(response.question));
+        const question = String(response.question || '').trim();
+        if (!question) return;
+        const headerIndex = headers.findIndex((header) => header === question || (typeof header === 'string' && header.includes(question)));
         if (headerIndex !== -1) {
             userResponses[headerIndex - 4] = selected.answer;
         }
@@ -311,7 +341,7 @@ const createAnalyticsData = (data) => {
             if (!analytics[question]) {
                 analytics[question] = {};
             }
-            response.selectedValue.forEach(selected => {
+            (response.selectedValue || []).forEach(selected => {
                 if (!analytics[question][selected.answer]) {
                     analytics[question][selected.answer] = 0;
                 }
@@ -542,17 +572,27 @@ const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
                 }
             }
             else if (response.formType === "SingleCheckForm") {
-                
+                const rowLabel = String(selected.rowQuestion || selected.answer || selected.value || '').trim();
                 const matchingHeaderIndices = headers.reduce((indices, header, index) => {
                     if (header === response.question) {
                         indices.push(index);
                     }
                     return indices;
                 }, []);
-                
+
                 for (const headerIndex of matchingHeaderIndices) {
-                    
-                    if (subHeaders[headerIndex].includes(selected.rowQuestion)) {
+                    const sub = String(subHeaders[headerIndex] || '');
+                    if (sub && rowLabel && (sub === rowLabel || sub.includes(rowLabel))) {
+                        userResponses[headerIndex - 4] = selected.index;
+                        break;
+                    }
+                }
+                if (matchingHeaderIndices.some((headerIndex) => userResponses[headerIndex - 4] !== '')) {
+                    return;
+                }
+                for (const headerIndex of matchingHeaderIndices) {
+                    const sub = String(subHeaders[headerIndex] || '');
+                    if (!sub.trim() && !userResponses[headerIndex - 4]) {
                         userResponses[headerIndex - 4] = selected.index;
                         break;
                     }
@@ -588,7 +628,9 @@ const createUserRowIndex = (user, subHeaders, headers, questionMap) => {
                 }
             }
             else if(response.formType === "SelectDropDownForm"){
-                const headerIndex = headers.findIndex(header => header.includes(response.question));    
+                const question = String(response.question || '').trim();
+                if (!question) return;
+                const headerIndex = headers.findIndex((header) => header === question || (typeof header === 'string' && header.includes(question)));
                 if (headerIndex !== -1) {
                     userResponses[headerIndex - 4] = selected.index;
                 }
@@ -626,7 +668,7 @@ const createAnalyticsDataIndex = (data) => {
             if (!analytics[question]) {
                 analytics[question] = {};
             }
-            response.selectedValue.forEach(selected => {
+            (response.selectedValue || []).forEach(selected => {
                 const index = selected.index;
                 if (!analytics[question][index]) {
                     analytics[question][index] = 0;

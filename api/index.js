@@ -18,6 +18,7 @@ import driPdfRoute from './routes/dri-pdf-route.js';
 import mtcRoute from './routes/mtcm-route.js';
 import zoomRoute from './routes/zoom-route.js';
 import surveyInviteRoute from './routes/survey-invite.route.js';
+import aiSurveyRoute from './routes/ai-survey.route.js';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { htmlMessage,healthCheckMessage } from './utils/static/static-data.js';
@@ -69,6 +70,7 @@ app.use('/api/dri', driPdfRoute)
 app.use('/api/mtcm', mtcRoute)
 app.use('/api/zoom', zoomRoute)
 app.use('/api/survey-invites', surveyInviteRoute)
+app.use('/api/ai-survey', aiSurveyRoute)
 app.get('/survey-meta/:surveyId', dynamicMetaHtml)
 
 

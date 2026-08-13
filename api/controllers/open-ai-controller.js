@@ -59,10 +59,9 @@ let generativeModel = null;
 const getGenerativeModel = async () => {
   if (!vertex_ai) {
     vertex_ai = await initVertexAI();
-    
-    // Create a more appropriate system instruction
+  }
+  if (!generativeModel) {
     const systemInstruction = {text: vertexContextData};
-    
     generativeModel = vertex_ai.preview.getGenerativeModel({
       model: process.env.VERTEX_AI_MODEL || 'gemini-pro',
       generationConfig: {
@@ -80,6 +79,67 @@ const getGenerativeModel = async () => {
     });
   }
   return generativeModel;
+};
+
+let surveyBuilderModel = null;
+
+const SURVEY_BUILDER_INSTRUCTION = `You generate survey drafts for Dubai Analytica.
+Return ONLY JSON. No markdown, no commentary.
+Schema:
+{
+  "surveyTitle": "string",
+  "questions": [
+    {
+      "formType": "SinglePointForm|SingleCheckForm|SelectDropDownForm|CommentBoxForm|SingleRowTextForm|EmailAddressForm|StarRatingForm|SmileyRatingForm|ThumbUpDownForm|DateTimeForm|PresentationTextForm|SectionHeadingForm",
+      "question": "string",
+      "choices": ["string"],
+      "formMandate": true
+    }
+  ]
+}
+Rules:
+- Use only those formType values.
+- SinglePointForm, SingleCheckForm, and SelectDropDownForm MUST include 2-8 choices.
+- Other types omit choices or use [].
+- At most 25 questions.
+- Prefer a mix of closed and open questions matching the user's brief.
+- English unless the user asks otherwise.`;
+
+const getSurveyBuilderModel = async () => {
+  if (!vertex_ai) {
+    vertex_ai = await initVertexAI();
+  }
+  if (!surveyBuilderModel) {
+    surveyBuilderModel = vertex_ai.preview.getGenerativeModel({
+      model: process.env.VERTEX_AI_MODEL || 'gemini-pro',
+      generationConfig: {
+        maxOutputTokens: 4096,
+        temperature: 0.3,
+        topP: 0.9,
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+      ],
+      systemInstruction: { parts: [{ text: SURVEY_BUILDER_INSTRUCTION }] },
+    });
+  }
+  return surveyBuilderModel;
+};
+
+export const generateSurveyDraftFromPrompt = async (prompt) => {
+  const model = await getSurveyBuilderModel();
+  const chat = model.startChat({});
+  const streamResult = await chat.sendMessageStream(prompt);
+  const content = (await streamResult.response).candidates?.[0]?.content;
+  const parts = content?.parts || [];
+  const text = parts.map((part) => part.text || '').join('\n').trim();
+  if (!text) {
+    throw new Error('Empty model response');
+  }
+  return text;
 };
 
 // Modified chatbot API handler

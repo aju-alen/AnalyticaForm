@@ -11,6 +11,10 @@ import { refreshToken } from '../utils/refreshToken';
 import { getUserAccess, clearUserAccess } from '../utils/userAccess';
 import { useNavigate } from 'react-router-dom';
 import TemporaryDrawer from '../components/TempDrawer';
+import {
+  SurveyBuilderChromeProvider,
+  SurveyBuilderChromeBody,
+} from '../components/SurveyBuilderChrome';
 import { Stack } from '@mui/material';
 import { uid } from 'uid';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -18,22 +22,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import SurveyIntro from '../components/SurveyIntro';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
-import { ContentCopy } from '@mui/icons-material';
-import Tooltip from '@mui/material/Tooltip';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { dropDownTemplate } from '../utils/templateData';
 import { checkBoxTemplate } from '../utils/templateData';
-import EmailIcon from '@mui/icons-material/Email';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
 import Collapse from '@mui/material/Collapse';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -105,16 +98,17 @@ const CreateNewSurvey = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [subscriptionEndDate, setSubscriptionEndDate] = useState('');
   const [loading, setLoading] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const open = Boolean(anchorEl);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // off by default to avoid forms disappearing when adding many quickly
   const [zoomStatus, setZoomStatus] = useState({ connected: false, zoomEmail: null, loading: true });
   const [accessPassword, setAccessPassword] = useState('');
-  const [clearAccessPassword, setClearAccessPassword] = useState(false);
+  const [passwordEnabled, setPasswordEnabled] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiUsage, setAiUsage] = useState(null);
+  const [aiBusy, setAiBusy] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
@@ -217,11 +211,12 @@ const CreateNewSurvey = () => {
       try {
         await refreshToken();
         const user = getUserAccess();
-        const [surveyRes, proRes, superAdminRes, zoomRes] = await Promise.all([
+        const [surveyRes, proRes, superAdminRes, zoomRes, aiRes] = await Promise.all([
           axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`),
           user?.id ? axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${user.id}`).catch(() => ({ data: null })) : Promise.resolve({ data: null }),
           axiosWithAuth.get(`${backendUrl}/api/auth/get-user`).catch(() => ({ data: { isSuperAdmin: false } })),
           axiosWithAuth.get(`${backendUrl}/api/zoom/status`).catch(() => ({ data: { connected: false } })),
+          axiosWithAuth.get(`${backendUrl}/api/ai-survey/usage`).catch(() => ({ data: { allowed: false, remaining: 0, limit: 2, used: 0 } })),
         ]);
 
         if (!mounted) return;
@@ -255,6 +250,8 @@ const CreateNewSurvey = () => {
           zoomEmail: zoomRes.data?.zoomEmail || null,
           loading: false,
         });
+        setAiUsage(aiRes.data || { allowed: false, remaining: 0, limit: 2, used: 0 });
+        setPasswordEnabled(Boolean(d.passwordRequired));
       } catch (err) {
         if (err.response?.status === 401) {
           clearUserAccess();
@@ -293,18 +290,17 @@ const CreateNewSurvey = () => {
         surveyForms: surveyFormsToSubmit,
         maxResponses: current.maxResponses === '' ? null : current.maxResponses,
         closesAt: current.closesAt === '' ? null : current.closesAt,
-        accessPassword: accessPassword.trim() || undefined,
-        clearAccessPassword,
+        accessPassword: passwordEnabled && accessPassword.trim() ? accessPassword.trim() : undefined,
+        clearAccessPassword: !passwordEnabled,
         clearBrandLogo: !current.brandLogoUrl,
       };
       await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
       setSaveStatus('saved');
       setAccessPassword('');
-      setClearAccessPassword(false);
-      if (accessPassword.trim()) {
+      if (passwordEnabled && accessPassword.trim()) {
         setSurveyData((prev) => ({ ...prev, passwordRequired: true }));
       }
-      if (clearAccessPassword) {
+      if (!passwordEnabled) {
         setSurveyData((prev) => ({ ...prev, passwordRequired: false }));
       }
       setTimeout(() => setSaveStatus('idle'), 2000);
@@ -317,7 +313,7 @@ const CreateNewSurvey = () => {
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
-  }, [surveyId, navigate, accessPassword, clearAccessPassword]);
+  }, [surveyId, navigate, accessPassword, passwordEnabled]);
 
   React.useEffect(() => {
     if (!autoSaveEnabled) return;
@@ -432,8 +428,8 @@ const CreateNewSurvey = () => {
         surveyForms: surveyFormsToSubmit,
         maxResponses: current.maxResponses === '' ? null : current.maxResponses,
         closesAt: current.closesAt === '' ? null : current.closesAt,
-        accessPassword: accessPassword.trim() || undefined,
-        clearAccessPassword,
+        accessPassword: passwordEnabled && accessPassword.trim() ? accessPassword.trim() : undefined,
+        clearAccessPassword: !passwordEnabled,
         clearBrandLogo: !current.brandLogoUrl,
       };
       await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
@@ -444,11 +440,66 @@ const CreateNewSurvey = () => {
         navigate('/login');
       }
     }
-  }, [surveyId, navigate, accessPassword, clearAccessPassword]);
+  }, [surveyId, navigate, accessPassword, passwordEnabled]);
 
   const handlePreviewSurvey = React.useCallback(() => {
     window.open(`${window.location.origin}/user-survey/${surveyId}?preview=1`, '_blank', 'noopener,noreferrer');
   }, [surveyId]);
+
+  const handleGenerateAiSurvey = React.useCallback(async () => {
+    const prompt = aiPrompt.trim();
+    if (!isSuperAdmin || !prompt || aiBusy) return;
+    if (surveyData.surveyForms.length > 0) {
+      const ok = window.confirm('This will replace the current questions with an AI draft. Continue?');
+      if (!ok) return;
+    }
+    setAiBusy(true);
+    try {
+      await refreshToken();
+      const res = await axiosWithAuth.post(
+        `${backendUrl}/api/ai-survey/generate/${surveyId}`,
+        { prompt },
+        { timeout: 120000 },
+      );
+      const d = res.data?.survey;
+      if (d) {
+        const normalized = normalizeTargetCountriesFromSurvey(d);
+        setSurveyData({
+          surveyTitle: d.surveyTitle,
+          surveyForms: d.surveyForms ?? [],
+          selectedItems: d.selectedItems ?? [],
+          surveyIntroduction: d.surveyIntroduction ?? '',
+          targetCountries: normalized,
+          targetCountry: deriveLegacyTargetCountry(normalized),
+          surveyStatus: d.surveyStatus || 'Draft',
+          closesAt: toDatetimeLocalValue(d.closesAt),
+          maxResponses: d.maxResponses ?? '',
+          oneResponsePerPerson: Boolean(d.oneResponsePerPerson),
+          passwordRequired: Boolean(d.passwordRequired),
+          surveyLayout: d.surveyLayout === 'onePage' ? 'onePage' : 'oneQuestion',
+          brandLogoUrl: d.brandLogoUrl || '',
+          brandColor: d.brandColor || '',
+          hidePoweredBy: Boolean(d.hidePoweredBy),
+        });
+        setSelectedItems(d.selectedItems ?? []);
+        setSelectedCountries(normalized);
+      }
+      if (res.data?.usage) setAiUsage(res.data.usage);
+      setAiPrompt('');
+    } catch (err) {
+      if (err.response?.status === 401) {
+        clearUserAccess();
+        navigate('/login');
+        return;
+      }
+      alert(err.response?.data?.message || 'Could not generate the survey.');
+      if (err.response?.data?.used != null) {
+        setAiUsage((prev) => ({ ...prev, ...err.response.data }));
+      }
+    } finally {
+      setAiBusy(false);
+    }
+  }, [isSuperAdmin, aiPrompt, aiBusy, surveyData.surveyForms.length, surveyId, navigate]);
 
   const handlePublishSurvey = React.useCallback(async () => {
     try {
@@ -463,8 +514,8 @@ const CreateNewSurvey = () => {
         surveyForms: surveyFormsToSubmit,
         maxResponses: current.maxResponses === '' ? null : current.maxResponses,
         closesAt: current.closesAt === '' ? null : current.closesAt,
-        accessPassword: accessPassword.trim() || undefined,
-        clearAccessPassword,
+        accessPassword: passwordEnabled && accessPassword.trim() ? accessPassword.trim() : undefined,
+        clearAccessPassword: !passwordEnabled,
         clearBrandLogo: !current.brandLogoUrl,
       };
       await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
@@ -479,7 +530,7 @@ const CreateNewSurvey = () => {
         alert(err.response?.data?.message || 'Could not publish survey.');
       }
     }
-  }, [surveyId, navigate, accessPassword, clearAccessPassword]);
+  }, [surveyId, navigate, accessPassword, passwordEnabled]);
 
   const handleShare = React.useCallback((platform) => {
     const surveyUrl = `${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`;
@@ -505,11 +556,6 @@ const CreateNewSurvey = () => {
     }
   }, [surveyId, surveyData.surveyTitle]);
 
-  const handleClick = React.useCallback((event) => {
-    setAnchorEl(event.currentTarget);
-  }, []);
-  const handleMenuClose = React.useCallback(() => setAnchorEl(null), []);
-
   const handleRegionToggle = React.useCallback((code) => {
     setSelectedCountries((prev) => {
       const next = prev.includes(code)
@@ -532,6 +578,30 @@ const CreateNewSurvey = () => {
     ) : (
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <SurveyBuilderChromeProvider
+          surveyData={surveyData}
+          setSurveyData={setSurveyData}
+          handleFormChange={handleFormChange}
+          passwordEnabled={passwordEnabled}
+          setPasswordEnabled={setPasswordEnabled}
+          accessPassword={accessPassword}
+          setAccessPassword={setAccessPassword}
+          isSuperAdmin={isSuperAdmin}
+          selectedCountries={selectedCountries}
+          onRegionToggle={handleRegionToggle}
+          regionOptions={TARGET_REGION_OPTIONS}
+          surveyId={surveyId}
+          takeSurveyUrl={takeSurveyUrl}
+          embedSnippet={embedSnippet}
+          onCopyUrl={handleCopy}
+          onCopyEmbed={handleCopyEmbed}
+          onShare={handleShare}
+          aiUsage={aiUsage}
+          aiPrompt={aiPrompt}
+          setAiPrompt={setAiPrompt}
+          aiBusy={aiBusy}
+          onGenerateAi={handleGenerateAiSurvey}
+        >
         <Box
         sx={{
           backgroundColor:'#F4F3F6',
@@ -711,218 +781,7 @@ const CreateNewSurvey = () => {
               This survey includes interview consent. Connect Zoom so respondents who agree to AV recording receive a unique join link after submit.
             </Typography>
           )}
-          <Box sx={{ mt: 3, mb: 2, p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>Close rules</Typography>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
-              <TextField
-                label="Close date"
-                type="datetime-local"
-                name="closesAt"
-                value={surveyData.closesAt || ''}
-                onChange={handleFormChange}
-                InputLabelProps={{ shrink: true }}
-                size="small"
-                fullWidth
-              />
-              <TextField
-                label="Max responses"
-                type="number"
-                name="maxResponses"
-                value={surveyData.maxResponses ?? ''}
-                onChange={handleFormChange}
-                inputProps={{ min: 1 }}
-                size="small"
-                fullWidth
-              />
-            </Stack>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={Boolean(surveyData.oneResponsePerPerson)}
-                  onChange={(e) => setSurveyData((prev) => ({ ...prev, oneResponsePerPerson: e.target.checked }))}
-                  size="small"
-                />
-              }
-              label="One response per person"
-            />
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 1 }} alignItems="center">
-              <TextField
-                label={surveyData.passwordRequired ? 'Set a new password' : 'Access password'}
-                type="password"
-                value={accessPassword}
-                onChange={(e) => setAccessPassword(e.target.value)}
-                size="small"
-                fullWidth
-                helperText={surveyData.passwordRequired ? 'A password is currently required. Leave blank to keep it.' : 'Optional. Respondents must enter this to take the survey.'}
-              />
-              {surveyData.passwordRequired && (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={clearAccessPassword}
-                      onChange={(e) => setClearAccessPassword(e.target.checked)}
-                    />
-                  }
-                  label="Remove password"
-                />
-              )}
-            </Stack>
-          </Box>
-          <Box sx={{ mt: 3, mb: 2, p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>Layout</Typography>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={surveyData.surveyLayout === 'onePage'}
-                  onChange={(e) => setSurveyData((prev) => ({
-                    ...prev,
-                    surveyLayout: e.target.checked ? 'onePage' : 'oneQuestion',
-                  }))}
-                  size="small"
-                />
-              }
-              label="Show all questions on one page"
-            />
-          </Box>
-         {surveyData.surveyForms.length > 0 && (
-  <Box
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: { xs: 'stretch', sm: 'stretch' },
-      gap: 1,
-      mt: 2,
-      width: '100%'
-    }}
-  >
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: { xs: 'row', sm: 'row' },
-        justifyContent: 'center',
-        alignItems: { xs: '', sm: 'center' },
-        gap: 2,
-        width: '100%'
-      }}
-    >
-    <TextField
-      id="outlined-basic"
-      label="Survey URL"
-      variant='outlined'
-      sx={{
-        flexGrow: 1,
-        minWidth: { xs: '90%', sm: '50%' },
-      }}
-      value={`${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`}
-      InputProps={{
-        readOnly: true,
-      }}
-    />
-    
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: { xs: 'center', sm: 'flex-start' },
-      alignItems: 'center'
-    }}>
-      <Tooltip title="Share options">
-        <IconButton
-          onClick={handleClick}
-          size="small"
-          aria-controls={open ? 'share-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
-        >
-          <MoreVertIcon />
-        </IconButton>
-      </Tooltip>
-      <Menu
-        id="share-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleMenuClose}
-        onClick={handleMenuClose}
-      >
-        <MenuItem onClick={handleCopy}>
-          <ListItemIcon>
-            <ContentCopy fontSize="small" />
-          </ListItemIcon>
-          Copy URL
-        </MenuItem>
-        <MenuItem onClick={() => handleShare('whatsapp')}>
-          <ListItemIcon>
-            <WhatsAppIcon fontSize="small" />
-          </ListItemIcon>
-          Share via WhatsApp
-        </MenuItem>
-        <MenuItem onClick={() => handleShare('email')}>
-          <ListItemIcon>
-            <EmailIcon fontSize="small" />
-          </ListItemIcon>
-          Share via Email
-        </MenuItem>
-      </Menu>
-    </Box>
-    </Box>
-    
-    {/* {isSaved && (
-      <Typography variant="body2" color="success.main">
-        {isSaved}
-      </Typography>
-    )} */}
-    {surveyData.surveyStatus === 'Draft' && (
-      <Typography variant="body2" color="warning.main" sx={{ mt: 1, width: '100%' }}>
-        This share URL will not collect responses until the survey is published.
-      </Typography>
-    )}
-    <TextField
-      label="Embed on your website"
-      value={embedSnippet}
-      InputProps={{ readOnly: true }}
-      fullWidth
-      size="small"
-      sx={{ mt: 2 }}
-    />
-    <Button size="small" onClick={handleCopyEmbed} sx={{ mt: 1, alignSelf: 'flex-start' }}>
-      Copy embed code
-    </Button>
-    <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
-      <Typography variant="body2" color="text.secondary">QR code</Typography>
-      <Box
-        component="img"
-        alt="Survey QR code"
-        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(takeSurveyUrl)}`}
-        sx={{ width: 160, height: 160, border: '1px solid #e2e8f0', borderRadius: 1 }}
-      />
-    </Box>
-  </Box>
-  
-)}
- {isSuperAdmin && (
-            <FormControl component="fieldset" fullWidth sx={{ mt: 3, mb: 3 }}>
-              <Typography variant="subtitle1" component="legend" sx={{ mb: 1 }}>
-                Select Target Regions
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-                On each response, one selected region is chosen at random and a matching IP is assigned.
-              </Typography>
-              <FormGroup>
-                {TARGET_REGION_OPTIONS.map(({ code, label }) => (
-                  <FormControlLabel
-                    key={code}
-                    control={
-                      <Checkbox
-                        checked={selectedCountries.includes(code)}
-                        onChange={() => handleRegionToggle(code)}
-                        size="small"
-                      />
-                    }
-                    label={label}
-                  />
-                ))}
-              </FormGroup>
-            </FormControl>
-          )}
-
+          <SurveyBuilderChromeBody>
           {surveyData.surveyForms.length > 0 && (
             <Box sx={{ mt: 2, mb: 2 }}>
               <ListItem
@@ -1073,6 +932,7 @@ const CreateNewSurvey = () => {
               );
             })}
           </Stack>
+          </SurveyBuilderChromeBody>
 
             <div className="flex justify-center">
           </div>
@@ -1088,6 +948,7 @@ const CreateNewSurvey = () => {
 
         <TemporaryDrawer open={isDrawerOpen} toggleDrawer={toggleDrawer} handleItemSelect={handleItemSelect} subscriptionEndDate={subscriptionEndDate} />
             </Box>
+        </SurveyBuilderChromeProvider>
       </ThemeProvider>
     )
   );

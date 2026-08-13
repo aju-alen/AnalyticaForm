@@ -582,7 +582,7 @@ const UserSubmitSurvey = () => {
                     return {
                         'Comment Box': form.options.map(option => {
                             console.log(option, 'option CommentBoxForm');
-                            return option.question;
+                            return option.question || form.question;
 
                         }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
 
@@ -594,7 +594,7 @@ const UserSubmitSurvey = () => {
                     return {
                         'Single Row Text': form.options.map(option => {
                             console.log(option, 'option SingleRowText');
-                            return option.question;
+                            return option.question || form.question;
 
                         }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
 
@@ -605,7 +605,7 @@ const UserSubmitSurvey = () => {
                     return {
                         'Email Address': form.options.map(option => {
                             console.log(option, 'option EmailAddressForm');
-                            return option.question;
+                            return option.question || form.question;
 
                         }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
 
@@ -629,7 +629,7 @@ const UserSubmitSurvey = () => {
                     return {
                         [form.subheading ? form.subheading : form.question]: form.options.map(option => {
                             console.log(option, 'option StarRatingForm');
-                            return option.question;
+                            return option.question || form.question;
 
                         }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
 
@@ -653,7 +653,7 @@ const UserSubmitSurvey = () => {
                     return {
                         [form.subheading ? form.subheading : form.question]: form.options.map(option => {
                             console.log(option, 'option DateTimeForm');
-                            return option.question;
+                            return option.question || form.question;
 
                         }).filter((item, index) => form.formType !== "DateTimeForm" || index === 0)
 
@@ -668,7 +668,7 @@ const UserSubmitSurvey = () => {
                                 // Return an array with a single null for SinglePointForm
                                 return null;
                             }
-                            return option.rowQuestion;
+                            return option.rowQuestion || form.question;
                         }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
                     };
                 }
@@ -745,7 +745,7 @@ const UserSubmitSurvey = () => {
                 }
 
                 else if (form.formType === "SingleCheckForm") {
-                    const optionLabels = (form.options || []).map(opt => opt.rowQuestion ?? opt.value);
+                    const optionLabels = (form.options || []).map(opt => opt.rowQuestion || opt.value);
                     const withOther = form.hasOtherOption ? [...optionLabels, 'Other'] : optionLabels;
                     return {
                         [form.subheading ? form.subheading : form.question]: withOther.length ? withOther : ['']
@@ -760,7 +760,7 @@ const UserSubmitSurvey = () => {
                                 // Return an array with a single null for SinglePointForm
                                 return null;
                             }
-                            return option.rowQuestion;
+                            return option.rowQuestion || option.value || option.question || form.question;
                         }).filter((item, index) => form.formType !== "SinglePointForm" || index === 0)
                     };
                 } else if (form.formType === "MultiScaleCheckBox") {
@@ -1240,6 +1240,7 @@ const UserSubmitSurvey = () => {
                     onSetLoading={setIsLoading}
                     {...(questionType.consent ? {
                         onConsentDisagree: handleConsentDisagree,
+                        onZoomInterviewExit: handleZoomInterviewExit,
                         onMandatoryIncomplete: () => setSnackbar({
                             open: true,
                             message: 'Please fill the mandatory fields',
@@ -1253,7 +1254,7 @@ const UserSubmitSurvey = () => {
         if (!questionType.wrap) return formEl;
 
         return (
-            <div className="w-full max-w-xl mx-auto px-4 pb-8">
+            <div className="w-11/12 h-4/6 mx-auto">
                 {!onePage && itemIndex !== 0 && <Button onClick={handlePrevious} className=''>
                     <KeyboardBackspaceIcon fontSize='large' />
                 </Button>}
@@ -1521,7 +1522,7 @@ const UserSubmitSurvey = () => {
                         </div>
                     ) : isOnePage ? (
                         <Box
-                            className="w-full max-w-xl mx-auto px-3 pb-28"
+                            className="w-11/12 mx-auto px-3 pb-28"
                             sx={{ '& .MuiButton-containedSuccess': { display: 'none' } }}
                         >
                             {(surveyData.surveyForms || []).map((item, index) => (

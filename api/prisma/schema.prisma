@@ -35,6 +35,7 @@ model User {
    surveys   Survey[]
    responsePurchases ResponsePurchase[]
    surveyContacts SurveyContact[]
+   aiSurveyGenerations AiSurveyGeneration[]
 
    proMember ProMember?
    refundRequests RefundRequest[]
@@ -108,6 +109,7 @@ model Survey {
 
   responses UserSurveyResponse[]
   inviteCampaigns SurveyInviteCampaign[]
+  aiGenerations AiSurveyGeneration[]
 }
 
 model UserSurveyResponse{
@@ -303,4 +305,17 @@ model SurveyInviteRecipient {
 
   @@index([campaignId, status])
   @@index([email, campaignId])
+}
+
+model AiSurveyGeneration {
+  id        String   @id @default(cuid())
+  userId    String
+  surveyId  String
+  prompt    String   @db.VarChar(4000)
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
