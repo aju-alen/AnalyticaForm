@@ -76,6 +76,15 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Switch from '@mui/material/Switch';
+import Chip from '@mui/material/Chip';
+
+function toDatetimeLocalValue(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 
 const DISPLAY_ONLY_FORM_TYPES = new Set(['IntroductionForm', 'PresentationTextForm', 'SectionHeadingForm', 'SectionSubHeadingForm']);
 const ALWAYS_MANDATORY_FORM_TYPES = new Set([
@@ -181,6 +190,8 @@ const CreateNewSurvey = () => {
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // off by default to avoid forms disappearing when adding many quickly
   const [zoomStatus, setZoomStatus] = useState({ connected: false, zoomEmail: null, loading: true });
+  const [accessPassword, setAccessPassword] = useState('');
+  const [clearAccessPassword, setClearAccessPassword] = useState(false);
 
   const [surveyData, setSurveyData] = useState({
     surveyTitle: '',
@@ -189,6 +200,11 @@ const CreateNewSurvey = () => {
     surveyIntroduction: '',
     targetCountry: 'NIL',
     targetCountries: [],
+    surveyStatus: 'Draft',
+    closesAt: '',
+    maxResponses: '',
+    oneResponsePerPerson: false,
+    passwordRequired: false,
   });
 
   const formDataRefs = useRef({});
@@ -318,6 +334,11 @@ const CreateNewSurvey = () => {
           surveyIntroduction: d.surveyIntroduction ?? '',
           targetCountries: normalized,
           targetCountry: deriveLegacyTargetCountry(normalized),
+          surveyStatus: d.surveyStatus || 'Draft',
+          closesAt: toDatetimeLocalValue(d.closesAt),
+          maxResponses: d.maxResponses ?? '',
+          oneResponsePerPerson: Boolean(d.oneResponsePerPerson),
+          passwordRequired: Boolean(d.passwordRequired),
         });
         setSelectedItems(d.selectedItems ?? []);
         setSelectedCountries(normalized);
@@ -363,9 +384,24 @@ const CreateNewSurvey = () => {
         const fromInstance = formInstanceRefs.current[form.id]?.getFormData?.();
         return fromInstance ?? formDataRefs.current[form.id] ?? form;
       });
-      const payload = { ...current, surveyForms: surveyFormsToSubmit };
+      const payload = {
+        ...current,
+        surveyForms: surveyFormsToSubmit,
+        maxResponses: current.maxResponses === '' ? null : current.maxResponses,
+        closesAt: current.closesAt === '' ? null : current.closesAt,
+        accessPassword: accessPassword.trim() || undefined,
+        clearAccessPassword,
+      };
       await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
       setSaveStatus('saved');
+      setAccessPassword('');
+      setClearAccessPassword(false);
+      if (accessPassword.trim()) {
+        setSurveyData((prev) => ({ ...prev, passwordRequired: true }));
+      }
+      if (clearAccessPassword) {
+        setSurveyData((prev) => ({ ...prev, passwordRequired: false }));
+      }
       setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -376,7 +412,7 @@ const CreateNewSurvey = () => {
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
-  }, [surveyId, navigate]);
+  }, [surveyId, navigate, accessPassword, clearAccessPassword]);
 
   React.useEffect(() => {
     if (!autoSaveEnabled) return;
@@ -486,7 +522,14 @@ const CreateNewSurvey = () => {
         const fromInstance = formInstanceRefs.current[form.id]?.getFormData?.();
         return fromInstance ?? formDataRefs.current[form.id] ?? form;
       });
-      const payload = { ...current, surveyForms: surveyFormsToSubmit };
+      const payload = {
+        ...current,
+        surveyForms: surveyFormsToSubmit,
+        maxResponses: current.maxResponses === '' ? null : current.maxResponses,
+        closesAt: current.closesAt === '' ? null : current.closesAt,
+        accessPassword: accessPassword.trim() || undefined,
+        clearAccessPassword,
+      };
       await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
       navigate('/dashboard');
     } catch (err) {
@@ -495,7 +538,41 @@ const CreateNewSurvey = () => {
         navigate('/login');
       }
     }
-  }, [surveyId, navigate]);
+  }, [surveyId, navigate, accessPassword, clearAccessPassword]);
+
+  const handlePreviewSurvey = React.useCallback(() => {
+    window.open(`${window.location.origin}/user-survey/${surveyId}?preview=1`, '_blank', 'noopener,noreferrer');
+  }, [surveyId]);
+
+  const handlePublishSurvey = React.useCallback(async () => {
+    try {
+      await refreshToken();
+      const current = surveyDataRef.current;
+      const surveyFormsToSubmit = (current.surveyForms ?? []).map((form) => {
+        const fromInstance = formInstanceRefs.current[form.id]?.getFormData?.();
+        return fromInstance ?? formDataRefs.current[form.id] ?? form;
+      });
+      const payload = {
+        ...current,
+        surveyForms: surveyFormsToSubmit,
+        maxResponses: current.maxResponses === '' ? null : current.maxResponses,
+        closesAt: current.closesAt === '' ? null : current.closesAt,
+        accessPassword: accessPassword.trim() || undefined,
+        clearAccessPassword,
+      };
+      await axiosWithAuth.put(`${backendUrl}/api/survey/get-one-survey/${surveyId}`, payload);
+      await axiosWithAuth.put(`${backendUrl}/api/survey/update-survey-status/${surveyId}`, { surveyStatus: 'Active' });
+      setSurveyData((prev) => ({ ...prev, surveyStatus: 'Active' }));
+      navigate('/dashboard');
+    } catch (err) {
+      if (err.response?.status === 401) {
+        clearUserAccess();
+        navigate('/login');
+      } else {
+        alert(err.response?.data?.message || 'Could not publish survey.');
+      }
+    }
+  }, [surveyId, navigate, accessPassword, clearAccessPassword]);
 
   const handleShare = React.useCallback((platform) => {
     const surveyUrl = `${import.meta.env.VITE_BACKEND_URL}/survey-meta/${surveyId}`;
@@ -646,6 +723,26 @@ const CreateNewSurvey = () => {
                       </Typography>
                     )}
                     <Button
+                      variant="outlined"
+                      color="inherit"
+                      onClick={handlePreviewSurvey}
+                      disabled={loading}
+                      sx={{ width: { xs: '100%', sm: 'auto' } }}
+                    >
+                      Preview
+                    </Button>
+                    {surveyData.surveyStatus !== 'Active' && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handlePublishSurvey}
+                        disabled={loading || (autoSaveEnabled && saveStatus === 'saving')}
+                        sx={{ width: { xs: '100%', sm: 'auto' } }}
+                      >
+                        Publish
+                      </Button>
+                    )}
+                    <Button
                       variant="contained"
                       color="success"
                       onClick={handleSubmitForm}
@@ -655,7 +752,7 @@ const CreateNewSurvey = () => {
                         width: { xs: '100%', sm: 'auto' }
                       }}
                     >
-                      Submit Your Survey
+                      Save
                     </Button>
                   </Box>
                 </Toolbar>
@@ -670,6 +767,18 @@ const CreateNewSurvey = () => {
             onChange={handleFormChange}
             sx={{ mt: 2 }}
           />
+          <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Chip
+              size="small"
+              label={surveyData.surveyStatus === 'Disable' ? 'Inactive' : (surveyData.surveyStatus || 'Draft')}
+              color={surveyData.surveyStatus === 'Active' ? 'success' : surveyData.surveyStatus === 'Draft' ? 'warning' : 'default'}
+            />
+            {surveyData.surveyStatus === 'Draft' && (
+              <Typography variant="body2" color="text.secondary">
+                Respondents cannot take this survey until you publish it.
+              </Typography>
+            )}
+          </Box>
           <Box sx={{ mt: 2, mb: 1, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1.5 }}>
             <Typography variant="body2" color="text.secondary">
               Zoom (for unique interview links):{' '}
@@ -695,18 +804,84 @@ const CreateNewSurvey = () => {
               This survey includes interview consent. Connect Zoom so respondents who agree to AV recording receive a unique join link after submit.
             </Typography>
           )}
+          <Box sx={{ mt: 3, mb: 2, p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>Close rules</Typography>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
+              <TextField
+                label="Close date"
+                type="datetime-local"
+                name="closesAt"
+                value={surveyData.closesAt || ''}
+                onChange={handleFormChange}
+                InputLabelProps={{ shrink: true }}
+                size="small"
+                fullWidth
+              />
+              <TextField
+                label="Max responses"
+                type="number"
+                name="maxResponses"
+                value={surveyData.maxResponses ?? ''}
+                onChange={handleFormChange}
+                inputProps={{ min: 1 }}
+                size="small"
+                fullWidth
+              />
+            </Stack>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={Boolean(surveyData.oneResponsePerPerson)}
+                  onChange={(e) => setSurveyData((prev) => ({ ...prev, oneResponsePerPerson: e.target.checked }))}
+                  size="small"
+                />
+              }
+              label="One response per person"
+            />
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 1 }} alignItems="center">
+              <TextField
+                label={surveyData.passwordRequired ? 'Set a new password' : 'Access password'}
+                type="password"
+                value={accessPassword}
+                onChange={(e) => setAccessPassword(e.target.value)}
+                size="small"
+                fullWidth
+                helperText={surveyData.passwordRequired ? 'A password is currently required. Leave blank to keep it.' : 'Optional. Respondents must enter this to take the survey.'}
+              />
+              {surveyData.passwordRequired && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={clearAccessPassword}
+                      onChange={(e) => setClearAccessPassword(e.target.checked)}
+                    />
+                  }
+                  label="Remove password"
+                />
+              )}
+            </Stack>
+          </Box>
          {surveyData.surveyForms.length > 0 && (
   <Box
     sx={{
       display: 'flex',
-      flexDirection: { xs: 'row', sm: 'row' },
-      justifyContent: 'center',
-      alignItems: { xs: '', sm: 'center' },
-      gap: 2,
+      flexDirection: 'column',
+      alignItems: { xs: 'stretch', sm: 'stretch' },
+      gap: 1,
       mt: 2,
       width: '100%'
     }}
   >
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'row', sm: 'row' },
+        justifyContent: 'center',
+        alignItems: { xs: '', sm: 'center' },
+        gap: 2,
+        width: '100%'
+      }}
+    >
     <TextField
       id="outlined-basic"
       label="Survey URL"
@@ -764,12 +939,18 @@ const CreateNewSurvey = () => {
         </MenuItem>
       </Menu>
     </Box>
+    </Box>
     
     {/* {isSaved && (
       <Typography variant="body2" color="success.main">
         {isSaved}
       </Typography>
     )} */}
+    {surveyData.surveyStatus === 'Draft' && (
+      <Typography variant="body2" color="warning.main" sx={{ mt: 1, width: '100%' }}>
+        This share URL will not collect responses until the survey is published.
+      </Typography>
+    )}
   </Box>
   
 )}

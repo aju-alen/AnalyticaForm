@@ -94,6 +94,34 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
     }
   };
 
+  const handlePreviewSurvey = (id) => {
+    handleCloseMenu();
+    window.open(`${window.location.origin}/user-survey/${id}?preview=1`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleCloneSurvey = async (id) => {
+    handleCloseMenu();
+    try {
+      setIsLoading(true);
+      await refreshToken();
+      const cloned = await axiosWithAuth.post(`${backendUrl}/api/survey/clone-survey/${id}`);
+      const newId = cloned.data?.newSurvey?.id;
+      handleDataChanged((prev) => !prev);
+      setSnackbar({ open: true, message: 'Survey cloned as a draft.', severity: 'success' });
+      if (newId) {
+        navigate(`/dashboard/create-survey/${newId}`);
+      }
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || 'Could not clone survey.',
+        severity: 'error',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleDeleteOpen = (surveyId) => {
     setSurveyId(surveyId);
     setDeleteOpen(true);
@@ -353,13 +381,24 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                             py: 1,
                             px: 2,
                             borderRadius: '20px',
-                            bgcolor: survey.surveyStatus === 'Active' ? alpha(primaryColor, 0.2) : alpha('#cbd5e1', 0.4),
-                            color: survey.surveyStatus === 'Active' ? primaryColor : '#475569',
+                            bgcolor: survey.surveyStatus === 'Active'
+                              ? alpha(primaryColor, 0.2)
+                              : survey.surveyStatus === 'Draft'
+                                ? alpha('#f59e0b', 0.2)
+                                : alpha('#cbd5e1', 0.4),
+                            color: survey.surveyStatus === 'Active'
+                              ? primaryColor
+                              : survey.surveyStatus === 'Draft'
+                                ? '#b45309'
+                                : '#475569',
                             fontWeight: 500
                           },
                           '&:before, &:after': { display: 'none' }
                         }}
                       >
+                        <MenuItem value={'Draft'}>
+                          {loadingSurveyId === survey.id ? <CircularProgress size={20} /> : "Draft"}
+                        </MenuItem>
                         <MenuItem value={'Active'}>
                           {loadingSurveyId === survey.id ? <CircularProgress size={20} /> : "Active"}
                         </MenuItem>
@@ -424,6 +463,48 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
             }
           }}
         >
+          <MenuItem 
+            onClick={() => handlePreviewSurvey(surveyId)}
+            sx={{ 
+              py: 1.5,
+              px: 2.5,
+              '&:hover': {
+                bgcolor: alpha(primaryColor, 0.08),
+                color: primaryColor
+              }
+            }}
+          >
+            Preview
+          </MenuItem>
+          <MenuItem 
+            onClick={() => handleCloneSurvey(surveyId)}
+            sx={{ 
+              py: 1.5,
+              px: 2.5,
+              '&:hover': {
+                bgcolor: alpha(primaryColor, 0.08),
+                color: primaryColor
+              }
+            }}
+          >
+            Clone
+          </MenuItem>
+          <MenuItem 
+            onClick={() => {
+              handleCloseMenu();
+              navigate(`/user-survey-analytics/${surveyId}`);
+            }}
+            sx={{ 
+              py: 1.5,
+              px: 2.5,
+              '&:hover': {
+                bgcolor: alpha(primaryColor, 0.08),
+                color: primaryColor
+              }
+            }}
+          >
+            Analytics
+          </MenuItem>
           <MenuItem 
             onClick={() => handleDeleteOpen(surveyId)}
             sx={{ 

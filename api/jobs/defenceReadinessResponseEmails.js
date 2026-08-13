@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/prisma.js';
 import OpenAI from 'openai';
 import { resendEmailDRIndex } from '../utils/resendEmailTemplate.js';
 import chalk from 'chalk';
 import { defenceReadinessSystemPrompt } from '../scripts/ai_chat_prompts.js';
-
-const prisma = new PrismaClient();
 
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })

@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../utils/prisma.js'
 import { FREE_SURVEY_LIMIT, userHasActiveProSubscription } from '../utils/planLimits.js'
-const prisma = new PrismaClient();
+import bcrypt from 'bcrypt';
 
 const isTruthyFlag = (value) => value === true || value === 'true';
 
@@ -51,10 +51,9 @@ export const createNewSurvey = async (req, res) => {
                 surveyTitle,
                 surveyDescription: "Test",
                 userId,
-                surveyStatus: 'Active',
+                surveyStatus: 'Draft',
             }
         });
-        await prisma.$disconnect();
         res.status(201).send({ message: 'Survey created successfully', newSurvey });
 
     } catch (err) {
@@ -83,7 +82,6 @@ export const getUserSurvey = async (req, res) => {
                 surveyCompleted: true,
             }
         });
-        await prisma.$disconnect();
         res.status(200).send(getSurveyAll);
 
     } catch (err) {
@@ -102,8 +100,11 @@ export const getSurveyById = async (req, res) => {
                 id: surveyId
             }
         });
-        await prisma.$disconnect();
-        res.status(200).json(getSurvey);
+        if (!getSurvey) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+        const { accessPasswordHash, ...rest } = getSurvey;
+        res.status(200).json({ ...rest, passwordRequired: Boolean(accessPasswordHash) });
     }
     catch (err) {
         console.log(err);
@@ -134,20 +135,38 @@ export const updateSurveyById = async (req, res) => {
         const access = await requireSurveyAccess(req, res, surveyId);
         if (!access) return;
 
+        const data = {
+            surveyTitle: req.body.surveyTitle,
+            surveyForms: req.body.surveyForms,
+            selectedItems: req.body.selectedItems,
+            surveyIntroduction: req.body.surveyIntroduction,
+            targetCountry: req.body.targetCountry,
+            targetCountries: Array.isArray(req.body.targetCountries) ? req.body.targetCountries : [],
+            oneResponsePerPerson: Boolean(req.body.oneResponsePerPerson),
+        };
+        if (req.body.closesAt === null || req.body.closesAt === '') {
+            data.closesAt = null;
+        } else if (req.body.closesAt) {
+            data.closesAt = new Date(req.body.closesAt);
+        }
+        if (req.body.maxResponses === null || req.body.maxResponses === '') {
+            data.maxResponses = null;
+        } else if (req.body.maxResponses != null) {
+            const n = parseInt(req.body.maxResponses, 10);
+            data.maxResponses = Number.isFinite(n) && n > 0 ? n : null;
+        }
+        if (req.body.clearAccessPassword) {
+            data.accessPasswordHash = null;
+        } else if (typeof req.body.accessPassword === 'string' && req.body.accessPassword.trim()) {
+            data.accessPasswordHash = await bcrypt.hash(req.body.accessPassword.trim(), 10);
+        }
+
         const updateSurvey = await prisma.survey.update({
             where: {
                 id: surveyId
             },
-            data: {
-                surveyTitle: req.body.surveyTitle,
-                surveyForms: req.body.surveyForms,
-                selectedItems: req.body.selectedItems,
-                surveyIntroduction: req.body.surveyIntroduction,
-                targetCountry: req.body.targetCountry,
-                targetCountries: Array.isArray(req.body.targetCountries) ? req.body.targetCountries : []
-            }
+            data,
         });
-        await prisma.$disconnect();
         console.log(updateSurvey, 'updateSurvey');
         res.status(200).json({ message: 'Survey updated successfully' });
     }
@@ -180,7 +199,6 @@ export const getAllSurveyResponse = async (req, res) => {
             ...(!isSubscribed ? { take: 500 } : {}),
         });
         
-        await prisma.$disconnect();
         res.status(200).send(getAllResponse);
     }
     catch (err) {
@@ -205,7 +223,6 @@ export const getSurveyResponsesPaginated = async (req, res) => {
         });
 
         if (!surveyDetails) {
-            await prisma.$disconnect();
             return res.status(404).send({ message: 'Survey not found' });
         }
 
@@ -241,8 +258,6 @@ export const getSurveyResponsesPaginated = async (req, res) => {
         const recentSubmissions = metaData.filter(
             (item) => item.createdAt >= new Date(Date.now() - 24 * 60 * 60 * 1000)
         ).length;
-
-        await prisma.$disconnect();
 
         return res.status(200).json({
             surveyTitle: surveyDetails.surveyTitle,
@@ -294,7 +309,6 @@ export const getAllSurveyOfOneUser = async (req, res) => {
                 surveyCompleted:true,
             }
         });
-        await prisma.$disconnect();
         res.status(200).send(getAllSurvey);
 
     }
@@ -307,7 +321,14 @@ export const getAllSurveyOfOneUser = async (req, res) => {
 export const updateUserView = async (req, res) => {
     const surveyId = req.params.surveyId;
     try {
-        const updateView = await prisma.survey.update({
+        const survey = await prisma.survey.findUnique({
+            where: { id: surveyId },
+            select: { surveyStatus: true },
+        });
+        if (!survey || survey.surveyStatus !== 'Active') {
+            return res.status(200).send({ message: 'Survey view not counted' });
+        }
+        await prisma.survey.update({
             where: {
                 id: surveyId
             },
@@ -317,7 +338,6 @@ export const updateUserView = async (req, res) => {
                 }
             }
         });
-        await prisma.$disconnect();
         res.status(200).send({ message: 'Survey view updated successfully' });
 
     }
@@ -347,7 +367,6 @@ export const deleteUserSurvey = async (req, res) => {
                 id:surveyId
             }
         });
-        await prisma.$disconnect();
         res.status(200).send({message:'Survey deleted successfully'});
 
     }
@@ -360,6 +379,10 @@ export const deleteUserSurvey = async (req, res) => {
 export const updateUserStatus = async (req, res) => {
     const surveyId = req.params.surveyId;
     try {
+        const allowed = ['Draft', 'Active', 'Disable'];
+        if (!allowed.includes(req.body.surveyStatus)) {
+            return res.status(400).send({ message: 'Invalid survey status' });
+        }
         const access = await requireSurveyAccess(req, res, surveyId);
         if (!access) return;
 
@@ -371,7 +394,6 @@ export const updateUserStatus = async (req, res) => {
                 surveyStatus: req.body.surveyStatus
             }
         });
-        await prisma.$disconnect();
         res.status(200).send({ message: 'Survey status updated successfully' });
     }
     catch (err) {
@@ -394,7 +416,6 @@ export const getIpOfSingleSurvey = async (req, res) => {
                 ipAddress:true
             }
         }); 
-        await prisma.$disconnect();
         const formatedData = getIpOfOneSurvey.map((data)=>data.ipAddress);
 console.log(formatedData,'formatedData');
 const sendData = JSON.stringify(formatedData)
@@ -406,4 +427,151 @@ const sendData = JSON.stringify(formatedData)
         res.status(500).send({message:'Internal server error'});
     }
 }
+
+const DISPLAY_ONLY_FORM_TYPES = new Set([
+    'IntroductionForm',
+    'PresentationTextForm',
+    'SectionHeadingForm',
+    'SectionSubHeadingForm',
+]);
+
+function extractAnswerLabels(selectedValue) {
+    if (selectedValue == null) return [];
+    const list = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
+    return list
+        .map((entry) => {
+            if (entry == null) return '';
+            if (typeof entry !== 'object') return String(entry).trim();
+            return String(entry.answer ?? entry.value ?? entry.label ?? entry.rowQuestion ?? '').trim();
+        })
+        .filter(Boolean);
+}
+
+export const cloneUserSurvey = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try {
+        const access = await requireSurveyAccess(req, res, surveyId);
+        if (!access) return;
+
+        const source = await prisma.survey.findUnique({ where: { id: surveyId } });
+        if (!source) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+
+        const surveyCount = await prisma.survey.count({ where: { userId: req.tokenId } });
+        if (surveyCount >= FREE_SURVEY_LIMIT) {
+            const isPro = await userHasActiveProSubscription(prisma, req.tokenId);
+            if (!isPro) {
+                return res.status(403).send({
+                    message: 'You can only create 5 surveys with a free account. Please upgrade to premium.',
+                });
+            }
+        }
+
+        const cloned = await prisma.survey.create({
+            data: {
+                surveyTitle: `${source.surveyTitle || 'Survey'} (copy)`,
+                surveyDescription: source.surveyDescription || 'Test',
+                userId: req.tokenId,
+                surveyStatus: 'Draft',
+                surveyForms: source.surveyForms ?? [],
+                selectedItems: source.selectedItems ?? [],
+                surveyIntroduction: source.surveyIntroduction,
+                formQuestions: source.formQuestions ?? [],
+                targetCountry: source.targetCountry,
+                targetCountries: source.targetCountries ?? [],
+                closesAt: source.closesAt,
+                maxResponses: source.maxResponses,
+                oneResponsePerPerson: source.oneResponsePerPerson,
+                accessPasswordHash: source.accessPasswordHash,
+            },
+        });
+        const { accessPasswordHash, ...rest } = cloned;
+        res.status(201).send({
+            message: 'Survey cloned successfully',
+            newSurvey: { ...rest, passwordRequired: Boolean(accessPasswordHash) },
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+};
+
+export const getQuestionAnalytics = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try {
+        const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+        if (!access) return;
+
+        const survey = await prisma.survey.findUnique({
+            where: { id: surveyId },
+            select: {
+                surveyTitle: true,
+                surveyForms: true,
+                surveyViews: true,
+                surveyResponses: true,
+                surveyCompleted: true,
+            },
+        });
+        if (!survey) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+
+        const responses = await prisma.userSurveyResponse.findMany({
+            where: { surveyId, isComplete: true },
+            select: { userResponse: true },
+        });
+
+        const forms = Array.isArray(survey.surveyForms) ? survey.surveyForms : [];
+        const questions = forms
+            .filter((form) => form && !DISPLAY_ONLY_FORM_TYPES.has(form.formType))
+            .map((form) => {
+                const counts = {};
+                let answered = 0;
+                responses.forEach((row) => {
+                    const answeredForms = Array.isArray(row.userResponse) ? row.userResponse : [];
+                    const match = answeredForms.find((item) => item?.id === form.id)
+                        || answeredForms.find((item) => item?.formType === form.formType && item?.question === form.question);
+                    const labels = extractAnswerLabels(match?.selectedValue);
+                    if (labels.length === 0) return;
+                    answered += 1;
+                    labels.forEach((label) => {
+                        counts[label] = (counts[label] || 0) + 1;
+                    });
+                });
+                const options = Object.entries(counts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([label, count]) => ({
+                        label,
+                        count,
+                        percent: responses.length ? Math.round((count / responses.length) * 1000) / 10 : 0,
+                    }));
+                return {
+                    id: form.id,
+                    formType: form.formType,
+                    question: form.question || form.quilText || form.subheading || form.formType,
+                    answered,
+                    total: responses.length,
+                    options,
+                };
+            });
+
+        const views = survey.surveyViews || 0;
+        const completionRate = views > 0
+            ? Math.round((survey.surveyResponses / views) * 1000) / 10
+            : 0;
+
+        res.status(200).json({
+            surveyTitle: survey.surveyTitle,
+            totalResponses: responses.length,
+            surveyViews: views,
+            completionRate,
+            questions,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+};
+
 

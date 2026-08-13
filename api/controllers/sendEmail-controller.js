@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../utils/prisma.js'
 import dotenv from 'dotenv';
 import ExcelJS from 'exceljs';
 import { resendEmailBoiler } from '../utils/resendEmailTemplate.js';
 dotenv.config();
-
-const prisma = new PrismaClient();
 
 export const contactUs = async (req, res) => {
     console.log(req.body, 'req.body');
@@ -486,11 +484,9 @@ export const sendSurveyExcelViaEmail = async (req, res) => {
             }]
         );
 
-        await prisma.$disconnect();
         res.status(200).json({ message: 'Email sent successfully with Excel attachment' });
     } catch (err) {
         console.error('Error sending survey Excel via email:', err);
-        await prisma.$disconnect();
         res.status(500).json({ message: 'Internal server error', error: err.message });
     }
 };

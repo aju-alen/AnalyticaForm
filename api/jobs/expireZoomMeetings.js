@@ -1,7 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/prisma.js';
 import { deleteZoomMeeting, getValidZoomAccessToken } from '../utils/zoomApi.js';
 
-const prisma = new PrismaClient();
 const QUAL_TYPES = new Set(['QualitativeConsentForm', 'DynamicQualitativeConsentForm']);
 
 function attachExpired(userResponse, meetingId) {

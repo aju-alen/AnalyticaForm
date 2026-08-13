@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../utils/prisma.js'
 import { updateUserResponseLimit } from './auth-controllers.js';
 import { generateIpAddressesForCountry } from '../utils/ipGenerator.js';
 import { generateInterimSummaryFromFirstTen } from '../utils/dri-ten-summary.js';
@@ -8,11 +8,27 @@ import { generateFullSummaryFromFifty } from '../utils/dri-50-summary.js';
 import { shouldCreateZoomForResponse } from '../utils/consentProgress.js';
 import { createZoomMeetingForHost, getValidZoomAccessToken } from '../utils/zoomApi.js';
 import { FREE_RESPONSE_LIMIT, userHasActiveProSubscription } from '../utils/planLimits.js';
-const prisma = new PrismaClient();
+import { getSurveyClosedReason } from '../utils/surveyAvailability.js';
+import bcrypt from 'bcrypt';
 
 async function surveyHasReachedFreeResponseLimit(survey) {
     if (!survey || survey.surveyResponses < FREE_RESPONSE_LIMIT) return false;
     return !(await userHasActiveProSubscription(prisma, survey.userId));
+}
+
+function surveyResponseCookieName(surveyId) {
+    return `da_survey_${surveyId}`;
+}
+
+function surveyCookieOptions() {
+    const isProd = process.env.NODE_ENV === 'production';
+    return {
+        httpOnly: true,
+        sameSite: isProd ? 'none' : 'lax',
+        secure: isProd,
+        maxAge: 365 * 24 * 60 * 60 * 1000,
+        path: '/',
+    };
 }
 
 const SUPPORTED_COUNTRY_CODES = new Set(['AE', 'SA', 'CN', 'UK', 'US', 'QA', 'IN']);
@@ -40,12 +56,62 @@ export const getSingleSurveyDataForUser = async (req, res) => {
         const getSurveyData = await prisma.survey.findUnique({
             where:{
                 id:surveyId
-            }});
+            },
+            select: {
+                id: true,
+                surveyTitle: true,
+                surveyDescription: true,
+                surveyStatus: true,
+                surveyForms: true,
+                surveyIntroduction: true,
+                surveyResponses: true,
+                userId: true,
+                closesAt: true,
+                maxResponses: true,
+                accessPasswordHash: true,
+                oneResponsePerPerson: true,
+            },
+        });
         if (!getSurveyData) {
             return res.status(404).send({ message: 'Survey not found' });
         }
-        const responseLimitReached = await surveyHasReachedFreeResponseLimit(getSurveyData);
-        res.status(200).json({ ...getSurveyData, responseLimitReached });
+        const isOwnerPro = await userHasActiveProSubscription(prisma, getSurveyData.userId);
+        const closedReason = getSurveyClosedReason(getSurveyData, { isOwnerPro });
+        const passwordRequired = Boolean(getSurveyData.accessPasswordHash);
+        const providedPassword = String(req.headers['x-survey-password'] || req.query.accessPassword || '').trim();
+        let passwordOk = !passwordRequired;
+        if (passwordRequired && providedPassword) {
+            passwordOk = await bcrypt.compare(providedPassword, getSurveyData.accessPasswordHash);
+        }
+
+        let alreadyResponded = false;
+        const cookieId = req.cookies?.[surveyResponseCookieName(surveyId)];
+        if (getSurveyData.oneResponsePerPerson && cookieId) {
+            const existing = await prisma.userSurveyResponse.findFirst({
+                where: { id: String(cookieId), surveyId },
+                select: { isComplete: true },
+            });
+            alreadyResponded = Boolean(existing?.isComplete);
+        }
+
+        const publicSurvey = {
+            id: getSurveyData.id,
+            surveyTitle: getSurveyData.surveyTitle,
+            surveyDescription: getSurveyData.surveyDescription,
+            surveyStatus: getSurveyData.surveyStatus,
+            surveyIntroduction: getSurveyData.surveyIntroduction,
+            surveyResponses: getSurveyData.surveyResponses,
+            responseLimitReached: Boolean(closedReason && /allotted responses/i.test(closedReason)),
+            isClosed: Boolean(closedReason),
+            closedReason,
+            passwordRequired,
+            oneResponsePerPerson: getSurveyData.oneResponsePerPerson,
+            closesAt: getSurveyData.closesAt,
+            maxResponses: getSurveyData.maxResponses,
+            alreadyResponded,
+            surveyForms: (!closedReason && passwordOk && !alreadyResponded) ? getSurveyData.surveyForms : [],
+        };
+        res.status(200).json(publicSurvey);
     }catch(err){
         console.log(err);
         res.status(500).send({message:'Internal server error'});
@@ -98,13 +164,35 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 surveyForms: true,
                 userId: true,
                 surveyResponses: true,
+                surveyStatus: true,
+                closesAt: true,
+                maxResponses: true,
+                accessPasswordHash: true,
+                oneResponsePerPerson: true,
             },
         });
         if (!surveyMeta) {
             return res.status(404).send({ message: 'Survey not found' });
         }
 
+        if (req.body.preview === true || req.body.preview === 'true' || req.query.preview === '1') {
+            return res.status(403).send({ message: 'Preview responses are not saved.' });
+        }
+
+        const isComplete = req.body.isComplete !== false && req.body.isComplete !== 'false';
+
+        if (surveyMeta.accessPasswordHash) {
+            const providedPassword = String(req.body.accessPassword || req.headers['x-survey-password'] || '').trim();
+            const passwordOk = providedPassword
+                ? await bcrypt.compare(providedPassword, surveyMeta.accessPasswordHash)
+                : false;
+            if (!passwordOk) {
+                return res.status(403).send({ message: 'A valid survey password is required.' });
+            }
+        }
+
         const requestedResponseId = String(req.body.responseId || '').trim();
+        const cookieName = surveyResponseCookieName(surveyId);
         let existingResponse = null;
         if (requestedResponseId) {
             existingResponse = await prisma.userSurveyResponse.findFirst({
@@ -114,10 +202,23 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                 },
             });
         }
-        if (!existingResponse && await surveyHasReachedFreeResponseLimit(surveyMeta)) {
-            return res.status(403).send({
-                message: 'This survey has exceeded its allotted responses. Please contact the host.',
+        if (!existingResponse && req.cookies?.[cookieName]) {
+            existingResponse = await prisma.userSurveyResponse.findFirst({
+                where: {
+                    id: String(req.cookies[cookieName]),
+                    surveyId,
+                },
             });
+        }
+        if (surveyMeta.oneResponsePerPerson && existingResponse?.isComplete) {
+            return res.status(403).send({ message: 'You have already submitted a response to this survey.' });
+        }
+        if (!existingResponse) {
+            const isOwnerPro = await userHasActiveProSubscription(prisma, surveyMeta.userId);
+            const closedReason = getSurveyClosedReason(surveyMeta, { isOwnerPro });
+            if (closedReason) {
+                return res.status(403).send({ message: closedReason });
+            }
         }
 
         let userResponsePayload = Array.isArray(req.body.userResponse)
@@ -132,7 +233,7 @@ export const postSingleSurveyDataForUser = async (req, res) => {
             surveyMeta?.surveyForms,
             userResponsePayload
         );
-        if (zoomCheck.ok && !alreadyHasActiveZoom) {
+        if (zoomCheck.ok && !alreadyHasActiveZoom && req.body.skipZoom !== true && req.body.skipZoom !== 'true') {
             try {
                 const tokenInfo = await getValidZoomAccessToken(surveyMeta.userId);
                 if (!tokenInfo?.accessToken) {
@@ -198,9 +299,12 @@ export const postSingleSurveyDataForUser = async (req, res) => {
         let savedUserResponse;
         let isUpdate = false;
 
+        const wasComplete = Boolean(existingResponse?.isComplete);
+        const existingId = existingResponse?.id || requestedResponseId;
+
         if (existingResponse) {
             savedUserResponse = await prisma.userSurveyResponse.update({
-                where: { id: requestedResponseId },
+                where: { id: existingId },
                 data: {
                     userResponse: userResponsePayload,
                     userName:req.body.userName,
@@ -209,9 +313,19 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                     introduction:req.body.introduction,
                     ipAddress:ipAddress,
                     userTimeSpent:req.body.userTimeSpent,
+                    isComplete,
                 },
             });
             isUpdate = true;
+            if (!wasComplete && isComplete) {
+                await prisma.survey.update({
+                    where: { id: surveyId },
+                    data: {
+                        surveyResponses: { increment: 1 },
+                        surveyCompleted: { increment: 1 },
+                    },
+                });
+            }
         }
 
         if (!savedUserResponse) {
@@ -224,24 +338,28 @@ export const postSingleSurveyDataForUser = async (req, res) => {
                     formQuestions:req.body.formQuestions,
                     introduction:req.body.introduction,
                     ipAddress:ipAddress,
-                    userTimeSpent:req.body.userTimeSpent
+                    userTimeSpent:req.body.userTimeSpent,
+                    isComplete,
                 }
             });
 
-            await prisma.survey.update({
-                where:{
-                    id:surveyId
-                },
-                data:{
-                    surveyResponses:{
-                        increment:1
+            if (isComplete) {
+                await prisma.survey.update({
+                    where:{
+                        id:surveyId
                     },
-                    surveyCompleted: {
-                        increment: 1
+                    data:{
+                        surveyResponses:{
+                            increment:1
+                        },
+                        surveyCompleted: {
+                            increment: 1
+                        }
                     }
-                }
-            });
+                });
+            }
         }
+        res.cookie(cookieName, savedUserResponse.id, surveyCookieOptions());
         const getResponseCount = await prisma.survey.findUnique({
             where:{
                 id:surveyId
@@ -301,7 +419,6 @@ export const postSingleSurveyDataForUser = async (req, res) => {
         } catch (fullSummaryErr) {
             console.error('[DRI full 50 summary]', fullSummaryErr?.message || fullSummaryErr);
         }
-        await prisma.$disconnect();
         if(getResponseCount.surveyResponses === 450 ){
             updateUserResponseLimit( getResponseCount.user.firstName, getResponseCount.user.email, getResponseCount.surveyTitle, 450 );
         }
@@ -456,6 +573,7 @@ export const postDefenceReadinessInterimSummaryForUser = async (req, res) => {
                 introduction: false,
                 ipAddress: Array.isArray(userIP) ? userIP[0] : String(userIP || ''),
                 userTimeSpent: req.body.userTimeSpent || '0m 0s',
+                isComplete: false,
             },
         });
         const interimSummary = await generateInterimSummaryFromFirstTen(

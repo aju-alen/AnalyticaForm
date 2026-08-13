@@ -1,11 +1,9 @@
 import multer from 'multer';
 import mutlerS3 from 'multer-s3';
 import { S3 } from '@aws-sdk/client-s3';
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../utils/prisma.js'
 import dotenv from 'dotenv';
 dotenv.config();
-
-const prisma = new PrismaClient();
 
 const BUCKET_NAME = process.env.BUCKET_NAME;
 const REGION = process.env.REGION;

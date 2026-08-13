@@ -91,6 +91,10 @@ model Survey {
   formQuestions Json @default("[]") 
   targetCountry String @default("NIL")
   targetCountries Json @default("[]")
+  closesAt DateTime?
+  maxResponses Int?
+  accessPasswordHash String?
+  oneResponsePerPerson Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -109,6 +113,7 @@ model UserSurveyResponse{
   userTimeSpent String @default("0")
   formQuestions Json
   introduction Boolean
+  isComplete Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   responseConfirmationEmailSentAt DateTime?
@@ -120,6 +125,8 @@ model UserSurveyResponse{
   driInterim10SummaryPayments DriInterim10SummaryPayment[]
   driFullReportPayments       DriFullReportPayment[]
   driresponseData             DriresponseData?
+
+  @@index([surveyId, createdAt])
 }
 
 model DriInterim10SummaryPayment {

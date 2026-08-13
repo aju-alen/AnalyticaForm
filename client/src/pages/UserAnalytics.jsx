@@ -118,11 +118,17 @@ export default function UserAnalytics() {
         setCustomerData(getAllUserData.data);
         
         // Calculate summary statistics
+        const surveys = getAllUserData.data || [];
         const summary = {
-          totalResponses: getAllUserData.data.reduce((sum, survey) => sum + survey.surveyResponses, 0),
-          totalViews: getAllUserData.data.reduce((sum, survey) => sum + survey.surveyViews, 0),
-          completionRate: getAllUserData.data.reduce((sum, survey) => sum + (survey.surveyCompleted / survey.surveyViews * 100 || 0), 0) / getAllUserData.data.length,
-          averageResponseTime: 0 // Add this from your backend if available
+          totalResponses: surveys.reduce((sum, survey) => sum + (survey.surveyResponses || 0), 0),
+          totalViews: surveys.reduce((sum, survey) => sum + (survey.surveyViews || 0), 0),
+          completionRate: surveys.length
+            ? surveys.reduce((sum, survey) => {
+                const views = survey.surveyViews || 0;
+                return sum + (views > 0 ? (survey.surveyResponses / views) * 100 : 0);
+              }, 0) / surveys.length
+            : 0,
+          averageResponseTime: 0
         };
         setAnalyticsSummary(summary);
         setIsLoading(false);
@@ -348,7 +354,7 @@ export default function UserAnalytics() {
                           row.surveyIntroduction?.length > 0 ? 'Yes' : 'No',
                           row.updatedAt,
                           row.surveyViews,
-                          `${Math.floor((row.surveyResponses / row.surveyViews) * 100)}%` || 0
+                          row.surveyViews > 0 ? `${Math.floor((row.surveyResponses / row.surveyViews) * 100)}%` : '0%'
                         ].map((cell, cellIndex) => (
                           <TableCell 
                             key={cellIndex}

@@ -64,6 +64,9 @@ const UserSubmitSurvey = () => {
         surveyId && surveyId === import.meta.env.VITE_DEFENCE_READINESS_SURVEY_ID;
     const continueResponseId = (searchParams.get('responseId') || '').trim();
     const continueDriFlag = (searchParams.get('continueDri') || '').trim();
+    const isPreview = searchParams.get('preview') === '1';
+    const progressStorageKey = `da-progress-${surveyId}`;
+    const passwordStorageKey = `da-survey-pw-${surveyId}`;
     const isDriContinueSession =
         isDefenceReadinessSurvey &&
         Boolean(continueResponseId) &&
@@ -98,6 +101,17 @@ const UserSubmitSurvey = () => {
     const [driInterimSubmitted, setDriInterimSubmitted] = useState(false);
     const [driInterimSubmitting, setDriInterimSubmitting] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+    const [surveyPassword, setSurveyPassword] = useState(() => {
+        try {
+            return sessionStorage.getItem(`da-survey-pw-${surveyId}`) || '';
+        } catch {
+            return '';
+        }
+    });
+    const [passwordInput, setPasswordInput] = useState('');
+    const [alreadyResponded, setAlreadyResponded] = useState(false);
+    const [savedResponseId, setSavedResponseId] = useState('');
+    const [previewBlocked, setPreviewBlocked] = useState(false);
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -188,6 +202,85 @@ const UserSubmitSurvey = () => {
         }
     };
 
+    const mergeSavedAnswers = (forms, savedAnswers) => {
+        if (!Array.isArray(forms) || !Array.isArray(savedAnswers)) return forms;
+        return forms.map((form) => {
+            const savedForm = savedAnswers.find((item) => item?.id === form.id)
+                || savedAnswers.find((item) => item?.formType === form.formType && item?.question === form.question);
+            if (!savedForm) return form;
+            return {
+                ...form,
+                selectedValue: Array.isArray(savedForm.selectedValue) ? savedForm.selectedValue : form.selectedValue,
+            };
+        });
+    };
+
+    const writeLocalProgress = (extra = {}) => {
+        if (isPreview) return;
+        try {
+            const existing = JSON.parse(localStorage.getItem(progressStorageKey) || '{}');
+            localStorage.setItem(progressStorageKey, JSON.stringify({
+                surveyForms: extra.surveyForms || surveyData.surveyForms,
+                currentIndex: extra.currentIndex ?? currentIndex,
+                formData: extra.formData || formData,
+                introduction: extra.introduction ?? introduction,
+                welcomePage: extra.welcomePage ?? welcomePage,
+                responseId: extra.responseId || existing.responseId || savedResponseId,
+            }));
+        } catch {
+            // ignore storage failures
+        }
+    };
+
+    const submitRequestConfig = () => ({
+        withCredentials: true,
+        headers: surveyPassword ? { 'x-survey-password': surveyPassword } : {},
+    });
+
+    const persistIncompleteToServer = async (formsOverride) => {
+        if (isPreview) return;
+        const forms = formsOverride || surveyData.surveyForms || [];
+        const userResponse = forms.filter((form) => form?.formType !== 'IntroductionForm');
+        try {
+            const resp = await axios.post(
+                `${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`,
+                {
+                    userResponse,
+                    userName: formData.userName || undefined,
+                    userEmail: formData.userEmail || undefined,
+                    formQuestions: [],
+                    introduction: false,
+                    userTimeSpent: startDate
+                        ? `${Math.floor((Date.now() - startDate) / 60000)}m ${Math.round(((Date.now() - startDate) % 60000) / 1000)}s`
+                        : '0m 0s',
+                    responseId: savedResponseId || undefined,
+                    isComplete: false,
+                    skipZoom: true,
+                    accessPassword: surveyPassword || undefined,
+                },
+                submitRequestConfig()
+            );
+            const id = resp?.data?.createUserResponse?.id;
+            if (id) {
+                setSavedResponseId(id);
+                writeLocalProgress({ responseId: id, surveyForms: forms });
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleUnlockPassword = (event) => {
+        event.preventDefault();
+        const next = passwordInput.trim();
+        setSurveyPassword(next);
+        try {
+            sessionStorage.setItem(passwordStorageKey, next);
+        } catch {
+            // ignore
+        }
+    };
+
 
     const handleSaveSinglePointForm = (formData) => {
 
@@ -268,7 +361,10 @@ const UserSubmitSurvey = () => {
     }
 
     const handleNext = () => {
-        setCurrentIndex(prevIndex => prevIndex + 1);
+        const next = currentIndex + 1;
+        setCurrentIndex(next);
+        writeLocalProgress({ currentIndex: next });
+        void persistIncompleteToServer();
     }
 
     const handleConsentDisagree = () => {
@@ -365,13 +461,26 @@ const UserSubmitSurvey = () => {
                 introduction: surveyData.surveyIntroduction === null ? false : true,
                 userTimeSpent: timeSpentString,
                 zoomInterviewExit: true,
+                isComplete: false,
+                responseId: isDriContinueSession ? continueResponseId : (savedResponseId || undefined),
+                accessPassword: surveyPassword || undefined,
             };
+
+            if (isPreview) {
+                return;
+            }
 
             const sendUserResp = await axios.post(
                 `${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`,
-                finalData
+                finalData,
+                submitRequestConfig()
             );
             const joinUrlFromApi = sendUserResp?.data?.zoomMeeting?.joinUrl || '';
+            const zoomSavedId = sendUserResp?.data?.createUserResponse?.id;
+            if (zoomSavedId) {
+                setSavedResponseId(zoomSavedId);
+                writeLocalProgress({ responseId: zoomSavedId });
+            }
             if (joinUrlFromApi) {
                 setZoomJoinUrl(joinUrlFromApi);
             } else {
@@ -422,6 +531,12 @@ const UserSubmitSurvey = () => {
         e.preventDefault();
         if (isSubmittingResponse) return;
         setIsSubmittingResponse(true);
+
+        if (isPreview) {
+            setResponseSubmitted(true);
+            setIsSubmittingResponse(false);
+            return;
+        }
 
         try {
             //response time calculation
@@ -740,25 +855,34 @@ const UserSubmitSurvey = () => {
                 formQuestions: formQuestions,
                 introduction: introduction,
                 userTimeSpent: timeSpentString,
-                responseId: isDriContinueSession ? continueResponseId : undefined
-
-
+                responseId: isDriContinueSession ? continueResponseId : (savedResponseId || undefined),
+                isComplete: true,
+                accessPassword: surveyPassword || undefined,
             }
             console.log(finalData, 'finalData');
 
             
 
-            const sendUserResp = await axios.post(`${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`, finalData);
-            const savedResponseId = sendUserResp?.data?.createUserResponse?.id;
+            const sendUserResp = await axios.post(
+                `${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`,
+                finalData,
+                submitRequestConfig()
+            );
+            const savedId = sendUserResp?.data?.createUserResponse?.id;
             const joinUrlFromApi = sendUserResp?.data?.zoomMeeting?.joinUrl || '';
             if (joinUrlFromApi) {
                 setZoomJoinUrl(joinUrlFromApi);
             }
             const isFullDriSubmission = isDefenceReadinessSurvey && data.length >= 50;
-            if (isFullDriSubmission && savedResponseId) {
+            if (isFullDriSubmission && savedId) {
                 const driPageBase = (import.meta.env.VITE_DRI_BASE_URL || 'http://localhost:5174').replace(/\/$/, '');
-                window.location.assign(`${driPageBase}/full-payment-summary/${encodeURIComponent(String(savedResponseId))}`);
+                window.location.assign(`${driPageBase}/full-payment-summary/${encodeURIComponent(String(savedId))}`);
                 return;
+            }
+            try {
+                localStorage.removeItem(progressStorageKey);
+            } catch {
+                // ignore
             }
             setResponseSubmitted(true);
             setIsLoading(false);
@@ -784,8 +908,20 @@ const UserSubmitSurvey = () => {
     useEffect(() => {
         const fetchSurveyData = async () => {
             try {
-                const surveyDataResp = await axios.get(`${backendUrl}/api/user-response-survey/get-one-survey/user/${surveyId}`);
+                if (isPreview) {
+                    const surveyDataResp = await axiosWithAuth.get(`${backendUrl}/api/survey/get-one-survey/${surveyId}`);
+                    setSurveyData(surveyDataResp.data);
+                    setStartDate(Date.now());
+                    return;
+                }
+                const headers = {};
+                if (surveyPassword) headers['x-survey-password'] = surveyPassword;
+                const surveyDataResp = await axios.get(
+                    `${backendUrl}/api/user-response-survey/get-one-survey/user/${surveyId}`,
+                    { withCredentials: true, headers }
+                );
                 let nextSurveyData = surveyDataResp.data;
+                setAlreadyResponded(Boolean(nextSurveyData.alreadyResponded));
 
                 if (isDriContinueSession) {
                     const resumeResp = await axios.get(
@@ -828,19 +964,41 @@ const UserSubmitSurvey = () => {
                     setWelcomePage(false);
                     setDriInterimSubmitted(true);
                     setCurrentIndex(11);
+                    setSavedResponseId(continueResponseId);
+                } else {
+                    try {
+                        const saved = JSON.parse(localStorage.getItem(progressStorageKey) || 'null');
+                        if (saved?.surveyForms && !nextSurveyData.alreadyResponded && !nextSurveyData.isClosed && nextSurveyData.surveyForms?.length) {
+                            nextSurveyData = {
+                                ...nextSurveyData,
+                                surveyForms: mergeSavedAnswers(nextSurveyData.surveyForms, saved.surveyForms),
+                            };
+                            if (typeof saved.currentIndex === 'number') setCurrentIndex(saved.currentIndex);
+                            if (saved.formData) setFormData((prev) => ({ ...prev, ...saved.formData }));
+                            if (saved.introduction === false) setIntroduction(false);
+                            if (saved.welcomePage === false) setWelcomePage(false);
+                            if (saved.responseId) setSavedResponseId(saved.responseId);
+                        }
+                    } catch {
+                        // ignore invalid saved progress
+                    }
                 }
 
                 setSurveyData(nextSurveyData);
                 setStartDate(Date.now());
             }
             catch (err) {
+                if (isPreview && err.response?.status === 401) {
+                    setPreviewBlocked(true);
+                }
                 console.log(err);
             }
         }
         fetchSurveyData();
-    }, [continueResponseId, isDriContinueSession, surveyId])
+    }, [continueResponseId, isDriContinueSession, surveyId, isPreview, surveyPassword])
 
     useEffect(() => {
+        if (isPreview) return;
         const checkIfUserViewedSurvey = async () => {
             try{
                 const viewedSurvey = await axiosWithAuth.put(`${backendUrl}/api/survey/update-user-view/${surveyId}`);
@@ -851,7 +1009,7 @@ const UserSubmitSurvey = () => {
             }
         }
         checkIfUserViewedSurvey();
-    }, []);
+    }, [isPreview, surveyId]);
 
     useEffect(() => {
         if (!isDefenceReadinessSurvey || introduction || driInterimSubmitted || isDriContinueSession) {
@@ -1992,13 +2150,35 @@ const UserSubmitSurvey = () => {
         />
             <CssBaseline />
             <div className=" flex justify-center items-center h-screen">
-                {((surveyData.responseLimitReached ?? surveyData.surveyResponses > 500)) && (<h1 className=' font-bold text-blue-500 text-xl'> This survey has exceeded it's alloted responses. Please contact host.</h1>)}
+                {isPreview && (
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-11/12 max-w-xl">
+                        <Alert severity="info">Preview only — answers are not saved.</Alert>
+                    </div>
+                )}
+                {previewBlocked && (
+                    <h1 className=' font-bold text-blue-500 text-xl'>Log in to preview this survey.</h1>
+                )}
+                {alreadyResponded && !isPreview && (
+                    <h1 className=' font-bold text-blue-500 text-xl'>You have already submitted a response to this survey.</h1>
+                )}
+                {(surveyData.isClosed || surveyData.responseLimitReached) && !isPreview && (
+                    <h1 className=' font-bold text-blue-500 text-xl'>{surveyData.closedReason || 'This survey has exceeded its allotted responses. Please contact the host.'}</h1>
+                )}
+                {!isPreview && surveyData.passwordRequired && !(surveyData.surveyForms?.length) && !surveyData.isClosed && !alreadyResponded && (
+                    <form onSubmit={handleUnlockPassword} className="flex flex-col gap-3 w-11/12 max-w-md bg-white p-6 rounded-xl shadow">
+                        <h1 className=' font-bold text-blue-700 text-xl text-center'>This survey is password protected</h1>
+                        <TextField
+                            type="password"
+                            label="Survey password"
+                            value={passwordInput}
+                            onChange={(e) => setPasswordInput(e.target.value)}
+                            required
+                        />
+                        <Button variant="contained" type="submit">Continue</Button>
+                    </form>
+                )}
 
-              
-
-                {(surveyData.surveyStatus === 'Disable') ? (<h1 className=' font-bold text-blue-500 text-xl'> This survey is not active. Please contact host.</h1>) : null}
-
-                {(introduction && welcomePage && !(surveyData.responseLimitReached ?? surveyData.surveyResponses > 500) && surveyData.surveyStatus==='Active') && (
+                {(introduction && welcomePage && (isPreview ? Boolean(surveyData.surveyForms?.length) && !previewBlocked : surveyData.surveyStatus==='Active' && !surveyData.isClosed && !surveyData.responseLimitReached && !alreadyResponded && Boolean(surveyData.surveyForms?.length))) && (
                <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 p-4">
                <motion.div 
                  initial={{ opacity: 0, y: 20 }}

@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient();
+import { prisma } from '../utils/prisma.js'
 
 export const getPurchaseDetails = async (req, res) => {
     console.log(req.params,'paraaaaaaaaaams');
@@ -19,6 +18,5 @@ export const getPurchaseDetails = async (req, res) => {
         res.status(500).send({message:'Internal server error'});
     }
     finally{
-        await prisma.$disconnect();
     }
 };

@@ -26,6 +26,7 @@ import { runDefenceReadinessResponseEmails } from './jobs/defenceReadinessRespon
 import { runExpireZoomMeetings } from './jobs/expireZoomMeetings.js';
 import chalk from 'chalk';
 import compression from 'compression';
+import helmet from 'helmet';
 
 dotenv.config();
 
@@ -34,14 +35,18 @@ const app = express();
 
 // app.set('trust proxy', true);
 app.use(compression());
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 app.use(cors(corsOptions));
 
 // Register webhook route BEFORE body parsers to preserve raw body for signature verification
 app.post('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }), stripeWebhook);
 app.post('/api/stripe/dri/webhook', bodyParser.raw({ type: 'application/json' }), stripeDriWebhook);
 
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({ limit: '2mb' }));
+app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {

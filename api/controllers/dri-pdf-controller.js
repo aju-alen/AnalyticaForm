@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/prisma.js';
 import puppeteer from 'puppeteer';
 import fs from 'node:fs';
 import { resendEmailPhdSuccessConsultationForm } from '../utils/resendEmailTemplate.js';
 
-const prisma = new PrismaClient();
 const CHROME_EXECUTABLE_PATH =
   process.env.PUPPETEER_EXECUTABLE_PATH ||
   process.env.CHROME_PATH ||

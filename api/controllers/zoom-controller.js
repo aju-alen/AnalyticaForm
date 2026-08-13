@@ -1,11 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/prisma.js';
 import {
   getZoomAuthorizeUrl,
   exchangeZoomCodeForTokens,
   fetchZoomUser,
 } from '../utils/zoomApi.js';
-
-const prisma = new PrismaClient();
 
 export const getZoomStatus = async (req, res) => {
   try {

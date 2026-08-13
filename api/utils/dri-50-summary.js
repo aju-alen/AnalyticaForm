@@ -1,12 +1,11 @@
 import { driQuestionMap } from '../config/dri-question.js';
 import OpenAI from 'openai';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from './prisma.js';
 
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   : null;
 
-const prisma = new PrismaClient();
 const DRI_QUESTION_COUNT = driQuestionMap.length;
 
 function parseDriQuestionId(raw) {

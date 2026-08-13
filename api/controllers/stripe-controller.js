@@ -9,9 +9,7 @@ import stripe from 'stripe';
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 const StripeDri = stripe(process.env.STRIPE_SECRET_KEY_DRI || '');
 
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient();
-
+import { prisma } from '../utils/prisma.js'
 
 const YOUR_DOMAIN = stripeFrontendURL;
 

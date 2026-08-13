@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../utils/prisma.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer";
@@ -9,8 +9,6 @@ import dotenv from 'dotenv';
 import { registerEmailTemplate, welcomeEmailTemplate } from '../utils/emailMailType.js';
 import { resendEmailBoiler } from '../utils/resendEmailTemplate.js';
 dotenv.config();
-
-const prisma = new PrismaClient();
 
 import { OAuth2Client } from 'google-auth-library';
 
@@ -155,8 +153,6 @@ export const userRegister = async (req, res, next) => {
                 message: "An error occurred during registration. Please try again or contact support.",
                 error: "REGISTRATION_FAILED"
             });
-        } finally {
-            await prisma.$disconnect();
         }
     };
 
@@ -181,7 +177,6 @@ export const userRegister = async (req, res, next) => {
                     isGuest: true,
                 }
             })
-            await prisma.$disconnect();
             if(!newUser){
                 return res.status(400).json({ message: "User registration failed. please try again" });
             }
@@ -222,7 +217,6 @@ export const userRegister = async (req, res, next) => {
                     emailVerificationToken: ''
                 }
             })
-            await prisma.$disconnect()
             const welcomeHTMLTemplate = welcomeEmailTemplate(updatedUser.firstName, updatedUser.email, frontendURL);
             const emailResponse = await resendEmailBoiler(process.env.GMAIL_AUTH_USER_SUPPORT, updatedUser.email, 'Welcome to Dubai Analytica', welcomeHTMLTemplate);
             console.log(emailResponse, 'emailResponse');
@@ -247,7 +241,6 @@ export const userRegister = async (req, res, next) => {
                     email
                 }
             });
-            await prisma.$disconnect();
             if (!user) {
                 return res.status(400).json({ message: "There exist no email in this application. You can register as a new account." });
             }
@@ -371,7 +364,6 @@ export const userRegister = async (req, res, next) => {
                 }
             })
             console.log("reached");
-            await prisma.$disconnect()
             console.log(req.body.email, resetToken, user.firstName, 'user in forget password');
             
             // Send reset password email using Resend
@@ -483,7 +475,6 @@ export const userRegister = async (req, res, next) => {
             if(!updatedUser){
                 return res.status(400).json({ message: 'Failed to update password' })
             }
-            await prisma.$disconnect()
             res.status(200).json({ message: 'Password reset successful' })
 
         }
@@ -507,7 +498,6 @@ export const userRegister = async (req, res, next) => {
                     firstName: true,
                 }
             })
-            await prisma.$disconnect()
             res.status(200).json(user)
 
         }
@@ -535,7 +525,6 @@ export const userRegister = async (req, res, next) => {
                     createdAt: true
                 }
             })
-            await prisma.$disconnect()
             res.status(200).json(user)
 
         }
@@ -566,7 +555,6 @@ export const userRegister = async (req, res, next) => {
             });
 
             if (!proMember) {
-                await prisma.$disconnect();
                 return res.status(200).json({
                     subscription: null,
                     isEligibleForRefund: false,
@@ -584,7 +572,6 @@ export const userRegister = async (req, res, next) => {
                 proMember.subscriptionPeriodStart && 
                 (currentTime - proMember.subscriptionPeriodStart) <= sevenDaysInSeconds;
 
-            await prisma.$disconnect();
             res.status(200).json({
                 subscription: proMember,
                 isEligibleForRefund,
@@ -593,7 +580,6 @@ export const userRegister = async (req, res, next) => {
 
         } catch (err) {
             console.log(err);
-            await prisma.$disconnect();
             res.status(400).send('An error occurred');
         }
     }
