@@ -10,7 +10,26 @@ import AddIcon from '@mui/icons-material/Add';
 import { ThemeProvider, alpha } from '@mui/material/styles';
 import theme from '../utils/theme';
 import { Box, Grid, TextField, CircularProgress, Snackbar, Alert, Typography, Card, CardContent, Button } from '@mui/material';
-import Joyride, { STATUS } from 'react-joyride';
+import Joyride, { STATUS, ACTIONS } from 'react-joyride';
+
+const DASHBOARD_TOUR_KEY = 'da.dashboardTourComplete';
+const LEGACY_TOUR_KEY = 'dashboardTourComplete';
+
+function dashboardTourStorageKey() {
+    const userId = getUserAccess()?.id;
+    return userId ? `${DASHBOARD_TOUR_KEY}.${userId}` : DASHBOARD_TOUR_KEY;
+}
+
+function hasCompletedDashboardTour() {
+    if (localStorage.getItem(dashboardTourStorageKey()) === '1') return true;
+    if (localStorage.getItem(LEGACY_TOUR_KEY) === 'true') return true;
+    return false;
+}
+
+function markDashboardTourComplete() {
+    localStorage.setItem(dashboardTourStorageKey(), '1');
+    localStorage.setItem(LEGACY_TOUR_KEY, 'true');
+}
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -24,7 +43,7 @@ const Dashboard = () => {
     const [alertColor, setAlertColor] = useState('');
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [dataChanged, setDataChanged] = useState(false);
-    const [runTour, setRunTour] = useState(false); // make it dynamic 
+    const [runTour, setRunTour] = useState(false); 
 
     useEffect(() => {
         const getUserIsProMember = async () => {
@@ -130,44 +149,40 @@ const Dashboard = () => {
         setUserSurveyData(userSurveyData.filter((survey) => survey.id !== surveyId));
       };
     
-    // Add tour steps
     const steps = [
         {
             target: '.survey-dashboard-title',
-            content: 'Welcome to your Survey Dashboard! This is where you can manage all your surveys.',
+            content: 'This is your dashboard. Create surveys, then share and track responses from here.',
             disableBeacon: true,
-        },
-        {
-            target: '.subscription-card',
-            content: 'Check your current subscription plan and upgrade for more features!',
+            placement: 'bottom',
         },
         {
             target: '.create-survey-button',
-            content: 'Click here to create a new survey. Free users can create up to 5 surveys.',
+            content: 'Start here. Name a survey, then add questions. Free accounts can create up to 5.',
+            disableBeacon: true,
+            placement: 'bottom',
         },
         {
             target: '.survey-list',
-            content: 'All your created surveys will appear here. You can view responses, share, or delete them.',
+            content: 'Your surveys land here. Open one to edit, or use Actions to preview, share, export, or delete.',
+            disableBeacon: true,
+            placement: 'top',
         },
     ];
 
-    // Add tour callback
     const handleJoyrideCallback = (data) => {
-        const { status } = data;
-        if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+        const { status, action } = data;
+        if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status) || action === ACTIONS.CLOSE) {
             setRunTour(false);
-            // Optionally save to localStorage that user has seen the tour
-            localStorage.setItem('dashboardTourComplete', 'true');
+            markDashboardTourComplete();
         }
     };
 
-    // Check if user should see tour
     useEffect(() => {
-        const tourComplete = localStorage.getItem('dashboardTourComplete');
-        if (!tourComplete) {
-            setRunTour(true);
-        }
-    }, []);
+        if (isLoading || hasCompletedDashboardTour()) return undefined;
+        const timer = window.setTimeout(() => setRunTour(true), 450);
+        return () => window.clearTimeout(timer);
+    }, [isLoading]);
 
     const totalResponses = userSurveyData.reduce((acc, survey) => acc + (survey.surveyResponses || 0), 0);
     const activeSurveys = userSurveyData.filter((survey) => survey.surveyStatus === 'Active').length;
@@ -183,14 +198,31 @@ const Dashboard = () => {
             <Joyride
                 steps={steps}
                 run={runTour}
-                continuous={true}
-                showProgress={true}
-                showSkipButton={true}
+                continuous
+                showProgress
+                showSkipButton
+                disableOverlayClose
+                scrollToFirstStep
                 callback={handleJoyrideCallback}
+                locale={{
+                    back: 'Back',
+                    next: 'Next',
+                    skip: 'Skip',
+                    last: 'Done',
+                }}
                 styles={{
                     options: {
                         primaryColor: theme.palette.primary.main,
                         zIndex: 10000,
+                    },
+                    tooltip: {
+                        borderRadius: 12,
+                    },
+                    buttonNext: {
+                        borderRadius: 8,
+                    },
+                    buttonBack: {
+                        marginRight: 8,
                     },
                 }}
             />

@@ -22,6 +22,15 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
             expand: ['data.product'],
           });
           console.log(prices);
+          const priceId = prices.data?.[0]?.id;
+          if (!priceId) {
+            return res.status(400).json({
+              message: 'This plan is not available for checkout. Please log in and try again, or contact support.',
+            });
+          }
+          if (!req.body.userId || !req.body.emailId) {
+            return res.status(400).json({ message: 'Please log in before checking out.' });
+          }
           const session = await Stripe.checkout.sessions.create({
             metadata:{
               userId:req.body.userId,
@@ -31,7 +40,7 @@ export const createCheckoutSessionForSubscription = async (req, res) => {
             customer_email: req.body.emailId,
             line_items: [
               {
-                price: prices.data[0].id,
+                price: priceId,
                 // For metered billing, do not pass quantity
                 quantity: 1,
         

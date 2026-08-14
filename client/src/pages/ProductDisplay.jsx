@@ -16,6 +16,9 @@ import HomeNavBar from '../components/HomeNavBar';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
 import { getUserAccess } from '../utils/userAccess';
+import { useNavigate } from 'react-router-dom';
+
+const isLiveStripe = String(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '').startsWith('pk_live_');
 
 
 const tiers = [
@@ -77,6 +80,7 @@ const ProductDisplayy = () => {
     const [userId, setUserId] = useState('');
     const [isProMember, setIsProMember] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const userDetails = getUserAccess();
@@ -272,10 +276,17 @@ const ProductDisplayy = () => {
                         Proceed to checkout
                       </Button>
                     </>
+                  ) : !userId ? (
+                    <Button
+                      variant="contained"
+                      sx={{ width: '100%' }}
+                      onClick={() => navigate('/login')}
+                    >
+                      Log in to checkout
+                    </Button>
                   ) : (
                     <form action={`${import.meta.env.VITE_BACKEND_URL}/api/stripe/create-checkout-session`} method="POST" style={{ width: '100%' }}>
-                      {/* Add a hidden field with the lookup_key of your Price */}
-                      <input type="hidden" name="lookup_key" value={tier.dev_lookup_key} />
+                      <input type="hidden" name="lookup_key" value={isLiveStripe ? tier.lookup_key : tier.dev_lookup_key} />
                       <input type="hidden" name="userId" value={userId} />
                       <input type="hidden" name="emailId" value={emailId} />
                       <Button 
