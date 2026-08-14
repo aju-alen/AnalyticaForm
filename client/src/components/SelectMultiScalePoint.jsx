@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, CssBaseline, Container, Box, Stack, Radio, Button, Typography, InputLabel, useTheme, useMediaQuery } from '@mui/material';
+import { TextField, CssBaseline, Container, Box, Stack, Radio, RadioGroup, FormControlLabel, Button, Typography, InputLabel, useTheme, useMediaQuery } from '@mui/material';
 import { uid } from 'uid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Divider from '@mui/material/Divider';
 import ReactQuill from 'react-quill';
@@ -170,15 +166,29 @@ const SelectMultiScalePoint = ({ onSaveForm, registerFormData, data, id, options
   }
 
   const handleRadioChange = (rowIndex, columnIndex) => {
-    const newSelectedValue = [...formData.selectedValue];
-    newSelectedValue[rowIndex].value = columnIndex;
-    newSelectedValue[rowIndex].index = columnIndex + 1;
-
-
-    newSelectedValue[rowIndex].question = formData.options[rowIndex].rowQuestion;
-
-    newSelectedValue[rowIndex].answer = formData.columnTextField[columnIndex].value;
-    setFormData(prev => ({ ...prev, selectedValue: newSelectedValue }));
+    setFormData((prev) => {
+      const row = prev.options[rowIndex];
+      const column = prev.columnTextField[columnIndex];
+      const newSelectedValue = prev.options.map((opt, i) => {
+        const existing = prev.selectedValue?.[i] || {
+          id: opt.id,
+          question: '',
+          answer: '',
+          value: '',
+          index: '',
+        };
+        if (i !== rowIndex) return existing;
+        return {
+          ...existing,
+          id: opt.id,
+          value: columnIndex,
+          index: columnIndex + 1,
+          question: row?.rowQuestion || '',
+          answer: column?.value || '',
+        };
+      });
+      return { ...prev, selectedValue: newSelectedValue };
+    });
   };
 
   return (
@@ -215,9 +225,9 @@ const SelectMultiScalePoint = ({ onSaveForm, registerFormData, data, id, options
             opacity: 1,
           },
           '&:hover': {
-            boxShadow: '0px 1px rgba(0, 0, 0, 0.2)',
-            transform: 'scale(0.98)',
-            backgroundColor: '#F4FFF8',
+            boxShadow: { xs: '0px 3px 6px rgba(0, 0, 0, 0.5)', sm: '0px 1px rgba(0, 0, 0, 0.2)' },
+            transform: { xs: 'none', sm: 'scale(0.98)' },
+            backgroundColor: { xs: '#F4F3F6', sm: '#F4FFF8' },
           },
         }}>
           {/* Question / editor section – constrained so it doesn't overlap */}
@@ -359,7 +369,7 @@ const SelectMultiScalePoint = ({ onSaveForm, registerFormData, data, id, options
                         <Radio
                           disabled={disableForm}
                           key={column.id}
-                          checked={formData.selectedValue[rowIndex].value === columnIndex}
+                          checked={formData.selectedValue?.[rowIndex]?.value === columnIndex}
                           onChange={() => handleRadioChange(rowIndex, columnIndex)}
                           size='small'
                         />
@@ -384,52 +394,149 @@ const SelectMultiScalePoint = ({ onSaveForm, registerFormData, data, id, options
             )}
           </Box>
 
-          {/* Mobile View */}
+          {/* Mobile View — stacked cards, no accordion */}
           <Box sx={{ display: { xs: 'block', sm: 'none' }, width: '100%', mt: 1, minWidth: 0 }}>
-            {formData.options.map((row, rowIndex) => (
-              <Accordion
-                key={row.id}
-                sx={{
-                  mb: 1,
-                  '& .MuiAccordionSummary-content': {
-                    margin: '8px 0',
-                  },
-                }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1-content"
-                  id="panel1-header"
+            {!disableText && (
+              <Stack spacing={1} sx={{ mb: 2 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Scale labels
+                </Typography>
+                {formData.columnTextField.map((column) => (
+                  <Box key={column.id} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <TextField
+                      placeholder="Type Your Response Here"
+                      variant="standard"
+                      name="columnTextField"
+                      value={column.value}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        columnTextField: formData.columnTextField.map((item) =>
+                          item.id === column.id ? { ...item, value: e.target.value } : item
+                        ),
+                      })}
+                      fullWidth
+                      multiline
+                      sx={{ '& .MuiInputBase-root': { fontSize: '0.95rem' } }}
+                    />
+                    {!disableButtons && (
+                      <HighlightOffIcon
+                        fontSize="small"
+                        color="error"
+                        onClick={() => handleDeleteColumn(column.id)}
+                        sx={{ flexShrink: 0 }}
+                      />
+                    )}
+                  </Box>
+                ))}
+              </Stack>
+            )}
+
+            {formData.options.map((row, rowIndex) => {
+              const selected = formData.selectedValue?.[rowIndex];
+              const selectedIndex =
+                selected?.value === '' || selected?.value === undefined || selected?.value === null
+                  ? undefined
+                  : Number(selected.value);
+              const hasSelection = Number.isFinite(selectedIndex);
+
+              return (
+                <Box
+                  key={row.id}
+                  sx={{
+                    mb: 2,
+                    p: 1.5,
+                    borderRadius: 2,
+                    bgcolor: '#fff',
+                    border: '1px solid',
+                    borderColor: hasSelection ? 'primary.light' : 'rgba(0, 0, 0, 0.12)',
+                  }}
                 >
-                  <Typography variant="subtitle2" sx={{ flex: 1 }}>
-                    {row.rowQuestion?.trim() || `Question ${rowIndex + 1}`}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ p: 1 }}>
-                  <Stack spacing={2}>
-                    {formData.columnTextField.map((column, columnIndex) => (
-                      <Box key={column.id} sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        p: 1,
-                        borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
-                      }}>
-                        <Typography variant="body2" sx={{ flex: 1 }}>
-                          {column.value}
-                        </Typography>
-                        <Radio
-                          disabled={disableForm}
-                          checked={formData.selectedValue[rowIndex].value === columnIndex}
-                          onChange={() => handleRadioChange(rowIndex, columnIndex)}
-                          size="small"
+                  {disableText ? (
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ mb: 1.5, fontWeight: 600, wordBreak: 'break-word', lineHeight: 1.4 }}
+                    >
+                      {row.rowQuestion?.trim() || `Item ${rowIndex + 1}`}
+                    </Typography>
+                  ) : (
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 1.5 }}>
+                      <TextField
+                        placeholder="Type Your Sub Question"
+                        variant="standard"
+                        name="rowQuestion"
+                        value={row.rowQuestion}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          options: formData.options.map((item) =>
+                            item.id === row.id ? { ...item, rowQuestion: e.target.value } : item
+                          ),
+                        })}
+                        fullWidth
+                        multiline
+                        sx={{ '& .MuiInputBase-root': { fontSize: '0.95rem' } }}
+                      />
+                      {!disableButtons && (
+                        <HighlightOffIcon
+                          fontSize="small"
+                          color="error"
+                          onClick={() => handleDeleteRow(row.id)}
+                          sx={{ flexShrink: 0, mt: 0.5 }}
                         />
-                      </Box>
-                    ))}
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-            ))}
+                      )}
+                    </Box>
+                  )}
+
+                  <RadioGroup
+                    name={`multi-scale-row-${row.id}`}
+                    value={hasSelection ? String(selectedIndex) : ''}
+                    onChange={(e) => handleRadioChange(rowIndex, Number(e.target.value))}
+                  >
+                    {formData.columnTextField.map((column, columnIndex) => {
+                      const isSelected = selectedIndex === columnIndex;
+                      return (
+                        <FormControlLabel
+                          key={column.id}
+                          value={String(columnIndex)}
+                          disabled={disableForm}
+                          control={<Radio size="medium" sx={{ py: 0.5 }} />}
+                          label={column.value?.trim() || `Option ${columnIndex + 1}`}
+                          sx={{
+                            m: 0,
+                            mb: 0.75,
+                            px: 1.25,
+                            py: 0.5,
+                            borderRadius: 1.5,
+                            width: '100%',
+                            minHeight: 48,
+                            alignItems: 'center',
+                            bgcolor: isSelected ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+                            border: '1px solid',
+                            borderColor: isSelected ? 'primary.main' : 'rgba(0, 0, 0, 0.08)',
+                            '& .MuiFormControlLabel-label': {
+                              fontSize: '0.95rem',
+                              wordBreak: 'break-word',
+                              flex: 1,
+                            },
+                          }}
+                        />
+                      );
+                    })}
+                  </RadioGroup>
+                </Box>
+              );
+            })}
+
+            {!disableButtons && (
+              <Button
+                variant="outlined"
+                color="primary"
+                size="small"
+                onClick={handleAddRow}
+                sx={{ width: '100%', minWidth: 100 }}
+              >
+                Add Row
+              </Button>
+            )}
           </Box>
 
           <Stack

@@ -1253,8 +1253,9 @@ const UserSubmitSurvey = () => {
 
         if (!questionType.wrap) return formEl;
 
+        const isMultiPointRadio = currentItem.formType === 'MultiScalePoint';
         return (
-            <div className="w-11/12 h-4/6 mx-auto">
+            <div className={isMultiPointRadio ? 'w-11/12 mx-auto max-sm:h-auto sm:h-4/6' : 'w-11/12 h-4/6 mx-auto'}>
                 {!onePage && itemIndex !== 0 && <Button onClick={handlePrevious} className=''>
                     <KeyboardBackspaceIcon fontSize='large' />
                 </Button>}
@@ -1318,7 +1319,13 @@ const UserSubmitSurvey = () => {
           }}
         />
             <CssBaseline />
-            <div className={`flex justify-center ${isOnePage && !introduction ? 'items-start min-h-screen py-24' : 'items-center min-h-screen py-16'}`}>
+            <div className={`flex justify-center min-h-screen ${
+                isOnePage && !introduction
+                    ? 'items-start py-24'
+                    : surveyData.surveyForms?.[currentIndex]?.formType === 'MultiScalePoint'
+                        ? 'items-start sm:items-center py-16'
+                        : 'items-center py-16'
+            }`}>
                 {showProgress && (
                     <Box sx={{
                         position: 'fixed',
