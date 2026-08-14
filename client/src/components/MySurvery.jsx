@@ -1,4 +1,11 @@
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -9,6 +16,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
@@ -439,7 +449,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           }}
           sx={{
             '& .MuiPaper-root': {
-              minWidth: '200px',
+              minWidth: '220px',
               borderRadius: 2,
               mt: 1,
               border: `1px solid ${alpha(primaryColor, 0.2)}`,
@@ -447,49 +457,38 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
             }
           }}
         >
-          <MenuItem 
+          <MenuItem
             onClick={() => handlePreviewSurvey(surveyId)}
-            sx={{ 
-              py: 1.5,
-              px: 2.5,
-              '&:hover': {
-                bgcolor: alpha(primaryColor, 0.08),
-                color: primaryColor
-              }
-            }}
+            sx={{ py: 1, px: 2 }}
           >
-            Preview
+            <ListItemIcon>
+              <VisibilityOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Preview</ListItemText>
           </MenuItem>
-          <MenuItem 
-            onClick={() => handleCloneSurvey(surveyId)}
-            sx={{ 
-              py: 1.5,
-              px: 2.5,
-              '&:hover': {
-                bgcolor: alpha(primaryColor, 0.08),
-                color: primaryColor
-              }
-            }}
+          <MenuItem
+            onClick={() => handleResponseDashboard(surveyId)}
+            sx={{ py: 1, px: 2 }}
           >
-            Clone
+            <ListItemIcon>
+              <AssessmentOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Responses</ListItemText>
           </MenuItem>
-          <MenuItem 
+          <MenuItem
             onClick={() => {
               handleCloseMenu();
               navigate(`/user-survey-analytics/${surveyId}`);
             }}
-            sx={{ 
-              py: 1.5,
-              px: 2.5,
-              '&:hover': {
-                bgcolor: alpha(primaryColor, 0.08),
-                color: primaryColor
-              }
-            }}
+            sx={{ py: 1, px: 2 }}
           >
-            Analytics
+            <ListItemIcon>
+              <BarChartOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Analytics</ListItemText>
           </MenuItem>
-          <MenuItem 
+          <Divider />
+          <MenuItem
             onClick={() => {
               handleCloseMenu();
               if (!isSubscribed) {
@@ -498,55 +497,47 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
               }
               navigate(`/dashboard/invites/${surveyId}`);
             }}
-            sx={{ 
-              py: 1.5,
-              px: 2.5,
-              '&:hover': {
-                bgcolor: alpha(primaryColor, 0.08),
-                color: primaryColor
-              }
-            }}
+            sx={{ py: 1, px: 2 }}
           >
-            Email invitations
+            <ListItemIcon>
+              <MailOutlineIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Invitations</ListItemText>
           </MenuItem>
-          <MenuItem 
+          <MenuItem
+            onClick={() => handleClickOpen(surveyId)}
+            sx={{ py: 1, px: 2 }}
+          >
+            <ListItemIcon>
+              <FileDownloadOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Export</ListItemText>
+          </MenuItem>
+          <MenuItem
+            onClick={() => handleCloneSurvey(surveyId)}
+            sx={{ py: 1, px: 2 }}
+          >
+            <ListItemIcon>
+              <ContentCopyOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Clone</ListItemText>
+          </MenuItem>
+          <Divider />
+          <MenuItem
             onClick={() => handleDeleteOpen(surveyId)}
-            sx={{ 
-              py: 1.5,
-              px: 2.5,
+            sx={{
+              py: 1,
+              px: 2,
+              color: 'error.main',
               '&:hover': {
                 bgcolor: alpha('#fee2e2', 1),
-                color: 'error.main'
               }
             }}
           >
-            Delete
-          </MenuItem>
-          <MenuItem 
-            onClick={() => handleClickOpen(surveyId)}
-            sx={{ 
-              py: 1.5,
-              px: 2.5,
-              '&:hover': {
-                bgcolor: alpha(primaryColor, 0.08),
-                color: primaryColor
-              }
-            }}
-          >
-            Export to Excel
-          </MenuItem>
-          <MenuItem 
-            onClick={() => handleResponseDashboard(surveyId)}
-            sx={{ 
-              py: 1.5,
-              px: 2.5,
-              '&:hover': {
-                bgcolor: alpha(primaryColor, 0.08),
-                color: primaryColor
-              }
-            }}
-          >
-            Response Dasboard
+            <ListItemIcon sx={{ color: 'error.main' }}>
+              <DeleteOutlineIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
           </MenuItem>
         </Menu>
       </Container>
