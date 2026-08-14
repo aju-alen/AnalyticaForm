@@ -17,6 +17,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
@@ -33,6 +34,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import { alpha } from '@mui/material/styles';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -41,6 +43,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { backendUrl } from '../utils/backendUrl';
 import { axiosWithAuth } from '../utils/customAxios';
 import { refreshToken } from '../utils/refreshToken';
+
+function surveyShareUrl(id) {
+  return `${import.meta.env.VITE_BACKEND_URL}/survey-meta/${id}`;
+}
+
+function surveyShareLabel(id) {
+  try {
+    const parsed = new URL(surveyShareUrl(id));
+    return `${parsed.host}/survey-meta/${id}`;
+  } catch {
+    return `/survey-meta/${id}`;
+  }
+}
 
 export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDataChanged }) {
   console.log(userSurveyData,'--userSurveyData--');
@@ -107,6 +122,16 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
   const handlePreviewSurvey = (id) => {
     handleCloseMenu();
     window.open(`${window.location.origin}/user-survey/${id}?preview=1`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleCopySurveyUrl = (event, id) => {
+    event.preventDefault();
+    event.stopPropagation();
+    navigator.clipboard.writeText(surveyShareUrl(id)).then(() => {
+      setSnackbar({ open: true, message: 'Survey link copied.', severity: 'success' });
+    }).catch(() => {
+      setSnackbar({ open: true, message: 'Could not copy the survey link.', severity: 'error' });
+    });
   };
 
   const handleCloneSurvey = async (id) => {
@@ -340,23 +365,65 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
                     }}
                   >
                     <TableCell data-label="Survey Name" align="center">
-                      <Link to={`/dashboard/create-survey/${survey.id}`} style={{ textDecoration: 'none' }}>
-                        <Button 
-                          variant="text" 
-                          color="primary"
-                          sx={{ 
-                            width: { xs: '100%', sm: 'auto' },
-                            justifyContent: 'flex-start',
-                            fontWeight: 700,
-                            color: primaryColor,
-                            '&:hover': {
-                              bgcolor: alpha(primaryColor, 0.2)
-                            }
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: { xs: 'flex-end', sm: 'center' },
+                          gap: 0.25,
+                          width: '100%',
+                          minWidth: 0,
+                        }}
+                      >
+                        <Link to={`/dashboard/create-survey/${survey.id}`} style={{ textDecoration: 'none' }}>
+                          <Button 
+                            variant="text" 
+                            color="primary"
+                            sx={{ 
+                              width: { xs: '100%', sm: 'auto' },
+                              justifyContent: { xs: 'flex-end', sm: 'center' },
+                              fontWeight: 700,
+                              color: primaryColor,
+                              textTransform: 'none',
+                              '&:hover': {
+                                bgcolor: alpha(primaryColor, 0.2)
+                              }
+                            }}
+                          >
+                            {survey.surveyTitle}
+                          </Button>
+                        </Link>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.25,
+                            maxWidth: { xs: '70%', sm: 240 },
                           }}
                         >
-                          {survey.surveyTitle}
-                        </Button>
-                      </Link>
+                          <Tooltip title={surveyShareUrl(survey.id)}>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              noWrap
+                              sx={{ cursor: 'pointer', maxWidth: '100%' }}
+                              onClick={(event) => handleCopySurveyUrl(event, survey.id)}
+                            >
+                              {surveyShareLabel(survey.id)}
+                            </Typography>
+                          </Tooltip>
+                          <Tooltip title="Copy link">
+                            <IconButton
+                              size="small"
+                              onClick={(event) => handleCopySurveyUrl(event, survey.id)}
+                              aria-label="Copy survey link"
+                              sx={{ p: 0.25 }}
+                            >
+                              <ContentCopyOutlinedIcon sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      </Box>
                     </TableCell>
                     <TableCell data-label="Created" align="center" sx={{ display: { xs: 'none', sm: 'table-cell' }, color: 'text.secondary' }}>
                       {dayjs(survey.createdAt).fromNow()}
