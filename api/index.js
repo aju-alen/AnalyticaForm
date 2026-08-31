@@ -37,7 +37,12 @@ dotenv.config();
 const app = express();
 
 // app.set('trust proxy', true);
-app.use(compression());
+app.use(compression({
+  filter: (req, res) => {
+    if (req.originalUrl?.startsWith('/api/google-vertex/chat')) return false;
+    return compression.filter(req, res);
+  },
+}));
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginResourcePolicy: { policy: 'cross-origin' },

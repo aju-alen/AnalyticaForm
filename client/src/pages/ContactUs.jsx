@@ -13,7 +13,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { backendUrl } from '../utils/backendUrl';
 import {motion} from 'framer-motion';
 import HomeNavBar from '../components/HomeNavBar';
-import {axiosWithAuth} from '../utils/customAxios';
+import { getUserAccess } from '../utils/userAccess';
+import { refreshToken } from '../utils/refreshToken';
 
 const ContactUs = () => {
   const [open, setOpen] = useState(false);
@@ -29,11 +30,8 @@ const ContactUs = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
-
-  console.log(chatMessages, 'chatMessages');
-  
+  const chatAbortRef = useRef(null); 
   
   const handleFormChange = (event) => {
     const { name, value } = event.target
@@ -337,25 +335,133 @@ const ContactUs = () => {
     return formattedText;
   };
 
-  
+  const buildChatHistory = (messages) => {
+    const turns = messages
+      .filter((msg) => msg?.text && !msg.isLoading)
+      .map((msg) => ({
+        role: msg.sender === 'user' ? 'user' : 'model',
+        text: String(msg.text),
+      }));
+    while (turns.length && turns[0].role === 'model') {
+      turns.shift();
+    }
+    return turns.slice(-10);
+  };
+
+  const updateStreamingBot = (accumulated, done = false) => {
+    setChatMessages((prev) => {
+      const next = [...prev];
+      let idx = -1;
+      for (let i = next.length - 1; i >= 0; i -= 1) {
+        if (next[i].sender === 'bot' && (next[i].isLoading || next[i].streaming)) {
+          idx = i;
+          break;
+        }
+      }
+      if (idx < 0) return prev;
+      next[idx] = { text: accumulated, sender: 'bot', streaming: !done };
+      return next;
+    });
+  };
+
+  const readSseChat = async (response, onText) => {
+    if (!response.body) {
+      throw new Error('No stream');
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let full = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split('\n\n');
+      buffer = events.pop() || '';
+      for (const event of events) {
+        const line = event.split('\n').find((item) => item.startsWith('data: '));
+        if (!line) continue;
+        let data;
+        try {
+          data = JSON.parse(line.slice(6));
+        } catch {
+          continue;
+        }
+        if (data.error) {
+          throw new Error(data.message || 'Chat error');
+        }
+        if (data.text) {
+          full += data.text;
+          onText(full);
+        }
+      }
+    }
+    return full;
+  };
 
   const handleChatSubmit = async (message) => {
-    setChatMessages((prev) => [...prev, { text: message, sender: 'user' }]);
+    const text = String(message || '').trim();
+    if (!text || isLoading) return;
+
+    chatAbortRef.current?.abort();
+    const controller = new AbortController();
+    chatAbortRef.current = controller;
+
+    const history = buildChatHistory(chatMessages);
+    setChatMessages((prev) => [
+      ...prev,
+      { text, sender: 'user' },
+      { text: '', sender: 'bot', isLoading: true },
+    ]);
     setIsLoading(true);
+
     try {
-      setChatMessages((prev) => [...prev, { text: '...', sender: 'bot', isLoading: true }]);
-      console.log(message, 'tododod111111');
-      
-      const response = await axiosWithAuth.post(`${backendUrl}/api/google-vertex/chat`, { message });
-      
-      setChatMessages((prev) => prev.filter(msg => !msg.isLoading));
-      // Store raw text, format only when displaying
-      setChatMessages((prev) => [...prev, { text: response.data.message.parts[0].text, sender: 'bot' }]);
+      await refreshToken();
+      const token = getUserAccess()?.accessToken;
+      if (!token) {
+        const err = new Error('login');
+        err.status = 401;
+        throw err;
+      }
+
+      const response = await fetch(`${backendUrl}/api/google-vertex/chat`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: text, history }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const err = new Error('request failed');
+        err.status = response.status;
+        throw err;
+      }
+
+      const full = await readSseChat(response, (accumulated) => updateStreamingBot(accumulated));
+      if (!String(full).trim()) {
+        throw new Error('empty');
+      }
+      updateStreamingBot(full, true);
     } catch (error) {
-      setChatMessages((prev) => prev.filter(msg => !msg.isLoading));
-      setChatMessages((prev) => [...prev, { text: 'Error: Unable to get response. It may be due to the server being down or make sure you have logged in.', sender: 'bot' }]);
+      if (error?.name === 'AbortError') return;
+      const loginHint = error?.status === 401 || error?.status === 403;
+      setChatMessages((prev) => [
+        ...prev.filter((msg) => !msg.isLoading && !msg.streaming),
+        {
+          text: loginHint
+            ? 'Please log in to chat with DA Assistant.'
+            : 'Unable to get a response. Please try again, or make sure you are logged in.',
+          sender: 'bot',
+        },
+      ]);
     } finally {
-      setIsLoading(false);
+      if (chatAbortRef.current === controller) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -363,11 +469,11 @@ const ContactUs = () => {
     if (isChatOpen && chatMessages.length === 0) {
       setChatMessages([
         {
-          text: "👋 Hello! I'm DA Assistant, your AI helper. How can I assist you today? I can help you with:",
+          text: "👋 Hello! I'm DA Assistant. Ask me about plans, survey features, or support.",
           sender: 'bot'
         },
         {
-          text: "• Information about DA's services\n• General inquiries\n• Technical support",
+          text: "• Free vs Premium pricing\n• Surveys, invites, analytics, and Zoom interviews\n• Office location and contact details",
           sender: 'bot'
         }
       ]);
@@ -377,6 +483,10 @@ const ContactUs = () => {
   useEffect(() => {
     scrollToBottom();
   }, [chatMessages]);
+
+  useEffect(() => () => {
+    chatAbortRef.current?.abort();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -393,9 +503,9 @@ const ContactUs = () => {
 
   // Add this array of suggested questions
   const suggestedQuestions = [
-    "What services does DA offer?",
-    "How can I schedule a consultation?",
-    "What are your business hours?",
+    "What is included in Free vs Premium?",
+    "How much is the annual plan?",
+    "What survey features do you offer?",
     "Where is the DA office located?",
     "How can I get technical support?"
   ];
@@ -631,7 +741,11 @@ const ContactUs = () => {
                   </Box>
                 </Box>
                 <IconButton
-                  onClick={() => setIsChatOpen(false)}
+                  onClick={() => {
+                    chatAbortRef.current?.abort();
+                    setIsLoading(false);
+                    setIsChatOpen(false);
+                  }}
                   sx={{ 
                     color: 'white',
                     '&:hover': {
@@ -726,7 +840,10 @@ const ContactUs = () => {
                           </div>
                         </Box>
                       ) : (
-                        <div dangerouslySetInnerHTML={{ __html: msg.sender === 'bot' ? formatResponseText(msg.text) : msg.text }} />
+                        <div>
+                          <span dangerouslySetInnerHTML={{ __html: msg.sender === 'bot' ? formatResponseText(msg.text) : msg.text }} />
+                          {msg.streaming ? <span className="stream-cursor">|</span> : null}
+                        </div>
                       )}
                     </Box>
                   </Box>
@@ -853,7 +970,13 @@ const ContactUs = () => {
           
           <Button
             variant="contained"
-            onClick={() => setIsChatOpen(!isChatOpen)}
+            onClick={() => {
+              if (isChatOpen) {
+                chatAbortRef.current?.abort();
+                setIsLoading(false);
+              }
+              setIsChatOpen(!isChatOpen);
+            }}
             sx={{
               width: { xs: '50px', sm: '60px' },
               height: { xs: '50px', sm: '60px' },
@@ -885,10 +1008,14 @@ const ContactUs = () => {
           100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
         }
         
-        .typing-indicator {
-          display: flex;
-          gap: 4px;
-          padding: 4px;
+        .stream-cursor {
+          display: inline-block;
+          margin-left: 2px;
+          color: #1976d2;
+          animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+          50% { opacity: 0; }
         }
         
         .typing-indicator span {

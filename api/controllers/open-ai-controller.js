@@ -65,9 +65,9 @@ const getGenerativeModel = async () => {
     generativeModel = vertex_ai.preview.getGenerativeModel({
       model: process.env.VERTEX_AI_MODEL || 'gemini-pro',
       generationConfig: {
-        maxOutputTokens: 500,  // Increased for more complete responses
-        temperature: 0.7,       // Adjusted for balanced creativity/consistency
-        topP: 0.95,
+        maxOutputTokens: 400,
+        temperature: 0.3,
+        topP: 0.8,
       },
       safetySettings: [
         { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
@@ -142,22 +142,79 @@ export const generateSurveyDraftFromPrompt = async (prompt) => {
   return text;
 };
 
-// Modified chatbot API handler
+const MAX_CHAT_CHARS = 2000;
+const MAX_HISTORY_TURNS = 10;
+
+function extractChunkText(chunk) {
+  const parts = chunk?.candidates?.[0]?.content?.parts;
+  if (!Array.isArray(parts)) return '';
+  return parts.map((part) => part.text || '').join('');
+}
+
+function sanitizeChatHistory(raw) {
+  if (!Array.isArray(raw)) return [];
+  const cleaned = raw
+    .filter((item) => item && (item.role === 'user' || item.role === 'model') && typeof item.text === 'string')
+    .map((item) => ({
+      role: item.role,
+      parts: [{ text: String(item.text).slice(0, MAX_CHAT_CHARS) }],
+    }))
+    .slice(-MAX_HISTORY_TURNS);
+
+  while (cleaned.length && cleaned[0].role !== 'user') {
+    cleaned.shift();
+  }
+
+  const alternating = [];
+  for (const item of cleaned) {
+    if (!alternating.length || alternating[alternating.length - 1].role !== item.role) {
+      alternating.push(item);
+    }
+  }
+  return alternating;
+}
+
 export const vertexChat = async (req, res) => {
-  const { message } = req.body;
+  const text = String(req.body?.message || '').trim().slice(0, MAX_CHAT_CHARS);
+  if (!text) {
+    return res.status(400).json({ error: true, message: 'Message is required' });
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  if (typeof res.flushHeaders === 'function') res.flushHeaders();
+
+  const writeEvent = (payload) => {
+    if (res.writableEnded) return;
+    res.write(`data: ${JSON.stringify(payload)}\n\n`);
+    if (typeof res.flush === 'function') res.flush();
+  };
+
   try {
     const model = await getGenerativeModel();
-    const chat = model.startChat({});
-    const streamResult = await chat.sendMessageStream(message);
-    const responseContent = (await streamResult.response).candidates[0].content;
+    const streamResult = await model.generateContentStream({
+      contents: [
+        ...sanitizeChatHistory(req.body?.history),
+        { role: 'user', parts: [{ text }] },
+      ],
+    });
 
-    res.status(200).send({ message: responseContent });
+    for await (const chunk of streamResult.stream) {
+      if (req.aborted || res.writableEnded) break;
+      const piece = extractChunkText(chunk);
+      if (piece) writeEvent({ text: piece });
+    }
+
+    writeEvent({ done: true });
+    res.end();
   } catch (err) {
     console.error('Vertex AI Error:', err);
-    res.status(500).send({ 
+    writeEvent({
       error: true,
       message: 'Error communicating with Vertex AI',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
+    res.end();
   }
 };
