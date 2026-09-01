@@ -70,7 +70,6 @@ const UserSubmitSurvey = () => {
     });
     const [passwordInput, setPasswordInput] = useState('');
     const [alreadyResponded, setAlreadyResponded] = useState(false);
-    const [savedResponseId, setSavedResponseId] = useState('');
     const [previewBlocked, setPreviewBlocked] = useState(false);
     const pendingZoomConsentRef = React.useRef(null);
 
@@ -163,74 +162,10 @@ const UserSubmitSurvey = () => {
         }
     };
 
-    const mergeSavedAnswers = (forms, savedAnswers) => {
-        if (!Array.isArray(forms) || !Array.isArray(savedAnswers)) return forms;
-        return forms.map((form) => {
-            const savedForm = savedAnswers.find((item) => item?.id === form.id)
-                || savedAnswers.find((item) => item?.formType === form.formType && item?.question === form.question);
-            if (!savedForm) return form;
-            return {
-                ...form,
-                selectedValue: Array.isArray(savedForm.selectedValue) ? savedForm.selectedValue : form.selectedValue,
-            };
-        });
-    };
-
-    const writeLocalProgress = (extra = {}) => {
-        if (isPreview) return;
-        try {
-            const existing = JSON.parse(localStorage.getItem(progressStorageKey) || '{}');
-            localStorage.setItem(progressStorageKey, JSON.stringify({
-                surveyForms: extra.surveyForms || surveyData.surveyForms,
-                currentIndex: extra.currentIndex ?? currentIndex,
-                formData: extra.formData || formData,
-                introduction: extra.introduction ?? introduction,
-                welcomePage: extra.welcomePage ?? welcomePage,
-                responseId: extra.responseId || existing.responseId || savedResponseId,
-            }));
-        } catch {
-            // ignore storage failures
-        }
-    };
-
     const submitRequestConfig = () => ({
         withCredentials: true,
         headers: surveyPassword ? { 'x-survey-password': surveyPassword } : {},
     });
-
-    const persistIncompleteToServer = async (formsOverride) => {
-        if (isPreview) return;
-        const forms = formsOverride || surveyData.surveyForms || [];
-        const userResponse = forms.filter((form) => form?.formType !== 'IntroductionForm');
-        try {
-            const resp = await axios.post(
-                `${backendUrl}/api/user-response-survey/submit-survey/${surveyId}`,
-                {
-                    userResponse,
-                    userName: formData.userName || undefined,
-                    userEmail: formData.userEmail || undefined,
-                    formQuestions: [],
-                    introduction: false,
-                    userTimeSpent: startDate
-                        ? `${Math.floor((Date.now() - startDate) / 60000)}m ${Math.round(((Date.now() - startDate) % 60000) / 1000)}s`
-                        : '0m 0s',
-                    responseId: savedResponseId || undefined,
-                    isComplete: false,
-                    skipZoom: true,
-                    accessPassword: surveyPassword || undefined,
-                    inviteToken: inviteToken || undefined,
-                },
-                submitRequestConfig()
-            );
-            const id = resp?.data?.createUserResponse?.id;
-            if (id) {
-                setSavedResponseId(id);
-                writeLocalProgress({ responseId: id, surveyForms: forms });
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    };
 
     const handleUnlockPassword = (event) => {
         event.preventDefault();
@@ -330,8 +265,6 @@ const UserSubmitSurvey = () => {
     const handleNext = () => {
         const next = currentIndex + 1;
         setCurrentIndex(next);
-        writeLocalProgress({ currentIndex: next });
-        void persistIncompleteToServer();
     }
 
     const handlePdfNext = () => {
@@ -359,7 +292,6 @@ const UserSubmitSurvey = () => {
                 ),
             }));
             setCurrentIndex(pdfFormIndex);
-            writeLocalProgress({ currentIndex: pdfFormIndex });
             return;
         }
         handleZoomInterviewExit(payload);
@@ -460,7 +392,7 @@ const UserSubmitSurvey = () => {
                 userTimeSpent: timeSpentString,
                 zoomInterviewExit: true,
                 isComplete: false,
-                responseId: isDriContinueSession ? continueResponseId : (savedResponseId || undefined),
+                responseId: isDriContinueSession ? continueResponseId : undefined,
                 accessPassword: surveyPassword || undefined,
                 inviteToken: inviteToken || undefined,
             };
@@ -475,11 +407,6 @@ const UserSubmitSurvey = () => {
                 submitRequestConfig()
             );
             const joinUrlFromApi = sendUserResp?.data?.zoomMeeting?.joinUrl || '';
-            const zoomSavedId = sendUserResp?.data?.createUserResponse?.id;
-            if (zoomSavedId) {
-                setSavedResponseId(zoomSavedId);
-                writeLocalProgress({ responseId: zoomSavedId });
-            }
             if (joinUrlFromApi) {
                 setZoomJoinUrl(joinUrlFromApi);
             } else {
@@ -817,7 +744,7 @@ const UserSubmitSurvey = () => {
                 formQuestions: formQuestions,
                 introduction: introduction,
                 userTimeSpent: timeSpentString,
-                responseId: isDriContinueSession ? continueResponseId : (savedResponseId || undefined),
+                responseId: isDriContinueSession ? continueResponseId : undefined,
                 isComplete: true,
                 accessPassword: surveyPassword || undefined,
                 inviteToken: inviteToken || undefined,
@@ -927,23 +854,11 @@ const UserSubmitSurvey = () => {
                     setWelcomePage(false);
                     setDriInterimSubmitted(true);
                     setCurrentIndex(11);
-                    setSavedResponseId(continueResponseId);
                 } else {
                     try {
-                        const saved = JSON.parse(localStorage.getItem(progressStorageKey) || 'null');
-                        if (saved?.surveyForms && !nextSurveyData.alreadyResponded && !nextSurveyData.isClosed && nextSurveyData.surveyForms?.length) {
-                            nextSurveyData = {
-                                ...nextSurveyData,
-                                surveyForms: mergeSavedAnswers(nextSurveyData.surveyForms, saved.surveyForms),
-                            };
-                            if (typeof saved.currentIndex === 'number') setCurrentIndex(saved.currentIndex);
-                            if (saved.formData) setFormData((prev) => ({ ...prev, ...saved.formData }));
-                            if (saved.introduction === false) setIntroduction(false);
-                            if (saved.welcomePage === false) setWelcomePage(false);
-                            if (saved.responseId) setSavedResponseId(saved.responseId);
-                        }
+                        localStorage.removeItem(progressStorageKey);
                     } catch {
-                        // ignore invalid saved progress
+                        // ignore
                     }
                 }
 

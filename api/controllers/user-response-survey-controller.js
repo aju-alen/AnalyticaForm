@@ -166,6 +166,10 @@ export const postSingleSurveyDataForUser = async (req, res) => {
         }
 
         const isComplete = req.body.isComplete !== false && req.body.isComplete !== 'false';
+        const isZoomInterviewExit = req.body.zoomInterviewExit === true || req.body.zoomInterviewExit === 'true';
+        if (!isComplete && !isZoomInterviewExit) {
+            return res.status(204).send();
+        }
 
         if (surveyMeta.accessPasswordHash) {
             const providedPassword = String(req.body.accessPassword || req.headers['x-survey-password'] || '').trim();

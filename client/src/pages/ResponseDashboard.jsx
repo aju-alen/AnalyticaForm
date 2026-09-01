@@ -53,6 +53,8 @@ dayjs.extend(relativeTime);
 
 const filters = [
   { id: 'all', label: 'All responses' },
+  { id: 'complete', label: 'Completed' },
+  { id: 'incomplete', label: 'Incomplete' },
   { id: 'identified', label: 'With email' },
   { id: 'anonymous', label: 'Anonymous only' },
   { id: 'recent', label: 'Last 7 days' },
@@ -277,6 +279,10 @@ const ResponseDashboard = ({ embedded = false }) => {
       if (!matchesSearch) return false;
 
       switch (activeFilter) {
+        case 'complete':
+          return resp.isComplete !== false;
+        case 'incomplete':
+          return resp.isComplete === false;
         case 'identified':
           return resp.userEmail && resp.userEmail !== 'Anonymous';
         case 'anonymous':
@@ -702,6 +708,11 @@ const ResponseDashboard = ({ embedded = false }) => {
                               <Chip
                                 label={dayjs(response.createdAt).format('MMM D, YYYY h:mm A')}
                                 color="primary"
+                                variant="outlined"
+                              />
+                              <Chip
+                                label={response.isComplete === false ? 'Incomplete' : 'Completed'}
+                                color={response.isComplete === false ? 'warning' : 'success'}
                                 variant="outlined"
                               />
                               <Chip
