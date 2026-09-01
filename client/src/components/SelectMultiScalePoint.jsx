@@ -39,7 +39,17 @@ const SelectMultiScalePoint = ({ onSaveForm, registerFormData, data, id, options
   const [formData, setFormData] = useState(initialFormData);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const columnCount = formData.columnTextField.length;
+  const needsHorizontalScroll = columnCount >= 8;
+  // Tighten spacing/type as columns approach 7 so a full Likert-style row still fits.
+  const compactness = Math.min(Math.max((columnCount - 2) / 5, 0), 1);
+  const scaleFontSize = `${(0.9 - compactness * 0.15).toFixed(3)}rem`;
+  const scaleCellPx = Math.round(12 - compactness * 10);
+  const scaleCellPy = Math.round(8 - compactness * 4);
+  const rowLabelWidthPct = Math.round(32 - compactness * 12);
+  const scaleTableMinWidth = 160 + columnCount * 84 + (disableButtons ? 0 : 48);
+  const radioIconSize = compactness > 0.7 ? 18 : 22;
   const toolbarSetting = disableText ? false : {
     container: isMobile && !disableText ? [
       // Mobile toolbar configuration
@@ -263,94 +273,246 @@ const SelectMultiScalePoint = ({ onSaveForm, registerFormData, data, id, options
           </Box>
 
           {/* Desktop/Tablet View – table separate below question */}
-          <Box sx={{ display: { xs: 'none', sm: 'block' }, width: '100%', mt: 1, minWidth: 0, overflowX: 'auto' }}>
-            <Table sx={{ minWidth: { sm: 500, md: 650 } }}>
+          <Box
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              width: '100%',
+              mt: 1,
+              minWidth: 0,
+              overflowX: needsHorizontalScroll ? 'auto' : 'visible',
+            }}
+            {...(needsHorizontalScroll
+              ? {
+                  role: 'region',
+                  tabIndex: 0,
+                  'aria-label': 'Rating scale table. Scroll horizontally to see additional columns.',
+                }
+              : {})}
+          >
+            <Table
+              size="small"
+              aria-label="Multi-point rating scale"
+              sx={{
+                width: '100%',
+                tableLayout: 'fixed',
+                minWidth: needsHorizontalScroll ? scaleTableMinWidth : 0,
+                '& .MuiTableCell-root': {
+                  px: `${scaleCellPx}px`,
+                  py: `${scaleCellPy}px`,
+                  verticalAlign: 'middle',
+                },
+              }}
+            >
               <TableHead>
                 <TableRow>
                   <TableCell
-                    colSpan={1}
-                  ></TableCell>
+                    component="th"
+                    scope="col"
+                    sx={{ width: `${rowLabelWidthPct}%`, minWidth: 0 }}
+                  >
+                    <Box
+                      component="span"
+                      sx={{
+                        position: 'absolute',
+                        width: 1,
+                        height: 1,
+                        p: 0,
+                        m: -1,
+                        overflow: 'hidden',
+                        clip: 'rect(0, 0, 0, 0)',
+                        whiteSpace: 'nowrap',
+                        border: 0,
+                      }}
+                    >
+                      Item
+                    </Box>
+                  </TableCell>
                   {formData.columnTextField.map((column) => (
                     <TableCell
                       key={column.id}
-                      sx={{ width: 'auto ', overflowX: 'auto', position: 'relative', }}
+                      id={`scale-col-${column.id}`}
+                      component="th"
+                      scope="col"
+                      sx={{
+                        width: 'auto',
+                        minWidth: 0,
+                        position: 'relative',
+                        verticalAlign: 'bottom',
+                      }}
                     >
                       <Box
                         sx={{
                           display: 'flex',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
                           width: '100%',
-                          '&:hover .delete-button': {
+                          minWidth: 0,
+                          '&:hover .delete-button, &:focus-within .delete-button': {
                             visibility: 'visible',
                           },
                         }}
                       >
-                        <TextField
-                          key={column.id}
-                          id="standard-basic"
-                          placeholder={!disableText ? "Type Your Response Here" : ''} variant="standard"
-                          name='columnTextField'
-                          value={column.value}
-                          onChange={(e) => setFormData({ ...formData, columnTextField: formData.columnTextField.map((item) => item.id === column.id ? { ...item, value: e.target.value } : item) })}
-                          InputProps={{
-                            readOnly: disableText,
-                          }}
-                          sx={{
-                            '& .MuiInputBase-root': {
-                              fontSize: '0.9rem',
-                            },
-                            '& .MuiInput-underline:before': {
-                              borderBottom: 'none',
-                            },
-                            '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                              borderBottom: 'none',
-                            },
-                            minWidth: { xs: 100, md: 200 },
-                          }}
-                          fullWidth
-                          multiline
-                        />
+                        {disableText ? (
+                          <Typography
+                            component="span"
+                            sx={{
+                              display: 'block',
+                              width: '100%',
+                              fontSize: scaleFontSize,
+                              lineHeight: 1.25,
+                              textAlign: 'center',
+                              overflowWrap: 'anywhere',
+                              wordBreak: 'break-word',
+                              whiteSpace: 'normal',
+                              hyphens: 'auto',
+                            }}
+                          >
+                            {column.value}
+                          </Typography>
+                        ) : (
+                          <TextField
+                            key={column.id}
+                            id={`column-label-${column.id}`}
+                            placeholder={!disableText ? 'Type Your Response Here' : ''}
+                            variant="standard"
+                            name="columnTextField"
+                            value={column.value}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              columnTextField: formData.columnTextField.map((item) =>
+                                item.id === column.id ? { ...item, value: e.target.value } : item
+                              ),
+                            })}
+                            InputProps={{
+                              readOnly: disableText,
+                            }}
+                            inputProps={{
+                              'aria-label': 'Column label',
+                            }}
+                            sx={{
+                              width: '100%',
+                              minWidth: 0,
+                              '& .MuiInputBase-root': {
+                                fontSize: scaleFontSize,
+                                alignItems: 'flex-start',
+                              },
+                              '& .MuiInputBase-input': {
+                                textAlign: 'center',
+                                lineHeight: 1.25,
+                                whiteSpace: 'normal',
+                                overflowWrap: 'anywhere',
+                                wordBreak: 'break-word',
+                                py: 0,
+                              },
+                              '& .MuiInput-underline:before': {
+                                borderBottom: 'none',
+                              },
+                              '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                                borderBottom: 'none',
+                              },
+                            }}
+                            fullWidth
+                            multiline
+                          />
+                        )}
 
                         {!disableButtons && (
-                          <HighlightOffIcon fontSize="small" className="delete-button"
+                          <HighlightOffIcon
+                            fontSize="small"
+                            className="delete-button"
                             color="error"
-                            variant="text"
+                            aria-label="Delete column"
+                            role="button"
+                            tabIndex={0}
                             sx={{
                               position: 'absolute',
-                              top: '0%',
-                              left: '0%',
-                              right: '0%',
-                              bottom: '0%',
+                              top: 0,
+                              right: 0,
                               visibility: 'hidden',
+                              cursor: 'pointer',
                               transition: 'visibility 0.1s ease-in-out',
                             }}
-                            onClick={() => handleDeleteColumn(column.id)} />
+                            onClick={() => handleDeleteColumn(column.id)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleDeleteColumn(column.id);
+                              }
+                            }}
+                          />
                         )}
                       </Box>
                     </TableCell>
                   ))}
+                  {!disableButtons && (
+                    <TableCell
+                      component="th"
+                      scope="col"
+                      sx={{ width: 40, minWidth: 40, p: 0.5 }}
+                    >
+                      <Box
+                        component="span"
+                        sx={{
+                          position: 'absolute',
+                          width: 1,
+                          height: 1,
+                          overflow: 'hidden',
+                          clip: 'rect(0, 0, 0, 0)',
+                        }}
+                      >
+                        Row actions
+                      </Box>
+                    </TableCell>
+                  )}
                 </TableRow>
               </TableHead>
-              <TableBody >
+              <TableBody>
                 {formData.options.map((row, rowIndex) => (
                   <TableRow
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     key={row.id}
                   >
-                    <TableCell component="th" scope="row" sx={{ width: '30%' }}>
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      id={`scale-row-${row.id}`}
+                      sx={{
+                        width: `${rowLabelWidthPct}%`,
+                        minWidth: 0,
+                        overflowWrap: 'anywhere',
+                        wordBreak: 'break-word',
+                      }}
+                    >
                       <TextField
-                        id="standard-basic"
-                        placeholder={!disableText ? "Type Your Sub Question" : ''}
+                        id={`row-question-${row.id}`}
+                        placeholder={!disableText ? 'Type Your Sub Question' : ''}
                         variant="standard"
-                        name='rowQuestion'
+                        name="rowQuestion"
                         value={row.rowQuestion}
-                        onChange={(e) => setFormData({ ...formData, options: formData.options.map((item) => item.id === row.id ? { ...item, rowQuestion: e.target.value } : item) })}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          options: formData.options.map((item) =>
+                            item.id === row.id ? { ...item, rowQuestion: e.target.value } : item
+                          ),
+                        })}
                         InputProps={{
                           readOnly: disableText,
                         }}
+                        inputProps={{
+                          'aria-label': row.rowQuestion?.trim()
+                            ? undefined
+                            : `Item ${rowIndex + 1}`,
+                        }}
                         sx={{
+                          width: '100%',
+                          minWidth: 0,
                           '& .MuiInputBase-root': {
-                            fontSize: '0.9rem',
+                            fontSize: scaleFontSize,
+                          },
+                          '& .MuiInputBase-input': {
+                            overflowWrap: 'anywhere',
+                            wordBreak: 'break-word',
+                            whiteSpace: 'normal',
+                            lineHeight: 1.3,
                           },
                           '& .MuiInput-underline:before': {
                             borderBottom: 'none',
@@ -358,31 +520,54 @@ const SelectMultiScalePoint = ({ onSaveForm, registerFormData, data, id, options
                           '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
                             borderBottom: 'none',
                           },
-                          minWidth: { xs: 100, md: 200 },
                         }}
+                        fullWidth
                         multiline
                       />
                     </TableCell>
 
-                    {row.columns.map((column, columnIndex) =>
-                      <TableCell key={column.id} align='center' >
-                        <Radio
-                          disabled={disableForm}
+                    {row.columns.map((column, columnIndex) => {
+                      const columnLabel =
+                        formData.columnTextField[columnIndex]?.value?.trim() ||
+                        `Option ${columnIndex + 1}`;
+                      const rowLabel =
+                        row.rowQuestion?.trim() || `Item ${rowIndex + 1}`;
+                      return (
+                        <TableCell
                           key={column.id}
-                          checked={formData.selectedValue?.[rowIndex]?.value === columnIndex}
-                          onChange={() => handleRadioChange(rowIndex, columnIndex)}
-                          size='small'
-                        />
+                          align="center"
+                          headers={`scale-row-${row.id} scale-col-${column.id}`}
+                          sx={{ minWidth: 0 }}
+                        >
+                          <Radio
+                            disabled={disableForm}
+                            checked={formData.selectedValue?.[rowIndex]?.value === columnIndex}
+                            onChange={() => handleRadioChange(rowIndex, columnIndex)}
+                            size="small"
+                            inputProps={{
+                              'aria-label': `${rowLabel}: ${columnLabel}`,
+                            }}
+                            sx={{
+                              p: 0.5,
+                              '& .MuiSvgIcon-root': { fontSize: radioIconSize },
+                            }}
+                          />
+                        </TableCell>
+                      );
+                    })}
+                    {!disableButtons && (
+                      <TableCell align="center" sx={{ width: 40, minWidth: 40, p: 0.5 }}>
+                        <Button
+                          variant="text"
+                          color="error"
+                          onClick={() => handleDeleteRow(row.id)}
+                          aria-label="Delete row"
+                          sx={{ minWidth: 32, p: 0.5 }}
+                        >
+                          <HighlightOffIcon fontSize="small" />
+                        </Button>
                       </TableCell>
                     )}
-                    <TableCell align="center">
-                      {!disableButtons && (<Button
-                        variant='text'
-                        color='error'
-                        onClick={() => handleDeleteRow(row.id)}>
-                        <HighlightOffIcon fontSize="small" />
-                      </Button>)}
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
