@@ -36,6 +36,7 @@ model User {
    responsePurchases ResponsePurchase[]
    surveyContacts SurveyContact[]
    aiSurveyGenerations AiSurveyGeneration[]
+   assistantChatUsages AssistantChatUsage[]
 
    proMember ProMember?
    refundRequests RefundRequest[]
@@ -101,6 +102,7 @@ model Survey {
   brandLogoUrl String? @db.VarChar(512)
   brandColor String? @db.VarChar(16)
   hidePoweredBy Boolean @default(false)
+  alertMilestonesSent Json @default("[]")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -316,6 +318,16 @@ model AiSurveyGeneration {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model AssistantChatUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }

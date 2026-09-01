@@ -30,8 +30,29 @@ const ContactUs = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
+  const [chatUsage, setChatUsage] = useState(null);
   const messagesEndRef = useRef(null);
-  const chatAbortRef = useRef(null); 
+  const chatAbortRef = useRef(null);
+
+  const loadChatUsage = async () => {
+    try {
+      await refreshToken();
+      const token = getUserAccess()?.accessToken;
+      if (!token) {
+        setChatUsage(null);
+        return;
+      }
+      const response = await fetch(`${backendUrl}/api/google-vertex/chat-usage`, {
+        credentials: 'include',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) return;
+      const data = await response.json();
+      setChatUsage(data);
+    } catch {
+      setChatUsage(null);
+    }
+  }; 
   
   const handleFormChange = (event) => {
     const { name, value } = event.target
@@ -402,6 +423,7 @@ const ContactUs = () => {
   const handleChatSubmit = async (message) => {
     const text = String(message || '').trim();
     if (!text || isLoading) return;
+    if (chatUsage && !chatUsage.unlimited && chatUsage.remaining === 0) return;
 
     chatAbortRef.current?.abort();
     const controller = new AbortController();
@@ -436,8 +458,21 @@ const ContactUs = () => {
       });
 
       if (!response.ok) {
-        const err = new Error('request failed');
+        let quotaMessage = '';
+        if (response.status === 429) {
+          try {
+            const body = await response.json();
+            quotaMessage = body.message || 'You have used your 5 DA Assistant chats this month.';
+          } catch {
+            quotaMessage = 'You have used your 5 DA Assistant chats this month.';
+          }
+          setChatUsage((prev) => (prev && !prev.unlimited
+            ? { ...prev, remaining: 0, allowed: false }
+            : prev));
+        }
+        const err = new Error(quotaMessage || 'request failed');
         err.status = response.status;
+        err.quotaMessage = quotaMessage;
         throw err;
       }
 
@@ -446,15 +481,22 @@ const ContactUs = () => {
         throw new Error('empty');
       }
       updateStreamingBot(full, true);
+      setChatUsage((prev) => {
+        if (!prev || prev.unlimited) return prev;
+        const remaining = Math.max(0, (prev.remaining || 0) - 1);
+        return { ...prev, remaining, used: (prev.used || 0) + 1, allowed: remaining > 0 };
+      });
     } catch (error) {
       if (error?.name === 'AbortError') return;
       const loginHint = error?.status === 401 || error?.status === 403;
       setChatMessages((prev) => [
         ...prev.filter((msg) => !msg.isLoading && !msg.streaming),
         {
-          text: loginHint
-            ? 'Please log in to chat with DA Assistant.'
-            : 'Unable to get a response. Please try again, or make sure you are logged in.',
+          text: error?.quotaMessage
+            ? `${error.quotaMessage} See pricing to upgrade.`
+            : loginHint
+              ? 'Please log in to chat with DA Assistant.'
+              : 'Unable to get a response. Please try again, or make sure you are logged in.',
           sender: 'bot',
         },
       ]);
@@ -466,6 +508,9 @@ const ContactUs = () => {
   };
 
   useEffect(() => {
+    if (isChatOpen) {
+      loadChatUsage();
+    }
     if (isChatOpen && chatMessages.length === 0) {
       setChatMessages([
         {
@@ -735,7 +780,11 @@ const ContactUs = () => {
                         }}
                       />
                       <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                        Online | Ready to help
+                        {chatUsage?.unlimited
+                          ? 'Online | Unlimited chat'
+                          : chatUsage && chatUsage.remaining != null
+                            ? `Online | ${chatUsage.remaining} chat${chatUsage.remaining === 1 ? '' : 's'} left this month`
+                            : 'Online | Ready to help'}
                       </Typography>
                     </Box>
                   </Box>
@@ -872,6 +921,7 @@ const ContactUs = () => {
                           variant="outlined"
                           size="small"
                           onClick={() => handleQuickQuestion(question)}
+                          disabled={Boolean(chatUsage && !chatUsage.unlimited && chatUsage.remaining === 0)}
                           sx={{
                             textTransform: 'none',
                             justifyContent: 'flex-start',
@@ -915,11 +965,16 @@ const ContactUs = () => {
                       fullWidth
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
-                      placeholder="Type your message..."
+                      placeholder={
+                        chatUsage && !chatUsage.unlimited && chatUsage.remaining === 0
+                          ? 'Monthly chat limit reached'
+                          : 'Type your message...'
+                      }
                       variant="outlined"
                       multiline
                       maxRows={2}
                       size="small"
+                      disabled={Boolean(chatUsage && !chatUsage.unlimited && chatUsage.remaining === 0)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
@@ -949,7 +1004,11 @@ const ContactUs = () => {
                     <Button 
                       type="submit"
                       variant="contained"
-                      disabled={!inputMessage.trim() || isLoading}
+                      disabled={
+                        !inputMessage.trim()
+                        || isLoading
+                        || Boolean(chatUsage && !chatUsage.unlimited && chatUsage.remaining === 0)
+                      }
                       sx={{
                         minWidth: 'unset',
                         px: 3,

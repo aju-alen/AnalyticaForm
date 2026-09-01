@@ -619,20 +619,26 @@ FEATURES ON BOTH FREE AND PREMIUM:
 - Password protection, close date, max responses, one response per person
 - One-page or one-question layout
 - Share URL, website embed, QR code
-- Question analytics
+- Overview analytics: totals, views, completion, and how each question was answered
 - Excel export (Free capped at 500 responses)
+- Email invitations: 10 recipients per month, 1 campaign per month
+- DA Assistant chat: 5 chats per calendar month
+- Email alert once a survey reaches 10 complete responses
 - Email support
 
 PREMIUM ONLY:
 - Unlimited surveys (Free: 5)
 - Unlimited responses (Free: 500 per survey)
-- Email invitations and campaigns
-- Response dashboard
-- Full Excel export
+- Email invitations and campaigns (200 recipients per campaign, 5 campaigns per survey per day, 500 sends per day)
+- Advanced analytics: individual responses, filters, time spent, unique participants
+- Trends: responses per day and drop-off by question
+- Full Excel export, including question summary
+- Unlimited DA Assistant chat
+- Milestone emails at 10, 50, 100, 250, and 500 complete responses, plus when a survey hits max responses or its close date
 - 24/7 chat support
 
 PRICING:
-- Free: AED 0 — 5 surveys, 500 responses per survey, features listed above, email support
+- Free: AED 0 — 5 surveys, 500 responses per survey, 10 invitation recipients per month, 5 DA Assistant chats per month, features listed above, email support
 - Monthly: AED 200 / month — all Free features plus Premium-only items
 - Annual: AED 1,992 / year (17% off AED 2,400; save AED 408) — same features as Monthly, billed once a year
 - Subscriptions auto-renew

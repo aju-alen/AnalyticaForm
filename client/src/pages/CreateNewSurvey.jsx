@@ -196,6 +196,14 @@ const CreateNewSurvey = () => {
       const cleanText = item.quilText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
       if (cleanText !== '') return cleanText;
     }
+    if (item.pdfURL) {
+      try {
+        const name = decodeURIComponent(String(item.pdfURL).split('/').pop() || '');
+        if (name) return name;
+      } catch {
+        return item.pdfURL;
+      }
+    }
     return '(No question text)';
   }, []);
 

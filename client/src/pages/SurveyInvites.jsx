@@ -46,6 +46,7 @@ const SurveyInvites = () => {
   const [sending, setSending] = useState(false);
   const [expandedCampaignId, setExpandedCampaignId] = useState('');
   const [recipients, setRecipients] = useState([]);
+  const [inviteQuota, setInviteQuota] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info', showPricing: false });
 
   const loadData = async () => {
@@ -58,6 +59,7 @@ const SurveyInvites = () => {
     setCampaigns(campaignsRes.data.campaigns || []);
     setSurveyTitle(campaignsRes.data.surveyTitle || '');
     setSurveyStatus(campaignsRes.data.surveyStatus || '');
+    setInviteQuota(campaignsRes.data.inviteQuota || null);
   };
 
   useEffect(() => {
@@ -238,9 +240,19 @@ const SurveyInvites = () => {
           Publish this survey before sending invitations.
         </Alert>
       )}
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         If this survey is password protected, respondents still need to enter the password. The invite email does not include it.
       </Typography>
+      {inviteQuota?.unlimited ? (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Premium invitation limits: 200 recipients per campaign, 5 campaigns per survey per day, 500 sends per day.
+        </Alert>
+      ) : inviteQuota ? (
+        <Alert severity={inviteQuota.campaignsRemaining < 1 || inviteQuota.recipientsRemaining < 1 ? 'warning' : 'info'} sx={{ mb: 3 }}>
+          Free plan: {inviteQuota.campaignsRemaining} of {inviteQuota.campaignsLimit} campaign
+          {inviteQuota.campaignsLimit === 1 ? '' : 's'} left this month, and {inviteQuota.recipientsRemaining} of {inviteQuota.recipientsLimit} recipients left.
+        </Alert>
+      ) : null}
 
       <Paper sx={{ p: 2.5, mb: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>Contacts</Typography>
@@ -333,7 +345,11 @@ const SurveyInvites = () => {
         <Button
           variant="contained"
           onClick={handleSend}
-          disabled={sending || surveyStatus !== 'Active'}
+          disabled={
+            sending
+            || surveyStatus !== 'Active'
+            || (inviteQuota && !inviteQuota.unlimited && (inviteQuota.campaignsRemaining < 1 || inviteQuota.recipientsRemaining < 1))
+          }
           sx={{ bgcolor: primaryColor }}
         >
           {sending ? <CircularProgress size={20} color="inherit" /> : 'Send'}

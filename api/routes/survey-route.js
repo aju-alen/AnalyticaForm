@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { createNewSurvey,getUserSurvey,getSurveyById,updateSurveyById,getAllSurveyResponse,getAllSurveyOfOneUser,updateUserView,deleteUserSurvey,updateUserStatus, getIpOfSingleSurvey, getSurveyResponsesPaginated, cloneUserSurvey, getQuestionAnalytics} from '../controllers/survey-controller.js';
+import { createNewSurvey,getUserSurvey,getSurveyById,updateSurveyById,getAllSurveyResponse,getAllSurveyOfOneUser,updateUserView,deleteUserSurvey,updateUserStatus, getIpOfSingleSurvey, getSurveyResponsesPaginated, cloneUserSurvey, getQuestionAnalytics, getTrendAnalytics} from '../controllers/survey-controller.js';
 import { apiCallLimiter } from '../middleware/rateLimiter.js'
 import { verifyJwt } from '../middleware/verifyJwt.js';
 
@@ -20,6 +20,7 @@ router.delete('/delete-survey/:surveyId',apiCallLimiter,verifyJwt, deleteUserSur
 router.put('/update-survey-status/:surveyId',apiCallLimiter,verifyJwt, updateUserStatus)
 router.post('/clone-survey/:surveyId',apiCallLimiter,verifyJwt, cloneUserSurvey)
 router.get('/question-analytics/:surveyId',apiCallLimiter,verifyJwt, getQuestionAnalytics)
+router.get('/trend-analytics/:surveyId',apiCallLimiter,verifyJwt, getTrendAnalytics)
 
 
 export default router;

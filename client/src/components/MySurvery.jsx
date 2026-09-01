@@ -1,6 +1,5 @@
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
@@ -104,12 +103,9 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
     handleCloseMenu();
   };
 
-  const handleResponseDashboard = (surveyId) => {
-    if (!isSubscribed) {
-      setPricingDialogOpen(true);
-      return;
-    }
-    navigate(`/dashboard/response-dashboard/${surveyId}`);
+  const handleOpenAnalytics = (surveyId) => {
+    handleCloseMenu();
+    navigate(`/dashboard/analytics/${surveyId}`);
   };
 
   const handlePricingDialogClose = (proceed) => {
@@ -534,19 +530,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
             <ListItemText>Preview</ListItemText>
           </MenuItem>
           <MenuItem
-            onClick={() => handleResponseDashboard(surveyId)}
-            sx={{ py: 1, px: 2 }}
-          >
-            <ListItemIcon>
-              <AssessmentOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Responses</ListItemText>
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleCloseMenu();
-              navigate(`/user-survey-analytics/${surveyId}`);
-            }}
+            onClick={() => handleOpenAnalytics(surveyId)}
             sx={{ py: 1, px: 2 }}
           >
             <ListItemIcon>
@@ -558,10 +542,6 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
           <MenuItem
             onClick={() => {
               handleCloseMenu();
-              if (!isSubscribed) {
-                setPricingDialogOpen(true);
-                return;
-              }
               navigate(`/dashboard/invites/${surveyId}`);
             }}
             sx={{ py: 1, px: 2 }}
@@ -686,7 +666,7 @@ export function MySurvey({ userSurveyData, isSubscribed, onDeleteSurvey,handleDa
         <DialogTitle>Upgrade Required</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Response analytics are available for Pro members only. Would you like to view our pricing plans?
+            Response analytics for individual respondents, plus email invitations, are available on Premium. Would you like to view our pricing plans?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

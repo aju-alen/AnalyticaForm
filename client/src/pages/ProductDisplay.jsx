@@ -45,7 +45,11 @@ const tiers = [
       'Unlimited questions',
       '15+ question types, including consent and Zoom interviews',
       'Templates, preview, clone, share, embed, and QR',
-      'Question analytics and Excel export (up to 500)',
+      'Overview analytics (totals and question results)',
+      'Email invitations (10 per month)',
+      'Excel export (up to 500)',
+      'DA Assistant (5 chats per month)',
+      'Email alert at 10 responses',
       'Email support',
     ],
     lookup_key: 'dubai_analytica_monthly',
@@ -64,8 +68,11 @@ const tiers = [
       'Unlimited responses',
       'Everything in Free',
       'Email invitations and campaigns',
-      'Response dashboard',
-      'Full Excel export',
+      'Advanced analytics: individual responses, filters, and time spent',
+      'Trends and drop-off',
+      'Full Excel export, including question summary',
+      'Unlimited DA Assistant',
+      'Milestone emails (10, 50, 100, 250, 500) plus close and max-response alerts',
       '24/7 chat support',
     ],
     lookup_key: 'dubai_analytica_monthly',
@@ -116,21 +123,25 @@ const comparisonSections = [
     category: 'Collect',
     rows: [
       { feature: 'Share URL, embed, QR', free: YES, premium: YES },
-      { feature: 'Email invitations and campaigns', free: NO, premium: YES },
+      { feature: 'Email invitations and campaigns', free: '10 / month', premium: 'Full campaigns' },
     ],
   },
   {
     category: 'Analyze',
     rows: [
-      { feature: 'Question analytics', free: YES, premium: YES },
-      { feature: 'Response dashboard', free: NO, premium: YES },
+      { feature: 'Overview analytics (totals and questions)', free: YES, premium: YES },
+      { feature: 'Individual responses, filters, and time spent', free: NO, premium: YES },
+      { feature: 'Trends and drop-off', free: NO, premium: YES },
       { feature: 'Excel export', free: 'Up to 500', premium: 'Unlimited' },
+      { feature: 'Question summary Excel', free: NO, premium: YES },
+      { feature: 'Response alerts', free: 'Email at 10', premium: 'Milestones + close/max' },
     ],
   },
   {
     category: 'Support',
     rows: [
       { feature: 'Email', free: YES, premium: YES },
+      { feature: 'DA Assistant', free: '5 / month', premium: 'Unlimited' },
       { feature: '24/7 chat', free: NO, premium: YES },
     ],
   },
@@ -299,7 +310,7 @@ const ProductDisplayy = () => {
               Plans and Pricing
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5 }}>
-              Start free. Upgrade when you need unlimited surveys, email invitations, and the response dashboard.
+              Start free. Upgrade when you need unlimited surveys, email invitations, and advanced analytics.
             </Typography>
           </Box>
 

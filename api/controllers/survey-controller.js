@@ -2,6 +2,7 @@ import { prisma } from '../utils/prisma.js'
 import { assertCanCreateSurvey, userHasActiveProSubscription } from '../utils/planLimits.js'
 import { requesterIsSuperAdmin, requireSurveyAccess } from '../utils/surveyAccess.js'
 import { loadResponsesForExport } from '../utils/surveyExport.js'
+import { buildQuestionAnalytics, extractAnswerLabels, findResponseMatch, getAnalyzableQuestions } from '../utils/questionAnalytics.js'
 import bcrypt from 'bcrypt';
 
 export const createNewSurvey = async (req, res) => {
@@ -191,6 +192,12 @@ export const getSurveyResponsesPaginated = async (req, res) => {
     try {
         const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
         if (!access) return;
+
+        const isPro = await userHasActiveProSubscription(prisma, req.tokenId)
+            || await requesterIsSuperAdmin(req);
+        if (!isPro) {
+            return res.status(403).send({ message: 'Individual responses are available on the Premium plan.' });
+        }
 
         const surveyDetails = await prisma.survey.findUnique({
             where: { id: surveyId },
@@ -403,25 +410,6 @@ const sendData = JSON.stringify(formatedData)
     }
 }
 
-const DISPLAY_ONLY_FORM_TYPES = new Set([
-    'IntroductionForm',
-    'PresentationTextForm',
-    'SectionHeadingForm',
-    'SectionSubHeadingForm',
-]);
-
-function extractAnswerLabels(selectedValue) {
-    if (selectedValue == null) return [];
-    const list = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
-    return list
-        .map((entry) => {
-            if (entry == null) return '';
-            if (typeof entry !== 'object') return String(entry).trim();
-            return String(entry.answer ?? entry.value ?? entry.label ?? entry.rowQuestion ?? '').trim();
-        })
-        .filter(Boolean);
-}
-
 export const cloneUserSurvey = async (req, res) => {
     const surveyId = req.params.surveyId;
     try {
@@ -496,39 +484,7 @@ export const getQuestionAnalytics = async (req, res) => {
             select: { userResponse: true },
         });
 
-        const forms = Array.isArray(survey.surveyForms) ? survey.surveyForms : [];
-        const questions = forms
-            .filter((form) => form && !DISPLAY_ONLY_FORM_TYPES.has(form.formType))
-            .map((form) => {
-                const counts = {};
-                let answered = 0;
-                responses.forEach((row) => {
-                    const answeredForms = Array.isArray(row.userResponse) ? row.userResponse : [];
-                    const match = answeredForms.find((item) => item?.id === form.id)
-                        || answeredForms.find((item) => item?.formType === form.formType && item?.question === form.question);
-                    const labels = extractAnswerLabels(match?.selectedValue);
-                    if (labels.length === 0) return;
-                    answered += 1;
-                    labels.forEach((label) => {
-                        counts[label] = (counts[label] || 0) + 1;
-                    });
-                });
-                const options = Object.entries(counts)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([label, count]) => ({
-                        label,
-                        count,
-                        percent: responses.length ? Math.round((count / responses.length) * 1000) / 10 : 0,
-                    }));
-                return {
-                    id: form.id,
-                    formType: form.formType,
-                    question: form.question || form.quilText || form.subheading || form.formType,
-                    answered,
-                    total: responses.length,
-                    options,
-                };
-            });
+        const questions = buildQuestionAnalytics(survey.surveyForms, responses);
 
         const views = survey.surveyViews || 0;
         const completionRate = views > 0
@@ -541,6 +497,70 @@ export const getQuestionAnalytics = async (req, res) => {
             surveyViews: views,
             completionRate,
             questions,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+};
+
+export const getTrendAnalytics = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try {
+        const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+        if (!access) return;
+
+        const isPro = await userHasActiveProSubscription(prisma, req.tokenId)
+            || await requesterIsSuperAdmin(req);
+        if (!isPro) {
+            return res.status(403).send({ message: 'Trends and drop-off are available on the Premium plan.' });
+        }
+
+        const survey = await prisma.survey.findUnique({
+            where: { id: surveyId },
+            select: { surveyTitle: true, surveyForms: true },
+        });
+        if (!survey) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+
+        const responses = await prisma.userSurveyResponse.findMany({
+            where: { surveyId },
+            select: { createdAt: true, isComplete: true, userResponse: true },
+        });
+
+        const byDay = {};
+        responses.filter((row) => row.isComplete).forEach((row) => {
+            const date = row.createdAt.toISOString().slice(0, 10);
+            byDay[date] = (byDay[date] || 0) + 1;
+        });
+        const responsesByDay = Object.entries(byDay)
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([date, count]) => ({ date, count }));
+
+        const questions = getAnalyzableQuestions(survey.surveyForms);
+        const dropOffRows = [];
+        questions.forEach((form, index) => {
+            const answered = responses.filter((row) => {
+                const match = findResponseMatch(row.userResponse, form);
+                return extractAnswerLabels(match?.selectedValue).length > 0;
+            }).length;
+            const previousAnswered = index === 0 ? responses.length : dropOffRows[index - 1].answered;
+            dropOffRows.push({
+                id: form.id,
+                question: form.question || form.quilText || form.subheading || form.formType,
+                answered,
+                total: responses.length,
+                percent: responses.length ? Math.round((answered / responses.length) * 1000) / 10 : 0,
+                dropOffFromPrevious: Math.max(0, previousAnswered - answered),
+            });
+        });
+
+        res.status(200).json({
+            surveyTitle: survey.surveyTitle,
+            responsesByDay,
+            dropOff: dropOffRows,
+            viewsOverTime: { available: false },
         });
     } catch (err) {
         console.log(err);

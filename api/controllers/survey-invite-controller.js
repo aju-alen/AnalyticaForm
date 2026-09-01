@@ -11,6 +11,7 @@ import { requireSurveyAccess } from '../utils/surveyAccess.js';
 import {
     assertCanUseInvites,
     assertSurveyInvitable,
+    getInviteQuotaForRequester,
     normalizeEmail,
     parseEmailList,
 } from '../utils/surveyInvite.js';
@@ -171,10 +172,12 @@ export const listCampaigns = async (req, res) => {
                 counts,
             };
         });
+        const inviteQuota = await getInviteQuotaForRequester(req);
         res.status(200).json({
             surveyTitle: survey?.surveyTitle || '',
             surveyStatus: survey?.surveyStatus || '',
             campaigns: payload,
+            inviteQuota,
         });
     } catch (err) {
         console.log(err);
@@ -267,22 +270,38 @@ export const createCampaign = async (req, res) => {
             return res.status(400).send({ message: 'A campaign can have at most 200 recipients.' });
         }
 
-        const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        const campaignsToday = await prisma.surveyInviteCampaign.count({
-            where: { surveyId, createdAt: { gte: dayAgo } },
-        });
-        if (campaignsToday >= INVITE_CAMPAIGNS_PER_SURVEY_PER_DAY) {
-            return res.status(400).send({ message: 'You can send at most 5 invitation campaigns per survey per day.' });
-        }
+        const inviteQuota = await getInviteQuotaForRequester(req);
+        if (!inviteQuota.unlimited) {
+            if (inviteQuota.campaignsRemaining < 1) {
+                return res.status(403).send({
+                    message: 'Free accounts can send 1 invitation campaign per month. Upgrade to Premium for more.',
+                });
+            }
+            if (recipients.length > inviteQuota.recipientsRemaining) {
+                return res.status(403).send({
+                    message: inviteQuota.recipientsRemaining === 0
+                        ? 'Free accounts can invite 10 people per month. Upgrade to Premium for more.'
+                        : `Free accounts can invite 10 people per month. You have ${inviteQuota.recipientsRemaining} left this month.`,
+                });
+            }
+        } else {
+            const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            const campaignsToday = await prisma.surveyInviteCampaign.count({
+                where: { surveyId, createdAt: { gte: dayAgo } },
+            });
+            if (campaignsToday >= INVITE_CAMPAIGNS_PER_SURVEY_PER_DAY) {
+                return res.status(400).send({ message: 'You can send at most 5 invitation campaigns per survey per day.' });
+            }
 
-        const sentToday = await prisma.surveyInviteRecipient.count({
-            where: {
-                sentAt: { gte: dayAgo },
-                campaign: { survey: { userId: req.tokenId } },
-            },
-        });
-        if (sentToday + recipients.length > INVITE_SENDS_PER_USER_PER_DAY) {
-            return res.status(400).send({ message: 'Daily invitation send limit reached.' });
+            const sentToday = await prisma.surveyInviteRecipient.count({
+                where: {
+                    sentAt: { gte: dayAgo },
+                    campaign: { survey: { userId: req.tokenId } },
+                },
+            });
+            if (sentToday + recipients.length > INVITE_SENDS_PER_USER_PER_DAY) {
+                return res.status(400).send({ message: 'Daily invitation send limit reached.' });
+            }
         }
 
         const campaign = await prisma.surveyInviteCampaign.create({

@@ -5,9 +5,19 @@ export const INVITE_RECIPIENTS_PER_CAMPAIGN = 200;
 export const INVITE_CAMPAIGNS_PER_SURVEY_PER_DAY = 5;
 export const INVITE_SENDS_PER_USER_PER_DAY = 500;
 export const INVITE_SEND_BATCH = 25;
+export const FREE_INVITE_CAMPAIGNS_PER_MONTH = 1;
+export const FREE_INVITE_RECIPIENTS_PER_MONTH = 10;
+export const FREE_ASSISTANT_CHATS_PER_MONTH = 5;
+export const RESPONSE_ALERT_MILESTONES = [10, 50, 100, 250, 500];
 export const AI_SURVEY_GENERATIONS_PER_MONTH = 2;
 export const AI_SURVEY_PROMPT_MAX_CHARS = 4000;
 export const AI_SURVEY_MAX_QUESTIONS = 25;
+
+export function getUtcMonthRange(now = new Date()) {
+    const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
+    const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0));
+    return { start, end };
+}
 
 export async function userHasActiveProSubscription(prisma, userId) {
     if (!userId) return false;

@@ -3,6 +3,7 @@ import { prisma } from '../utils/prisma.js';
 import { requireSurveyAccess, requesterIsSuperAdmin } from '../utils/surveyAccess.js';
 import { userHasActiveProSubscription } from '../utils/planLimits.js';
 import { loadResponsesForExport, writeWorkbookToResponse } from '../utils/surveyExport.js';
+import { buildQuestionAnalytics } from '../utils/questionAnalytics.js';
 
 // Function to extract form questions
 const extractFormQuestions = (data) => {
@@ -467,6 +468,59 @@ export const exportSurveyToExcelIndex = async (req, res) => {
         const data = await loadExportRows(req, res);
         if (!data) return;
         await writeWorkbookToResponse(res, buildIndexWorkbook(data), exportFilename(data, 'Index'));
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+};
+
+export const exportQuestionSummary = async (req, res) => {
+    const surveyId = req.params.surveyId;
+    try {
+        const access = await requireSurveyAccess(req, res, surveyId, { allowSuperAdmin: true });
+        if (!access) return;
+
+        const isPro = await userHasActiveProSubscription(prisma, req.tokenId)
+            || await requesterIsSuperAdmin(req);
+        if (!isPro) {
+            return res.status(403).send({ message: 'Question summary Excel export is available on the Premium plan.' });
+        }
+
+        const survey = await prisma.survey.findUnique({
+            where: { id: surveyId },
+            select: { surveyTitle: true, surveyForms: true },
+        });
+        if (!survey) {
+            return res.status(404).send({ message: 'Survey not found' });
+        }
+
+        const responses = await prisma.userSurveyResponse.findMany({
+            where: { surveyId, isComplete: true },
+            select: { userResponse: true },
+        });
+        const questions = buildQuestionAnalytics(survey.surveyForms, responses);
+
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet('Question summary');
+        const header = sheet.addRow(['Question', 'Option', 'Count', 'Percent']);
+        header.font = { bold: true };
+        questions.forEach((question) => {
+            if (!question.options.length) {
+                sheet.addRow([question.question, '', question.answered, '']);
+                return;
+            }
+            question.options.forEach((option) => {
+                sheet.addRow([question.question, option.label, option.count, option.percent]);
+            });
+        });
+        sheet.columns = [
+            { width: 50 },
+            { width: 30 },
+            { width: 12 },
+            { width: 12 },
+        ];
+        const title = String(survey.surveyTitle || 'survey').replace(/[\\/"]/g, '');
+        await writeWorkbookToResponse(res, workbook, `${title} Question summary.xlsx`);
     } catch (err) {
         console.error(err);
         res.status(500).send({ message: 'Internal server error' });

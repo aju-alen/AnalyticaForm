@@ -5,7 +5,7 @@ import theme from '../utils/theme';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
 import { refreshToken } from '../utils/refreshToken';
-import { getUserAccess, clearUserAccess } from '../utils/userAccess';
+import { getUserAccess, clearUserAccess, isUserSuperAdmin } from '../utils/userAccess';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -123,7 +123,7 @@ const buildShareSummary = (survey, responses, stats) => {
   return lines.join('\n');
 };
 
-const ResponseDashboard = () => {
+const ResponseDashboard = ({ embedded = false }) => {
   const { surveyId } = useParams();
   const navigate = useNavigate();
 
@@ -224,8 +224,8 @@ const ResponseDashboard = () => {
       try {
         await refreshToken();
         const user = getUserAccess();
-        let subscribed = false;
-        if (user?.id) {
+        let subscribed = isUserSuperAdmin();
+        if (!subscribed && user?.id) {
           try {
             const memberRes = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${user.id}`);
             const now = Math.floor(Date.now() / 1000);
@@ -411,6 +411,7 @@ const ResponseDashboard = () => {
       : 0;
 
   if (accessDenied) {
+    if (embedded) return null;
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -421,8 +422,7 @@ const ResponseDashboard = () => {
                 Upgrade Required
               </Typography>
               <Typography variant="body1" color="text.secondary" mb={3}>
-                Response analytics are available to Dubai Analytica Pro members. Upgrade to unlock detailed dashboards,
-                exports, and advanced sharing options.
+                Individual responses are available to Dubai Analytica Premium members. Upgrade to unlock each respondent’s answers, filters, and exports.
               </Typography>
               <Stack spacing={2}>
                 <Button variant="contained" size="large" onClick={() => navigate('/pricing')}>
@@ -441,9 +441,10 @@ const ResponseDashboard = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ bgcolor: '#f4f7fb', minHeight: '100vh', py: 4 }}>
-        <Container maxWidth="xl">
+      {!embedded && <CssBaseline />}
+      <Box sx={{ bgcolor: embedded ? 'transparent' : '#f4f7fb', minHeight: embedded ? 'auto' : '100vh', py: embedded ? 0 : 4 }}>
+        <Container maxWidth="xl" disableGutters={embedded}>
+          {!embedded && (
           <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2} mb={3}>
             <Box>
               <Typography variant="h4" fontWeight={700}>
@@ -459,6 +460,7 @@ const ResponseDashboard = () => {
               <Chip color="primary" label={`${responses.length} responses`} />
             </Stack>
           </Stack>
+          )}
 
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>

@@ -18,7 +18,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { Container, Typography } from '@mui/material';
 import { refreshToken } from '../utils/refreshToken';
-import { getUserAccess, clearUserAccess } from '../utils/userAccess';
+import { getUserAccess, clearUserAccess, isUserSuperAdmin } from '../utils/userAccess';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +26,7 @@ import { Button, Stack } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../utils/theme';
 import { BarChart } from '@mui/x-charts/BarChart';
-import CountryAnalytics from '../components/CountryAnalytics';
+import dayjs from 'dayjs';
 
 
 
@@ -96,6 +96,7 @@ export default function UserAnalytics() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [customerData, setCustomerData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPremium, setIsPremium] = useState(false);
   const [analyticsSummary, setAnalyticsSummary] = useState({
     totalResponses: 0,
     totalViews: 0,
@@ -116,6 +117,18 @@ export default function UserAnalytics() {
         console.log(userId, 'userId');
         const getAllUserData = await axiosWithAuth.get(`${backendUrl}/api/survey/get-all-sruvey-from-oneuser/${userId}`);
         setCustomerData(getAllUserData.data);
+
+        let premium = isUserSuperAdmin();
+        if (!premium) {
+          try {
+            const memberRes = await axiosWithAuth.get(`${backendUrl}/api/auth/get-user-promember/${userId}`);
+            const now = Math.floor(Date.now() / 1000);
+            premium = Boolean(memberRes?.data?.subscriptionPeriodEnd && memberRes.data.subscriptionPeriodEnd > now);
+          } catch {
+            premium = false;
+          }
+        }
+        setIsPremium(premium);
         
         // Calculate summary statistics
         const surveys = getAllUserData.data || [];
@@ -186,11 +199,16 @@ export default function UserAnalytics() {
               gutterBottom
               sx={{ 
                 fontWeight: 'bold',
-                mb: 4,
+                mb: 1,
                 textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
               }}
             >
-              Analytics Dashboard
+              Analytics
+            </Typography>
+            <Typography align="center" color="text.secondary" sx={{ mb: 4 }}>
+              {isPremium
+                ? 'Account overview plus advanced charts. Open a survey for question results and individual responses.'
+                : 'Totals and question-level results for each survey. Upgrade for individual responses and extra charts.'}
             </Typography>
 
             {/* Summary Cards */}
@@ -335,7 +353,7 @@ export default function UserAnalytics() {
                           }}
                         >
                           <Button 
-                            onClick={() => navigate(`/user-survey-analytics/${row.id}`)}
+                            onClick={() => navigate(`/dashboard/analytics/${row.id}`)}
                             sx={{
                               textTransform: 'none',
                               textAlign: 'left',
@@ -349,10 +367,10 @@ export default function UserAnalytics() {
                           </Button>
                         </TableCell>
                         {[
-                          row.createdAt,
+                          row.createdAt ? dayjs(row.createdAt).format('MMM D, YYYY') : '—',
                           row.surveyResponses,
                           row.surveyIntroduction?.length > 0 ? 'Yes' : 'No',
-                          row.updatedAt,
+                          row.updatedAt ? dayjs(row.updatedAt).format('MMM D, YYYY') : '—',
                           row.surveyViews,
                           row.surveyViews > 0 ? `${Math.floor((row.surveyResponses / row.surveyViews) * 100)}%` : '0%'
                         ].map((cell, cellIndex) => (
@@ -431,7 +449,7 @@ export default function UserAnalytics() {
                 gap: 4,
                 mt: 3
               }}>
-                {['Survey Responses', 'Survey Viewed', 'Survey Completed'].map((title, index) => (
+                {['Survey Responses', ...(isPremium ? ['Survey Viewed', 'Survey Completed'] : [])].map((title, index) => (
                   <Paper 
                     key={title}
                     elevation={2}
@@ -476,6 +494,16 @@ export default function UserAnalytics() {
                   </Paper>
                 ))}
               </Box>
+              {!isPremium && (
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                  <Typography color="text.secondary" sx={{ mb: 1.5 }}>
+                    Premium adds views and completion charts, plus each respondent’s answers inside a survey.
+                  </Typography>
+                  <Button variant="contained" onClick={() => navigate('/pricing')}>
+                    See Premium plans
+                  </Button>
+                </Box>
+              )}
             </Paper>
           </Container>
         </Box>

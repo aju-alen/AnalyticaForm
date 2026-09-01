@@ -38,6 +38,7 @@ export const QUESTION_TYPES = {
   ConstantSumForm: defineType({ label: 'Constant sum', component: load(() => import('../components/ConstantSum')), saveKind: 'multiscale' }),
   PickAndRankForm: defineType({ label: 'Pick and rank', component: load(() => import('../components/PickAndRank')), saveKind: 'multiscale' }),
   PresentationTextForm: defineType({ label: 'Presentation text', component: load(() => import('../components/PresentationText')), displayOnly: true, saveKind: 'multiscale' }),
+  PdfViewerForm: defineType({ label: 'PDF viewer', component: load(() => import('../components/PdfViewer')), displayOnly: true, saveKind: 'multiscale' }),
   SectionHeadingForm: defineType({ label: 'Section heading', component: load(() => import('../components/SectionHeading')), displayOnly: true, saveKind: 'multiscale' }),
   SectionSubHeadingForm: defineType({ label: 'Section subheading', component: load(() => import('../components/SectionSubHeading')), displayOnly: true, saveKind: 'multiscale' }),
   DateTimeForm: defineType({ label: 'Date & time', component: load(() => import('../components/DateTime')), saveKind: 'multiscale' }),

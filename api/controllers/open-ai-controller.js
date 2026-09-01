@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
 import { VertexAI } from '@google-cloud/vertexai';
 import { vertexContextData } from '../utils/static/static-data.js';
+import {
+  assertCanUseAssistantChat,
+  getAssistantChatQuotaForRequester,
+  recordAssistantChatUsage,
+} from '../utils/assistantChatLimits.js';
 
 dotenv.config();
 
@@ -174,10 +179,27 @@ function sanitizeChatHistory(raw) {
   return alternating;
 }
 
+export const getAssistantChatUsage = async (req, res) => {
+  try {
+    const usage = await getAssistantChatQuotaForRequester(req);
+    res.status(200).json(usage);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+};
+
 export const vertexChat = async (req, res) => {
   const text = String(req.body?.message || '').trim().slice(0, MAX_CHAT_CHARS);
   if (!text) {
     return res.status(400).json({ error: true, message: 'Message is required' });
+  }
+
+  const gate = await assertCanUseAssistantChat(req, res);
+  if (!gate.ok) return;
+
+  if (!gate.usage.unlimited) {
+    await recordAssistantChatUsage(req.tokenId);
   }
 
   res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');

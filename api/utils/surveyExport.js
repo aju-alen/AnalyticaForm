@@ -34,9 +34,20 @@ export async function loadResponsesForExport(prisma, surveyId, { isOwnerPro = fa
     return results;
 }
 
+export function sanitizeDownloadFilename(filename, fallback = 'download.xlsx') {
+    const cleaned = String(filename || fallback)
+        .replace(/[\r\n\0"]/g, '')
+        .replace(/[\\/:*?<>|]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim() || fallback;
+    const ascii = cleaned.replace(/[^\x20-\x7E]/g, '_').replace(/_+/g, '_').trim() || fallback;
+    return ascii;
+}
+
 export async function writeWorkbookToResponse(res, workbook, filename) {
+    const safeName = sanitizeDownloadFilename(filename);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
     await workbook.xlsx.write(res);
     res.end();
 }

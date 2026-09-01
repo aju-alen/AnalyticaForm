@@ -8,6 +8,7 @@ import { generateFullSummaryFromFifty } from '../utils/dri-50-summary.js';
 import { shouldCreateZoomForResponse } from '../utils/consentProgress.js';
 import { createZoomMeetingForHost, getValidZoomAccessToken } from '../utils/zoomApi.js';
 import { FREE_RESPONSE_LIMIT, userHasActiveProSubscription } from '../utils/planLimits.js';
+import { maybeSendResponseMilestoneEmails } from '../utils/responseAlerts.js';
 import { getSurveyClosedReason } from '../utils/surveyAvailability.js';
 import bcrypt from 'bcrypt';
 
@@ -454,6 +455,11 @@ export const postSingleSurveyDataForUser = async (req, res) => {
         }
         if(getResponseCount.surveyResponses === 475 ){
             updateUserResponseLimit( getResponseCount.user.firstName, getResponseCount.user.email, getResponseCount.surveyTitle, 475 );
+        }
+        if (isComplete && (!isUpdate || !wasComplete)) {
+            maybeSendResponseMilestoneEmails(surveyId).catch((err) => {
+                console.error('[response milestone email]', err?.message || err);
+            });
         }
         if (!zoomJoinUrl) {
             const fromSaved = (Array.isArray(savedUserResponse?.userResponse)

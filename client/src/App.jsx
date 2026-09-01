@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, Outlet, Navigate, useLocation } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Outlet, Navigate, useLocation, useParams } from 'react-router-dom'
 import MainNavBar from './components/MainNavBar';
 import Footer from './components/Footer';
 import { lazy, Suspense } from 'react';
@@ -45,7 +45,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Analytics = lazy(() => import('./pages/Analytics'));
 const Error404 = lazy(() => import('./pages/404Error'));
 const UserAnalytics = lazy(() => import('./pages/UserAnalytics'));
-const Usersurveyanalytics = lazy(() => import('./pages/User-survey-analytics'));
+const SurveyAnalytics = lazy(() => import('./pages/SurveyAnalytics'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
 const PhdSuccessConsultation = lazy(() => import('./pages/PhdSuccessConsultation'));
 const Subscription = lazy(() => import('./pages/Subscription'));
@@ -55,8 +55,8 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const UserMarket = lazy(() => import('./pages/UserMarket'));
 const About = lazy(() => import('./pages/About'));
 const FeaturesHome = lazy(() => import('./pages/FeaturesHome'));
-const ResponseDashboard = lazy(() => import('./pages/ResponseDashboard'));
 const SurveyInvites = lazy(() => import('./pages/SurveyInvites'));
+const Profile = lazy(() => import('./pages/Profile'));
 const App = () => {
 
   const isAuthenticated = () => isUserAuthenticated();
@@ -79,6 +79,16 @@ const App = () => {
       return element;
     }
     return <Navigate to="/login" />;
+  };
+
+  const LegacySurveyAnalyticsRedirect = () => {
+    const { surveyId } = useParams();
+    return <Navigate to={`/dashboard/analytics/${surveyId}`} replace />;
+  };
+
+  const LegacyResponseDashboardRedirect = () => {
+    const { surveyId } = useParams();
+    return <Navigate to={`/dashboard/analytics/${surveyId}?tab=responses`} replace />;
   };
 
   const router = createBrowserRouter([
@@ -211,8 +221,12 @@ const App = () => {
           element: <ProtectedRoute element={<Dashboard />} />, // Wrap Dashboard inside ProtectedRoute
         },
         {
+          path: "/dashboard/analytics/:surveyId",
+          element: <ProtectedRoute element={<SurveyAnalytics />} />,
+        },
+        {
           path: "/dashboard/response-dashboard/:surveyId",
-          element: <ProtectedRoute element={<ResponseDashboard />} />, // Wrap Dashboard inside ProtectedRoute
+          element: <ProtectedRoute element={<LegacyResponseDashboardRedirect />} />,
         },
         {
           path: "/dashboard/invites/:surveyId",
@@ -225,6 +239,10 @@ const App = () => {
         {
           path: "/dashboard/subscription",
           element: <ProtectedRoute element={<Subscription />} />,
+        },
+        {
+          path: "/dashboard/profile",
+          element: <ProtectedRoute element={<Profile />} />,
         },
         {
           path: "/pricing",
@@ -248,7 +266,7 @@ const App = () => {
         },
         {
           path: "/user-survey-analytics/:surveyId",
-          element: <ProtectedRoute element={<Usersurveyanalytics />} />, // Wrap Dashboard inside ProtectedRoute
+          element: <ProtectedRoute element={<LegacySurveyAnalyticsRedirect />} />,
         },
         {
           path: "/contact-us",

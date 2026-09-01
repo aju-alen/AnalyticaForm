@@ -1,12 +1,8 @@
 import { prisma } from './prisma.js';
-import { AI_SURVEY_GENERATIONS_PER_MONTH } from './planLimits.js';
+import { AI_SURVEY_GENERATIONS_PER_MONTH, getUtcMonthRange } from './planLimits.js';
 import { requesterIsSuperAdmin } from './surveyAccess.js';
 
-export function getUtcMonthRange(now = new Date()) {
-    const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
-    const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0));
-    return { start, end };
-}
+export { getUtcMonthRange };
 
 export async function countAiSurveyGenerationsThisMonth(userId, now = new Date()) {
     const { start, end } = getUtcMonthRange(now);

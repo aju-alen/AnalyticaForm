@@ -372,6 +372,16 @@ const TemporaryDrawer = ({ open, toggleDrawer, handleItemSelect, subscriptionEnd
                     </ListItemButton>
                   </ListItem>
                 </Grid>
+                <Grid item xs={12}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={handleItemClick('PdfViewerForm')}>
+                      <ListItemText
+                        primary={'PDF Viewer'}
+                        sx={{ fontSize: '0.875rem' }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Grid>
               </Grid>
             </Grid>
 

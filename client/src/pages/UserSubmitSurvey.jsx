@@ -1254,8 +1254,15 @@ const UserSubmitSurvey = () => {
         if (!questionType.wrap) return formEl;
 
         const isMultiPointRadio = currentItem.formType === 'MultiScalePoint';
+        const isPdfViewer = currentItem.formType === 'PdfViewerForm';
         return (
-            <div className={isMultiPointRadio ? 'w-11/12 mx-auto max-sm:h-auto sm:h-4/6' : 'w-11/12 h-4/6 mx-auto'}>
+            <div className={
+                isPdfViewer
+                    ? 'w-11/12 mx-auto h-[85vh] max-sm:h-[80vh]'
+                    : isMultiPointRadio
+                        ? 'w-11/12 mx-auto max-sm:h-auto sm:h-4/6'
+                        : 'w-11/12 h-4/6 mx-auto'
+            }>
                 {!onePage && itemIndex !== 0 && <Button onClick={handlePrevious} className=''>
                     <KeyboardBackspaceIcon fontSize='large' />
                 </Button>}

@@ -33,8 +33,9 @@ const ResponsiveAppBar = () => {
   const navigationItems = [
     { label: 'Create A Survey', path: '/dashboard' },
     { label: 'Subscription', path: '/dashboard/subscription' },
+    { label: 'Profile', path: '/dashboard/profile' },
     { label: 'Become a Pro Member', path: '/pricing' },
-    { label: 'User Analytics', path: '/user-analytics' },
+    { label: 'Analytics', path: '/user-analytics' },
     ...(isSuperAdmin ? [{ label: 'Super Admin Data', path: '/admin-analytics' }] : []),
   ];
 

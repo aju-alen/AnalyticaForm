@@ -1,5 +1,10 @@
 import { prisma } from './prisma.js';
-import { userHasActiveProSubscription } from './planLimits.js';
+import {
+    FREE_INVITE_CAMPAIGNS_PER_MONTH,
+    FREE_INVITE_RECIPIENTS_PER_MONTH,
+    getUtcMonthRange,
+    userHasActiveProSubscription,
+} from './planLimits.js';
 import { requesterIsSuperAdmin } from './surveyAccess.js';
 import { getSurveyClosedReason } from './surveyAvailability.js';
 
@@ -84,10 +89,58 @@ export function buildUnsubscribeLink(token) {
 }
 
 export async function assertCanUseInvites(req, res) {
-    const isPro = await userHasActiveProSubscription(prisma, req.tokenId);
-    if (isPro || await requesterIsSuperAdmin(req)) return true;
-    res.status(403).send({ message: 'Email invitations are available on the Premium plan.' });
-    return false;
+    if (!req.tokenId) {
+        res.status(401).send({ message: 'Unauthorized' });
+        return false;
+    }
+    return true;
+}
+
+export async function getInviteUsage(userId, { unlimited = false } = {}) {
+    const { start, end } = getUtcMonthRange();
+    const resetsAt = end.toISOString();
+    if (unlimited) {
+        return {
+            unlimited: true,
+            campaignsUsed: 0,
+            campaignsLimit: null,
+            campaignsRemaining: null,
+            recipientsUsed: 0,
+            recipientsLimit: null,
+            recipientsRemaining: null,
+            resetsAt,
+        };
+    }
+    const [campaignsUsed, recipientsUsed] = await Promise.all([
+        prisma.surveyInviteCampaign.count({
+            where: {
+                createdAt: { gte: start, lt: end },
+                survey: { userId },
+            },
+        }),
+        prisma.surveyInviteRecipient.count({
+            where: {
+                createdAt: { gte: start, lt: end },
+                campaign: { survey: { userId } },
+            },
+        }),
+    ]);
+    return {
+        unlimited: false,
+        campaignsUsed,
+        campaignsLimit: FREE_INVITE_CAMPAIGNS_PER_MONTH,
+        campaignsRemaining: Math.max(0, FREE_INVITE_CAMPAIGNS_PER_MONTH - campaignsUsed),
+        recipientsUsed,
+        recipientsLimit: FREE_INVITE_RECIPIENTS_PER_MONTH,
+        recipientsRemaining: Math.max(0, FREE_INVITE_RECIPIENTS_PER_MONTH - recipientsUsed),
+        resetsAt,
+    };
+}
+
+export async function getInviteQuotaForRequester(req) {
+    const unlimited = await userHasActiveProSubscription(prisma, req.tokenId)
+        || await requesterIsSuperAdmin(req);
+    return getInviteUsage(req.tokenId, { unlimited });
 }
 
 export function assertSurveyInvitable(survey, isOwnerPro) {
