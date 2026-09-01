@@ -376,6 +376,20 @@ const CreateNewSurvey = () => {
         surveyForms: [...(prev.surveyForms ?? []), ...cloned],
       }));
       focusSurveyForm(cloned[cloned.length - 1]?.id);
+    } else if (item === 'PdfViewerForm') {
+      const newForm = { id: uid(5), formType: item };
+      setSelectedItems(prev => [...prev, item]);
+      setSurveyData(prev => {
+        const forms = prev.surveyForms ?? [];
+        const insertAt = insertIndexForConsent(forms);
+        const surveyForms = [
+          ...forms.slice(0, insertAt),
+          newForm,
+          ...forms.slice(insertAt),
+        ];
+        return { ...prev, surveyForms };
+      });
+      focusSurveyForm(newForm.id);
     } else if (CONSENT_FORM_TYPES.has(item)) {
       const newForm = { id: uid(5), formType: item, formMandate: true };
       setSelectedItems(prev => [...prev, item]);

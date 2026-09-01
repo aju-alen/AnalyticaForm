@@ -8,7 +8,7 @@ import theme from '../utils/theme'
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import SEO from '../components/SEO'
-import { evaluateConsentProgress } from '../utils/consentProgress'
+import { evaluateConsentProgress, wantsZoomInterviewExit } from '../utils/consentProgress'
 import { getQuestionType, DISPLAY_ONLY_FORM_TYPES } from '../questionTypes/registry'
 import { axiosWithAuth } from '../utils/customAxios'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -72,6 +72,7 @@ const UserSubmitSurvey = () => {
     const [alreadyResponded, setAlreadyResponded] = useState(false);
     const [savedResponseId, setSavedResponseId] = useState('');
     const [previewBlocked, setPreviewBlocked] = useState(false);
+    const pendingZoomConsentRef = React.useRef(null);
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -321,11 +322,47 @@ const UserSubmitSurvey = () => {
 
     }
 
+    const pdfFormIndex = (surveyData.surveyForms || []).findIndex(
+        (form) => form.formType === 'PdfViewerForm'
+    );
+    const hasPdfViewer = pdfFormIndex >= 0;
+
     const handleNext = () => {
         const next = currentIndex + 1;
         setCurrentIndex(next);
         writeLocalProgress({ currentIndex: next });
         void persistIncompleteToServer();
+    }
+
+    const handlePdfNext = () => {
+        const consentForm = pendingZoomConsentRef.current
+            || (surveyData.surveyForms || []).find(
+                (form) =>
+                    form.formType === 'QualitativeConsentForm' ||
+                    form.formType === 'DynamicQualitativeConsentForm'
+            );
+        if (consentForm && wantsZoomInterviewExit(consentForm)) {
+            handleZoomInterviewExit(consentForm);
+            return;
+        }
+        handleNext();
+    }
+
+    const handleConsentZoomOrPdf = (payload) => {
+        const deferZoomForPdf = hasPdfViewer && surveyData.surveyLayout !== 'onePage';
+        if (deferZoomForPdf && wantsZoomInterviewExit(payload)) {
+            pendingZoomConsentRef.current = payload;
+            setSurveyData((prev) => ({
+                ...prev,
+                surveyForms: (prev.surveyForms || []).map((form) =>
+                    form.id === payload.id ? payload : form
+                ),
+            }));
+            setCurrentIndex(pdfFormIndex);
+            writeLocalProgress({ currentIndex: pdfFormIndex });
+            return;
+        }
+        handleZoomInterviewExit(payload);
     }
 
     const handleConsentDisagree = () => {
@@ -1231,7 +1268,7 @@ const UserSubmitSurvey = () => {
                 <FormComponent
                     data={currentItem}
                     onSaveForm={onSaveForm}
-                    onHandleNext={handleNext}
+                    onHandleNext={currentItem.formType === 'PdfViewerForm' ? handlePdfNext : handleNext}
                     id={currentItem.id}
                     options={currentItem.options}
                     disableForm={false}
@@ -1240,7 +1277,7 @@ const UserSubmitSurvey = () => {
                     onSetLoading={setIsLoading}
                     {...(questionType.consent ? {
                         onConsentDisagree: handleConsentDisagree,
-                        onZoomInterviewExit: handleZoomInterviewExit,
+                        onZoomInterviewExit: handleConsentZoomOrPdf,
                         onMandatoryIncomplete: () => setSnackbar({
                             open: true,
                             message: 'Please fill the mandatory fields',
@@ -1258,7 +1295,7 @@ const UserSubmitSurvey = () => {
         return (
             <div className={
                 isPdfViewer
-                    ? 'w-11/12 mx-auto h-[85vh] max-sm:h-[80vh]'
+                    ? 'w-11/12 mx-auto h-[85vh] max-sm:h-[80vh] flex flex-col'
                     : isMultiPointRadio
                         ? 'w-11/12 mx-auto max-sm:h-auto sm:h-4/6'
                         : 'w-11/12 h-4/6 mx-auto'

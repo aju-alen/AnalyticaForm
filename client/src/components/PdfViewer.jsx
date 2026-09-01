@@ -108,12 +108,10 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container maxWidth='xl' sx={{ height: '100%' }}>
+      <Container maxWidth='xl' sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'stretch',
-          justifyContent: 'space-between',
           flexGrow: 1,
           height: '100%',
           minHeight: previewMinHeight,
@@ -128,7 +126,7 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
           backgroundColor: '#F4F3F6',
         }}>
           {!disableText && !formData.pdfURL && (
-            <Stack spacing={1} sx={{ mb: 2, alignItems: 'flex-start' }}>
+            <Stack spacing={1} sx={{ mb: 2, alignItems: 'flex-start', flexShrink: 0 }}>
               <Button
                 component="label"
                 variant="contained"
@@ -156,8 +154,7 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
               sx={{
                 width: '100%',
                 flexGrow: 1,
-                minHeight: previewMinHeight,
-                height: '100%',
+                minHeight: { xs: '58vh', sm: '63vh', md: '68vh' },
                 border: 'none',
                 borderRadius: 1,
                 backgroundColor: '#fff',
@@ -167,7 +164,7 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
             disableText && (
               <Box sx={{
                 flexGrow: 1,
-                minHeight: previewMinHeight,
+                minHeight: 0,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -179,8 +176,8 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
             )
           )}
 
-          <Stack spacing={2} direction="row" sx={{ marginTop: '1rem' }}>
-            {disableButtons && (
+          {disableButtons && (
+            <Stack spacing={2} direction="row" sx={{ marginTop: '1rem', flexShrink: 0 }}>
               <Button
                 variant="contained"
                 color="success"
@@ -188,8 +185,8 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
               >
                 Next Question
               </Button>
-            )}
-          </Stack>
+            </Stack>
+          )}
         </Box>
       </Container>
     </React.Fragment>
