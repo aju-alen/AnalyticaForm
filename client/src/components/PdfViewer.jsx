@@ -8,6 +8,7 @@ import { uid } from 'uid';
 import axios from 'axios';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
+import PdfPageViewer from './PdfPageViewer';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -200,9 +201,9 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
               minHeight: { xs: '58vh', sm: '63vh', md: '68vh' },
               borderRadius: 1,
               backgroundColor: '#fff',
-              overflow: 'hidden',
+              overflow: 'auto',
               display: 'flex',
-              alignItems: 'center',
+              alignItems: previewSrc && !previewLoading && !previewError ? 'stretch' : 'center',
               justifyContent: 'center',
             }}>
               {previewLoading && <CircularProgress />}
@@ -210,18 +211,7 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
                 <Typography variant="body2" color="error">{previewError}</Typography>
               )}
               {!previewLoading && previewSrc && (
-                <Box
-                  component="iframe"
-                  title="Survey document"
-                  src={previewSrc}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: { xs: '58vh', sm: '63vh', md: '68vh' },
-                    border: 'none',
-                    backgroundColor: '#fff',
-                  }}
-                />
+                <PdfPageViewer file={previewSrc} />
               )}
             </Box>
           ) : (
