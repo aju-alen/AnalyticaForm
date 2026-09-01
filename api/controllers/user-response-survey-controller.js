@@ -115,8 +115,8 @@ export const getSingleSurveyDataForUser = async (req, res) => {
             maxResponses: getSurveyData.maxResponses,
             alreadyResponded,
             surveyLayout: getSurveyData.surveyLayout === 'onePage' ? 'onePage' : 'oneQuestion',
-            brandLogoUrl: getSurveyData.brandLogoUrl || null,
-            brandColor: getSurveyData.brandColor || null,
+            brandLogoUrl: isOwnerPro ? (getSurveyData.brandLogoUrl || null) : null,
+            brandColor: isOwnerPro ? (getSurveyData.brandColor || null) : null,
             hidePoweredBy: Boolean(getSurveyData.hidePoweredBy && isOwnerPro),
             surveyForms: (!closedReason && passwordOk && !alreadyResponded) ? getSurveyData.surveyForms : [],
         };

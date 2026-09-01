@@ -115,21 +115,21 @@ export const updateSurveyById = async (req, res) => {
             surveyLayout: req.body.surveyLayout === 'onePage' ? 'onePage' : 'oneQuestion',
             hidePoweredBy: false,
         };
-        if (typeof req.body.brandLogoUrl === 'string') {
-            data.brandLogoUrl = req.body.brandLogoUrl.trim() || null;
-        }
-        if (req.body.clearBrandLogo) {
-            data.brandLogoUrl = null;
-        }
-        if (typeof req.body.brandColor === 'string') {
-            const color = req.body.brandColor.trim();
-            data.brandColor = /^#([0-9a-fA-F]{6})$/.test(color) ? color : null;
-        }
-        if (req.body.brandColor === '' || req.body.brandColor === null) {
-            data.brandColor = null;
-        }
         const requesterPro = await userHasActiveProSubscription(prisma, req.tokenId);
         if (requesterPro || await requesterIsSuperAdmin(req)) {
+            if (typeof req.body.brandLogoUrl === 'string') {
+                data.brandLogoUrl = req.body.brandLogoUrl.trim() || null;
+            }
+            if (req.body.clearBrandLogo) {
+                data.brandLogoUrl = null;
+            }
+            if (typeof req.body.brandColor === 'string') {
+                const color = req.body.brandColor.trim();
+                data.brandColor = /^#([0-9a-fA-F]{6})$/.test(color) ? color : null;
+            }
+            if (req.body.brandColor === '' || req.body.brandColor === null) {
+                data.brandColor = null;
+            }
             data.hidePoweredBy = Boolean(req.body.hidePoweredBy);
         }
         if (req.body.closesAt === null || req.body.closesAt === '') {

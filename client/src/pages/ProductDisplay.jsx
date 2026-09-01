@@ -68,6 +68,7 @@ const tiers = [
       'Unlimited responses',
       'Everything in Free',
       'Email invitations and campaigns',
+      'Custom branding: logo, color, and hide “Powered by”',
       'Advanced analytics: individual responses, filters, and time spent',
       'Trends and drop-off',
       'Full Excel export, including question summary',
@@ -117,6 +118,7 @@ const comparisonSections = [
       { feature: 'Preview and clone', free: YES, premium: YES },
       { feature: 'Password, close date, max responses', free: YES, premium: YES },
       { feature: 'One-page or one-question layout', free: YES, premium: YES },
+      { feature: 'Custom branding (logo, color, hide “Powered by”)', free: NO, premium: YES },
     ],
   },
   {

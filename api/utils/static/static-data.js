@@ -636,6 +636,7 @@ PREMIUM ONLY:
 - Unlimited DA Assistant chat
 - Milestone emails at 10, 50, 100, 250, and 500 complete responses, plus when a survey hits max responses or its close date
 - 24/7 chat support
+- Custom branding: logo, brand color, and hide “Powered by Dubai Analytica” (per survey)
 
 PRICING:
 - Free: AED 0 — 5 surveys, 500 responses per survey, 10 invitation recipients per month, 5 DA Assistant chats per month, features listed above, email support
@@ -643,7 +644,6 @@ PRICING:
 - Annual: AED 1,992 / year (17% off AED 2,400; save AED 408) — same features as Monthly, billed once a year
 - Subscriptions auto-renew
 - Annual: cancel anytime to stop the next charge. Annual fees are not refundable. The customer keeps Premium access until the end of the year already paid for.
-- Do not mention custom branding, logos, or removing “powered by”
 
 SUPPORT:
 - Email and phone 24/7 for all users: +971 (058) 265 2808

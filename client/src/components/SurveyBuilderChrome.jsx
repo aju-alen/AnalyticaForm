@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
@@ -20,6 +22,9 @@ import ContentCopy from '@mui/icons-material/ContentCopy';
 import EmailIcon from '@mui/icons-material/Email';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { axiosWithAuth } from '../utils/customAxios';
+import { backendUrl } from '../utils/backendUrl';
+import { refreshToken } from '../utils/refreshToken';
 
 const ChromeContext = createContext(null);
 
@@ -49,6 +54,121 @@ function LayoutFields() {
         }
         label="Show all questions on one page"
       />
+    </>
+  );
+}
+
+function BrandingFields() {
+  const { surveyData, setSurveyData, canBrand, surveyId } = useChrome();
+  const navigate = useNavigate();
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const brandColor = /^#([0-9a-fA-F]{6})$/.test(surveyData.brandColor || '')
+    ? surveyData.brandColor
+    : '#1976d2';
+
+  const handleLogoUpload = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || !canBrand || !surveyId) return;
+    setUploading(true);
+    setUploadError('');
+    try {
+      await refreshToken();
+      const fileData = new FormData();
+      fileData.append('s3', file);
+      const res = await axiosWithAuth.post(`${backendUrl}/api/s3/upload-brand-logo/${surveyId}`, fileData);
+      const url = res.data?.url;
+      if (!url) throw new Error('No logo URL returned');
+      setSurveyData((prev) => ({ ...prev, brandLogoUrl: url }));
+    } catch (err) {
+      setUploadError(err.response?.data?.message || 'Could not upload logo.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+        <Typography variant="subtitle1">Branding</Typography>
+        {!canBrand && <Chip size="small" color="primary" label="Premium" />}
+      </Box>
+      {!canBrand && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+          Logo, color, and hiding “Powered by Dubai Analytica” are available on Premium.
+        </Typography>
+      )}
+      {surveyData.brandLogoUrl ? (
+        <Box
+          component="img"
+          src={surveyData.brandLogoUrl}
+          alt="Brand logo"
+          sx={{ height: 40, maxWidth: 180, objectFit: 'contain', display: 'block', mb: 1 }}
+        />
+      ) : null}
+      <Stack direction="row" spacing={1} sx={{ mb: 2 }} flexWrap="wrap" useFlexGap>
+        <Button component="label" variant="outlined" size="small" disabled={!canBrand || uploading}>
+          {uploading ? 'Uploading…' : (surveyData.brandLogoUrl ? 'Replace logo' : 'Upload logo')}
+          <input
+            type="file"
+            hidden
+            accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml"
+            onChange={handleLogoUpload}
+          />
+        </Button>
+        {surveyData.brandLogoUrl ? (
+          <Button
+            variant="text"
+            size="small"
+            color="secondary"
+            disabled={!canBrand || uploading}
+            onClick={() => setSurveyData((prev) => ({ ...prev, brandLogoUrl: '' }))}
+          >
+            Remove logo
+          </Button>
+        ) : null}
+      </Stack>
+      {uploadError ? (
+        <Typography variant="body2" color="error" sx={{ mb: 1 }}>{uploadError}</Typography>
+      ) : null}
+      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+        <Typography variant="body2">Brand color</Typography>
+        <Box
+          component="input"
+          type="color"
+          value={brandColor}
+          disabled={!canBrand}
+          onChange={(e) => setSurveyData((prev) => ({ ...prev, brandColor: e.target.value }))}
+          sx={{ width: 40, height: 32, border: '1px solid #e2e8f0', p: 0, bgcolor: 'transparent' }}
+        />
+        {surveyData.brandColor ? (
+          <Button
+            variant="text"
+            size="small"
+            disabled={!canBrand}
+            onClick={() => setSurveyData((prev) => ({ ...prev, brandColor: '' }))}
+          >
+            Clear
+          </Button>
+        ) : null}
+      </Stack>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={Boolean(surveyData.hidePoweredBy)}
+            disabled={!canBrand}
+            onChange={(e) => setSurveyData((prev) => ({ ...prev, hidePoweredBy: e.target.checked }))}
+            size="small"
+          />
+        }
+        label="Hide “Powered by Dubai Analytica”"
+      />
+      {!canBrand && (
+        <Button size="small" sx={{ mt: 1, display: 'block' }} onClick={() => navigate('/pricing')}>
+          See Premium plans
+        </Button>
+      )}
     </>
   );
 }
@@ -291,6 +411,9 @@ function SettingsStack({ showAi }) {
       </Box>
       <Box sx={sectionSx}>
         <LayoutFields />
+      </Box>
+      <Box sx={sectionSx}>
+        <BrandingFields />
       </Box>
       {isSuperAdmin && (
         <Box sx={sectionSx}>

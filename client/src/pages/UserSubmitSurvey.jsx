@@ -5,7 +5,7 @@ import { useParams,useNavigate, useSearchParams } from 'react-router-dom'
 import { Button, TextField,Box,Typography, Stack, AppBar,Toolbar, Snackbar, Alert, LinearProgress} from '@mui/material'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import theme from '../utils/theme'
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import SEO from '../components/SEO'
 import { evaluateConsentProgress, wantsZoomInterviewExit } from '../utils/consentProgress'
@@ -1313,7 +1313,16 @@ const UserSubmitSurvey = () => {
 
 
     const isOnePage = surveyData.surveyLayout === 'onePage';
-    const hidePoweredBy = false;
+    const hidePoweredBy = Boolean(surveyData.hidePoweredBy);
+    const surveyTheme = React.useMemo(() => {
+        const color = typeof surveyData.brandColor === 'string' ? surveyData.brandColor.trim() : '';
+        if (!/^#([0-9a-fA-F]{6})$/.test(color)) return theme;
+        return createTheme(theme, {
+            palette: {
+                primary: { main: color },
+            },
+        });
+    }, [surveyData.brandColor]);
     const answerableForms = (surveyData.surveyForms || []).filter(
         (form) => form && !DISPLAY_ONLY_FORM_TYPES.has(form.formType)
     );
@@ -1341,7 +1350,7 @@ const UserSubmitSurvey = () => {
     
     console.log(surveyData, 'surveyForms-forms');
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={surveyTheme}>
               <SEO
             robotText="noindex, nofollow"
           title={`Dubai Analytica: ${surveyData.surveyTitle}`}

@@ -658,6 +658,9 @@ const CreateNewSurvey = () => {
           accessPassword={accessPassword}
           setAccessPassword={setAccessPassword}
           isSuperAdmin={isSuperAdmin}
+          canBrand={Boolean(
+            isSuperAdmin || (Number(subscriptionEndDate) > Math.floor(Date.now() / 1000))
+          )}
           selectedCountries={selectedCountries}
           onRegionToggle={handleRegionToggle}
           regionOptions={TARGET_REGION_OPTIONS}
