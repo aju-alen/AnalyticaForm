@@ -5,6 +5,7 @@ import Container from '@mui/material/Container';
 import { Button, Stack, CircularProgress, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { uid } from 'uid';
+import axios from 'axios';
 import { axiosWithAuth } from '../utils/customAxios';
 import { backendUrl } from '../utils/backendUrl';
 
@@ -40,6 +41,9 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
   });
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [previewSrc, setPreviewSrc] = useState('');
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState('');
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -68,6 +72,50 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
       setFormData((prev) => ({ ...prev, id }));
     }
   }, [data, id]);
+
+  useEffect(() => {
+    if (!formData.pdfURL) {
+      setPreviewSrc('');
+      setPreviewError('');
+      setPreviewLoading(false);
+      return undefined;
+    }
+
+    let objectUrl = '';
+    let cancelled = false;
+    const loadPreview = async () => {
+      setPreviewLoading(true);
+      setPreviewError('');
+      try {
+        const res = await axios.get(`${backendUrl}/api/s3/view-pdf`, {
+          params: { url: formData.pdfURL },
+          responseType: 'blob',
+        });
+        if (cancelled) return;
+        const blob = res.data instanceof Blob
+          ? res.data
+          : new Blob([res.data], { type: 'application/pdf' });
+        objectUrl = URL.createObjectURL(blob);
+        if (cancelled) {
+          URL.revokeObjectURL(objectUrl);
+          return;
+        }
+        setPreviewSrc(objectUrl);
+      } catch {
+        if (!cancelled) {
+          setPreviewSrc('');
+          setPreviewError('Could not load the document');
+        }
+      } finally {
+        if (!cancelled) setPreviewLoading(false);
+      }
+    };
+    loadPreview();
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [formData.pdfURL]);
 
   const handlePdfUpload = async (event) => {
     const file = event.target.files?.[0];
@@ -147,19 +195,35 @@ const PdfViewer = ({ onSaveForm, data, id, disableText, disableButtons, onHandle
           )}
 
           {formData.pdfURL ? (
-            <Box
-              component="iframe"
-              title="PDF preview"
-              src={formData.pdfURL}
-              sx={{
-                width: '100%',
-                flexGrow: 1,
-                minHeight: { xs: '58vh', sm: '63vh', md: '68vh' },
-                border: 'none',
-                borderRadius: 1,
-                backgroundColor: '#fff',
-              }}
-            />
+            <Box sx={{
+              flexGrow: 1,
+              minHeight: { xs: '58vh', sm: '63vh', md: '68vh' },
+              borderRadius: 1,
+              backgroundColor: '#fff',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              {previewLoading && <CircularProgress />}
+              {!previewLoading && previewError && (
+                <Typography variant="body2" color="error">{previewError}</Typography>
+              )}
+              {!previewLoading && previewSrc && (
+                <Box
+                  component="iframe"
+                  title="Survey document"
+                  src={previewSrc}
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: { xs: '58vh', sm: '63vh', md: '68vh' },
+                    border: 'none',
+                    backgroundColor: '#fff',
+                  }}
+                />
+              )}
+            </Box>
           ) : (
             disableText && (
               <Box sx={{

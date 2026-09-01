@@ -192,6 +192,50 @@ export const fetchPdfDetails = async (req, res) => {
     }
 }
 
+function pdfKeyFromStoredUrl(urlString) {
+    if (!urlString || typeof urlString !== 'string') return null;
+    try {
+        const parsed = new URL(urlString);
+        const allowedHosts = new Set([
+            `${BUCKET_NAME}.s3.${REGION}.amazonaws.com`,
+            `${BUCKET_NAME}.s3.amazonaws.com`,
+            'dubai-analytica.s3.ap-south-1.amazonaws.com',
+        ].filter(Boolean));
+        if (!allowedHosts.has(parsed.hostname)) return null;
+        const key = decodeURIComponent(parsed.pathname.replace(/^\/+/, ''));
+        if (!key.startsWith('pdfForm/') || key.includes('..')) return null;
+        return key;
+    } catch {
+        return null;
+    }
+}
+
+export const viewPdf = async (req, res) => {
+    const key = pdfKeyFromStoredUrl(req.query.url);
+    if (!key) {
+        return res.status(400).json({ message: 'Invalid PDF' });
+    }
+    try {
+        const data = await s3.getObject({
+            Bucket: BUCKET_NAME,
+            Key: key,
+        });
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline');
+        res.setHeader('Cache-Control', 'private, max-age=300');
+        res.removeHeader('X-Frame-Options');
+
+        if (data.Body && typeof data.Body.pipe === 'function') {
+            return data.Body.pipe(res);
+        }
+        const bytes = await data.Body.transformToByteArray();
+        return res.send(Buffer.from(bytes));
+    } catch (err) {
+        console.error('[viewPdf]', err?.message || err);
+        return res.status(404).json({ message: 'PDF not found' });
+    }
+};
+
 export const uploadBrandLogo = async (req, res) => {
     const surveyId = req.params.surveyId;
     try {
