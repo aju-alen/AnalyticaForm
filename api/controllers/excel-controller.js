@@ -495,7 +495,7 @@ export const exportQuestionSummary = async (req, res) => {
         }
 
         const responses = await prisma.userSurveyResponse.findMany({
-            where: { surveyId, isComplete: true },
+            where: { surveyId },
             select: { userResponse: true },
         });
         const questions = buildQuestionAnalytics(survey.surveyForms, responses);
