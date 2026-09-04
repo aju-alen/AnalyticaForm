@@ -1,0 +1,479 @@
+{
+    "userResponse": [
+      {
+        "formType": "DynamicQualitativeConsentForm",
+        "question": "Informed Consent Agreement From Awareness to Action: UAE Nationals’ Responses to Real-Time Carbon Footprint Feedback and AI-Enabled Sustainability SupportPlease read this consent agreement carefully before you decide to participate in the study.Consent Form Key Information: • Participate in an approximately 15–20 minute online expert review of the study’s measurement instruments.• Review measurement instrument indicators and provide clarity and necessity ratings.• This is a construct-validation exercise, not a survey about your own organization or practices; it involves no engineering build, deployment, or performance testing.• No information collected will connect your identity with your responses.Purpose of the research study: This exploratory mixed-methods study examines how UAE nationals (Emiratis) respond to real time carbon footprint feedback and how artificial intelligence (AI) could support movement from environmental awareness to sustainable daily action.What you will do in the study: You will review the measurement instrument indicators and provide clarity and relevance ratings. You can skip any item and can stop at any time.Time required: The study will require about 15–20 minutes of your time.Risks: There are few anticipated risks in this study. Any discomfort is minimal.Benefits: There are no direct benefits to you for participating in this research study. The study may improve the understanding of how real time carbon footprint supported by AI may support sustainable daily action. Confidentiality: Your responses will be kept in confidence and reported only in aggregated or anonymized form; an ID number is assigned to each expert.Anonymity: The information that you give in the study will be anonymous. Your name will not be linked to the data.Voluntary participation: Your participation in the study is completely voluntary.Right to withdraw from the study: You have the right to withdraw from the study at any time before analysis without penalty. How to withdraw from the study: To withdraw, close the review before submitting, or email the researcher at oalhamiri23@gmail.com within 7 days of completing the review.Payment: You will receive no payment for participating in this study.Using data beyond this study: I may choose to use the data as part of a future study. The data you provide in this study will be retained in a secure manner for one (1) year and then destroyed.",
+        "selectedValue": [
+          {
+            "question": "I confirm that I am 18 years or older, and I agree to participate in the research study described above.",
+            "answer": "Yes",
+            "value": "Yes",
+            "index": 1
+          }
+        ],
+        "id": "6e65a",
+        "items": [
+          {
+            "id": "fef09",
+            "rule": "exit_on_no",
+            "label": "I confirm that I am 18 years or older, and I agree to participate in the research study described above.",
+            "showsZoomOnYes": false
+          }
+        ]
+      },
+      {
+        "formType": "PresentationTextForm",
+        "question": "Measurement Instrument Evaluation and Indicator Review\n\nInstructions. For each measurement item, rate every item on two 4-point judgements — Clarity (1 = Not clear … 4 = Very clear) and Necessity\n/ Relevance (1 = Not necessary … 4 = Highly necessary). After each dimension, one Completeness\njudgement asks whether the indicators, taken together, fully capture the construct (and what is missing).",
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ]
+      },
+      {
+        "formType": "MultiScalePoint",
+        "question": "Please identify the clarity level of the following measurement items.",
+        "selectedValue": [
+          {
+            "id": "az56j",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Clear",
+            "question": "Before today, how familiar were you with the term “carbon footprint”?"
+          },
+          {
+            "id": "34511",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "How often do you think about the environmental impact of your daily activities?"
+          },
+          {
+            "id": "a1b56",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "How important is reducing carbon emissions to you personally? "
+          },
+          {
+            "id": "899c4",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "How confident are you that you understand which of your daily activities generate the most carbon emissions?"
+          },
+          {
+            "id": "a241e",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "How often do you actively try to reduce your environmental impact?"
+          },
+          {
+            "id": "a2fb7",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "Which of the following actions do you currently practice?"
+          },
+          {
+            "id": "5847d",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Clear",
+            "question": "In the past 12 months, how much have you changed your lifestyle to be more environmentally friendly? "
+          },
+          {
+            "id": "86ef7",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "How willing are you to change daily habits if they are shown to have a significant environmental impact?"
+          },
+          {
+            "id": "41460",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "If you received this information weekly, how likely would you be to change some of your habits?"
+          },
+          {
+            "id": "1283e",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "Which area would you be most likely to try to improve first?"
+          },
+          {
+            "id": "2d3d9",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "Which type of feedback would motivate you the most to change your behavior?"
+          },
+          {
+            "id": "c4640",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "How useful would real-time carbon footprint \ntracking be in your daily life?"
+          },
+          {
+            "id": "71555",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "Before seeing the carbon footprint report above, how did you think your environmental impact compared to the average person?"
+          },
+          {
+            "id": "5185a",
+            "index": 4,
+            "value": 3,
+            "answer": "Very Clear",
+            "question": "How comfortable are you using AI-powered applications (e.g., chatbots, recommendation systems)?"
+          },
+          {
+            "id": "7c5e5",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Clear",
+            "question": "Would you trust an AI system to provide recommendations for reducing your carbon footprint?"
+          },
+          {
+            "id": "fd6f9",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Clear",
+            "question": "Which type of AI-generated recommendation would be most valuable to you? "
+          },
+          {
+            "id": "48a80",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Clear",
+            "question": "Would you use an AI-powered platform that helps monitor and reduce your carbon footprint? "
+          },
+          {
+            "id": "93308",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Clear",
+            "question": "How often would you realistically use such a platform?"
+          },
+          {
+            "id": "21987",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "What was your first reaction when you saw the carbon footprint report above?"
+          },
+          {
+            "id": "75537",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Clear",
+            "question": "What would motivate you the most to reduce your carbon footprint?"
+          },
+          {
+            "id": "a8de4",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "What challenges or barriers prevent people from making more environmentally friendly choices?"
+          },
+          {
+            "id": "cc1ca",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "In your opinion, how could AI help individuals live more sustainably in the UAE?"
+          },
+          {
+            "id": "42757",
+            "index": 3,
+            "value": 2,
+            "answer": "Clear ",
+            "question": "If you could add one feature to an AI-powered sustainability platform, what would it be and why?"
+          }
+        ]
+      },
+      {
+        "formType": "MultiScalePoint",
+        "question": "Please identify the necessity/relevance level of the following construct indicators.",
+        "selectedValue": [
+          {
+            "id": "az56j",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Necessary",
+            "question": "Before today, how familiar were you with the term “carbon footprint”?"
+          },
+          {
+            "id": "b5a40",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Necessary",
+            "question": "How often do you think about the environmental impact of your daily activities?"
+          },
+          {
+            "id": "ea29d",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Necessary",
+            "question": "How important is reducing carbon emissions to you personally? "
+          },
+          {
+            "id": "5b593",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "How confident are you that you understand which of your daily activities generate the most carbon emissions?"
+          },
+          {
+            "id": "71fcd",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "How often do you actively try to reduce your environmental impact?"
+          },
+          {
+            "id": "862c5",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "Which of the following actions do you currently practice?"
+          },
+          {
+            "id": "e17cc",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "In the past 12 months, how much have you changed your lifestyle to be more environmentally friendly?"
+          },
+          {
+            "id": "b9452",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "How willing are you to change daily habits if they are shown to have a significant environmental impact?"
+          },
+          {
+            "id": "420eb",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "If you received this information weekly, how likely would you be to change some of your habits?"
+          },
+          {
+            "id": "d0bff",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "Which area would you be most likely to try to improve first?"
+          },
+          {
+            "id": "8890a",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "Which type of feedback would motivate you the most to change your behavior?"
+          },
+          {
+            "id": "9739c",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "How useful would real-time carbon footprint \ntracking be in your daily life?"
+          },
+          {
+            "id": "aed8a",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "Before seeing the carbon footprint report above, how did you think your environmental impact compared to the average person?"
+          },
+          {
+            "id": "582d0",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Necessary",
+            "question": "How comfortable are you using AI-powered applications (e.g., chatbots, recommendation systems)?"
+          },
+          {
+            "id": "4b234",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "Would you trust an AI system to provide recommendations for reducing your carbon footprint?"
+          },
+          {
+            "id": "30191",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Necessary",
+            "question": "Which type of AI-generated recommendation would be most valuable to you? "
+          },
+          {
+            "id": "f4120",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "Would you use an AI-powered platform that helps monitor and reduce your carbon footprint? "
+          },
+          {
+            "id": "18034",
+            "index": 2,
+            "value": 1,
+            "answer": "Somewhat Necessary",
+            "question": "How often would you realistically use such a platform?"
+          },
+          {
+            "id": "1c822",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "What was your first reaction when you saw the carbon footprint report above?"
+          },
+          {
+            "id": "569a4",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "What would motivate you the most to reduce your carbon footprint?"
+          },
+          {
+            "id": "d38db",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "What challenges or barriers prevent people from making more environmentally friendly choices?"
+          },
+          {
+            "id": "b3f86",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "In your opinion, how could AI help individuals live more sustainably in the UAE?"
+          },
+          {
+            "id": "640d1",
+            "index": 3,
+            "value": 2,
+            "answer": "Necessary",
+            "question": "If you could add one feature to an AI-powered sustainability platform, what would it be and why?"
+          }
+        ]
+      },
+      {
+        "formType": "MultiScalePoint",
+        "question": "Completeness",
+        "selectedValue": [
+          {
+            "id": "az56j",
+            "index": 2,
+            "value": 1,
+            "answer": "Mostly",
+            "question": "Do these measurement items and indicators, together, fully capture the scope of the study?"
+          }
+        ]
+      },
+      {
+        "formType": "CommentBoxForm",
+        "question": "Overall Measurement Instrument JudgementAny recommended rewordings, merges, or removals?",
+        "selectedValue": [
+          {
+            "index": "",
+            "value": "",
+            "answer": "",
+            "question": ""
+          }
+        ]
+      }
+    ],
+    "userName": "",
+    "userEmail": "",
+    "formQuestions": [
+      {
+        "Dynamic Consent (Qualitative)": [
+          "I confirm that I am 18 years or older, and I agree to participate in the research study described above.",
+          "Zoom join URL"
+        ]
+      },
+      {
+        "Measurement Instrument Evaluation and Indicator Review\n\nInstructions. For each measurement item, rate every item on two 4-point judgements — Clarity (1 = Not clear … 4 = Very clear) and Necessity\n/ Relevance (1 = Not necessary … 4 = Highly necessary). After each dimension, one Completeness\njudgement asks whether the indicators, taken together, fully capture the construct (and what is missing).": [
+          "Measurement Instrument Evaluation and Indicator Review\n\nInstructions. For each measurement item, rate every item on two 4-point judgements — Clarity (1 = Not clear … 4 = Very clear) and Necessity\n/ Relevance (1 = Not necessary … 4 = Highly necessary). After each dimension, one Completeness\njudgement asks whether the indicators, taken together, fully capture the construct (and what is missing)."
+        ]
+      },
+      {
+        "Please identify the clarity level of the following measurement items.": [
+          "Before today, how familiar were you with the term “carbon footprint”?",
+          "How often do you think about the environmental impact of your daily activities?",
+          "How important is reducing carbon emissions to you personally? ",
+          "How confident are you that you understand which of your daily activities generate the most carbon emissions?",
+          "How often do you actively try to reduce your environmental impact?",
+          "Which of the following actions do you currently practice?",
+          "In the past 12 months, how much have you changed your lifestyle to be more environmentally friendly? ",
+          "How willing are you to change daily habits if they are shown to have a significant environmental impact?",
+          "If you received this information weekly, how likely would you be to change some of your habits?",
+          "Which area would you be most likely to try to improve first?",
+          "Which type of feedback would motivate you the most to change your behavior?",
+          "How useful would real-time carbon footprint \ntracking be in your daily life?",
+          "Before seeing the carbon footprint report above, how did you think your environmental impact compared to the average person?",
+          "How comfortable are you using AI-powered applications (e.g., chatbots, recommendation systems)?",
+          "Would you trust an AI system to provide recommendations for reducing your carbon footprint?",
+          "Which type of AI-generated recommendation would be most valuable to you? ",
+          "Would you use an AI-powered platform that helps monitor and reduce your carbon footprint? ",
+          "How often would you realistically use such a platform?",
+          "What was your first reaction when you saw the carbon footprint report above?",
+          "What would motivate you the most to reduce your carbon footprint?",
+          "What challenges or barriers prevent people from making more environmentally friendly choices?",
+          "In your opinion, how could AI help individuals live more sustainably in the UAE?",
+          "If you could add one feature to an AI-powered sustainability platform, what would it be and why?"
+        ]
+      },
+      {
+        "Please identify the necessity/relevance level of the following construct indicators.": [
+          "Before today, how familiar were you with the term “carbon footprint”?",
+          "How often do you think about the environmental impact of your daily activities?",
+          "How important is reducing carbon emissions to you personally? ",
+          "How confident are you that you understand which of your daily activities generate the most carbon emissions?",
+          "How often do you actively try to reduce your environmental impact?",
+          "Which of the following actions do you currently practice?",
+          "In the past 12 months, how much have you changed your lifestyle to be more environmentally friendly?",
+          "How willing are you to change daily habits if they are shown to have a significant environmental impact?",
+          "If you received this information weekly, how likely would you be to change some of your habits?",
+          "Which area would you be most likely to try to improve first?",
+          "Which type of feedback would motivate you the most to change your behavior?",
+          "How useful would real-time carbon footprint \ntracking be in your daily life?",
+          "Before seeing the carbon footprint report above, how did you think your environmental impact compared to the average person?",
+          "How comfortable are you using AI-powered applications (e.g., chatbots, recommendation systems)?",
+          "Would you trust an AI system to provide recommendations for reducing your carbon footprint?",
+          "Which type of AI-generated recommendation would be most valuable to you? ",
+          "Would you use an AI-powered platform that helps monitor and reduce your carbon footprint? ",
+          "How often would you realistically use such a platform?",
+          "What was your first reaction when you saw the carbon footprint report above?",
+          "What would motivate you the most to reduce your carbon footprint?",
+          "What challenges or barriers prevent people from making more environmentally friendly choices?",
+          "In your opinion, how could AI help individuals live more sustainably in the UAE?",
+          "If you could add one feature to an AI-powered sustainability platform, what would it be and why?"
+        ]
+      },
+      {
+        "Completeness": [
+          "Do these measurement items and indicators, together, fully capture the scope of the study?"
+        ]
+      },
+      {
+        "Comment Box": [
+          "Overall Measurement Instrument JudgementAny recommended rewordings, merges, or removals?"
+        ]
+      }
+    ],
+    "introduction": true,
+    "userTimeSpent": "9m 39s",
+    "isComplete": true
+  }
+  
