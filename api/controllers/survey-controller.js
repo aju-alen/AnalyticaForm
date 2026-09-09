@@ -49,9 +49,18 @@ export const getUserSurvey = async (req, res) => {
                 userId: true,
                 surveyViews: true,
                 surveyCompleted: true,
+                _count: {
+                    select: {
+                        responses: true,
+                    },
+                },
             }
         });
-        res.status(200).send(getSurveyAll);
+        const surveysWithResponseCount = getSurveyAll.map(({ _count, ...survey }) => ({
+            ...survey,
+            surveyResponses: _count.responses,
+        }));
+        res.status(200).send(surveysWithResponseCount);
 
     } catch (err) {
         console.log(err);
