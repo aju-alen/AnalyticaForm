@@ -165,8 +165,9 @@ export const postSingleSurveyDataForUser = async (req, res) => {
             return res.status(403).send({ message: 'Preview responses are not saved.' });
         }
 
-        const isComplete = req.body.isComplete !== false && req.body.isComplete !== 'false';
         const isZoomInterviewExit = req.body.zoomInterviewExit === true || req.body.zoomInterviewExit === 'true';
+        const isComplete = isZoomInterviewExit
+            || (req.body.isComplete !== false && req.body.isComplete !== 'false');
         if (!isComplete && !isZoomInterviewExit) {
             return res.status(204).send();
         }

@@ -391,7 +391,7 @@ const UserSubmitSurvey = () => {
                 introduction: surveyData.surveyIntroduction === null ? false : true,
                 userTimeSpent: timeSpentString,
                 zoomInterviewExit: true,
-                isComplete: false,
+                isComplete: true,
                 responseId: isDriContinueSession ? continueResponseId : undefined,
                 accessPassword: surveyPassword || undefined,
                 inviteToken: inviteToken || undefined,
