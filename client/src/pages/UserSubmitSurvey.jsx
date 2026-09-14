@@ -765,7 +765,7 @@ const UserSubmitSurvey = () => {
             }
             const isFullDriSubmission = isDefenceReadinessSurvey && data.length >= 50;
             if (isFullDriSubmission && savedId) {
-                const driPageBase = (import.meta.env.VITE_DRI_BASE_URL || 'http://localhost:5174').replace(/\/$/, '');
+                const driPageBase = (import.meta.env.VITE_DRI_BASE_URL || 'https://dri.phdsuccess.ae').replace(/\/$/, '');
                 window.location.assign(`${driPageBase}/full-payment-summary/${encodeURIComponent(String(savedId))}`);
                 return;
             }
