@@ -978,12 +978,16 @@ const UserSubmitSurvey = () => {
                   
                   <div className="p-8">
                     <h1 className="font-bold text-blue-500 text-3xl text-center mb-2">
-                      Thank You for your response
+                      {isDefenceReadinessSurvey
+                        ? 'You have completed your defense readiness index assessment'
+                        : 'Thank You for your response'}
                     </h1>
                     
                     {(!responseSubmitted && !isLoading) && (
                       <h2 className="font-medium text-gray-600 text-lg mb-8 text-center">
-                        Please enter your details to complete the survey
+                        {isDefenceReadinessSurvey
+                          ? 'Once you click on submit, you will receive an email with the defense readiness index report.'
+                          : 'Please enter your details to complete the survey'}
                       </h2>
                     )}
           
