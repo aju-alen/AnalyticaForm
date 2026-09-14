@@ -1,5 +1,16 @@
 import { prisma } from '../utils/prisma.js';
 
+const SURVEY_FRONTEND_ORIGIN = 'https://dubaianalytica.com';
+
+/** PhD Success and the survey app iframe this share URL. Helmet otherwise sends X-Frame-Options: SAMEORIGIN. */
+const allowSurveyMetaFraming = (res) => {
+    res.removeHeader('X-Frame-Options');
+    res.setHeader(
+        'Content-Security-Policy',
+        "frame-ancestors 'self' https://phdsuccess.ae https://www.phdsuccess.ae https://dubaianalytica.com https://www.dubaianalytica.com"
+    );
+};
+
 export const dynamicMetaHtml = async (req, res) => {
     try{
         const { surveyId } = req.params;
@@ -18,6 +29,14 @@ export const dynamicMetaHtml = async (req, res) => {
             })
         }
         console.log(survey,'survey in dynamic meta html');
+
+        allowSurveyMetaFraming(res);
+        const isIframe = String(req.headers['sec-fetch-dest'] || '').toLowerCase() === 'iframe';
+        const surveyPageUrl = `${SURVEY_FRONTEND_ORIGIN}/user-survey/${surveyId}${isIframe ? '?embed=1' : ''}`;
+
+        if (isIframe) {
+            return res.redirect(302, surveyPageUrl);
+        }
         
         res.send(`
             <!DOCTYPE html>
@@ -35,7 +54,7 @@ export const dynamicMetaHtml = async (req, res) => {
                 <meta property="og:title" content="${survey.surveyTitle} | Dubai Analytica" />
                 <meta property="og:description" content="${survey.surveyDescription || 'Take part in this survey by Dubai Analytica - Your trusted platform for Market and Academic Research'}" />
                 <meta property="og:image" content="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/DA-whatsapp-preview.png" />
-                <meta property="og:url" content="https://dubaianalytica.com/user-survey/${surveyId}" />
+                <meta property="og:url" content="${surveyPageUrl}" />
                 
                 <!-- Twitter Tags -->
                 <meta name="twitter:creator" content="Dubai Analytica" />
@@ -43,7 +62,7 @@ export const dynamicMetaHtml = async (req, res) => {
                 <meta name="twitter:title" content="${survey.surveyTitle} | Dubai Analytica" />
                 <meta name="twitter:description" content="${survey.surveyDescription || 'Take part in this survey by Dubai Analytica - Your trusted platform for Market and Academic Research'}" />
                 <meta name="twitter:image" content="https://dubai-analytica.s3.ap-south-1.amazonaws.com/image/DA-whatsapp-preview.png" />
-                <meta http-equiv="refresh" content="0;url=https://dubaianalytica.com/user-survey/${surveyId}" />
+                <meta http-equiv="refresh" content="0;url=${surveyPageUrl}" />
                 <style>
                     body {
                         margin: 0;
